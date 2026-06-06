@@ -1,0 +1,6 @@
+import os
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY", os.environ.get("PATHFORGE_SECRET_KEY", "dev-secret"))
+DATABASE_PATH = os.environ.get("DATABASE_PATH", os.environ.get("PATHFORGE_DB_PATH", "pathforge.db"))
+JWT_SECRET = os.environ.get("JWT_SECRET", os.environ.get("PATHFORGE_JWT_SECRET", "dev-jwt-secret"))

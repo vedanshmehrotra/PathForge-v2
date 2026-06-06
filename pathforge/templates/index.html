@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathForge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100">
+  <main class="min-h-screen grid place-items-center px-4">
+    <section class="w-full max-w-5xl">
+      <p class="text-sm font-semibold text-cyan-300">Adaptive DSA practice</p>
+      <h1 class="mt-3 text-5xl font-bold tracking-tight sm:text-7xl">PathForge</h1>
+      <p class="mt-5 max-w-2xl text-lg text-zinc-300">Submit code, let the AST engine identify the pattern you actually used, then get the next problem matched to your gaps and current skill.</p>
+      <div class="mt-10 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-5"><span class="text-cyan-300">1</span><h2 class="mt-2 font-semibold">Submit</h2><p class="mt-2 text-sm text-zinc-400">Solve a curated DSA problem in Python or Java.</p></div>
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-5"><span class="text-cyan-300">2</span><h2 class="mt-2 font-semibold">Analyze</h2><p class="mt-2 text-sm text-zinc-400">PathForge checks correctness and detects algorithmic patterns.</p></div>
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-5"><span class="text-cyan-300">3</span><h2 class="mt-2 font-semibold">Recommend</h2><p class="mt-2 text-sm text-zinc-400">Your next problem targets weak topics and confidence gaps.</p></div>
+      </div>
+      <div class="mt-10 grid gap-6 rounded-lg border border-zinc-800 bg-zinc-900 p-5 md:grid-cols-2">
+        <form id="loginForm" class="space-y-3">
+          <h2 class="font-semibold">Login</h2>
+          <input class="field" name="username" placeholder="Username or email">
+          <input class="field" name="password" type="password" placeholder="Password">
+          <button class="btn" type="submit">Login</button>
+        </form>
+        <form id="registerForm" class="space-y-3">
+          <h2 class="font-semibold">Register</h2>
+          <input class="field" name="username" placeholder="Username">
+          <input class="field" name="email" type="email" placeholder="Email">
+          <input class="field" name="password" type="password" placeholder="Password">
+          <select class="field" name="experience_level">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+          <div class="grid gap-2 text-sm text-zinc-300 sm:grid-cols-2">
+            <label><input type="checkbox" name="confident_areas" value="arrays"> Arrays</label>
+            <label><input type="checkbox" name="confident_areas" value="trees_graphs"> Trees/Graphs</label>
+            <label><input type="checkbox" name="confident_areas" value="dp"> DP</label>
+            <label><input type="checkbox" name="confident_areas" value="linked_lists"> Linked Lists</label>
+            <label><input type="checkbox" name="confident_areas" value="binary_search"> Binary Search</label>
+            <label><input type="checkbox" name="confident_areas" value="greedy_backtracking"> Greedy/Backtracking</label>
+          </div>
+          <button class="btn" type="submit">Create account</button>
+        </form>
+      </div>
+      <p id="message" class="mt-4 min-h-6 text-sm text-red-300"></p>
+    </section>
+  </main>
+  <script>
+    const message = document.getElementById('message');
+    async function auth(path, body) {
+      message.textContent = '';
+      const res = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Request failed');
+      localStorage.setItem('pf_token', json.data.token);
+      localStorage.setItem('pf_user_id', json.data.user_id);
+      location.href = json.data.onboarding_complete ? '/practice' : '/diagnostic';
+    }
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      auth('/api/auth/login', Object.fromEntries(new FormData(loginForm))).catch(err => message.textContent = err.message);
+    });
+    registerForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const form = new FormData(registerForm);
+      const body = Object.fromEntries(form);
+      body.confident_areas = form.getAll('confident_areas');
+      auth('/api/auth/register', body).catch(err => message.textContent = err.message);
+    });
+  </script>
+</body>
+</html>

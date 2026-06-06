@@ -1,0 +1,70 @@
+.field {
+  width: 100%;
+  border: 1px solid rgb(63 63 70);
+  border-radius: 0.5rem;
+  background: rgb(24 24 27);
+  color: rgb(244 244 245);
+  padding: 0.65rem 0.8rem;
+  outline: none;
+}
+
+.field:focus {
+  border-color: rgb(34 211 238);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.15);
+}
+
+.btn {
+  width: 100%;
+  border-radius: 0.5rem;
+  background: rgb(8 145 178);
+  color: white;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.badge {
+  border-radius: 999px;
+  border: 1px solid rgb(63 63 70);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  color: rgb(34 211 238);
+}
+
+.label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(161 161 170);
+}
+
+.stat {
+  border: 1px solid rgb(39 39 42);
+  border-radius: 0.5rem;
+  background: rgb(24 24 27);
+  padding: 1rem;
+}
+
+.stat-num {
+  margin-top: 0.25rem;
+  font-size: 1.875rem;
+  font-weight: 800;
+}
+
+.result-panel {
+  opacity: 0;
+  transform: translateY(10px);
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 220ms ease, transform 220ms ease, max-height 220ms ease;
+}
+
+.result-panel.show {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 360px;
+}

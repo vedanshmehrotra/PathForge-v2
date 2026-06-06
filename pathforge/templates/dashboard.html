@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - PathForge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100">
+  <header class="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
+    <a class="text-xl font-bold" href="/">PathForge</a>
+    <nav class="flex gap-3 text-sm"><a href="/practice" class="text-cyan-300">Practice</a><button id="logout" class="text-zinc-400">Logout</button></nav>
+  </header>
+  <main class="mx-auto max-w-6xl space-y-5 p-4">
+    <p id="error" class="min-h-6 text-sm text-red-300"></p>
+    <section class="grid gap-4 sm:grid-cols-4">
+      <div class="stat"><p class="label">Overall Elo</p><p id="overall" class="stat-num">800</p></div>
+      <div class="stat"><p class="label">Solved</p><p id="solved" class="stat-num">0</p></div>
+      <div class="stat"><p class="label">Submissions</p><p id="subs" class="stat-num">0</p></div>
+      <div class="stat"><p class="label">Streak</p><p id="streak" class="stat-num">0</p></div>
+    </section>
+    <section class="grid gap-4 sm:grid-cols-3">
+      <div class="stat"><p class="label">Easy pass rate</p><p id="easyRate" class="stat-num">0%</p></div>
+      <div class="stat"><p class="label">Medium pass rate</p><p id="mediumRate" class="stat-num">0%</p></div>
+      <div class="stat"><p class="label">Hard pass rate</p><p id="hardRate" class="stat-num">0%</p></div>
+    </section>
+    <section class="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
+      <h1 class="text-xl font-semibold">Topic Elo</h1>
+      <canvas id="eloChart" class="mt-4 max-h-80"></canvas>
+    </section>
+    <section class="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
+        <h2 class="font-semibold">Weakest topics</h2>
+        <div id="weakest" class="mt-4 space-y-3"></div>
+      </div>
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-5 overflow-x-auto">
+        <h2 class="font-semibold">Recent submissions</h2>
+        <table class="mt-4 w-full text-left text-sm">
+          <thead class="text-zinc-400"><tr><th class="py-2">Problem</th><th>Verdict</th><th>Detected</th><th>Gap</th><th>When</th></tr></thead>
+          <tbody id="recent" class="divide-y divide-zinc-800"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    const token = localStorage.getItem('pf_token'), userId = localStorage.getItem('pf_user_id');
+    if (!token || !userId) location.href = '/';
+    const showError = msg => error.textContent = msg || '';
+    async function api(path) {
+      const res = await fetch(path, {headers:{Authorization:`Bearer ${token}`}});
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Request failed');
+      return json.data;
+    }
+    function renderChart(profiles) {
+      new Chart(document.getElementById('eloChart'), {
+        type: 'bar',
+        data: {labels: profiles.map(p=>p.topic), datasets:[{label:'Elo', data:profiles.map(p=>p.elo_rating), backgroundColor:profiles.map(p => p.elo_rating < 900 ? '#f97316' : p.elo_rating < 1000 ? '#facc15' : '#22d3ee')}]},
+        options: {responsive:true, plugins:{legend:{labels:{color:'#e4e4e7'}}}, scales:{x:{ticks:{color:'#a1a1aa'}}, y:{ticks:{color:'#a1a1aa'}, suggestedMin:400, suggestedMax:1600}}}
+      });
+    }
+    const pct = value => `${Math.round((value || 0) * 100)}%`;
+    const weakClass = elo => elo < 900 ? 'border-orange-500/60 bg-orange-950/30' : elo < 1000 ? 'border-amber-400/60 bg-amber-950/30' : 'border-zinc-800';
+    function render(data) {
+      overall.textContent = data.overall_elo;
+      solved.textContent = data.stats.total_solved;
+      subs.textContent = data.stats.total_submissions;
+      streak.textContent = data.stats.current_streak;
+      easyRate.textContent = pct(data.stats.pass_rate_by_difficulty.Easy);
+      mediumRate.textContent = pct(data.stats.pass_rate_by_difficulty.Medium);
+      hardRate.textContent = pct(data.stats.pass_rate_by_difficulty.Hard);
+      weakest.innerHTML = data.weakest_topics.map(t => `<div class="rounded border p-3 ${weakClass(t.elo_rating)}"><p class="font-medium">${t.topic}</p><p class="text-sm text-zinc-400">Elo ${Math.round(t.elo_rating)} - accuracy ${Math.round(t.accuracy*100)}% - recent failures ${t.recent_failures}</p></div>`).join('') || '<p class="text-sm text-zinc-400">No topic data yet.</p>';
+      recent.innerHTML = data.recent_submissions.map(s => `<tr><td class="py-2">${s.title}</td><td>${s.verdict}</td><td>${s.detected_pattern || 'none'}</td><td>${s.gap_identified ? 'yes' : 'no'}</td><td>${s.submitted_at}</td></tr>`).join('') || '<tr><td class="py-3 text-zinc-400" colspan="5">No submissions yet.</td></tr>';
+      renderChart(data.profiles);
+    }
+    logout.addEventListener('click', () => { localStorage.clear(); location.href = '/'; });
+    api(`/api/profile/${userId}`).then(render).catch(err => showError(err.message));
+  </script>
+</body>
+</html>
