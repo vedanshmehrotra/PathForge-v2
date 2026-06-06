@@ -66,11 +66,13 @@ def recommend(user_id):
     recommendation_id = _log_recommendation(connection, user_id, problem, topic, explanation)
     return success({
         "tier": "specific",
+        "confidence_tier": "specific",
         "problem": problem,
         "explanation": explanation,
         "confidence": 0.0,
         "topic": topic,
         "pattern": topic,
+        "pattern_label": topic.replace("_", " "),
         "difficulty": difficulty,
         "leetcode_url": leetcode_url(topic, difficulty),
         "patterns": pattern_options(),
@@ -193,11 +195,13 @@ def _active_recommendation(connection, user_id):
     problem = connection.execute("SELECT * FROM problems WHERE id = ?", (row["problem_id"],)).fetchone() if row["problem_id"] else None
     return {
         "tier": row["confidence_tier"],
+        "confidence_tier": row["confidence_tier"],
         "problem": dict(problem) if problem else None,
         "explanation": row["reason"],
         "confidence": 0.0,
         "topic": topic,
         "pattern": topic,
+        "pattern_label": topic.replace("_", " "),
         "difficulty": difficulty,
         "leetcode_url": leetcode_url(topic, difficulty),
         "patterns": pattern_options(),

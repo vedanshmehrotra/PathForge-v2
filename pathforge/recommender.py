@@ -15,7 +15,7 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
     current_problem_id = submission["problem_id"]
     companion_mode = problem_record is None
     pattern = gap_info.get("gap_pattern") or gap_info.get("matched_pattern") or submission.get("detected_pattern") or "hash_map_lookup"
-    topic = pattern if companion_mode else _topic_from_problem(problem_record)
+    topic = pattern
     confidence = gap_info["diagnosis_confidence"]
 
     if companion_mode:
@@ -67,7 +67,7 @@ def _select_problem(user_id, topic, difficulty, db_path=None, exclude_problem_id
         SELECT p.*
         FROM problems p
         WHERE p.difficulty = ?
-          AND p.topics LIKE ?
+          AND (p.topics LIKE ? OR p.pattern LIKE ?)
           AND (? IS NULL OR p.id != ?)
           AND NOT EXISTS (
               SELECT 1
@@ -80,7 +80,7 @@ def _select_problem(user_id, topic, difficulty, db_path=None, exclude_problem_id
         ORDER BY COALESCE(p.acceptance_rate, 0) DESC, p.id ASC
         LIMIT 1
         """,
-        (difficulty, f"%{topic}%", exclude_problem_id, exclude_problem_id, user_id),
+        (difficulty, f"%{topic}%", f'%"{topic}"%', exclude_problem_id, exclude_problem_id, user_id),
     ).fetchone()
     return dict(row) if row else None
 
@@ -89,21 +89,13 @@ def _build_explanation(tier, gap_info, problem, topic=None, no_gap=False):
     """Build a human-readable explanation for the recommendation result."""
     focus = gap_info.get("gap_pattern") or gap_info.get("matched_pattern") or "the core pattern"
     readable_focus = focus.replace("_", " ")
-    readable_topic = topic or "this topic"
+    readable_topic = (topic or "this pattern").replace("_", " ")
 
-    if no_gap and problem:
-        return (
-            f"Nice work: your solution matched the expected approach. "
-            f"Try {problem['title']} next to stretch {readable_topic} at a stronger difficulty."
-        )
     if no_gap:
-        return f"Nice work: your solution matched the expected approach. Keep building momentum in {readable_topic}."
+        return f"Nice work. Keep building momentum with {readable_topic} practice."
 
     if tier == "specific" and problem:
-        return (
-            f"Your submission did not show enough evidence of the expected {readable_focus} approach. "
-            f"Try {problem['title']} to practice {readable_focus} in {readable_topic}."
-        )
+        return f"Practice {readable_focus} next using the linked LeetCode problem list."
     if tier == "topic_hint":
         return (
             f"Your result suggests a possible gap in {readable_topic}. "
@@ -116,11 +108,13 @@ def _recommendation(tier, problem, explanation, confidence, topic, difficulty, p
     """Return the normalized recommendation dictionary."""
     return {
         "tier": tier,
+        "confidence_tier": tier,
         "problem": problem,
         "explanation": explanation,
         "confidence": round(float(confidence), 2),
         "topic": topic,
         "pattern": pattern,
+        "pattern_label": pattern.replace("_", " "),
         "difficulty": difficulty,
         "leetcode_url": leetcode_url(pattern, difficulty),
     }

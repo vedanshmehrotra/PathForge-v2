@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS submissions (
     verdict TEXT NOT NULL CHECK (verdict IN ('pass', 'fail', 'error', 'tle')),
     detected_pattern TEXT,
     detected_confidence REAL NOT NULL DEFAULT 0.0 CHECK (detected_confidence >= 0.0 AND detected_confidence <= 1.0),
-    expected_pattern TEXT NOT NULL,
+    expected_pattern TEXT,
     target_pattern TEXT,
     gap_identified INTEGER NOT NULL CHECK (gap_identified IN (0, 1)),
     diagnosis_confidence REAL NOT NULL DEFAULT 0.0 CHECK (diagnosis_confidence >= 0.0 AND diagnosis_confidence <= 1.0),

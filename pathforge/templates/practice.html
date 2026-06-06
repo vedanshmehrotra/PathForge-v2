@@ -29,7 +29,10 @@
     </section>
     <section class="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900">
       <div class="grid gap-3 border-b border-zinc-800 p-3 sm:grid-cols-[1fr_160px]">
-        <select id="targetPattern" class="field"></select>
+        <div>
+          <input type="number" id="leetcodeProblemId" placeholder="LeetCode problem number (optional)" class="field">
+          <p class="mt-2 text-xs text-zinc-400">Enter the LeetCode problem number you solved. Leave blank if unknown.</p>
+        </div>
         <select id="language" class="field"><option value="python">Python</option></select>
       </div>
       <textarea id="code" class="min-h-[440px] flex-1 resize-none bg-zinc-950 p-4 font-mono text-sm text-zinc-100 outline-none" spellcheck="false">def solve():
@@ -42,8 +45,8 @@
       <div id="result" class="result-panel border-t border-zinc-800 p-4">
         <div class="grid gap-3 sm:grid-cols-4">
           <div><p class="label">Verdict</p><p id="verdict" class="font-semibold"></p></div>
-          <div><p class="label">Target</p><p id="targetOut"></p></div>
           <div><p class="label">Detected</p><p id="detected"></p></div>
+          <div><p class="label">Expected</p><p id="expected"></p></div>
           <div><p class="label">Gap</p><p id="gap"></p></div>
         </div>
         <p id="feedback" class="mt-4 text-sm text-zinc-300"></p>
@@ -64,13 +67,11 @@
     }
     function setRecommendation(rec) {
       currentRec = rec;
-      patternTitle.textContent = rec.pattern.replaceAll('_', ' ');
+      patternTitle.textContent = rec.pattern_label || rec.pattern.replaceAll('_', ' ');
       difficulty.textContent = rec.difficulty;
       tier.textContent = rec.tier;
       explainRec.textContent = rec.explanation;
       leetcodeLink.href = rec.leetcode_url;
-      targetPattern.innerHTML = rec.patterns.map(p => `<option value="${p.pattern}">${p.label}</option>`).join('');
-      targetPattern.value = rec.pattern;
     }
     async function submit(verdictValue) {
       showError('');
@@ -80,19 +81,22 @@
           source_code:code.value,
           language:language.value,
           verdict:verdictValue,
-          target_pattern:targetPattern.value
+          leetcode_problem_number:Number(leetcodeProblemId.value) || null
         })});
         verdict.textContent = data.submission.verdict;
-        targetOut.textContent = targetPattern.value.replaceAll('_', ' ');
         detected.textContent = (data.submission.detected_pattern || 'none').replaceAll('_', ' ');
-        const targetLabel = targetPattern.value.replaceAll('_', ' ');
+        expected.textContent = (data.submission.expected_pattern || 'unknown').replaceAll('_', ' ');
+        const expectedLabel = (data.submission.expected_pattern || 'unknown').replaceAll('_', ' ');
         const detectedLabel = (data.submission.detected_pattern || 'none').replaceAll('_', ' ');
-        gap.textContent = data.gap_info.gap_detected ? 'yes' : 'no';
-        feedback.textContent = data.gap_info.gap_detected && data.submission.verdict === 'pass'
-          ? `Looks like you used ${detectedLabel} instead of ${targetLabel}. We've updated your ${detectedLabel} profile.`
-          : data.explanation;
+        const knownExpected = data.submission.expected_pattern && data.submission.expected_pattern !== 'unknown';
+        gap.textContent = knownExpected ? (data.gap_info.gap_detected ? 'yes' : 'no') : 'N/A';
+        if (!knownExpected) feedback.textContent = `Detected ${detectedLabel}. Expected pattern is unknown, so your ${detectedLabel} profile was updated without a gap signal.`;
+        else if (!data.gap_info.gap_detected && data.submission.verdict === 'pass') feedback.textContent = `Your code correctly used ${detectedLabel}. Great work.`;
+        else if (data.gap_info.gap_detected && data.submission.verdict === 'pass') feedback.textContent = `Your code used ${detectedLabel} but this problem typically expects ${expectedLabel}. We've updated your ${detectedLabel} profile and recommend practicing ${expectedLabel} next.`;
+        else if (!data.gap_info.gap_detected) feedback.textContent = `You identified the right pattern (${detectedLabel}) but the solution needs work. Try again or practice easier ${detectedLabel} problems.`;
+        else feedback.textContent = `Your code used ${detectedLabel} but this problem expects ${expectedLabel}. Focus on ${expectedLabel} next.`;
         result.classList.add('show');
-        if (data.recommendation.leetcode_url) setRecommendation({...currentRec, ...data.recommendation, patterns: currentRec.patterns});
+        if (data.recommendation.leetcode_url) setRecommendation({...currentRec, ...data.recommendation});
       } catch (err) { showError(err.message); }
     }
     passed.addEventListener('click', () => submit('pass'));

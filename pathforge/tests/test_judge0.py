@@ -169,7 +169,7 @@ def two_sum(nums, target):
         handle_submission(1, 1, code, "python", db_path=db_path)
 
     profile = connection.execute(
-        "SELECT * FROM topic_profiles WHERE user_id = 1 AND topic = 'Array'"
+        "SELECT * FROM topic_profiles WHERE user_id = 1 AND topic = 'hash_map_lookup'"
     ).fetchone()
     submission = connection.execute("SELECT * FROM submissions WHERE user_id = 1").fetchone()
     assert profile["attempt_count"] == 1

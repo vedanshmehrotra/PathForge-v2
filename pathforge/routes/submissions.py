@@ -11,9 +11,9 @@ submissions_bp = Blueprint("submissions", __name__, url_prefix="/api")
 def submit():
     """Submit source code to the PathForge pipeline and return the full result."""
     payload = request.get_json(silent=True) or {}
-    required = ("user_id", "source_code", "language", "verdict", "target_pattern")
+    required = ("user_id", "source_code", "language", "verdict")
     if any(payload.get(key) in (None, "") for key in required):
-        return error("user_id, source_code, language, verdict, and target_pattern are required")
+        return error("user_id, source_code, language, and verdict are required")
     if int(payload["user_id"]) != request.user_id:
         return error("Token user does not match submitted user_id", 403)
 
@@ -24,7 +24,7 @@ def submit():
             source_code=payload["source_code"],
             language=payload["language"],
             verdict=payload["verdict"],
-            target_pattern=payload["target_pattern"],
+            leetcode_problem_number=int(payload["leetcode_problem_number"]) if payload.get("leetcode_problem_number") else None,
             db_path=current_app.config.get("DATABASE_PATH"),
         )
     except Exception as exc:
