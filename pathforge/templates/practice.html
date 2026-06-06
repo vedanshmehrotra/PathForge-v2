@@ -50,6 +50,7 @@
           <div><p class="label">Gap</p><p id="gap"></p></div>
         </div>
         <p id="feedback" class="mt-4 text-sm text-zinc-300"></p>
+        <p id="datasetNote" class="mt-2 text-xs text-zinc-500"></p>
       </div>
     </section>
   </main>
@@ -90,6 +91,7 @@
         const detectedLabel = (data.submission.detected_pattern || 'none').replaceAll('_', ' ');
         const knownExpected = data.submission.expected_pattern && data.submission.expected_pattern !== 'unknown';
         gap.textContent = knownExpected ? (data.gap_info.gap_detected ? 'yes' : 'no') : 'N/A';
+        datasetNote.textContent = knownExpected ? '' : 'Problem not in PathForge dataset - pattern detected from your code directly.';
         if (!knownExpected) feedback.textContent = `Detected ${detectedLabel}. Expected pattern is unknown, so your ${detectedLabel} profile was updated without a gap signal.`;
         else if (!data.gap_info.gap_detected && data.submission.verdict === 'pass') feedback.textContent = `Your code correctly used ${detectedLabel}. Great work.`;
         else if (data.gap_info.gap_detected && data.submission.verdict === 'pass') feedback.textContent = `Your code used ${detectedLabel} but this problem typically expects ${expectedLabel}. We've updated your ${detectedLabel} profile and recommend practicing ${expectedLabel} next.`;

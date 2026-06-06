@@ -14,7 +14,7 @@ def run_pipeline(user_id, problem_id, source_code, language, db_path=None, verdi
     )
     connection = get_connection(db_path)
     lookup_id = leetcode_problem_number if leetcode_problem_number is not None else problem_id
-    problem_record = _get_problem(connection, lookup_id) if lookup_id else None
+    problem_record = _find_problem(connection, lookup_id) if lookup_id else None
     expected_patterns = _expected_patterns(problem_record) if problem_record else []
     detected_patterns = submission_result.get("ast", {}).get("scores", {})
     gap_info = detect_gap(detected_patterns, expected_patterns) if expected_patterns else _unknown_gap_info(submission_result)
@@ -47,6 +47,12 @@ def _get_problem(connection, problem_id):
     if not row:
         raise ValueError(f"Problem not found: {problem_id}")
     return dict(row)
+
+
+def _find_problem(connection, problem_id):
+    """Return a problem record dictionary by ID, or None if it is not in the dataset."""
+    row = connection.execute("SELECT * FROM problems WHERE id = ?", (problem_id,)).fetchone()
+    return dict(row) if row else None
 
 
 def _expected_patterns(problem_record):
