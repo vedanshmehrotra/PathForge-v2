@@ -186,7 +186,7 @@ def test_fallback_when_no_problem_available_in_gap_topic(tmp_path):
 
     assert recommendation["tier"] == "specific"
     assert recommendation["problem"]["id"] == 3
-    assert recommendation["topic"] == "Graph"
+    assert recommendation["topic"] == "bfs_level_order"
 
 
 def test_full_pipeline_with_mocked_submission_handler(tmp_path):

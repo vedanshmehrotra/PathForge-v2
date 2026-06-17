@@ -65,7 +65,9 @@ def recommend(user_id):
             d = _difficulty_from_elo(float(w["elo_rating"]))
             p = _select_problem(connection, user_id, t, d)
             if p:
-                topic, difficulty, problem = t, d, p
+                patterns = json.loads(p["pattern"])
+                topic = patterns[0] if patterns else t
+                difficulty, problem = d, p
                 break
 
         if not problem and weakest:
@@ -73,7 +75,9 @@ def recommend(user_id):
             for d in ("Easy", "Medium", "Hard"):
                 p = _select_problem(connection, user_id, t, d)
                 if p:
-                    topic, difficulty, problem = t, d, p
+                    patterns = json.loads(p["pattern"])
+                    topic = patterns[0] if patterns else t
+                    difficulty, problem = d, p
                     break
 
         if not problem:

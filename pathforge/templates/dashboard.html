@@ -38,7 +38,7 @@
       <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-5 overflow-x-auto">
         <h2 class="font-semibold">Recent submissions</h2>
         <table class="mt-4 w-full text-left text-sm">
-          <thead class="text-zinc-400"><tr><th class="py-2">Problem</th><th>Verdict</th><th>Detected</th><th>Gap</th><th>When</th></tr></thead>
+          <thead class="text-zinc-400"><tr><th class="py-2">Problem</th><th>Verdict</th><th>When</th></tr></thead>
           <tbody id="recent" class="divide-y divide-zinc-800"></tbody>
         </table>
       </div>
@@ -108,7 +108,7 @@
       mediumRate.textContent = pct(data.stats.pass_rate_by_difficulty.Medium);
       hardRate.textContent = pct(data.stats.pass_rate_by_difficulty.Hard);
       weakest.innerHTML = data.weakest_topics.map(t => `<div class="rounded border p-3 ${weakClass(t.elo_rating)}"><p class="font-medium">${human(t.topic)}</p><p class="text-sm text-zinc-400">Elo ${Math.round(t.elo_rating)} - accuracy ${Math.round(t.accuracy*100)}% - recent failures ${t.recent_failures}</p></div>`).join('') || '<p class="text-sm text-zinc-400">No topic data yet.</p>';
-      recent.innerHTML = data.recent_submissions.map(s => `<tr><td class="py-2">${s.title}</td><td>${s.verdict}</td><td>${human(s.detected_pattern) || 'none'}</td><td>${s.gap_identified ? 'yes' : 'no'}</td><td>${s.submitted_at}</td></tr>`).join('') || '<tr><td class="py-3 text-zinc-400" colspan="5">No submissions yet.</td></tr>';
+      recent.innerHTML = data.recent_submissions.map(s => `<tr><td class="py-2">${s.title}</td><td>${s.verdict}</td><td>${s.submitted_at}</td></tr>`).join('') || '<tr><td class="py-3 text-zinc-400" colspan="3">No submissions yet.</td></tr>';
       renderChart(data.profiles);
     }
     logout.addEventListener('click', () => { localStorage.clear(); location.href = '/'; });
