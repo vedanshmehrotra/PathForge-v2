@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, current_app, request
 
 from pathforge.db.db import get_connection
@@ -53,15 +55,35 @@ def recommend(user_id):
     if refresh:
         _clear_active_recommendation(connection, user_id)
 
-    weakest = get_weakest_topics(connection, user_id, limit=1)
-    if weakest:
-        topic = weakest[0]["topic"]
-        difficulty = _difficulty_from_elo(float(weakest[0]["elo_rating"]))
-    else:
-        topic = "hash_map_lookup"
-        difficulty = "Easy"
+    weakest = get_weakest_topics(connection, user_id, limit=33)
+    topic = "hash_map_lookup"
+    difficulty = "Easy"
+    problem = None
 
-    problem = _select_problem(user_id, topic, difficulty, db_path=current_app.config.get("DATABASE_PATH"))
+    for w in weakest:
+        t = w["topic"]
+        d = _difficulty_from_elo(float(w["elo_rating"]))
+        p = _select_problem(user_id, t, d, db_path=current_app.config.get("DATABASE_PATH"))
+        if p:
+            topic, difficulty, problem = t, d, p
+            break
+
+    if not problem and weakest:
+        t = weakest[0]["topic"]
+        for d in ("Easy", "Medium", "Hard"):
+            p = _select_problem(user_id, t, d, db_path=current_app.config.get("DATABASE_PATH"))
+            if p:
+                topic, difficulty, problem = t, d, p
+                break
+
+    if not problem:
+        p = _first_unsolved_problem(connection, user_id)
+        if p:
+            topic = json.loads(p["pattern"])[0]
+            difficulty = p["difficulty"]
+            problem = p
+        else:
+            return error("No unsolved problems available", 404)
     explanation = f"Practice {topic.replace('_', ' ')} at {difficulty} level. Pick any LeetCode problem from the linked list, solve it there, then paste your Python solution here."
     recommendation_id = _log_recommendation(connection, user_id, problem, topic, explanation)
     return success({

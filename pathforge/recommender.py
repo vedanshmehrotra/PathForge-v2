@@ -76,11 +76,18 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
         problem = _select_problem(user_id, topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
         selected_topic = topic
         if not problem:
-            fallback = get_weakest_topics(connection, user_id, limit=1)
-            if fallback:
-                selected_topic = fallback[0]["topic"]
-                difficulty = _difficulty_from_elo(float(fallback[0]["elo_rating"]))
-                problem = _select_problem(user_id, selected_topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
+            fallback = get_weakest_topics(connection, user_id, limit=33)
+            for fb in fallback:
+                ft = fb["topic"]
+                if ft == selected_topic:
+                    continue
+                fd = _difficulty_from_elo(float(fb["elo_rating"]))
+                p = _select_problem(user_id, ft, fd, db_path=db_path, exclude_problem_id=current_problem_id)
+                if p:
+                    selected_topic = ft
+                    difficulty = fd
+                    problem = p
+                    break
         tier = "specific" if problem else "topic_hint"
         explanation = _build_explanation(tier, gap_info, problem, topic=selected_topic)
         return _recommendation(tier, problem, explanation, confidence, selected_topic, difficulty, selected_topic)
