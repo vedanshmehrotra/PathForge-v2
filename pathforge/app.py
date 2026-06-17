@@ -36,11 +36,6 @@ def create_app(test_config=None):
         """Render the landing page."""
         return render_template("index.html")
 
-    @app.route("/diagnostic")
-    def diagnostic():
-        """Render onboarding diagnostics."""
-        return render_template("diagnostic.html")
-
     @app.route("/practice")
     def practice():
         """Render the practice interface."""

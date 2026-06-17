@@ -9,7 +9,6 @@ from flask import Blueprint, current_app, jsonify, request
 
 from pathforge.db.db import get_connection
 from pathforge.db.profile_manager import (
-    BROAD_TOPIC_PATTERNS,
     EXPERIENCE_BASELINES,
     iso_now,
     normalize_confident_areas,
@@ -72,7 +71,7 @@ def register():
                 experience_level, confident_areas, onboarding_complete,
                 created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)
             """,
             (username, email, password_hash, display_name, experience_level, json.dumps(confident_areas), now, now),
         )
@@ -86,7 +85,7 @@ def register():
         "user_id": user_id,
         "token": _make_token(user_id),
         "username": username,
-        "onboarding_complete": False,
+        "onboarding_complete": True,
         "seed": seed,
     }, 201)
 
@@ -128,54 +127,3 @@ def _jwt_secret():
     return current_app.config["JWT_SECRET"]
 
 
-@auth_bp.get("/onboarding/diagnostic")
-@require_auth
-def diagnostic():
-    """Return the next onboarding diagnostic problem for the authenticated user."""
-    connection = get_connection(current_app.config.get("DATABASE_PATH"))
-    user = connection.execute("SELECT confident_areas, onboarding_complete FROM users WHERE id = ?", (request.user_id,)).fetchone()
-    if not user:
-        return error("User not found", 404)
-    confident = json.loads(user["confident_areas"] or "[]")
-    problems = _diagnostic_problems(connection, request.user_id, confident)
-    submitted_ids = {
-        row["problem_id"] for row in connection.execute(
-            "SELECT DISTINCT problem_id FROM submissions WHERE user_id = ? AND problem_id IS NOT NULL",
-            (request.user_id,),
-        ).fetchall()
-    }
-    remaining = [problem for problem in problems if problem["id"] not in submitted_ids]
-    if not remaining:
-        connection.execute("UPDATE users SET onboarding_complete = 1, updated_at = ? WHERE id = ?", (iso_now(), request.user_id))
-        connection.commit()
-        return success({"complete": True, "problem": None, "remaining": 0, "total": len(problems)})
-    return success({"complete": False, "problem": remaining[0], "remaining": len(remaining), "total": len(problems)})
-
-
-def _diagnostic_problems(connection, user_id, confident_areas):
-    """Pick one Easy problem from up to five broad areas the user did not mark confident."""
-    confident = set(confident_areas or [])
-    area_order = [area for area in BROAD_TOPIC_PATTERNS if area not in confident] + [area for area in BROAD_TOPIC_PATTERNS if area in confident]
-    selected = []
-    seen_ids = set()
-    for area in area_order:
-        if len(selected) >= 5:
-            break
-        patterns = sorted(BROAD_TOPIC_PATTERNS[area])
-        where = " OR ".join(["pattern LIKE ?" for _ in patterns])
-        row = connection.execute(
-            f"""
-            SELECT * FROM problems
-            WHERE difficulty = 'Easy' AND ({where})
-            ORDER BY COALESCE(acceptance_rate, 0) DESC, id ASC
-            LIMIT 1
-            """,
-            [f'%"{pattern}"%' for pattern in patterns],
-        ).fetchone()
-        if row and row["id"] not in seen_ids:
-            problem = dict(row)
-            problem["target_pattern"] = json.loads(problem["pattern"])[0]
-            problem["area"] = area
-            selected.append(problem)
-            seen_ids.add(problem["id"])
-    return selected

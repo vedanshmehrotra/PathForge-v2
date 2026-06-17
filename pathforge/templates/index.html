@@ -58,7 +58,7 @@
       if (!json.success) throw new Error(json.error || 'Request failed');
       localStorage.setItem('pf_token', json.data.token);
       localStorage.setItem('pf_user_id', json.data.user_id);
-      location.href = json.data.onboarding_complete ? '/practice' : '/diagnostic';
+      location.href = '/practice';
     }
     loginForm.addEventListener('submit', e => {
       e.preventDefault();

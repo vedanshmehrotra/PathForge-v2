@@ -165,11 +165,8 @@
 
     $('logout').addEventListener('click', () => { localStorage.clear(); location.href = '/'; });
 
-    api('/api/auth/onboarding/diagnostic')
-      .then(d => {
-        if (!d.complete) { location.href = '/diagnostic'; return; }
-        return api(`/api/recommend/${userId}`).then(setRecommendation);
-      })
+    api(`/api/recommend/${userId}`)
+      .then(setRecommendation)
       .catch(err => { $('loading').classList.add('hidden'); showError(err.message); });
   </script>
 </body>
