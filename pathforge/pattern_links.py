@@ -1,5 +1,46 @@
 from pathforge.ast_engine.patterns import ALL_PATTERNS
 
+HUMAN_READABLE_PATTERNS = {
+    "hash_map_lookup": "Hash Map Lookup",
+    "hash_map_frequency": "Hash Map Frequency",
+    "prefix_sum": "Prefix Sum",
+    "sliding_window_fixed": "Fixed Sliding Window",
+    "sliding_window_variable": "Sliding Window",
+    "two_pointers_opposite": "Two Pointers",
+    "two_pointers_same": "Two Pointers (Same Direction)",
+    "dfs_recursive": "Depth-First Search",
+    "dfs_iterative": "Depth-First Search (Iterative)",
+    "bfs_level_order": "Breadth-First Search",
+    "bfs_shortest_path": "Breadth-First Search (Shortest Path)",
+    "topological_sort": "Topological Sort",
+    "union_find": "Union-Find",
+    "binary_search_tree": "Binary Search Tree",
+    "dp_1d_forward": "1D Dynamic Programming",
+    "dp_1d_sequence": "1D Sequence DP",
+    "dp_2d_grid": "2D Grid DP",
+    "dp_2d_string": "2D String DP",
+    "dp_knapsack": "Knapsack DP",
+    "dp_interval": "Interval DP",
+    "dp_state_machine": "State Machine DP",
+    "fast_slow_pointers": "Fast & Slow Pointers",
+    "linked_list_reversal": "Linked List Reversal",
+    "monotonic_stack": "Monotonic Stack",
+    "monotonic_deque": "Monotonic Deque",
+    "binary_search_standard": "Binary Search",
+    "binary_search_rotated": "Binary Search (Rotated)",
+    "binary_search_answer": "Binary Search on Answer",
+    "heap_top_k": "Heap / Top K",
+    "greedy_local": "Greedy",
+    "greedy_interval": "Greedy (Intervals)",
+    "backtracking_permutation": "Backtracking (Permutations)",
+    "backtracking_subset": "Backtracking (Subsets)",
+}
+
+
+def humanize_pattern(pattern):
+    return HUMAN_READABLE_PATTERNS.get(pattern, pattern.replace("_", " ").title())
+
+
 LEETCODE_TAGS = {
     "hash_map_lookup": "hash-table",
     "hash_map_frequency": "hash-table",

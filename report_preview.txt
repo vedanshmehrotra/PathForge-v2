@@ -1,0 +1,8 @@
+You are continuing development on PathForge, an adaptive DSA learning platform. Read this entire prompt before touching any code.
+What PathForge is:
+A practice companion that helps users track their DSA pattern mastery and get personalized problem recommendations. Users solve problems externally on LeetCode, then come back to PathForge to log their result. PathForge updates their mastery profile and recommends what to practice next.
+What PathForge is NOT:
+Not a code execution platform. Not a judge. Not a LeetCode replacement. It does not run code, does not evaluate correctness programmatically, and does not compete with LeetCode on execution infrastructure.
+Primary Objective:
+The goal is not to build the perfect learning system. The goal is to create the first fully working recommendation loop:
+Recommended Problem

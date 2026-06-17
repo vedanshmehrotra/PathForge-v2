@@ -1,6 +1,10 @@
+import logging
+
 from pathforge.db.db import get_connection
 from pathforge.db.profile_manager import get_weakest_topics
 from pathforge.pattern_links import leetcode_url
+
+logger = logging.getLogger(__name__)
 
 SPECIFIC_THRESHOLD = 0.75
 HINT_THRESHOLD = 0.55
@@ -24,17 +28,47 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
         return _recommendation("topic_hint", None, explanation, confidence, pattern, difficulty, pattern)
 
     if not gap_info["gap_detected"] and submission["verdict"] == "pass":
+        if _check_pattern_lock(connection, user_id, topic, "pass"):
+            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            difficulty = _difficulty_for_user(connection, user_id, new_topic)
+            problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+            tier = "specific" if problem else "topic_hint"
+            explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass")
+            return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         difficulty = _move_difficulty(problem_record["difficulty"], 1)
         problem = _select_problem(user_id, topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
+        if not problem:
+            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            if new_topic != topic:
+                difficulty = _difficulty_for_user(connection, user_id, new_topic)
+                problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+                tier = "specific" if problem else "topic_hint"
+                explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass")
+                return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         tier = "specific" if problem else "topic_hint"
-        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True)
+        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="pass")
         return _recommendation(tier, problem, explanation, confidence, topic, difficulty, topic)
 
     if not gap_info["gap_detected"]:
+        if _check_pattern_lock(connection, user_id, topic, "fail"):
+            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            difficulty = _difficulty_for_user(connection, user_id, new_topic)
+            problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+            tier = "specific" if problem else "topic_hint"
+            explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail")
+            return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         difficulty = _move_difficulty(problem_record["difficulty"], -1 if submission["verdict"] != "pass" else 0)
         problem = _select_problem(user_id, topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
+        if not problem and submission["verdict"] != "pass":
+            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            if new_topic != topic:
+                difficulty = _difficulty_for_user(connection, user_id, new_topic)
+                problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+                tier = "specific" if problem else "topic_hint"
+                explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail")
+                return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         tier = "specific" if problem else "topic_hint"
-        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True)
+        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="fail")
         return _recommendation(tier, problem, explanation, confidence, topic, difficulty, topic)
 
     if confidence >= SPECIFIC_THRESHOLD:
@@ -67,7 +101,7 @@ def _select_problem(user_id, topic, difficulty, db_path=None, exclude_problem_id
         SELECT p.*
         FROM problems p
         WHERE p.difficulty = ?
-          AND (p.topics LIKE ? OR p.pattern LIKE ?)
+          AND (p.topics LIKE ? OR json_extract(p.pattern, '$[0]') = ?)
           AND (? IS NULL OR p.id != ?)
           AND NOT EXISTS (
               SELECT 1
@@ -80,19 +114,70 @@ def _select_problem(user_id, topic, difficulty, db_path=None, exclude_problem_id
         ORDER BY COALESCE(p.acceptance_rate, 0) DESC, p.id ASC
         LIMIT 1
         """,
-        (difficulty, f"%{topic}%", f'%"{topic}"%', exclude_problem_id, exclude_problem_id, user_id),
+        (difficulty, f"%{topic}%", topic, exclude_problem_id, exclude_problem_id, user_id),
     ).fetchone()
     return dict(row) if row else None
 
 
-def _build_explanation(tier, gap_info, problem, topic=None, no_gap=False):
+def _check_pattern_lock(connection, user_id, topic, verdict):
+    """Return True if the user has 3+ consecutive passes or fails on the same topic."""
+    if verdict == "pass":
+        rows = connection.execute(
+            """SELECT verdict FROM submissions
+               WHERE user_id = ? AND topic = ?
+               ORDER BY submitted_at DESC LIMIT 3""",
+            (user_id, topic),
+        ).fetchall()
+        if len(rows) >= 3 and all(r["verdict"] == "pass" for r in rows):
+            return True
+    elif verdict == "fail":
+        row = connection.execute(
+            "SELECT recent_failures FROM topic_profiles WHERE user_id = ? AND topic = ?",
+            (user_id, topic),
+        ).fetchone()
+        if row and int(row["recent_failures"]) >= 3:
+            return True
+    return False
+
+
+def _rotate_topic(connection, user_id, exclude_topic, db_path=None):
+    """Pick the weakest topic with available problems, different from exclude_topic."""
+    weakest = get_weakest_topics(connection, user_id, limit=33)
+    for w in weakest:
+        candidate = w["topic"]
+        if candidate == exclude_topic:
+            continue
+        difficulty = _difficulty_from_elo(float(w["elo_rating"]))
+        problem = _select_problem(user_id, candidate, difficulty, db_path=db_path)
+        if problem:
+            return candidate
+        logger.info(
+            "_rotate_topic: skipped topic '%s' (no available problem at %s for user %s)",
+            candidate, difficulty, user_id,
+        )
+    logger.warning(
+        "_rotate_topic: no viable topic found for user %s, falling back to '%s'",
+        user_id, exclude_topic,
+    )
+    return exclude_topic
+
+
+def _build_explanation(tier, gap_info, problem, topic=None, old_topic=None, no_gap=False, verdict=None):
     """Build a human-readable explanation for the recommendation result."""
     focus = gap_info.get("gap_pattern") or gap_info.get("matched_pattern") or "the core pattern"
     readable_focus = focus.replace("_", " ")
     readable_topic = (topic or "this pattern").replace("_", " ")
 
+    if tier == "rotate":
+        readable_old = (old_topic or "the previous topic").replace("_", " ")
+        if verdict == "fail":
+            return f"{readable_focus} is tough. Let's practice {readable_topic} and come back stronger."
+        return f"Nice streak on {readable_old}! Switching to {readable_topic}, your weakest area."
+
     if no_gap:
-        return f"Nice work. Keep building momentum with {readable_topic} practice."
+        if verdict == "pass":
+            return f"Nice work on {readable_topic}. Keep up the momentum!"
+        return f"{readable_topic} needs more practice. Try this problem to build confidence."
 
     if tier == "specific" and problem:
         return f"Practice {readable_focus} next using the linked LeetCode problem list."

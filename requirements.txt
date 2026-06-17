@@ -1,5 +1,4 @@
 Flask
 bcrypt
 PyJWT
-requests
 gunicorn

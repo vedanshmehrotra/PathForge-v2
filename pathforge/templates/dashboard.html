@@ -54,10 +54,46 @@
       if (!json.success) throw new Error(json.error || 'Request failed');
       return json.data;
     }
+    const HUMAN_NAMES = {
+      "hash_map_lookup": "Hash Map Lookup",
+      "hash_map_frequency": "Hash Map Frequency",
+      "prefix_sum": "Prefix Sum",
+      "sliding_window_fixed": "Fixed Sliding Window",
+      "sliding_window_variable": "Sliding Window",
+      "two_pointers_opposite": "Two Pointers",
+      "two_pointers_same": "Two Pointers (Same Direction)",
+      "dfs_recursive": "Depth-First Search",
+      "dfs_iterative": "Depth-First Search (Iterative)",
+      "bfs_level_order": "Breadth-First Search",
+      "bfs_shortest_path": "Breadth-First Search (Shortest Path)",
+      "topological_sort": "Topological Sort",
+      "union_find": "Union-Find",
+      "binary_search_tree": "Binary Search Tree",
+      "dp_1d_forward": "1D Dynamic Programming",
+      "dp_1d_sequence": "1D Sequence DP",
+      "dp_2d_grid": "2D Grid DP",
+      "dp_2d_string": "2D String DP",
+      "dp_knapsack": "Knapsack DP",
+      "dp_interval": "Interval DP",
+      "dp_state_machine": "State Machine DP",
+      "fast_slow_pointers": "Fast & Slow Pointers",
+      "linked_list_reversal": "Linked List Reversal",
+      "monotonic_stack": "Monotonic Stack",
+      "monotonic_deque": "Monotonic Deque",
+      "binary_search_standard": "Binary Search",
+      "binary_search_rotated": "Binary Search (Rotated)",
+      "binary_search_answer": "Binary Search on Answer",
+      "heap_top_k": "Heap / Top K",
+      "greedy_local": "Greedy",
+      "greedy_interval": "Greedy (Intervals)",
+      "backtracking_permutation": "Backtracking (Permutations)",
+      "backtracking_subset": "Backtracking (Subsets)",
+    };
+    const human = p => HUMAN_NAMES[p] || p.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     function renderChart(profiles) {
       new Chart(document.getElementById('eloChart'), {
         type: 'bar',
-        data: {labels: profiles.map(p=>p.topic), datasets:[{label:'Elo', data:profiles.map(p=>p.elo_rating), backgroundColor:profiles.map(p => p.elo_rating < 900 ? '#f97316' : p.elo_rating < 1000 ? '#facc15' : '#22d3ee')}]},
+        data: {labels: profiles.map(p=>human(p.topic)), datasets:[{label:'Elo', data:profiles.map(p=>p.elo_rating), backgroundColor:profiles.map(p => p.elo_rating < 900 ? '#f97316' : p.elo_rating < 1000 ? '#facc15' : '#22d3ee')}]},
         options: {responsive:true, plugins:{legend:{labels:{color:'#e4e4e7'}}}, scales:{x:{ticks:{color:'#a1a1aa'}}, y:{ticks:{color:'#a1a1aa'}, suggestedMin:400, suggestedMax:1600}}}
       });
     }
@@ -71,8 +107,8 @@
       easyRate.textContent = pct(data.stats.pass_rate_by_difficulty.Easy);
       mediumRate.textContent = pct(data.stats.pass_rate_by_difficulty.Medium);
       hardRate.textContent = pct(data.stats.pass_rate_by_difficulty.Hard);
-      weakest.innerHTML = data.weakest_topics.map(t => `<div class="rounded border p-3 ${weakClass(t.elo_rating)}"><p class="font-medium">${t.topic}</p><p class="text-sm text-zinc-400">Elo ${Math.round(t.elo_rating)} - accuracy ${Math.round(t.accuracy*100)}% - recent failures ${t.recent_failures}</p></div>`).join('') || '<p class="text-sm text-zinc-400">No topic data yet.</p>';
-      recent.innerHTML = data.recent_submissions.map(s => `<tr><td class="py-2">${s.title}</td><td>${s.verdict}</td><td>${s.detected_pattern || 'none'}</td><td>${s.gap_identified ? 'yes' : 'no'}</td><td>${s.submitted_at}</td></tr>`).join('') || '<tr><td class="py-3 text-zinc-400" colspan="5">No submissions yet.</td></tr>';
+      weakest.innerHTML = data.weakest_topics.map(t => `<div class="rounded border p-3 ${weakClass(t.elo_rating)}"><p class="font-medium">${human(t.topic)}</p><p class="text-sm text-zinc-400">Elo ${Math.round(t.elo_rating)} - accuracy ${Math.round(t.accuracy*100)}% - recent failures ${t.recent_failures}</p></div>`).join('') || '<p class="text-sm text-zinc-400">No topic data yet.</p>';
+      recent.innerHTML = data.recent_submissions.map(s => `<tr><td class="py-2">${s.title}</td><td>${s.verdict}</td><td>${human(s.detected_pattern) || 'none'}</td><td>${s.gap_identified ? 'yes' : 'no'}</td><td>${s.submitted_at}</td></tr>`).join('') || '<tr><td class="py-3 text-zinc-400" colspan="5">No submissions yet.</td></tr>';
       renderChart(data.profiles);
     }
     logout.addEventListener('click', () => { localStorage.clear(); location.href = '/'; });

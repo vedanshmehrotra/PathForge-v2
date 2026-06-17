@@ -108,7 +108,7 @@ def update_topic_profile(
     new_pass_count = pass_count + (1 if verdict == "pass" else 0)
     new_pattern_match_count = pattern_match_count + (1 if verdict == "pass" and detected_pattern == expected_pattern else 0)
     new_accuracy = new_pass_count / new_attempt_count
-    new_recent_failures = recent_failures + 1 if verdict == "fail" else 0
+    new_recent_failures = recent_failures + 1 if verdict == "fail" else max(0, recent_failures - 1)
 
     connection.execute(
         """
@@ -180,9 +180,9 @@ def get_weakest_topics(connection, user_id, limit=5):
         SELECT user_id, topic, elo_rating, attempt_count, pass_count,
                pattern_match_count, accuracy, recent_failures,
                last_attempt_at, created_at, updated_at,
-               ((1600.0 - elo_rating) / 1200.0)
-               + (1.0 - accuracy)
-               + (MIN(recent_failures, 5) / 5.0) AS weakness_score
+                ((1600.0 - elo_rating) / 1200.0)
+                + (1.0 - accuracy)
+                + (MIN(recent_failures, 5) / 3.0) AS weakness_score
         FROM topic_profiles
         WHERE user_id = ?
         ORDER BY weakness_score DESC, elo_rating ASC, accuracy ASC

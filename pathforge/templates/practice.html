@@ -12,104 +12,165 @@
     <a class="text-xl font-bold" href="/">PathForge</a>
     <nav class="flex gap-3 text-sm"><a href="/dashboard" class="text-cyan-300">Dashboard</a><button id="logout" class="text-zinc-400">Logout</button></nav>
   </header>
-  <main class="grid min-h-[calc(100vh-57px)] gap-4 p-4 lg:grid-cols-[0.85fr_1.15fr]">
-    <section class="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-      <p class="text-sm font-semibold text-cyan-300">Recommended practice</p>
-      <h1 id="patternTitle" class="mt-2 text-2xl font-semibold">Loading...</h1>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <span id="difficulty" class="badge"></span>
-        <span id="tier" class="badge"></span>
-      </div>
-      <p id="explainRec" class="mt-5 text-sm text-zinc-300"></p>
-      <a id="leetcodeLink" class="mt-5 inline-block rounded-lg bg-cyan-700 px-4 py-2 font-semibold text-white" target="_blank">Open LeetCode list</a>
-      <div class="mt-6 rounded-lg bg-zinc-950 p-4 text-sm text-zinc-400">
-        Pick any problem from the linked LeetCode list. After LeetCode tells you whether it passed, paste your Python solution here and report the verdict honestly.
-      </div>
-      <p id="error" class="mt-4 min-h-6 text-sm text-red-300"></p>
-    </section>
-    <section class="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900">
-      <div class="grid gap-3 border-b border-zinc-800 p-3 sm:grid-cols-[1fr_160px]">
-        <div>
-          <input type="number" id="leetcodeProblemId" placeholder="LeetCode problem number (optional)" class="field">
-          <p class="mt-2 text-xs text-zinc-400">Enter the LeetCode problem number you solved. Leave blank if unknown.</p>
+  <main class="mx-auto max-w-4xl p-4 pt-8">
+    <div id="loading" class="text-center text-zinc-400 py-20">Loading your recommendation...</div>
+    <div id="practiceContent" class="hidden">
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+        <p class="text-xs font-semibold uppercase tracking-wider text-cyan-300">Recommended practice</p>
+        <h1 id="problemTitle" class="mt-2 text-2xl font-semibold"></h1>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <span id="difficulty" class="badge"></span>
+          <span id="topicTags" class="text-sm text-zinc-400"></span>
         </div>
-        <select id="language" class="field"><option value="python">Python</option></select>
-      </div>
-      <textarea id="code" class="min-h-[440px] flex-1 resize-none bg-zinc-950 p-4 font-mono text-sm text-zinc-100 outline-none" spellcheck="false">def solve():
-    pass
-</textarea>
-      <div class="flex flex-wrap gap-3 border-t border-zinc-800 p-3">
-        <button id="passed" class="btn w-auto px-5">I Passed on LeetCode</button>
-        <button id="failed" class="btn w-auto bg-zinc-700 px-5">I Failed on LeetCode</button>
-      </div>
-      <div id="result" class="result-panel border-t border-zinc-800 p-4">
-        <div class="grid gap-3 sm:grid-cols-4">
-          <div><p class="label">Verdict</p><p id="verdict" class="font-semibold"></p></div>
-          <div><p class="label">Detected</p><p id="detected"></p></div>
-          <div><p class="label">Expected</p><p id="expected"></p></div>
-          <div><p class="label">Gap</p><p id="gap"></p></div>
+        <p id="explanation" class="mt-4 text-sm text-zinc-300"></p>
+        <div class="mt-6">
+          <a id="leetcodeLink" class="inline-block rounded-lg bg-cyan-700 px-5 py-2.5 font-semibold text-white hover:bg-cyan-600" target="_blank" rel="noopener">
+            Open on LeetCode &rarr;
+          </a>
         </div>
-        <p id="feedback" class="mt-4 text-sm text-zinc-300"></p>
-        <p id="datasetNote" class="mt-2 text-xs text-zinc-500"></p>
       </div>
-    </section>
+      <div class="mt-6 flex gap-4">
+        <button id="btnSolved" class="flex-1 rounded-lg bg-emerald-600 px-6 py-4 text-lg font-bold text-white hover:bg-emerald-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          I Solved It &#10003;
+        </button>
+        <button id="btnUnsolved" class="flex-1 rounded-lg bg-red-700 px-6 py-4 text-lg font-bold text-white hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          I Couldn't Solve It &#10007;
+        </button>
+      </div>
+      <div id="resultPanel" class="result-panel mt-6 rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div>
+            <p class="label">Pattern practiced</p>
+            <p id="resultPattern" class="mt-1 font-semibold"></p>
+          </div>
+          <div>
+            <p class="label">Elo change</p>
+            <p id="resultElo" class="mt-1 font-semibold"></p>
+          </div>
+          <div>
+            <p class="label">Next up</p>
+            <p id="resultNextPattern" class="mt-1 font-semibold"></p>
+          </div>
+        </div>
+        <p id="resultExplanation" class="mt-4 text-sm text-zinc-300"></p>
+        <div class="mt-5">
+          <button id="btnNext" class="rounded-lg bg-cyan-700 px-5 py-2.5 font-semibold text-white hover:bg-cyan-600 transition-colors">
+            Practice Next Problem &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+    <p id="error" class="mt-4 min-h-6 text-sm text-red-300"></p>
   </main>
   <script>
     const token = localStorage.getItem('pf_token'), userId = localStorage.getItem('pf_user_id');
     if (!token || !userId) location.href = '/';
-    let currentRec = null;
-    const authHeaders = {'Authorization': `Bearer ${token}`, 'Content-Type':'application/json'};
-    const showError = msg => document.getElementById('error').textContent = msg || '';
-    async function api(path, options={}) {
-      const res = await fetch(path, {...options, headers:{...authHeaders, ...(options.headers||{})}});
+
+    const $ = id => document.getElementById(id);
+    const showError = msg => $('error').textContent = msg || '';
+    const authHeaders = {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'};
+
+    async function api(path, options = {}) {
+      const res = await fetch(path, {...options, headers: {...authHeaders, ...(options.headers || {})}});
       const json = await res.json();
       if (!json.success) throw new Error(json.error || 'Request failed');
       return json.data;
     }
+
+    const HUMAN_NAMES = {
+      "hash_map_lookup": "Hash Map Lookup",
+      "hash_map_frequency": "Hash Map Frequency",
+      "prefix_sum": "Prefix Sum",
+      "sliding_window_fixed": "Fixed Sliding Window",
+      "sliding_window_variable": "Sliding Window",
+      "two_pointers_opposite": "Two Pointers",
+      "two_pointers_same": "Two Pointers (Same Direction)",
+      "dfs_recursive": "Depth-First Search",
+      "dfs_iterative": "Depth-First Search (Iterative)",
+      "bfs_level_order": "Breadth-First Search",
+      "bfs_shortest_path": "Breadth-First Search (Shortest Path)",
+      "topological_sort": "Topological Sort",
+      "union_find": "Union-Find",
+      "binary_search_tree": "Binary Search Tree",
+      "dp_1d_forward": "1D Dynamic Programming",
+      "dp_1d_sequence": "1D Sequence DP",
+      "dp_2d_grid": "2D Grid DP",
+      "dp_2d_string": "2D String DP",
+      "dp_knapsack": "Knapsack DP",
+      "dp_interval": "Interval DP",
+      "dp_state_machine": "State Machine DP",
+      "fast_slow_pointers": "Fast & Slow Pointers",
+      "linked_list_reversal": "Linked List Reversal",
+      "monotonic_stack": "Monotonic Stack",
+      "monotonic_deque": "Monotonic Deque",
+      "binary_search_standard": "Binary Search",
+      "binary_search_rotated": "Binary Search (Rotated)",
+      "binary_search_answer": "Binary Search on Answer",
+      "heap_top_k": "Heap / Top K",
+      "greedy_local": "Greedy",
+      "greedy_interval": "Greedy (Intervals)",
+      "backtracking_permutation": "Backtracking (Permutations)",
+      "backtracking_subset": "Backtracking (Subsets)",
+    };
+    const human = p => HUMAN_NAMES[p] || p.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+    let currentRec = null;
+
     function setRecommendation(rec) {
       currentRec = rec;
-      patternTitle.textContent = rec.pattern_label || rec.pattern.replaceAll('_', ' ');
-      difficulty.textContent = rec.difficulty;
-      tier.textContent = rec.tier;
-      explainRec.textContent = rec.explanation;
-      leetcodeLink.href = rec.leetcode_url;
+      $('problemTitle').textContent = rec.problem ? rec.problem.title : 'Pick a problem';
+      $('difficulty').textContent = rec.difficulty;
+      $('topicTags').textContent = rec.problem ? rec.problem.topics : '';
+      $('explanation').textContent = rec.explanation;
+      $('leetcodeLink').href = rec.problem ? rec.problem.link : rec.leetcode_url;
+      $('loading').classList.add('hidden');
+      $('practiceContent').classList.remove('hidden');
+      $('btnSolved').disabled = false;
+      $('btnUnsolved').disabled = false;
     }
-    async function submit(verdictValue) {
+
+    async function submit(verdict) {
       showError('');
+      $('btnSolved').disabled = true;
+      $('btnUnsolved').disabled = true;
       try {
-        const data = await api('/api/submit', {method:'POST', body:JSON.stringify({
-          user_id:Number(userId),
-          source_code:code.value,
-          language:language.value,
-          verdict:verdictValue,
-          leetcode_problem_number:Number(leetcodeProblemId.value) || null
+        const data = await api('/api/submit', {method: 'POST', body: JSON.stringify({
+          user_id: Number(userId),
+          problem_id: currentRec.problem.id,
+          verdict: verdict
         })});
-        verdict.textContent = data.submission.verdict;
-        detected.textContent = (data.submission.detected_pattern || 'none').replaceAll('_', ' ');
-        expected.textContent = (data.submission.expected_pattern || 'unknown').replaceAll('_', ' ');
-        const expectedLabel = (data.submission.expected_pattern || 'unknown').replaceAll('_', ' ');
-        const detectedLabel = (data.submission.detected_pattern || 'none').replaceAll('_', ' ');
-        const knownExpected = data.submission.expected_pattern && data.submission.expected_pattern !== 'unknown';
-        gap.textContent = knownExpected ? (data.gap_info.gap_detected ? 'yes' : 'no') : 'N/A';
-        datasetNote.textContent = knownExpected ? '' : 'Problem not in PathForge dataset - pattern detected from your code directly.';
-        if (!knownExpected) feedback.textContent = `Detected ${detectedLabel}. Expected pattern is unknown, so your ${detectedLabel} profile was updated without a gap signal.`;
-        else if (!data.gap_info.gap_detected && data.submission.verdict === 'pass') feedback.textContent = `Your code correctly used ${detectedLabel}. Great work.`;
-        else if (data.gap_info.gap_detected && data.submission.verdict === 'pass') feedback.textContent = `Your code used ${detectedLabel} but this problem typically expects ${expectedLabel}. We've updated your ${detectedLabel} profile and recommend practicing ${expectedLabel} next.`;
-        else if (!data.gap_info.gap_detected) feedback.textContent = `You identified the right pattern (${detectedLabel}) but the solution needs work. Try again or practice easier ${detectedLabel} problems.`;
-        else feedback.textContent = `Your code used ${detectedLabel} but this problem expects ${expectedLabel}. Focus on ${expectedLabel} next.`;
-        result.classList.add('show');
-        if (data.recommendation.leetcode_url) setRecommendation({...currentRec, ...data.recommendation});
-      } catch (err) { showError(err.message); }
+        const rec = data.next_recommendation;
+        $('resultPattern').textContent = human(data.pattern_updated);
+        const sign = data.elo_change >= 0 ? '+' : '';
+        $('resultElo').textContent = `${sign}${data.elo_change}`;
+        $('resultNextPattern').textContent = human(rec.pattern);
+        $('resultExplanation').textContent = data.explanation;
+        $('resultPanel').classList.add('show');
+      } catch (err) {
+        showError(err.message);
+        $('btnSolved').disabled = false;
+        $('btnUnsolved').disabled = false;
+      }
     }
-    passed.addEventListener('click', () => submit('pass'));
-    failed.addEventListener('click', () => submit('fail'));
-    logout.addEventListener('click', () => { localStorage.clear(); location.href = '/'; });
+
+    $('btnSolved').addEventListener('click', () => submit('solved'));
+    $('btnUnsolved').addEventListener('click', () => submit('unsolved'));
+
+    $('btnNext').addEventListener('click', () => {
+      $('resultPanel').classList.remove('show');
+      $('btnSolved').disabled = false;
+      $('btnUnsolved').disabled = false;
+      api(`/api/recommend/${userId}`).then(setRecommendation).catch(showError);
+    });
+
+    $('logout').addEventListener('click', () => { localStorage.clear(); location.href = '/'; });
+
     api('/api/auth/onboarding/diagnostic')
-      .then(data => {
-        if (!data.complete) { location.href = '/diagnostic'; return; }
+      .then(d => {
+        if (!d.complete) { location.href = '/diagnostic'; return; }
         return api(`/api/recommend/${userId}`).then(setRecommendation);
       })
-      .catch(err => showError(err.message));
+      .catch(err => { $('loading').classList.add('hidden'); showError(err.message); });
   </script>
 </body>
 </html>
