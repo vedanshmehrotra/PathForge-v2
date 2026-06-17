@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, current_app, request
 
-from pathforge.db.db import get_connection
+from pathforge.db.db import connect
 from pathforge.routes.auth import error, require_auth, success
 
 problems_bp = Blueprint("problems", __name__, url_prefix="/api")
@@ -19,36 +19,36 @@ def list_problems():
     search = request.args.get("search")
     where, params = _problem_filters(difficulty, topic, search)
     offset = (page - 1) * per_page
-    connection = get_connection(current_app.config.get("DATABASE_PATH"))
-    rows = connection.execute(
-        f"""
-        SELECT id, title, difficulty, topics, pattern, link, acceptance_rate
-        FROM problems
-        {where}
-        ORDER BY id ASC
-        LIMIT ? OFFSET ?
-        """,
-        (*params, per_page, offset),
-    ).fetchall()
-    total = connection.execute(f"SELECT COUNT(*) AS total FROM problems {where}", params).fetchone()["total"]
-    return success({"items": [dict(row) for row in rows], "page": page, "per_page": per_page, "total": total})
+    with connect(current_app.config.get("DATABASE_PATH")) as connection:
+        rows = connection.execute(
+            f"""
+            SELECT id, title, difficulty, topics, pattern, link, acceptance_rate
+            FROM problems
+            {where}
+            ORDER BY id ASC
+            LIMIT ? OFFSET ?
+            """,
+            (*params, per_page, offset),
+        ).fetchall()
+        total = connection.execute(f"SELECT COUNT(*) AS total FROM problems {where}", params).fetchone()["total"]
+        return success({"items": [dict(row) for row in rows], "page": page, "per_page": per_page, "total": total})
 
 
 @problems_bp.get("/problems/<int:problem_id>")
 @require_auth
 def get_problem(problem_id):
     """Return one problem record with test case count but without test case bodies."""
-    connection = get_connection(current_app.config.get("DATABASE_PATH"))
-    row = connection.execute("SELECT * FROM problems WHERE id = ?", (problem_id,)).fetchone()
-    if not row:
-        return error("Problem not found", 404)
-    problem = dict(row)
-    try:
-        problem["test_case_count"] = len(json.loads(problem.get("test_cases") or "[]"))
-    except json.JSONDecodeError:
-        problem["test_case_count"] = 0
-    problem.pop("test_cases", None)
-    return success(problem)
+    with connect(current_app.config.get("DATABASE_PATH")) as connection:
+        row = connection.execute("SELECT * FROM problems WHERE id = ?", (problem_id,)).fetchone()
+        if not row:
+            return error("Problem not found", 404)
+        problem = dict(row)
+        try:
+            problem["test_case_count"] = len(json.loads(problem.get("test_cases") or "[]"))
+        except json.JSONDecodeError:
+            problem["test_case_count"] = 0
+        problem.pop("test_cases", None)
+        return success(problem)
 
 
 def _problem_filters(difficulty, topic, search):

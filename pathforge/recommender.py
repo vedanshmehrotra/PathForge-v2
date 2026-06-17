@@ -1,6 +1,5 @@
 import logging
 
-from pathforge.db.db import get_connection
 from pathforge.db.profile_manager import get_weakest_topics
 from pathforge.pattern_links import leetcode_url
 
@@ -11,9 +10,8 @@ HINT_THRESHOLD = 0.55
 DIFFICULTY_ORDER = ["Easy", "Medium", "Hard"]
 
 
-def get_recommendation(user_id, submission_result, problem_record, db_path=None):
+def get_recommendation(user_id, submission_result, problem_record, connection):
     """Return a confidence-gated recommendation for a completed submission."""
-    connection = get_connection(db_path)
     gap_info = submission_result["gap_info"]
     submission = submission_result["submission"]
     current_problem_id = submission["problem_id"]
@@ -29,19 +27,19 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
 
     if not gap_info["gap_detected"] and submission["verdict"] == "pass":
         if _check_pattern_lock(connection, user_id, topic, "pass"):
-            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            new_topic = _rotate_topic(connection, user_id, topic)
             difficulty = _difficulty_for_user(connection, user_id, new_topic)
-            problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+            problem = _select_problem(connection, user_id, new_topic, difficulty)
             tier = "specific" if problem else "topic_hint"
             explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass")
             return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         difficulty = _move_difficulty(problem_record["difficulty"], 1)
-        problem = _select_problem(user_id, topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
+        problem = _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=current_problem_id)
         if not problem:
-            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            new_topic = _rotate_topic(connection, user_id, topic)
             if new_topic != topic:
                 difficulty = _difficulty_for_user(connection, user_id, new_topic)
-                problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+                problem = _select_problem(connection, user_id, new_topic, difficulty)
                 tier = "specific" if problem else "topic_hint"
                 explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass")
                 return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
@@ -51,19 +49,19 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
 
     if not gap_info["gap_detected"]:
         if _check_pattern_lock(connection, user_id, topic, "fail"):
-            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            new_topic = _rotate_topic(connection, user_id, topic)
             difficulty = _difficulty_for_user(connection, user_id, new_topic)
-            problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+            problem = _select_problem(connection, user_id, new_topic, difficulty)
             tier = "specific" if problem else "topic_hint"
             explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail")
             return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         difficulty = _move_difficulty(problem_record["difficulty"], -1 if submission["verdict"] != "pass" else 0)
-        problem = _select_problem(user_id, topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
+        problem = _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=current_problem_id)
         if not problem and submission["verdict"] != "pass":
-            new_topic = _rotate_topic(connection, user_id, topic, db_path=db_path)
+            new_topic = _rotate_topic(connection, user_id, topic)
             if new_topic != topic:
                 difficulty = _difficulty_for_user(connection, user_id, new_topic)
-                problem = _select_problem(user_id, new_topic, difficulty, db_path=db_path)
+                problem = _select_problem(connection, user_id, new_topic, difficulty)
                 tier = "specific" if problem else "topic_hint"
                 explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail")
                 return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
@@ -73,7 +71,7 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
 
     if confidence >= SPECIFIC_THRESHOLD:
         difficulty = _difficulty_for_user(connection, user_id, topic)
-        problem = _select_problem(user_id, topic, difficulty, db_path=db_path, exclude_problem_id=current_problem_id)
+        problem = _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=current_problem_id)
         selected_topic = topic
         if not problem:
             fallback = get_weakest_topics(connection, user_id, limit=33)
@@ -82,7 +80,7 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
                 if ft == selected_topic:
                     continue
                 fd = _difficulty_from_elo(float(fb["elo_rating"]))
-                p = _select_problem(user_id, ft, fd, db_path=db_path, exclude_problem_id=current_problem_id)
+                p = _select_problem(connection, user_id, ft, fd, exclude_problem_id=current_problem_id)
                 if p:
                     selected_topic = ft
                     difficulty = fd
@@ -100,9 +98,8 @@ def get_recommendation(user_id, submission_result, problem_record, db_path=None)
     return _recommendation("general_hint", None, explanation, confidence, topic, _difficulty_for_user(connection, user_id, topic), topic)
 
 
-def _select_problem(user_id, topic, difficulty, db_path=None, exclude_problem_id=None):
+def _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=None):
     """Select the highest-acceptance unsolved problem for a topic and difficulty."""
-    connection = get_connection(db_path)
     row = connection.execute(
         """
         SELECT p.*
@@ -147,7 +144,7 @@ def _check_pattern_lock(connection, user_id, topic, verdict):
     return False
 
 
-def _rotate_topic(connection, user_id, exclude_topic, db_path=None):
+def _rotate_topic(connection, user_id, exclude_topic):
     """Pick the weakest topic with available problems, different from exclude_topic."""
     weakest = get_weakest_topics(connection, user_id, limit=33)
     for w in weakest:
@@ -155,7 +152,7 @@ def _rotate_topic(connection, user_id, exclude_topic, db_path=None):
         if candidate == exclude_topic:
             continue
         difficulty = _difficulty_from_elo(float(w["elo_rating"]))
-        problem = _select_problem(user_id, candidate, difficulty, db_path=db_path)
+        problem = _select_problem(connection, user_id, candidate, difficulty)
         if problem:
             return candidate
         logger.info(

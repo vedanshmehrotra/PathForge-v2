@@ -1,12 +1,10 @@
 import json
 from datetime import date, timedelta
 
-from pathforge.db.db import get_connection
 from pathforge.db.profile_manager import iso_now, update_topic_profile
 
 
-def handle_submission(user_id, problem_id, verdict, db_path=None):
-    connection = get_connection(db_path)
+def handle_submission(user_id, problem_id, verdict, connection):
     timestamp = iso_now()
 
     problem = _get_problem(connection, problem_id)

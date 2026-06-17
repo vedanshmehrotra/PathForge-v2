@@ -98,7 +98,7 @@ def run_trace():
             },
         }
 
-        rec = get_recommendation(1, submission_result, problem, db_path=db_path)
+        rec = get_recommendation(1, submission_result, problem, connection)
         subject = f"Submission #{i+1}: pass on hash_map_lookup"
         print(f"\n{subject}")
         print(f"  recommended topic: {rec['topic']}")
@@ -151,7 +151,7 @@ def run_trace():
             },
         }
 
-        rec = get_recommendation(1, submission_result, problem, db_path=db_path)
+        rec = get_recommendation(1, submission_result, problem, connection)
         subject = f"Submission #{i+1}: fail on sliding_window_variable"
         print(f"\n{subject}")
         print(f"  recommended topic: {rec['topic']}")

@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, current_app, request
 
-from pathforge.db.db import get_connection
+from pathforge.db.db import connect
 from pathforge.db.profile_manager import get_user_profile, get_weakest_topics, iso_now
 from pathforge.pattern_links import leetcode_url, pattern_options
 from pathforge.recommender import _difficulty_from_elo, _select_problem
@@ -17,28 +17,28 @@ def profile(user_id):
     """Return topic profiles, overall Elo, weakest topics, and recent submissions."""
     if user_id != request_user_id():
         return error("Forbidden", 403)
-    connection = get_connection(current_app.config.get("DATABASE_PATH"))
-    profiles = get_user_profile(connection, user_id)
-    recent = connection.execute(
-        """
-        SELECT s.id, s.problem_id, COALESCE(p.title, s.topic) AS title, s.verdict, s.detected_pattern,
-               s.expected_pattern, s.gap_identified, s.diagnosis_confidence,
-               s.topic, s.submitted_at
-        FROM submissions s
-        LEFT JOIN problems p ON p.id = s.problem_id
-        WHERE s.user_id = ?
-        ORDER BY s.submitted_at DESC
-        LIMIT 10
-        """,
-        (user_id,),
-    ).fetchall()
-    return success({
-        "profiles": profiles,
-        "overall_elo": _overall_elo(profiles),
-        "weakest_topics": get_weakest_topics(connection, user_id, limit=5),
-        "recent_submissions": [dict(row) for row in recent],
-        "stats": _stats(connection, user_id),
-    })
+    with connect(current_app.config.get("DATABASE_PATH")) as connection:
+        profiles = get_user_profile(connection, user_id)
+        recent = connection.execute(
+            """
+            SELECT s.id, s.problem_id, COALESCE(p.title, s.topic) AS title, s.verdict, s.detected_pattern,
+                   s.expected_pattern, s.gap_identified, s.diagnosis_confidence,
+                   s.topic, s.submitted_at
+            FROM submissions s
+            LEFT JOIN problems p ON p.id = s.problem_id
+            WHERE s.user_id = ?
+            ORDER BY s.submitted_at DESC
+            LIMIT 10
+            """,
+            (user_id,),
+        ).fetchall()
+        return success({
+            "profiles": profiles,
+            "overall_elo": _overall_elo(profiles),
+            "weakest_topics": get_weakest_topics(connection, user_id, limit=5),
+            "recent_submissions": [dict(row) for row in recent],
+            "stats": _stats(connection, user_id),
+        })
 
 
 @profile_bp.get("/recommend/<int:user_id>")
@@ -47,60 +47,60 @@ def recommend(user_id):
     """Return the next recommended problem for a user without requiring a new submission."""
     if user_id != request_user_id():
         return error("Forbidden", 403)
-    connection = get_connection(current_app.config.get("DATABASE_PATH"))
-    refresh = request.args.get("refresh", "").lower() == "true"
-    active = None if refresh else _active_recommendation(connection, user_id)
-    if active:
-        return success(active)
-    if refresh:
-        _clear_active_recommendation(connection, user_id)
+    with connect(current_app.config.get("DATABASE_PATH")) as connection:
+        refresh = request.args.get("refresh", "").lower() == "true"
+        active = None if refresh else _active_recommendation(connection, user_id)
+        if active:
+            return success(active)
+        if refresh:
+            _clear_active_recommendation(connection, user_id)
 
-    weakest = get_weakest_topics(connection, user_id, limit=33)
-    topic = "hash_map_lookup"
-    difficulty = "Easy"
-    problem = None
+        weakest = get_weakest_topics(connection, user_id, limit=33)
+        topic = "hash_map_lookup"
+        difficulty = "Easy"
+        problem = None
 
-    for w in weakest:
-        t = w["topic"]
-        d = _difficulty_from_elo(float(w["elo_rating"]))
-        p = _select_problem(user_id, t, d, db_path=current_app.config.get("DATABASE_PATH"))
-        if p:
-            topic, difficulty, problem = t, d, p
-            break
-
-    if not problem and weakest:
-        t = weakest[0]["topic"]
-        for d in ("Easy", "Medium", "Hard"):
-            p = _select_problem(user_id, t, d, db_path=current_app.config.get("DATABASE_PATH"))
+        for w in weakest:
+            t = w["topic"]
+            d = _difficulty_from_elo(float(w["elo_rating"]))
+            p = _select_problem(connection, user_id, t, d)
             if p:
                 topic, difficulty, problem = t, d, p
                 break
 
-    if not problem:
-        p = _first_unsolved_problem(connection, user_id)
-        if p:
-            topic = json.loads(p["pattern"])[0]
-            difficulty = p["difficulty"]
-            problem = p
-        else:
-            return error("No unsolved problems available", 404)
-    explanation = f"Practice {topic.replace('_', ' ')} at {difficulty} level. Pick any LeetCode problem from the linked list, solve it there, then paste your Python solution here."
-    recommendation_id = _log_recommendation(connection, user_id, problem, topic, explanation)
-    return success({
-        "tier": "specific",
-        "confidence_tier": "specific",
-        "problem": problem,
-        "explanation": explanation,
-        "confidence": 0.0,
-        "topic": topic,
-        "pattern": topic,
-        "pattern_label": topic.replace("_", " "),
-        "difficulty": difficulty,
-        "leetcode_url": leetcode_url(topic, difficulty),
-        "patterns": pattern_options(),
-        "id": recommendation_id,
-        "returning": False,
-    })
+        if not problem and weakest:
+            t = weakest[0]["topic"]
+            for d in ("Easy", "Medium", "Hard"):
+                p = _select_problem(connection, user_id, t, d)
+                if p:
+                    topic, difficulty, problem = t, d, p
+                    break
+
+        if not problem:
+            p = _first_unsolved_problem(connection, user_id)
+            if p:
+                topic = json.loads(p["pattern"])[0]
+                difficulty = p["difficulty"]
+                problem = p
+            else:
+                return error("No unsolved problems available", 404)
+        explanation = f"Practice {topic.replace('_', ' ')} at {difficulty} level. Pick any LeetCode problem from the linked list, solve it there, then paste your Python solution here."
+        recommendation_id = _log_recommendation(connection, user_id, problem, topic, explanation)
+        return success({
+            "tier": "specific",
+            "confidence_tier": "specific",
+            "problem": problem,
+            "explanation": explanation,
+            "confidence": 0.0,
+            "topic": topic,
+            "pattern": topic,
+            "pattern_label": topic.replace("_", " "),
+            "difficulty": difficulty,
+            "leetcode_url": leetcode_url(topic, difficulty),
+            "patterns": pattern_options(),
+            "id": recommendation_id,
+            "returning": False,
+        })
 
 
 def request_user_id():

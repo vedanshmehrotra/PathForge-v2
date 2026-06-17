@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -15,6 +16,19 @@ def get_connection(db_path=None):
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
     return connection
+
+
+@contextmanager
+def connect(db_path=None):
+    """Context manager yielding a SQLite connection with WAL mode, busy_timeout, and auto-close."""
+    connection = get_connection(db_path)
+    connection.execute("PRAGMA journal_mode=WAL")
+    connection.execute("PRAGMA busy_timeout=5000")
+    connection.execute("PRAGMA synchronous=NORMAL")
+    try:
+        yield connection
+    finally:
+        connection.close()
 
 
 def init_db(db_path=None):

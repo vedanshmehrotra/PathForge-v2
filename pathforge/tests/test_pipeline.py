@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from pathforge.db.db import init_db
+from pathforge.db.db import connect, init_db
 from pathforge.pipeline import run_pipeline
 from pathforge.recommender import get_recommendation
 
@@ -102,7 +102,7 @@ def test_specific_recommendation_when_confidence_high_and_gap_detected(tmp_path)
         "gap_pattern": "sliding_window_variable",
     }
 
-    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), db_path=db_path)
+    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), connection)
 
     assert recommendation["tier"] == "specific"
     assert recommendation["problem"]["id"] == 2
@@ -121,7 +121,7 @@ def test_hint_when_confidence_is_mid(tmp_path):
         "gap_pattern": "sliding_window_variable",
     }
 
-    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), db_path=db_path)
+    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), connection)
 
     assert recommendation["tier"] == "topic_hint"
     assert recommendation["problem"] is None
@@ -139,7 +139,7 @@ def test_general_when_confidence_is_low(tmp_path):
         "gap_pattern": "sliding_window_variable",
     }
 
-    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), db_path=db_path)
+    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), connection)
 
     assert recommendation["tier"] == "general_hint"
     assert recommendation["problem"] is None
@@ -164,7 +164,7 @@ def test_no_gap_pass_recommends_next_difficulty(tmp_path):
         "gap_pattern": None,
     }
 
-    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), db_path=db_path)
+    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), connection)
 
     assert recommendation["tier"] == "specific"
     assert recommendation["problem"]["id"] == 4
@@ -182,7 +182,7 @@ def test_fallback_when_no_problem_available_in_gap_topic(tmp_path):
         "gap_pattern": "sliding_window_variable",
     }
 
-    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), db_path=db_path)
+    recommendation = get_recommendation(1, submission, dict(connection.execute("SELECT * FROM problems WHERE id = 1").fetchone()), connection)
 
     assert recommendation["tier"] == "specific"
     assert recommendation["problem"]["id"] == 3

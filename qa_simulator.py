@@ -132,7 +132,7 @@ def do_submit(user_id, problem, verdict_str, submitted_at, db_path):
     gap_info = {"gap_detected": False, "gap_pattern": None, "matched_pattern": pattern, "diagnosis_confidence": 1.0}
     sub_result = {"submission": record, "gap_info": gap_info, "profile_update": profile_update}
 
-    rec = get_recommendation(user_id, sub_result, problem)
+    rec = get_recommendation(user_id, sub_result, problem, connection)
 
     profiles = {p["topic"]: dict(p) for p in connection.execute(
         "SELECT * FROM topic_profiles WHERE user_id = ?", (user_id,)).fetchall()}

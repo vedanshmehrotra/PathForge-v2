@@ -1,30 +1,30 @@
-from pathforge.db.db import get_connection
+from pathforge.db.db import connect
 from pathforge.db.profile_manager import iso_now
 from pathforge.recommender import get_recommendation
 from pathforge.submission_handler import handle_submission
 
 
 def run_pipeline(user_id, problem_id, verdict, db_path=None):
-    submission_result = handle_submission(
-        user_id, problem_id, verdict, db_path=db_path
-    )
-    connection = get_connection(db_path)
-    problem_record = _find_problem(connection, problem_id)
+    with connect(db_path) as connection:
+        submission_result = handle_submission(
+            user_id, problem_id, verdict, connection
+        )
+        problem_record = _find_problem(connection, problem_id)
 
-    _mark_last_recommendation_acted_on(connection, user_id)
-    recommendation = get_recommendation(user_id, submission_result, problem_record, db_path=db_path)
-    recommendation_id = _log_recommendation(connection, user_id, recommendation)
-    recommendation["id"] = recommendation_id
-    recommendation["returning"] = False
+        _mark_last_recommendation_acted_on(connection, user_id)
+        recommendation = get_recommendation(user_id, submission_result, problem_record, connection)
+        recommendation_id = _log_recommendation(connection, user_id, recommendation)
+        recommendation["id"] = recommendation_id
+        recommendation["returning"] = False
 
-    return {
-        "submission": submission_result["submission"],
-        "gap_info": submission_result["gap_info"],
-        "recommendation": recommendation,
-        "explanation": recommendation["explanation"],
-        "profile_update": submission_result.get("profile_update"),
-        "profile_error": submission_result.get("profile_error"),
-    }
+        return {
+            "submission": submission_result["submission"],
+            "gap_info": submission_result["gap_info"],
+            "recommendation": recommendation,
+            "explanation": recommendation["explanation"],
+            "profile_update": submission_result.get("profile_update"),
+            "profile_error": submission_result.get("profile_error"),
+        }
 
 
 def _find_problem(connection, problem_id):
@@ -53,6 +53,7 @@ def _log_recommendation(connection, user_id, recommendation):
     recommendation_id = cursor.lastrowid
     connection.execute("UPDATE users SET last_recommendation_id = ?, updated_at = ? WHERE id = ?", (recommendation_id, iso_now(), user_id))
     connection.commit()
+    return recommendation_id
 
 
 def _mark_last_recommendation_acted_on(connection, user_id):
