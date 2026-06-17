@@ -173,10 +173,36 @@ def get_user_profile(connection, user_id):
     return [dict(row) for row in rows]
 
 
-def get_weakest_topics(connection, user_id, limit=5):
-    """Return topics ranked by low Elo, low accuracy, and recent failures."""
+def get_recommendable_patterns(connection):
+    """Return the set of pattern names that have at least 1 primary problem in the bank.
+
+    A pattern is recommendable only when the CSV contains at least one problem
+    where that pattern appears as the first element in the pattern JSON array.
+    Patterns with zero primary problems (e.g. binary_search_tree, dp_interval)
+    would produce non-actionable topic_hint recommendations and are excluded.
+    """
     rows = connection.execute(
-        """
+        """SELECT DISTINCT json_extract(p.pattern, '$[0]') AS pattern
+           FROM problems p
+           WHERE json_extract(p.pattern, '$[0]') IS NOT NULL"""
+    ).fetchall()
+    return {row["pattern"] for row in rows}
+
+
+def get_weakest_topics(connection, user_id, limit=5):
+    """Return topics ranked by low Elo, low accuracy, and recent failures.
+
+    Only recommendable patterns (those with at least 1 primary problem in the bank)
+    are included. Topics with zero available problems (e.g. dp_state_machine,
+    topological_sort) are excluded since the system can never produce an actionable
+    recommendation for them.
+    """
+    recommendable = get_recommendable_patterns(connection)
+    if not recommendable:
+        return []
+    placeholders = ",".join("?" * len(recommendable))
+    rows = connection.execute(
+        f"""
         SELECT user_id, topic, elo_rating, attempt_count, pass_count,
                pattern_match_count, accuracy, recent_failures,
                last_attempt_at, created_at, updated_at,
@@ -185,9 +211,10 @@ def get_weakest_topics(connection, user_id, limit=5):
                 + (MIN(recent_failures, 5) / 3.0) AS weakness_score
         FROM topic_profiles
         WHERE user_id = ?
+          AND topic IN ({placeholders})
         ORDER BY weakness_score DESC, elo_rating ASC, accuracy ASC
         LIMIT ?
         """,
-        (user_id, limit),
+        (user_id, *sorted(recommendable), limit),
     ).fetchall()
     return [dict(row) for row in rows]

@@ -32,7 +32,8 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
             difficulty = _difficulty_for_user(connection, user_id, new_topic)
             problem = _select_problem(connection, user_id, new_topic, difficulty)
             tier = "specific" if problem else "topic_hint"
-            explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass")
+            consecutive = _consecutive_pass_count(connection, user_id, topic)
+            explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass", consecutive_count=consecutive, old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
             return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         difficulty = _move_difficulty(problem_record["difficulty"], 1)
         problem = _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=current_problem_id)
@@ -42,10 +43,10 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                 difficulty = _difficulty_for_user(connection, user_id, new_topic)
                 problem = _select_problem(connection, user_id, new_topic, difficulty)
                 tier = "specific" if problem else "topic_hint"
-                explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass")
+                explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
                 return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         tier = "specific" if problem else "topic_hint"
-        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="pass")
+        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="pass", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
         return _recommendation(tier, problem, explanation, confidence, topic, difficulty, topic)
 
     if not gap_info["gap_detected"]:
@@ -54,7 +55,7 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
             difficulty = _difficulty_for_user(connection, user_id, new_topic)
             problem = _select_problem(connection, user_id, new_topic, difficulty)
             tier = "specific" if problem else "topic_hint"
-            explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail")
+            explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
             return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         difficulty = _move_difficulty(problem_record["difficulty"], -1 if submission["verdict"] != "pass" else 0)
         problem = _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=current_problem_id)
@@ -64,10 +65,10 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                 difficulty = _difficulty_for_user(connection, user_id, new_topic)
                 problem = _select_problem(connection, user_id, new_topic, difficulty)
                 tier = "specific" if problem else "topic_hint"
-                explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail")
+                explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
                 return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
         tier = "specific" if problem else "topic_hint"
-        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="fail")
+        explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="fail", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
         return _recommendation(tier, problem, explanation, confidence, topic, difficulty, topic)
 
     if confidence >= SPECIFIC_THRESHOLD:
@@ -89,14 +90,14 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                     problem = p
                     break
         tier = "specific" if problem else "topic_hint"
-        explanation = _build_explanation(tier, gap_info, problem, topic=selected_topic)
+        explanation = _build_explanation(tier, gap_info, problem, topic=selected_topic, old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
         return _recommendation(tier, problem, explanation, confidence, selected_topic, difficulty, selected_topic)
 
     if confidence >= HINT_THRESHOLD:
-        explanation = _build_explanation("topic_hint", gap_info, None, topic=topic)
+        explanation = _build_explanation("topic_hint", gap_info, None, topic=topic, old_difficulty=problem_record["difficulty"] if problem_record else None)
         return _recommendation("topic_hint", None, explanation, confidence, topic, _difficulty_for_user(connection, user_id, topic), topic)
 
-    explanation = _build_explanation("general_hint", gap_info, None, topic=topic)
+    explanation = _build_explanation("general_hint", gap_info, None, topic=topic, old_difficulty=problem_record["difficulty"] if problem_record else None)
     return _recommendation("general_hint", None, explanation, confidence, topic, _difficulty_for_user(connection, user_id, topic), topic)
 
 
@@ -146,6 +147,23 @@ def _check_pattern_lock(connection, user_id, topic, verdict):
     return False
 
 
+def _consecutive_pass_count(connection, user_id, topic):
+    """Return the number of consecutive pass verdicts for a topic (most recent first)."""
+    rows = connection.execute(
+        """SELECT verdict FROM submissions
+           WHERE user_id = ? AND topic = ?
+           ORDER BY submitted_at DESC""",
+        (user_id, topic),
+    ).fetchall()
+    count = 0
+    for row in rows:
+        if row["verdict"] == "pass":
+            count += 1
+        else:
+            break
+    return count
+
+
 def _rotate_topic(connection, user_id, exclude_topic):
     """Pick the weakest topic with available problems, different from exclude_topic."""
     weakest = get_weakest_topics(connection, user_id, limit=33)
@@ -169,31 +187,40 @@ def _rotate_topic(connection, user_id, exclude_topic):
     return exclude_topic
 
 
-def _build_explanation(tier, gap_info, problem, topic=None, old_topic=None, no_gap=False, verdict=None):
-    """Build a human-readable explanation for the recommendation result."""
+def _build_explanation(tier, gap_info, problem, topic=None, old_topic=None, no_gap=False, verdict=None, consecutive_count=None, old_difficulty=None, new_difficulty=None):
+    """Build a deterministic explanation for the recommendation, explaining WHY."""
     focus = gap_info.get("gap_pattern") or gap_info.get("matched_pattern") or "the core pattern"
     readable_focus = focus.replace("_", " ")
     readable_topic = (topic or "this pattern").replace("_", " ")
+    readable_old = (old_topic or "").replace("_", " ") if old_topic else ""
 
     if tier == "rotate":
-        readable_old = (old_topic or "the previous topic").replace("_", " ")
-        if verdict == "fail":
-            return f"{readable_focus} is tough. Let's practice {readable_topic} and come back stronger."
-        return f"Nice streak on {readable_old}! Switching to {readable_topic}, your weakest area."
+        if verdict == "fail" and readable_old:
+            return f"You've been struggling with {readable_old} recently. Let's strengthen {readable_topic} before returning."
+        if consecutive_count and consecutive_count > 1 and readable_old:
+            return f"You solved {consecutive_count} consecutive {readable_old} problems. {readable_topic.capitalize()} is one of your lowest-rated topics, so we're broadening your coverage."
+        if readable_old:
+            return f"Good work on {readable_old}. Let's switch to {readable_topic}, one of your lowest-rated topics, to broaden your coverage."
+        return f"Let's practice {readable_topic} next."
 
     if no_gap:
         if verdict == "pass":
-            return f"Nice work on {readable_topic}. Keep up the momentum!"
-        return f"{readable_topic} needs more practice. Try this problem to build confidence."
+            if problem and old_difficulty and new_difficulty and old_difficulty != new_difficulty:
+                return f"You handled the {old_difficulty} {readable_topic} problem correctly. Let's try a {new_difficulty} problem."
+            if problem:
+                return f"Good progress on {readable_topic}. Let's continue with another problem."
+            return f"Good progress on {readable_topic}. We're finding the right next challenge."
+        if problem and old_difficulty and new_difficulty and old_difficulty != new_difficulty:
+            return f"The {old_difficulty} {readable_topic} problem was challenging. Let's try an easier {new_difficulty} problem."
+        if problem:
+            return f"Let's try another {readable_topic} problem to build confidence."
+        return f"Keep practicing {readable_topic} fundamentals."
 
     if tier == "specific" and problem:
-        return f"Practice {readable_focus} next using the linked LeetCode problem list."
+        return f"Let's target {readable_topic}, which was identified as an area to work on."
     if tier == "topic_hint":
-        return (
-            f"Your result suggests a possible gap in {readable_topic}. "
-            f"Review {readable_focus} before moving to another problem."
-        )
-    return f"Focus on the fundamentals of {readable_topic} before taking on a more targeted recommendation."
+        return f"Your last result points to {readable_topic}. Review problems in this area before your next attempt."
+    return f"Focus on building a strong foundation in {readable_topic}."
 
 
 def _recommendation(tier, problem, explanation, confidence, topic, difficulty, pattern):

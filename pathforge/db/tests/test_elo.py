@@ -97,18 +97,33 @@ def test_get_weakest_topics_ranks_low_skill_first(tmp_path):
     )
     connection.execute(
         """
+        INSERT INTO problems (id, title, difficulty, topics, pattern, test_cases, acceptance_rate, created_at)
+        VALUES
+            (1, 'Dummy', 'Easy', 'Array', '["hash_map_lookup"]', '[]', 50.0, '2026-06-03T00:00:00+00:00')
+        """
+    )
+    connection.execute(
+        """
         INSERT INTO topic_profiles (
             user_id, topic, elo_rating, attempt_count, pass_count,
             pattern_match_count, accuracy, recent_failures,
             created_at, updated_at
         )
         VALUES
-            (1, 'Arrays', 700, 5, 1, 1, 0.2, 3, '2026-06-03T00:00:00+00:00', '2026-06-03T00:00:00+00:00'),
-            (1, 'Graphs', 1100, 5, 4, 4, 0.8, 0, '2026-06-03T00:00:00+00:00', '2026-06-03T00:00:00+00:00')
+            (1, 'hash_map_lookup', 700, 5, 1, 1, 0.2, 3, '2026-06-03T00:00:00+00:00', '2026-06-03T00:00:00+00:00'),
+            (1, 'bfs_level_order', 1100, 5, 4, 4, 0.8, 0, '2026-06-03T00:00:00+00:00', '2026-06-03T00:00:00+00:00')
+        """
+    )
+    # Seed a second problem so bfs_level_order is also recommendable
+    connection.execute(
+        """
+        INSERT INTO problems (id, title, difficulty, topics, pattern, test_cases, acceptance_rate, created_at)
+        VALUES
+            (2, 'Dummy2', 'Easy', 'Graph', '["bfs_level_order"]', '[]', 50.0, '2026-06-03T00:00:00+00:00')
         """
     )
     connection.commit()
 
     weakest = get_weakest_topics(connection, user_id=1)
-    assert weakest[0]["topic"] == "Arrays"
+    assert weakest[0]["topic"] == "hash_map_lookup"
     assert weakest[0]["weakness_score"] > weakest[1]["weakness_score"]

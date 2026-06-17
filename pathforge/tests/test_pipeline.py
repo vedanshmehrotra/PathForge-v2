@@ -36,8 +36,8 @@ def seed_base(connection, include_gap_problem=True):
             accuracy, recent_failures, created_at, updated_at
         )
         VALUES
-            (1, 'Array', 850, 3, 1, 1, 0.33, 2, '2026-06-04T00:00:00+00:00', '2026-06-04T00:00:00+00:00'),
-            (1, 'Graph', 700, 3, 0, 0, 0.0, 3, '2026-06-04T00:00:00+00:00', '2026-06-04T00:00:00+00:00')
+            (1, 'sliding_window_variable', 850, 3, 1, 1, 0.33, 2, '2026-06-04T00:00:00+00:00', '2026-06-04T00:00:00+00:00'),
+            (1, 'bfs_level_order', 700, 3, 0, 0, 0.0, 3, '2026-06-04T00:00:00+00:00', '2026-06-04T00:00:00+00:00')
         """
     )
     connection.commit()
@@ -55,7 +55,7 @@ def fake_submission(scores, verdict="pass", gap_identified=1):
             "detected_confidence": max(scores.values()) if scores else 0.0,
             "expected_pattern": "sliding_window_variable",
             "gap_identified": gap_identified,
-            "topic": "Array",
+            "topic": "sliding_window_variable",
         },
         "ast": {"scores": scores},
         "evaluation": {"verdict": verdict},
@@ -82,7 +82,7 @@ def insert_submission(connection, verdict="pass"):
         VALUES (
             1, 1, 1, 'code', ?, 'hash_map_lookup',
             0.9, 'sliding_window_variable', 1,
-            1, 1, 'Array', '2026-06-04T00:00:00+00:00'
+            1, 1, 'sliding_window_variable', '2026-06-04T00:00:00+00:00'
         )
         """,
         (verdict,),
