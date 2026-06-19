@@ -115,7 +115,8 @@ def _save_submission(
             submitted_at,
         ),
     )
-    connection.commit()
+    # NOTE: Do not commit here. The caller (pipeline.py) must handle atomicity
+    # by committing all changes (submission, streak, profile, recommendation) in one transaction.
     return cursor.lastrowid
 
 
@@ -135,7 +136,8 @@ def _update_user_streak(connection, user_id, submitted_at):
         "UPDATE users SET current_streak = ?, last_submission_date = ?, updated_at = ? WHERE id = ?",
         (streak, today.isoformat(), submitted_at, user_id),
     )
-    connection.commit()
+    # NOTE: Do not commit here. The caller (pipeline.py) must handle atomicity
+    # by committing all changes (submission, streak, profile, recommendation) in one transaction.
 
 
 def _get_submission(connection, submission_id):

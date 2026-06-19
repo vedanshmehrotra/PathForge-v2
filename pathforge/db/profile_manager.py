@@ -142,7 +142,8 @@ def update_topic_profile(
             timestamp,
         ),
     )
-    connection.commit()
+    # NOTE: Do not commit here. The caller (pipeline.py) must handle atomicity
+    # by committing all changes (submission, streak, profile, recommendation) in one transaction.
 
     return {
         "user_id": user_id,

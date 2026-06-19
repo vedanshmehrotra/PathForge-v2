@@ -6,25 +6,32 @@ from pathforge.submission_handler import handle_submission
 
 def run_pipeline(user_id, problem_id, verdict, db_path=None):
     with connect(db_path) as connection:
-        submission_result = handle_submission(
-            user_id, problem_id, verdict, connection
-        )
-        problem_record = _find_problem(connection, problem_id)
+        try:
+            submission_result = handle_submission(
+                user_id, problem_id, verdict, connection
+            )
+            problem_record = _find_problem(connection, problem_id)
 
-        _mark_last_recommendation_acted_on(connection, user_id)
-        recommendation = get_recommendation(user_id, submission_result, problem_record, connection)
-        recommendation_id = _log_recommendation(connection, user_id, recommendation)
-        recommendation["id"] = recommendation_id
-        recommendation["returning"] = False
+            _mark_last_recommendation_acted_on(connection, user_id)
+            recommendation = get_recommendation(user_id, submission_result, problem_record, connection)
+            recommendation_id = _log_recommendation(connection, user_id, recommendation)
+            recommendation["id"] = recommendation_id
+            recommendation["returning"] = False
 
-        return {
-            "submission": submission_result["submission"],
-            "gap_info": submission_result["gap_info"],
-            "recommendation": recommendation,
-            "explanation": recommendation["explanation"],
-            "profile_update": submission_result.get("profile_update"),
-            "profile_error": submission_result.get("profile_error"),
-        }
+            # Commit all changes atomically: submission, streak, profile, recommendations
+            connection.commit()
+
+            return {
+                "submission": submission_result["submission"],
+                "gap_info": submission_result["gap_info"],
+                "recommendation": recommendation,
+                "explanation": recommendation["explanation"],
+                "profile_update": submission_result.get("profile_update"),
+                "profile_error": submission_result.get("profile_error"),
+            }
+        except Exception:
+            connection.rollback()
+            raise
 
 
 def _find_problem(connection, problem_id):
@@ -52,7 +59,7 @@ def _log_recommendation(connection, user_id, recommendation):
     )
     recommendation_id = cursor.lastrowid
     connection.execute("UPDATE users SET last_recommendation_id = ?, updated_at = ? WHERE id = ?", (recommendation_id, iso_now(), user_id))
-    connection.commit()
+    # NOTE: Do not commit here. The caller (run_pipeline) handles atomicity.
     return recommendation_id
 
 
@@ -64,4 +71,4 @@ def _mark_last_recommendation_acted_on(connection, user_id):
         "UPDATE recommendations SET acted_on = 1, acted_on_at = ? WHERE id = ? AND user_id = ?",
         (iso_now(), row["last_recommendation_id"], user_id),
     )
-    connection.commit()
+    # NOTE: Do not commit here. The caller (run_pipeline) handles atomicity.

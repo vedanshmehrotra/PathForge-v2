@@ -23,8 +23,9 @@
           <span id="reasonBadge" class="inline-block rounded-full border border-zinc-700 px-3 py-0.5 text-xs text-zinc-300"></span>
           <span id="topicTags" class="text-sm text-zinc-400"></span>
         </div>
-        <details class="mt-4 group">
-          <summary class="cursor-pointer text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-300">Why this problem?</summary>
+        <p id="explanationPreview" class="mt-4 text-sm text-zinc-300"></p>
+        <details class="mt-2 group">
+          <summary class="cursor-pointer text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-300">Why this problem? (More details)</summary>
           <p id="explanation" class="mt-2 text-sm text-zinc-300"></p>
         </details>
         <div class="mt-6">
@@ -132,12 +133,19 @@
 
     let currentRec = null;
 
+    function extractFirstSentence(text) {
+      if (!text) return '';
+      const match = text.match(/^[^.!?]*[.!?]/);
+      return match ? match[0] : text;
+    }
+
     function setRecommendation(rec) {
       currentRec = rec;
       $('problemTitle').textContent = rec.problem ? rec.problem.title : 'Pick a problem';
       $('difficulty').textContent = rec.difficulty;
       $('reasonBadge').textContent = reasonLabel(rec.tier || rec.confidence_tier);
       $('topicTags').textContent = rec.problem ? rec.problem.topics : '';
+      $('explanationPreview').textContent = extractFirstSentence(rec.explanation);
       $('explanation').textContent = rec.explanation;
       $('leetcodeLink').href = rec.problem ? rec.problem.link : rec.leetcode_url;
       $('loading').classList.add('hidden');

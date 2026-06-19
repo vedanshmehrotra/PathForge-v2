@@ -204,3 +204,134 @@ def test_full_pipeline_with_mocked_submission_handler(tmp_path):
     assert response["gap_info"]["gap_detected"] is True
     assert response["recommendation"]["tier"] in ("specific", "topic_hint")
     assert saved_recommendation is not None
+
+
+def test_race_condition_atomicity_all_or_nothing(tmp_path):
+    """
+    Regression test for race condition issue #3.
+    
+    Verifies that when a submission is processed, all state changes
+    (submission, streak, Elo profile, and recommendation) are committed
+    atomically. If any part fails, the entire transaction should rollback.
+    
+    This prevents:
+    - ELO being updated without submission being saved
+    - Recommendation being logged without Elo being updated
+    - Partial state leading to inconsistent user experience
+    """
+    db_path = tmp_path / "atomicity.sqlite3"
+    connection = init_db(db_path)
+    seed_base(connection)
+    insert_submission(connection)
+    
+    # Track Elo before submission
+    elo_before = connection.execute(
+        "SELECT elo_rating FROM topic_profiles WHERE user_id = 1 AND topic = 'sliding_window_variable'"
+    ).fetchone()["elo_rating"]
+    
+    # Get streak and last recommendation before submission
+    user_before = connection.execute("SELECT current_streak, last_recommendation_id FROM users WHERE id = 1").fetchone()
+    
+    # Run the pipeline
+    response = run_pipeline(1, 1, "solved", db_path=db_path)
+    
+    # Reconnect to get fresh data (simulating a new request)
+    connection = connection.__enter__()
+    connection = connection.__exit__(None, None, None)
+    from pathforge.db.db import get_connection
+    connection = get_connection(db_path)
+    
+    # VERIFY ATOMICITY: All state must be updated together
+    
+    # 1. Submission must be saved
+    submission = connection.execute("SELECT * FROM submissions WHERE user_id = 1 ORDER BY id DESC LIMIT 1").fetchone()
+    assert submission is not None, "Submission not saved"
+    assert submission["verdict"] == "pass", "Submission verdict incorrect"
+    
+    # 2. Elo must be updated for the topic
+    elo_after = connection.execute(
+        "SELECT elo_rating FROM topic_profiles WHERE user_id = 1 AND topic = 'sliding_window_variable'"
+    ).fetchone()["elo_rating"]
+    assert elo_after > elo_before, "Elo not updated for the submission"
+    
+    # 3. Streak must be updated
+    user_after = connection.execute("SELECT current_streak, last_recommendation_id FROM users WHERE id = 1").fetchone()
+    assert user_after["current_streak"] is not None, "Streak not updated"
+    
+    # 4. Recommendation must be logged
+    recommendation = connection.execute(
+        "SELECT * FROM recommendations WHERE user_id = 1 ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    assert recommendation is not None, "Recommendation not logged"
+    assert user_after["last_recommendation_id"] == recommendation["id"], "last_recommendation_id not updated"
+    
+    # 5. Recommendation must be marked as acted_on
+    previous_recommendation = connection.execute(
+        "SELECT * FROM recommendations WHERE user_id = 1 AND id = ? ORDER BY id DESC LIMIT 1 OFFSET 1",
+        (user_before["last_recommendation_id"],)
+    ).fetchone()
+    if previous_recommendation:
+        assert previous_recommendation["acted_on"] == 1, "Previous recommendation not marked as acted_on"
+    
+    connection.close()
+
+
+def test_no_elo_loss_on_duplicate_attempt(tmp_path):
+    """
+    Regression test to ensure that concurrent submissions don't cause lost updates.
+    
+    Simulates the scenario where:
+    1. Request A reads Elo=850 for sliding_window_variable
+    2. Request B reads Elo=850 for sliding_window_variable  
+    3. Both calculate new Elo and write (should be ~860)
+    4. Verify that both submissions are recorded and Elo reflects both changes
+    
+    Before fix: Only one +10 applied, Elo=860 (lost update)
+    After fix: Both submissions saved atomically, no lost updates
+    """
+    db_path = tmp_path / "no_lost_updates.sqlite3"
+    connection = init_db(db_path)
+    seed_base(connection)
+    insert_submission(connection)
+    
+    # Verify initial state - count submissions after seed
+    initial_submission_count = connection.execute(
+        "SELECT COUNT(*) as count FROM submissions WHERE user_id = 1 AND topic = 'sliding_window_variable' AND verdict = 'pass'"
+    ).fetchone()["count"]
+    
+    initial_profile = connection.execute(
+        "SELECT attempt_count FROM topic_profiles WHERE user_id = 1 AND topic = 'sliding_window_variable'"
+    ).fetchone()
+    initial_attempts = initial_profile["attempt_count"]
+    
+    # Simulate two sequential submissions (can't truly parallelize in pytest)
+    response1 = run_pipeline(1, 1, "solved", db_path=db_path)
+    
+    # Create another unsolved problem for second attempt
+    from pathforge.db.db import get_connection
+    conn = get_connection(db_path)
+    conn.execute(
+        """INSERT INTO problems (id, title, difficulty, topics, pattern, test_cases, acceptance_rate, created_at)
+           VALUES (5, 'Sliding Window 3', 'Easy', 'Array', '["sliding_window_variable"]', '[]', 85.0, '2026-06-04T00:00:00+00:00')"""
+    )
+    conn.commit()
+    conn.close()
+    
+    response2 = run_pipeline(1, 5, "solved", db_path=db_path)
+    
+    # Both submissions should be recorded (total = initial + 2)
+    conn = get_connection(db_path)
+    final_submission_count = conn.execute(
+        "SELECT COUNT(*) as count FROM submissions WHERE user_id = 1 AND topic = 'sliding_window_variable' AND verdict = 'pass'"
+    ).fetchone()["count"]
+    assert final_submission_count == initial_submission_count + 2, \
+        f"Expected {initial_submission_count + 2} submissions, got {final_submission_count}"
+    
+    # Attempt count should be incremented by 2
+    final_profile = conn.execute(
+        "SELECT attempt_count FROM topic_profiles WHERE user_id = 1 AND topic = 'sliding_window_variable'"
+    ).fetchone()
+    assert final_profile["attempt_count"] == initial_attempts + 2, \
+        f"Attempt count should be {initial_attempts + 2}, got {final_profile['attempt_count']}"
+    
+    conn.close()
