@@ -177,7 +177,7 @@ def _first_unsolved_problem(connection, user_id):
         FROM problems p
         WHERE NOT EXISTS (
             SELECT 1 FROM submissions s
-            WHERE s.user_id = ? AND s.problem_id = p.id AND s.verdict = 'pass' AND s.gap_identified = 0
+            WHERE s.user_id = ? AND s.problem_id = p.id AND s.verdict = 'pass'
         )
         ORDER BY p.difficulty ASC, COALESCE(p.acceptance_rate, 0) DESC
         LIMIT 1

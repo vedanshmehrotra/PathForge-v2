@@ -45,6 +45,13 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                 tier = "specific" if problem else "topic_hint"
                 explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="pass", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
                 return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
+        if problem:
+            rec, rotated = _maybe_rotate_for_diversity(
+                connection, user_id, topic, gap_info, difficulty,
+                current_problem_id, problem_record, False, "pass",
+            )
+            if rotated:
+                return rec
         tier = "specific" if problem else "topic_hint"
         explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="pass", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
         return _recommendation(tier, problem, explanation, confidence, topic, difficulty, topic)
@@ -67,6 +74,14 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                 tier = "specific" if problem else "topic_hint"
                 explanation = _build_explanation("rotate", gap_info, problem, topic=new_topic, old_topic=topic, verdict="fail", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
                 return _recommendation(tier, problem, explanation, confidence, new_topic, difficulty, new_topic)
+        if problem:
+            verdict = submission["verdict"]
+            rec, rotated = _maybe_rotate_for_diversity(
+                connection, user_id, topic, gap_info, difficulty,
+                current_problem_id, problem_record, False, verdict,
+            )
+            if rotated:
+                return rec
         tier = "specific" if problem else "topic_hint"
         explanation = _build_explanation(tier, gap_info, problem, topic=topic, no_gap=True, verdict="fail", old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
         return _recommendation(tier, problem, explanation, confidence, topic, difficulty, topic)
@@ -89,6 +104,13 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                     difficulty = fd
                     problem = p
                     break
+        if problem:
+            rec, rotated = _maybe_rotate_for_diversity(
+                connection, user_id, selected_topic, gap_info, difficulty,
+                current_problem_id, problem_record, True, submission["verdict"],
+            )
+            if rotated:
+                return rec
         tier = "specific" if problem else "topic_hint"
         explanation = _build_explanation(tier, gap_info, problem, topic=selected_topic, old_difficulty=problem_record["difficulty"], new_difficulty=difficulty)
         return _recommendation(tier, problem, explanation, confidence, selected_topic, difficulty, selected_topic)
@@ -116,7 +138,6 @@ def _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=N
               WHERE s.user_id = ?
                 AND s.problem_id = p.id
                 AND s.verdict = 'pass'
-                AND s.gap_identified = 0
           )
         ORDER BY COALESCE(p.acceptance_rate, 0) DESC, p.id ASC
         LIMIT 1
@@ -162,6 +183,39 @@ def _consecutive_pass_count(connection, user_id, topic):
         else:
             break
     return count
+
+
+def _consecutive_recommendations_for_topic(connection, user_id, topic):
+    """Return True if the same topic was recommended in the last 2 stored recommendations."""
+    rows = connection.execute(
+        """SELECT topic FROM recommendations
+           WHERE user_id = ?
+           ORDER BY created_at DESC LIMIT 2""",
+        (user_id,),
+    ).fetchall()
+    return len(rows) >= 2 and all(r["topic"] == topic for r in rows)
+
+
+def _maybe_rotate_for_diversity(connection, user_id, topic, gap_info, difficulty, current_problem_id, problem_record, gap_detected, submission_verdict):
+    """If topic was recommended 2+ times consecutively, rotate to another weak topic.
+
+    Returns (recommendation_dict, True) if rotation happened, (None, False) otherwise.
+    """
+    if not _consecutive_recommendations_for_topic(connection, user_id, topic):
+        return None, False
+    new_topic = _rotate_topic(connection, user_id, topic)
+    if new_topic == topic:
+        return None, False
+    new_difficulty = _difficulty_for_user(connection, user_id, new_topic)
+    problem = _select_problem(connection, user_id, new_topic, new_difficulty, exclude_problem_id=current_problem_id)
+    tier = "specific" if problem else "topic_hint"
+    explanation = _build_explanation(
+        "rotate", gap_info, problem, topic=new_topic, old_topic=topic,
+        no_gap=not gap_detected,
+        verdict=submission_verdict,
+        old_difficulty=difficulty, new_difficulty=new_difficulty,
+    )
+    return _recommendation(tier, problem, explanation, gap_info["diagnosis_confidence"], new_topic, new_difficulty, new_topic), True
 
 
 def _rotate_topic(connection, user_id, exclude_topic):
