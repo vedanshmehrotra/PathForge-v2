@@ -27,7 +27,6 @@ def run_pipeline(user_id, problem_id, verdict, db_path=None):
                 "recommendation": recommendation,
                 "explanation": recommendation["explanation"],
                 "profile_update": submission_result.get("profile_update"),
-                "profile_error": submission_result.get("profile_error"),
             }
         except Exception:
             connection.rollback()

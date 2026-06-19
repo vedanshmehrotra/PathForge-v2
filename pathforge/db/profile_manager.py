@@ -190,6 +190,83 @@ def get_recommendable_patterns(connection):
     return {row["pattern"] for row in rows}
 
 
+def ensure_topic_profiles_exist(connection, user_id):
+    """Create topic profiles for a user from their submission data if none exist.
+
+    This handles the case where submissions were created outside the normal pipeline
+    (e.g., data migration, test data) and the topic_profiles table was never populated.
+    Topics are mapped from submission data using the detected/expected pattern, falling
+    back to the submission's topic field.
+    """
+    existing = connection.execute(
+        "SELECT COUNT(*) AS cnt FROM topic_profiles WHERE user_id = ?",
+        (user_id,),
+    ).fetchone()
+    if existing and existing["cnt"] > 0:
+        return 0
+
+    from pathforge.db.elo import update_elo, outcome_from_submission
+
+    subs = connection.execute(
+        """
+        SELECT s.topic, s.verdict, s.detected_pattern, s.expected_pattern,
+               COALESCE(p.difficulty, 'Easy') AS difficulty, s.submitted_at
+        FROM submissions s
+        LEFT JOIN problems p ON p.id = s.problem_id
+        WHERE s.user_id = ?
+        ORDER BY s.submitted_at ASC
+        """,
+        (user_id,),
+    ).fetchall()
+
+    if not subs:
+        return 0
+
+    topic_data = {}
+    for s in subs:
+        topic = s["detected_pattern"] or s["expected_pattern"] or s["topic"]
+        if not topic:
+            continue
+        if topic not in topic_data:
+            topic_data[topic] = {
+                "attempt_count": 0, "pass_count": 0,
+                "elo_rating": 800.0, "recent_failures": 0,
+                "last_attempt_at": None,
+            }
+        td = topic_data[topic]
+        td["attempt_count"] += 1
+        td["last_attempt_at"] = s["submitted_at"]
+        outcome = outcome_from_submission(s["verdict"], s["detected_pattern"], s["expected_pattern"])
+        td["elo_rating"] = update_elo(td["elo_rating"], s["difficulty"], outcome)
+        td["recent_failures"] += 1 if outcome < 1.0 else max(0, td["recent_failures"] - 1)
+        if s["verdict"] == "pass":
+            td["pass_count"] += 1
+
+    timestamp = iso_now()
+    rows = []
+    for topic, td in topic_data.items():
+        accuracy = td["pass_count"] / td["attempt_count"] if td["attempt_count"] else 0.0
+        rows.append((
+            user_id, topic, td["elo_rating"], td["attempt_count"],
+            td["pass_count"], 0, accuracy, td["recent_failures"],
+            td["last_attempt_at"], timestamp, timestamp,
+        ))
+
+    connection.executemany(
+        """
+        INSERT INTO topic_profiles (
+            user_id, topic, elo_rating, attempt_count, pass_count,
+            pattern_match_count, accuracy, recent_failures,
+            last_attempt_at, created_at, updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(user_id, topic) DO NOTHING
+        """,
+        rows,
+    )
+    return len(rows)
+
+
 def get_weakest_topics(connection, user_id, limit=5):
     """Return topics ranked by low Elo, low accuracy, and recent failures.
 
@@ -197,6 +274,9 @@ def get_weakest_topics(connection, user_id, limit=5):
     are included. Topics with zero available problems (e.g. dp_state_machine,
     topological_sort) are excluded since the system can never produce an actionable
     recommendation for them.
+
+    If no topic profiles exist for the user (e.g. submissions were created outside
+    the normal pipeline), profiles are backfilled from submission data automatically.
     """
     recommendable = get_recommendable_patterns(connection)
     if not recommendable:
@@ -218,4 +298,24 @@ def get_weakest_topics(connection, user_id, limit=5):
         """,
         (user_id, *sorted(recommendable), limit),
     ).fetchall()
+
+    if not rows:
+        ensure_topic_profiles_exist(connection, user_id)
+        rows = connection.execute(
+            f"""
+            SELECT user_id, topic, elo_rating, attempt_count, pass_count,
+                   pattern_match_count, accuracy, recent_failures,
+                   last_attempt_at, created_at, updated_at,
+                    ((1600.0 - elo_rating) / 1200.0)
+                    + (1.0 - accuracy)
+                    + (MIN(recent_failures, 5) / 3.0) AS weakness_score
+            FROM topic_profiles
+            WHERE user_id = ?
+              AND topic IN ({placeholders})
+            ORDER BY weakness_score DESC, elo_rating ASC, accuracy ASC
+            LIMIT ?
+            """,
+            (user_id, *sorted(recommendable), limit),
+        ).fetchall()
+
     return [dict(row) for row in rows]

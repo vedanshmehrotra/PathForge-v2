@@ -60,7 +60,6 @@ def fake_submission(scores, verdict="pass", gap_identified=1):
         "ast": {"scores": scores},
         "evaluation": {"verdict": verdict},
         "profile_update": None,
-        "profile_error": None,
         "gap_info": {
             "gap_detected": bool(gap_identified),
             "gap_pattern": None,

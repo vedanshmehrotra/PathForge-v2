@@ -12,21 +12,16 @@ def handle_submission(user_id, problem_id, verdict, connection):
 
     db_verdict = "pass" if verdict == "solved" else "fail"
 
-    profile_update = None
-    profile_error = None
-    try:
-        profile_update = update_topic_profile(
-            connection,
-            user_id=user_id,
-            topic=pattern,
-            difficulty=problem["difficulty"],
-            verdict=db_verdict,
-            detected_pattern=pattern,
-            expected_pattern=pattern,
-            attempted_at=timestamp,
-        )
-    except Exception as exc:
-        profile_error = str(exc)
+    profile_update = update_topic_profile(
+        connection,
+        user_id=user_id,
+        topic=pattern,
+        difficulty=problem["difficulty"],
+        verdict=db_verdict,
+        detected_pattern=pattern,
+        expected_pattern=pattern,
+        attempted_at=timestamp,
+    )
 
     attempt_number = _next_attempt_number(connection, user_id, problem_id)
     submission_id = _save_submission(
@@ -53,7 +48,6 @@ def handle_submission(user_id, problem_id, verdict, connection):
         "submission": record,
         "gap_info": gap_info,
         "profile_update": profile_update,
-        "profile_error": profile_error,
     }
 
 

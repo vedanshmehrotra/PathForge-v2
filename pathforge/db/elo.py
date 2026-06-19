@@ -46,9 +46,11 @@ def update_elo(current_rating, difficulty, outcome):
 
 
 def outcome_from_submission(verdict, detected_pattern, expected_pattern):
-    """Map a verdict and pattern match into win, partial win, or loss outcome."""
-    if verdict not in ("pass", "fail"):
-        raise ValueError("verdict must be 'pass' or 'fail'")
-    if verdict == "fail":
-        return 0.0
-    return 1.0 if detected_pattern == expected_pattern else 0.5
+    """Map a verdict and pattern match into win, partial win, or loss outcome.
+
+    All verdicts valid per the schema (pass, fail, error, tle) are accepted.
+    Only 'pass' is treated as a success; everything else (fail, error, tle) is a loss.
+    """
+    if verdict == "pass":
+        return 1.0 if detected_pattern == expected_pattern else 0.5
+    return 0.0
