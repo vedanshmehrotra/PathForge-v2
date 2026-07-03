@@ -38,6 +38,24 @@ This document tracks the implementation status of all 33 pattern detectors in th
 | 32 | `backtracking_permutation` | | Pending | |
 | 33 | `backtracking_subset` | | Pending | |
 
+## Validation Status
+
+All 15 implemented detectors validated against 325 LeetCode-inspired code patterns.
+
+| Metric | Value |
+|--------|-------|
+| Total Tests | 325 |
+| True Positives | 150 |
+| False Negatives | 9 |
+| True Negatives | 164 |
+| False Positives | 2 (borderline) |
+| Precision | 0.9868 |
+| Recall | 0.9434 |
+| F1 Score | 0.9646 |
+| Avg Confidence | 0.7727 |
+| Detector Overlap | 0.0% (perfect separation) |
+| Unit Tests | 252/252 passing |
+
 ## Summary
 
 | Category | Count |

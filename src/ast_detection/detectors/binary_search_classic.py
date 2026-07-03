@@ -52,7 +52,7 @@ class BinarySearchClassicDetector(BaseDetector):
             has_mid_comparison = self._find_mid_comparison(node.body)
             has_answer_space_check = self._find_answer_space_check(node.body)
 
-            if has_midpoint and has_boundary_update and not has_answer_space_check:
+            if has_midpoint and has_boundary_update and has_mid_comparison and not has_answer_space_check:
                 if has_midpoint:
                     evidence.append(
                         EvidenceItem(
@@ -156,21 +156,16 @@ class BinarySearchClassicDetector(BaseDetector):
         return False
 
     def _find_mid_comparison(self, body: list) -> bool:
-        """Check if there's a comparison using the mid index to access array elements.
+        """Check that the loop body contains at least one If statement.
 
-        Matches: if arr[mid] == target  or  elif arr[mid] < target
+        Binary search always makes a decision based on mid via conditional
+        branching. Without an If, the loop is just blindly shrinking boundaries
+        (e.g., `mid = (left+right)//2; left = mid + 1`), which is not a real
+        binary search and would be a false positive.
         """
         for stmt in ast.walk(ast.Module(body=body)):
             if isinstance(stmt, ast.If):
-                test = stmt.test
-                if isinstance(test, ast.Compare):
-                    for sub in ast.walk(test):
-                        if isinstance(sub, ast.Subscript):
-                            if isinstance(sub.slice, ast.Name) and sub.slice.id in ("mid", "m", "middle", "pivot"):
-                                return True
-                            if isinstance(sub.value, ast.Name):
-                                if isinstance(sub.slice, ast.Name):
-                                    return True
+                return True
         return False
 
     def _find_answer_space_check(self, body: list) -> bool:
