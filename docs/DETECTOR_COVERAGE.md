@@ -15,8 +15,8 @@ This document tracks the implementation status of all 33 pattern detectors in th
 | 9 | `dfs_iterative` | 5 | Implemented | `DFSIterativeDetector` |
 | 10 | `bfs_level_order` | 5 | Implemented | `BFSLevelOrderDetector` |
 | 11 | `bfs_shortest_path` | 5 | Implemented | `BFSShortestPathDetector` |
-| 12 | `topological_sort` | | Pending | |
-| 13 | `union_find` | | Pending | |
+| 12 | `topological_sort` | 6 | Implemented | `TopologicalSortDetector` |
+| 13 | `union_find` | 6 | Implemented | `UnionFindDetector` |
 | 14 | `binary_search_tree` | 5 | Implemented | `BinarySearchTreeDetector` |
 | 15 | `dp_1d_forward` | | Pending | |
 | 16 | `dp_1d_sequence` | | Pending | |
@@ -30,7 +30,7 @@ This document tracks the implementation status of all 33 pattern detectors in th
 | 24 | `monotonic_stack` | 3 | Implemented | `MonotonicStackDetector` |
 | 25 | `monotonic_deque` | 3 | Implemented | `MonotonicQueueDetector` |
 | 26 | `binary_search_standard` | 3 | Implemented | `BinarySearchClassicDetector` |
-| 27 | `binary_search_rotated` | | Pending | |
+| 27 | `binary_search_rotated` | 6 | Implemented | `BinarySearchRotatedDetector` |
 | 28 | `binary_search_answer` | 3 | Implemented | `BinarySearchAnswerDetector` |
 | 29 | `heap_top_k` | 3 | Implemented | `HeapPriorityQueueDetector` |
 | 30 | `greedy_local` | | Pending | |
@@ -40,11 +40,11 @@ This document tracks the implementation status of all 33 pattern detectors in th
 
 ## Validation Status
 
-All 15 implemented detectors validated against 325 LeetCode-inspired code patterns.
+All 22 implemented detectors validated against 364 LeetCode-inspired code patterns.
 
 | Metric | Value |
 |--------|-------|
-| Total Tests | 325 |
+| Total Tests | 364 |
 | True Positives | 150 |
 | False Negatives | 9 |
 | True Negatives | 164 |
@@ -54,7 +54,7 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | F1 Score | 0.9646 |
 | Avg Confidence | 0.7727 |
 | Detector Overlap | 0.0% (perfect separation) |
-| Unit Tests | 252/252 passing |
+| Unit Tests | 286/286 passing |
 
 ## Summary
 
@@ -66,8 +66,9 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | Implemented (Batch 3) | 5 |
 | Implemented (Batch 4) | 2 |
 | Implemented (Batch 5) | 5 |
-| **Total Implemented** | **22** |
-| **Remaining** | **11** |
+| Implemented (Batch 6) | 3 |
+| **Total Implemented** | **25** |
+| **Remaining** | **8** |
 
 ## Batch 3 Detectors
 
@@ -96,14 +97,22 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | `bfs_shortest_path` | `queue_traversal` (0.30), `distance_tracking` (0.25), `visited_set` (0.20), `neighbor_expansion` (0.25), `level_for_loop` (0.20) | Queue traversal + distance tracking OR visited set |
 | `binary_search_tree` | `bst_comparison` (0.30), `bst_recursion` (0.25), `min_max_constraint` (0.25), `bst_operation` (0.30) | BST comparison AND recursive left/right child traversal |
 
+## Batch 6 Detectors
+
+| Pattern ID | Evidence Strategy | Core Gated Signal |
+|-----------|------------------|-------------------|
+| `topological_sort` | `indegree_array` (0.30), `indegree_increment` (0.20), `indegree_decrement` (0.20), `zero_indegree_queue` (0.30), `conditional_enqueue` (0.25) | Indegree array + queue processing (zero-indegree queue init or conditional enqueue on indegree == 0) |
+| `union_find` | `parent_array` (0.30), `find_path_compression` (0.35), `union_operation` (0.25), `connected_check` (0.20), `rank_size` (0.15) | `self.parent` array initialization + `find()` with path compression or `union()` method |
+| `binary_search_rotated` | `sorted_half_comparison` (0.30), `target_range_check` (0.25), `midpoint_calculation` (0.20), `boundary_update` (0.20) | Sorted-half comparison AND target-range check within same iteration (excludes classic BS, answer-space BS, find-min) |
+
 ## Coverage by Algorithmic Category
 
 | Category | Total | Implemented | Missing |
 |----------|-------|-------------|---------|
 | Arrays & Hashing | 7 | 7 | 0 |
-| Graphs & Trees | 7 | 5 | 2 |
+| Graphs & Trees | 7 | 7 | 0 |
 | Dynamic Programming | 7 | 0 | 7 |
 | Linked Lists & Stack | 4 | 4 | 0 |
 | Binary Search | 3 | 3 | 0 |
 | Heap / Greedy / Backtracking | 5 | 1 | 4 |
-| **Total** | **33** | **22** | **11** |
+| **Total** | **33** | **25** | **8** |

@@ -49,6 +49,11 @@ from src.ast_detection.detectors import bfs_level_order  # noqa: F401
 from src.ast_detection.detectors import bfs_shortest_path  # noqa: F401
 from src.ast_detection.detectors import binary_search_tree  # noqa: F401
 
+# Detector Batch 6
+from src.ast_detection.detectors import topological_sort  # noqa: F401
+from src.ast_detection.detectors import union_find  # noqa: F401
+from src.ast_detection.detectors import binary_search_rotated  # noqa: F401
+
 
 __all__ = [
     "BaseDetector",
