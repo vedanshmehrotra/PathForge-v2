@@ -24,11 +24,16 @@ class FastSlowPointersDetector(BaseDetector):
         self._detect_cycle_check(ast_root, evidence)
 
         confidence = self._calculate_confidence(evidence)
+
+        has_core_signal = any(
+            e.type in ("floyd_traversal", "cycle_check") for e in evidence
+        )
+
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
             evidence=evidence,
-            detected=confidence > 0.0,
+            detected=has_core_signal,
         )
 
     def _detect_pointer_names(self, ast_root: ast.AST, evidence: list) -> None:
@@ -98,6 +103,7 @@ class FastSlowPointersDetector(BaseDetector):
                 return True   (cycle found)
         or equivalent comparison between pointer variables used in advancement.
         """
+        target_names = {"slow", "fast", "tortoise", "hare", "slow_ptr", "fast_ptr"}
         pointer_pairs = set()
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.While):
@@ -105,6 +111,14 @@ class FastSlowPointersDetector(BaseDetector):
 
             advancement = self._collect_advancements_robust(node.body)
             pointer_names = set(advancement.keys())
+
+            for child in ast.walk(node):
+                if isinstance(child, ast.Name):
+                    name_lower = child.id.lower()
+                    for t in target_names:
+                        if t in name_lower:
+                            pointer_names.add(child.id)
+
             if len(pointer_names) < 2:
                 continue
 

@@ -42,6 +42,13 @@ from src.ast_detection.detectors import monotonic_queue  # noqa: F401
 from src.ast_detection.detectors import fast_slow_pointers  # noqa: F401
 from src.ast_detection.detectors import linked_list_reversal  # noqa: F401
 
+# Detector Batch 5
+from src.ast_detection.detectors import dfs_recursive  # noqa: F401
+from src.ast_detection.detectors import dfs_iterative  # noqa: F401
+from src.ast_detection.detectors import bfs_level_order  # noqa: F401
+from src.ast_detection.detectors import bfs_shortest_path  # noqa: F401
+from src.ast_detection.detectors import binary_search_tree  # noqa: F401
+
 
 __all__ = [
     "BaseDetector",

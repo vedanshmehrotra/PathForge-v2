@@ -20,11 +20,20 @@ class LinkedListReversalDetector(BaseDetector):
         self._detect_recursive_reversal(ast_root, evidence)
 
         confidence = self._calculate_confidence(evidence)
+
+        has_recursive = any(e.type == "recursive_rewiring" for e in evidence)
+        has_rewiring = any(e.type == "pointer_rewiring" for e in evidence)
+        has_secondary = any(
+            e.type in ("prev_curr_update", "reversal_variable_names")
+            for e in evidence
+        )
+        detected = has_recursive or (has_rewiring and has_secondary)
+
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
             evidence=evidence,
-            detected=confidence > 0.0,
+            detected=detected,
         )
 
     def _detect_iterative_reversal(self, ast_root: ast.AST, evidence: list) -> None:

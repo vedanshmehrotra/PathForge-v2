@@ -11,13 +11,13 @@ This document tracks the implementation status of all 33 pattern detectors in th
 | 5 | `sliding_window_variable` | 2 | Implemented | `SlidingWindowVariableDetector` |
 | 6 | `two_pointers_opposite` | 2 | Implemented | `TwoPointersOppositeDetector` |
 | 7 | `two_pointers_same` | 2 | Implemented | `TwoPointersSameDetector` |
-| 8 | `dfs_recursive` | | Pending | |
-| 9 | `dfs_iterative` | | Pending | |
-| 10 | `bfs_level_order` | | Pending | |
-| 11 | `bfs_shortest_path` | | Pending | |
+| 8 | `dfs_recursive` | 5 | Implemented | `DFSRecursiveDetector` |
+| 9 | `dfs_iterative` | 5 | Implemented | `DFSIterativeDetector` |
+| 10 | `bfs_level_order` | 5 | Implemented | `BFSLevelOrderDetector` |
+| 11 | `bfs_shortest_path` | 5 | Implemented | `BFSShortestPathDetector` |
 | 12 | `topological_sort` | | Pending | |
 | 13 | `union_find` | | Pending | |
-| 14 | `binary_search_tree` | | Pending | |
+| 14 | `binary_search_tree` | 5 | Implemented | `BinarySearchTreeDetector` |
 | 15 | `dp_1d_forward` | | Pending | |
 | 16 | `dp_1d_sequence` | | Pending | |
 | 17 | `dp_2d_grid` | | Pending | |
@@ -65,8 +65,9 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | Implemented (Batch 2) | 5 |
 | Implemented (Batch 3) | 5 |
 | Implemented (Batch 4) | 2 |
-| **Total Implemented** | **17** |
-| **Remaining** | **16** |
+| Implemented (Batch 5) | 5 |
+| **Total Implemented** | **22** |
+| **Remaining** | **11** |
 
 ## Batch 3 Detectors
 
@@ -85,14 +86,24 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | `fast_slow_pointers` | `floyd_traversal` (0.60), `cycle_check` (0.40), `pointer_names` (0.20) | While loop with `.next` traversal at ≥2 different advancement rates |
 | `linked_list_reversal` | `pointer_rewiring` (0.50), `prev_curr_update` (0.30), `reversal_variable_names` (0.20) / `recursive_rewiring` (0.60), `recursive_call_with_next` (0.40) | `curr.next = prev` rewiring (iterative) or `head.next.next = head` rewiring (recursive) |
 
+## Batch 5 Detectors
+
+| Pattern ID | Evidence Strategy | Core Gated Signal |
+|-----------|------------------|-------------------|
+| `dfs_recursive` | `recursive_call` (0.35), `graph_traversal` (0.30), `child_recursion` (0.25), `grid_expansion` (0.25), `visited_tracking` (0.20), `base_case` (0.20) | Recursive self-call + graph traversal OR child recursion OR grid expansion OR visited tracking |
+| `dfs_iterative` | `explicit_stack` (0.35), `stack_traversal` (0.30), `child_push` (0.25), `visited_tracking` (0.20) | Stack initialized before while + stack.pop() + child push or visited tracking (excludes comparison-driven pop) |
+| `bfs_level_order` | `queue_popleft` (0.35), `child_enqueue` (0.30), `level_tracking` (0.25), `deque_import` (0.20) | Popleft + child enqueue (excludes distance tracking and visited set) |
+| `bfs_shortest_path` | `queue_traversal` (0.30), `distance_tracking` (0.25), `visited_set` (0.20), `neighbor_expansion` (0.25), `level_for_loop` (0.20) | Queue traversal + distance tracking OR visited set |
+| `binary_search_tree` | `bst_comparison` (0.30), `bst_recursion` (0.25), `min_max_constraint` (0.25), `bst_operation` (0.30) | BST comparison AND recursive left/right child traversal |
+
 ## Coverage by Algorithmic Category
 
 | Category | Total | Implemented | Missing |
 |----------|-------|-------------|---------|
 | Arrays & Hashing | 7 | 7 | 0 |
-| Graphs & Trees | 7 | 0 | 7 |
+| Graphs & Trees | 7 | 5 | 2 |
 | Dynamic Programming | 7 | 0 | 7 |
 | Linked Lists & Stack | 4 | 4 | 0 |
 | Binary Search | 3 | 3 | 0 |
 | Heap / Greedy / Backtracking | 5 | 1 | 4 |
-| **Total** | **33** | **15** | **18** |
+| **Total** | **33** | **22** | **11** |
