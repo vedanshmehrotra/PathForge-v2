@@ -25,8 +25,8 @@ This document tracks the implementation status of all 33 pattern detectors in th
 | 19 | `dp_knapsack` | | Pending | |
 | 20 | `dp_interval` | | Pending | |
 | 21 | `dp_state_machine` | | Pending | |
-| 22 | `fast_slow_pointers` | | Pending | |
-| 23 | `linked_list_reversal` | | Pending | |
+| 22 | `fast_slow_pointers` | 4 | Implemented | `FastSlowPointersDetector` |
+| 23 | `linked_list_reversal` | 4 | Implemented | `LinkedListReversalDetector` |
 | 24 | `monotonic_stack` | 3 | Implemented | `MonotonicStackDetector` |
 | 25 | `monotonic_deque` | 3 | Implemented | `MonotonicQueueDetector` |
 | 26 | `binary_search_standard` | 3 | Implemented | `BinarySearchClassicDetector` |
@@ -64,8 +64,9 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | Implemented (Batch 1) | 5 |
 | Implemented (Batch 2) | 5 |
 | Implemented (Batch 3) | 5 |
-| **Total Implemented** | **15** |
-| **Remaining** | **18** |
+| Implemented (Batch 4) | 2 |
+| **Total Implemented** | **17** |
+| **Remaining** | **16** |
 
 ## Batch 3 Detectors
 
@@ -77,6 +78,13 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | `monotonic_stack` | `monotonic_pop` (0.40), `stack_push` (0.25), `comparison_loop` (0.30) | Empty list stack + inner while with comparison-driven pop + append |
 | `monotonic_deque` | `monotonic_pop` (0.35), `queue_append` (0.20), `queue_popleft` (0.30), `deque_creation` (0.20) | `deque()` creation + inner while with comparison-driven pop + append |
 
+## Batch 4 Detectors
+
+| Pattern ID | Evidence Strategy | Core Gated Signal |
+|-----------|------------------|-------------------|
+| `fast_slow_pointers` | `floyd_traversal` (0.60), `cycle_check` (0.40), `pointer_names` (0.20) | While loop with `.next` traversal at ≥2 different advancement rates |
+| `linked_list_reversal` | `pointer_rewiring` (0.50), `prev_curr_update` (0.30), `reversal_variable_names` (0.20) / `recursive_rewiring` (0.60), `recursive_call_with_next` (0.40) | `curr.next = prev` rewiring (iterative) or `head.next.next = head` rewiring (recursive) |
+
 ## Coverage by Algorithmic Category
 
 | Category | Total | Implemented | Missing |
@@ -84,7 +92,7 @@ All 15 implemented detectors validated against 325 LeetCode-inspired code patter
 | Arrays & Hashing | 7 | 7 | 0 |
 | Graphs & Trees | 7 | 0 | 7 |
 | Dynamic Programming | 7 | 0 | 7 |
-| Linked Lists & Stack | 4 | 2 | 2 |
+| Linked Lists & Stack | 4 | 4 | 0 |
 | Binary Search | 3 | 3 | 0 |
 | Heap / Greedy / Backtracking | 5 | 1 | 4 |
 | **Total** | **33** | **15** | **18** |

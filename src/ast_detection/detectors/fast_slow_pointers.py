@@ -19,6 +19,7 @@ class FastSlowPointersDetector(BaseDetector):
 
     def detect(self, ast_root: ast.AST) -> DetectionResult:
         evidence = []
+        self._detect_pointer_names(ast_root, evidence)
         self._detect_floyd_traversal(ast_root, evidence)
         self._detect_cycle_check(ast_root, evidence)
 
@@ -30,6 +31,29 @@ class FastSlowPointersDetector(BaseDetector):
             detected=confidence > 0.0,
         )
 
+    def _detect_pointer_names(self, ast_root: ast.AST, evidence: list) -> None:
+        """Signal: presence of typical fast/slow pointer names.
+
+        Matches variable names like slow, fast, tortoise, hare, slow_ptr, fast_ptr.
+        """
+        detected_names = set()
+        target_names = {"slow", "fast", "tortoise", "hare", "slow_ptr", "fast_ptr"}
+        for node in ast.walk(ast_root):
+            if isinstance(node, ast.Name):
+                name_lower = node.id.lower()
+                for t in target_names:
+                    if t in name_lower:
+                        detected_names.add(node.id)
+
+        if len(detected_names) >= 2:
+            evidence.append(
+                EvidenceItem(
+                    type="pointer_names",
+                    description=f"Traditional fast/slow pointer variable names found: {sorted(list(detected_names))}",
+                    weight=0.20,
+                )
+            )
+
     def _detect_floyd_traversal(self, ast_root: ast.AST, evidence: list) -> None:
         """Signal: while loop with linked-list slow/fast pointer advancement.
 
@@ -40,24 +64,20 @@ class FastSlowPointersDetector(BaseDetector):
                 slow = slow.next
                 fast = fast.next.next
 
-        Requires .next attribute in the while condition (linked-list context).
+        Requires .next attribute in the loop body or condition (linked-list context).
         """
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.While):
                 continue
 
-            if not self._has_next_in_condition(node.test):
+            if not self._has_next_in_loop(node):
                 continue
 
-            advancement = self._collect_next_advancements(node.body)
+            advancement = self._collect_advancements_robust(node.body)
             if len(advancement) < 2:
                 continue
 
-            step_counts = set()
-            for var, steps in advancement.items():
-                for s in steps:
-                    step_counts.add(s)
-
+            step_counts = set(advancement.values())
             if len(step_counts) < 2:
                 continue
 
@@ -83,14 +103,20 @@ class FastSlowPointersDetector(BaseDetector):
             if not isinstance(node, ast.While):
                 continue
 
-            if not self._has_next_in_condition(node.test):
-                continue
-
-            advancement = self._collect_next_advancements(node.body)
+            advancement = self._collect_advancements_robust(node.body)
             pointer_names = set(advancement.keys())
             if len(pointer_names) < 2:
                 continue
 
+            # 1. Search in while condition
+            if isinstance(node.test, ast.Compare) and len(node.test.ops) == 1:
+                if isinstance(node.test.ops[0], (ast.Eq, ast.Is, ast.IsNot, ast.NotEq)):
+                    left = self._extract_name(node.test.left)
+                    right = self._extract_name(node.test.comparators[0])
+                    if left in pointer_names and right in pointer_names:
+                        pointer_pairs.add((left, right))
+
+            # 2. Search in loop body
             for stmt in ast.walk(ast.Module(body=node.body)):
                 if isinstance(stmt, ast.If):
                     test = stmt.test
@@ -110,13 +136,11 @@ class FastSlowPointersDetector(BaseDetector):
                 )
             )
 
-    def _has_next_in_condition(self, test: ast.AST) -> bool:
-        """Check if the while condition contains a .next attribute reference or simple pointer check."""
-        for node in ast.walk(test):
-            if isinstance(node, ast.Attribute) and node.attr == "next":
+    def _has_next_in_loop(self, node: ast.While) -> bool:
+        """Check if the while loop (condition or body) contains a .next attribute reference."""
+        for child in ast.walk(node):
+            if isinstance(child, ast.Attribute) and child.attr == "next":
                 return True
-            # In some cases, condition might just be `while fast:` with body checking `fast.next`
-            # or simply using names that are traversed. But .next in condition is the primary signal.
         return False
 
     def _extract_next_chain(self, node: ast.AST):
@@ -132,56 +156,35 @@ class FastSlowPointersDetector(BaseDetector):
             return current.id, hops
         return None, 0
 
-    def _collect_next_advancements(self, body: list) -> dict:
-        """Collect variable names and their .next chain lengths (step counts).
+    def _collect_advancements_robust(self, body: list) -> dict:
+        """Collect variable names and their total next-advancement hops in the loop.
 
-        Returns dict mapping variable_name -> set(step_counts)
-        where step_count is the number of .next hops (1 for .next, 2 for .next.next).
+        Returns a dict mapping variable_name to total hops.
         """
-        advancements = {}
-        for stmt in body:
-            if isinstance(stmt, ast.Assign):
-                if len(stmt.targets) == 1:
-                    target = stmt.targets[0]
+        hops_map = {}
+        # Walk all assignments in the body
+        for node in ast.walk(ast.Module(body=body)):
+            if isinstance(node, ast.Assign):
+                if len(node.targets) == 1:
+                    target = node.targets[0]
                     if isinstance(target, ast.Name):
-                        base_name, hops = self._extract_next_chain(stmt.value)
+                        base_name, hops = self._extract_next_chain(node.value)
                         if base_name == target.id and hops > 0:
-                            advancements.setdefault(target.id, set()).add(hops)
-                    elif isinstance(target, (ast.Tuple, ast.List)) and isinstance(stmt.value, (ast.Tuple, ast.List)):
-                        if len(target.elts) == len(stmt.value.elts):
-                            for t, v in zip(target.elts, stmt.value.elts):
+                            hops_map[target.id] = hops_map.get(target.id, 0) + hops
+                    elif isinstance(target, (ast.Tuple, ast.List)) and isinstance(node.value, (ast.Tuple, ast.List)):
+                        if len(target.elts) == len(node.value.elts):
+                            for t, v in zip(target.elts, node.value.elts):
                                 if isinstance(t, ast.Name):
                                     base_name, hops = self._extract_next_chain(v)
                                     if base_name == t.id and hops > 0:
-                                        advancements.setdefault(t.id, set()).add(hops)
-            elif hasattr(stmt, "body") and isinstance(stmt.body, list):
-                inc = self._collect_next_advancements(stmt.body)
-                self._merge(advancements, inc)
-                if hasattr(stmt, "orelse") and isinstance(stmt.orelse, list):
-                    inc = self._collect_next_advancements(stmt.orelse)
-                    self._merge(advancements, inc)
-                if hasattr(stmt, "finalbody") and isinstance(stmt.finalbody, list):
-                    inc = self._collect_next_advancements(stmt.finalbody)
-                    self._merge(advancements, inc)
-                if hasattr(stmt, "handlers") and isinstance(stmt.handlers, list):
-                    for handler in stmt.handlers:
-                        if hasattr(handler, "body") and isinstance(handler.body, list):
-                            inc = self._collect_next_advancements(handler.body)
-                            self._merge(advancements, inc)
-        return advancements
+                                        hops_map[t.id] = hops_map.get(t.id, 0) + hops
+        return hops_map
 
     def _extract_name(self, node: ast.AST) -> str:
         """Extract variable name from an expression node, or empty string."""
         if isinstance(node, ast.Name):
             return node.id
         return ""
-
-    @staticmethod
-    def _merge(target: dict, source: dict) -> None:
-        for key, values in source.items():
-            if key not in target:
-                target[key] = set()
-            target[key].update(values)
 
     def _calculate_confidence(self, evidence: list) -> float:
         if not evidence:

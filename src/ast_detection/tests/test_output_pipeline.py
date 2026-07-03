@@ -164,7 +164,7 @@ class TestOutputPipeline:
         assert "confidence_distribution" in stats
         
         assert stats["patterns_detected"] == 0
-        assert stats["patterns_checked"] == 15
+        assert stats["patterns_checked"] == 17
         assert stats["detection_ratio"] == 0.0
         assert stats["average_confidence"] == 0.0
 

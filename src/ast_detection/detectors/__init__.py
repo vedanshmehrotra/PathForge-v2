@@ -38,6 +38,10 @@ from src.ast_detection.detectors import heap_priority_queue  # noqa: F401
 from src.ast_detection.detectors import monotonic_stack  # noqa: F401
 from src.ast_detection.detectors import monotonic_queue  # noqa: F401
 
+# Detector Batch 4
+from src.ast_detection.detectors import fast_slow_pointers  # noqa: F401
+from src.ast_detection.detectors import linked_list_reversal  # noqa: F401
+
 
 __all__ = [
     "BaseDetector",
