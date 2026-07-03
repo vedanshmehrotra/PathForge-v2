@@ -31,6 +31,13 @@ from src.ast_detection.detectors import sliding_window_fixed  # noqa: F401
 from src.ast_detection.detectors import sliding_window_variable  # noqa: F401
 from src.ast_detection.detectors import prefix_sum  # noqa: F401
 
+# Detector Batch 3
+from src.ast_detection.detectors import binary_search_classic  # noqa: F401
+from src.ast_detection.detectors import binary_search_answer  # noqa: F401
+from src.ast_detection.detectors import heap_priority_queue  # noqa: F401
+from src.ast_detection.detectors import monotonic_stack  # noqa: F401
+from src.ast_detection.detectors import monotonic_queue  # noqa: F401
+
 
 __all__ = [
     "BaseDetector",
