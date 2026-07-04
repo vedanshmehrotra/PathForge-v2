@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_recommendation_id INTEGER,
     current_streak INTEGER NOT NULL DEFAULT 0,
     last_submission_date TEXT,
+    supabase_id TEXT UNIQUE,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     FOREIGN KEY (last_recommendation_id) REFERENCES recommendations(id) ON DELETE SET NULL
@@ -112,3 +113,19 @@ CREATE TABLE IF NOT EXISTS gap_signals (
 CREATE INDEX IF NOT EXISTS idx_gap_signals_user ON gap_signals(user_id);
 CREATE INDEX IF NOT EXISTS idx_gap_signals_user_strength ON gap_signals(user_id, gap_strength DESC);
 CREATE INDEX IF NOT EXISTS idx_gap_signals_user_pattern ON gap_signals(user_id, pattern_id);
+
+CREATE TABLE IF NOT EXISTS user_pattern_elo (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    pattern_id TEXT NOT NULL,
+    elo REAL NOT NULL DEFAULT 1200.0 CHECK (elo >= 400.0),
+    last_updated TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(user_id, pattern_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_pattern_elo_user ON user_pattern_elo(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_pattern_elo_user_pattern ON user_pattern_elo(user_id, pattern_id);
+CREATE INDEX IF NOT EXISTS idx_user_pattern_elo_elo ON user_pattern_elo(elo DESC);

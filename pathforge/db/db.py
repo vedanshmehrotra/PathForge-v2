@@ -63,9 +63,35 @@ def _ensure_gap_signals_table(connection):
         connection.execute("CREATE INDEX idx_gap_signals_user_pattern ON gap_signals(user_id, pattern_id)")
 
 
+def _ensure_user_pattern_elo_table(connection):
+    tables = {row["name"] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    if "user_pattern_elo" not in tables:
+        connection.execute("""
+            CREATE TABLE user_pattern_elo (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                pattern_id TEXT NOT NULL,
+                elo REAL NOT NULL DEFAULT 1200.0 CHECK (elo >= 400.0),
+                last_updated TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                UNIQUE(user_id, pattern_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        """)
+        connection.execute("CREATE INDEX idx_user_pattern_elo_user ON user_pattern_elo(user_id)")
+        connection.execute("CREATE INDEX idx_user_pattern_elo_user_pattern ON user_pattern_elo(user_id, pattern_id)")
+        connection.execute("CREATE INDEX idx_user_pattern_elo_elo ON user_pattern_elo(elo DESC)")
+
+
 def _apply_lightweight_migrations(connection):
     _ensure_gap_signals_table(connection)
+    _ensure_user_pattern_elo_table(connection)
     """Add new nullable columns when an older local SQLite file already exists."""
+
+    user_columns = {row["name"] for row in connection.execute("PRAGMA table_info(users)").fetchall()}
+    if "supabase_id" not in user_columns:
+        connection.execute("ALTER TABLE users ADD COLUMN supabase_id TEXT UNIQUE")
     columns = {row["name"] for row in connection.execute("PRAGMA table_info(submissions)").fetchall()}
     if "diagnosis_confidence" not in columns:
         connection.execute("ALTER TABLE submissions ADD COLUMN diagnosis_confidence REAL NOT NULL DEFAULT 0.0")
