@@ -54,6 +54,21 @@ from src.ast_detection.detectors import topological_sort  # noqa: F401
 from src.ast_detection.detectors import union_find  # noqa: F401
 from src.ast_detection.detectors import binary_search_rotated  # noqa: F401
 
+# Detector Batch 7
+from src.ast_detection.detectors import greedy_local  # noqa: F401
+from src.ast_detection.detectors import greedy_interval  # noqa: F401
+from src.ast_detection.detectors import backtracking_subset  # noqa: F401
+from src.ast_detection.detectors import backtracking_permutation  # noqa: F401
+
+# Detector Batch 8 — DP
+from src.ast_detection.detectors import dp_1d_forward  # noqa: F401
+from src.ast_detection.detectors import dp_state_machine  # noqa: F401
+from src.ast_detection.detectors import dp_1d_sequence  # noqa: F401
+from src.ast_detection.detectors import dp_2d_grid  # noqa: F401
+from src.ast_detection.detectors import dp_2d_string  # noqa: F401
+from src.ast_detection.detectors import dp_knapsack  # noqa: F401
+from src.ast_detection.detectors import dp_interval  # noqa: F401
+
 
 __all__ = [
     "BaseDetector",
