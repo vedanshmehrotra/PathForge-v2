@@ -31,6 +31,9 @@ class DP2DStringDetector(BaseDetector):
         secondary_count = sum([has_array, has_nested, has_recurrence, has_base])
         detected = has_string_compare and has_grid_lookback and secondary_count >= 1
 
+        if self._has_anti_signals(evidence):
+            detected = False
+
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
@@ -213,6 +216,12 @@ class DP2DStringDetector(BaseDetector):
                     if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
                         if isinstance(node.value.slice, ast.UnaryOp):
                             return True
+        return False
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_string_compare = any(e.type == "string_compare" for e in evidence)
+        if not has_string_compare:
+            return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:

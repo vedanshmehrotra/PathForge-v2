@@ -16,27 +16,6 @@ from src.ast_detection.detectors.base import BaseDetector, register_detector, De
 class DPStateMachineDetector(BaseDetector):
     pattern_id = "dp_state_machine"
 
-    STATE_NAMES = {
-        "hold", "sold", "rest", "cooldown", "buy", "sell",
-        "prev0", "prev1", "curr0", "curr1",
-        "prev_hold", "prev_sold", "prev_rest",
-        "dp0", "dp1", "dp2",
-        "cash", "stock", "state",
-        "not_hold", "hold_stock",
-        "with_stock", "without_stock",
-        "has_stock", "no_stock",
-        "keep", "take",
-        "rob_prev", "rob_curr",
-        "rob0", "rob1",
-        "prev_rob", "curr_rob",
-        "max0", "max1",
-        "prev_take", "prev_skip",
-        "take_curr", "skip_curr",
-        "taken", "skipped",
-        "buy_state", "sell_state",
-        "prev_max", "curr_max", "prev_buy", "prev_sell",
-    }
-
     def detect(self, ast_root: ast.AST) -> DetectionResult:
         evidence = []
         self._detect_state_machine(ast_root, evidence)
@@ -51,6 +30,9 @@ class DPStateMachineDetector(BaseDetector):
 
         secondary_count = sum([has_dp_array_1d, has_loop, has_cache])
         detected = has_state_vars and has_state_transition and secondary_count >= 1
+
+        if self._has_anti_signals(evidence):
+            detected = False
 
         return DetectionResult(
             pattern_id=self.pattern_id,
@@ -130,111 +112,131 @@ class DPStateMachineDetector(BaseDetector):
                     )
 
     def _find_state_variables(self, func_def: ast.FunctionDef) -> bool:
-        state_assignments = set()
-
+        loop_assigned = set()
+        dp_subscript_writes = {}
         for node in ast.walk(func_def):
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        if target.id.lower() in self.STATE_NAMES:
-                            state_assignments.add(target.id.lower())
-                    if isinstance(target, ast.Subscript):
-                        if isinstance(target.value, ast.Name):
-                            if target.value.id.lower() in self.STATE_NAMES:
-                                state_assignments.add(target.value.id.lower())
-                        if isinstance(target.value, ast.Subscript):
-                            if isinstance(target.value.value, ast.Name):
-                                base = target.value.value.id.lower()
-                                if base.startswith("dp"):
-                                    if isinstance(target.value.slice, ast.Name):
-                                        state_assignments.add(f"dp_{target.value.slice.id}")
-                                    elif isinstance(target.value.slice, ast.Constant):
-                                        state_assignments.add(f"dp_{target.value.slice.value}")
-                                if base.startswith("dp"):
-                                    slice_val = None
-                                    if isinstance(target.slice, ast.Name):
-                                        slice_val = target.slice.id
-                                    elif isinstance(target.slice, ast.Constant):
-                                        slice_val = str(target.slice.value)
-                                    if slice_val is not None:
-                                        state_assignments.add(f"dp_val_{slice_val}")
+            if isinstance(node, (ast.For, ast.While)):
+                for sub in ast.walk(node):
+                    if isinstance(sub, ast.Assign):
+                        for target in sub.targets:
+                            self._collect_assigned_names(target, loop_assigned, dp_subscript_writes, node)
 
-            if isinstance(node, ast.AugAssign):
-                if isinstance(node.target, ast.Name):
-                    if node.target.id.lower() in self.STATE_NAMES:
-                        state_assignments.add(node.target.id.lower())
+        max_min_args = set()
+        for node in ast.walk(func_def):
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Name) and node.func.id in ("max", "min"):
+                    for arg in node.args:
+                        if isinstance(arg, ast.Name):
+                            max_min_args.add(arg.id)
+                        elif isinstance(arg, ast.Subscript):
+                            base = self._get_subscript_base(arg)
+                            if base:
+                                max_min_args.add(base)
+                        elif isinstance(arg, ast.BinOp):
+                            for sub in ast.walk(arg):
+                                if isinstance(sub, ast.Name):
+                                    max_min_args.add(sub.id)
+                                elif isinstance(sub, ast.Subscript):
+                                    base = self._get_subscript_base(sub)
+                                    if base:
+                                        max_min_args.add(base)
 
-        if len(state_assignments) >= 2:
+        state_candidates = loop_assigned & max_min_args
+        if len(state_candidates) >= 2:
             return True
 
-        max_min_on_state_count = 0
-        for node in ast.walk(func_def):
-            if isinstance(node, ast.Call):
-                if isinstance(node.func, ast.Name) and node.func.id in ("max", "min"):
-                    state_args = 0
-                    for arg in node.args:
-                        if isinstance(arg, ast.Name) and arg.id.lower() in self.STATE_NAMES:
-                            state_args += 1
-                        if isinstance(arg, ast.Subscript):
-                            if isinstance(arg.value, ast.Name) and arg.value.id.lower() in self.STATE_NAMES:
-                                state_args += 1
-                    if state_args >= 2:
-                        max_min_on_state_count += 1
+        for base, count in dp_subscript_writes.items():
+            if count >= 2 and base in max_min_args:
+                return True
 
-        return max_min_on_state_count >= 1
+        return False
+
+    def _collect_assigned_names(self, target: ast.AST, names: set, dp_writes: dict, loop_node: ast.AST) -> None:
+        if isinstance(target, ast.Name):
+            names.add(target.id)
+        elif isinstance(target, ast.Tuple):
+            for elt in target.elts:
+                self._collect_assigned_names(elt, names, dp_writes, loop_node)
+        elif isinstance(target, ast.Subscript):
+            base = self._get_subscript_base(target)
+            if base:
+                names.add(base)
+                dp_writes[base] = dp_writes.get(base, 0) + 1
+
+    def _get_subscript_base(self, node: ast.AST) -> str:
+        if isinstance(node, ast.Subscript):
+            if isinstance(node.value, ast.Name):
+                return node.value.id
+            if isinstance(node.value, ast.Subscript):
+                return self._get_subscript_base(node.value)
+        return None
 
     def _find_state_transition(self, func_def: ast.FunctionDef) -> bool:
+        loop_vars = self._collect_loop_assigned_vars(func_def)
         for node in ast.walk(func_def):
             if isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Name) and node.func.id in ("max", "min"):
-                    state_args = 0
-                    binop_with_state = False
+                    has_state_arg = False
                     for arg in node.args:
-                        if isinstance(arg, ast.Name) and arg.id.lower() in self.STATE_NAMES:
-                            state_args += 1
-                        if isinstance(arg, ast.Subscript):
-                            if isinstance(arg.value, ast.Name) and arg.value.id.lower() in self.STATE_NAMES:
-                                state_args += 1
-                            if isinstance(arg.value, ast.Subscript):
-                                if isinstance(arg.value.value, ast.Name) and arg.value.value.id.lower().startswith("dp"):
-                                    state_args += 1
-                        if isinstance(arg, ast.BinOp):
-                            for sub in ast.walk(arg):
-                                if isinstance(sub, ast.Name) and sub.id.lower() in self.STATE_NAMES:
-                                    binop_with_state = True
-                                if isinstance(sub, ast.Subscript):
-                                    if isinstance(sub.value, ast.Name) and sub.value.id.lower() in self.STATE_NAMES:
-                                        binop_with_state = True
-                                    if isinstance(sub.value, ast.Subscript):
-                                        if isinstance(sub.value.value, ast.Name) and sub.value.value.id.lower().startswith("dp"):
-                                            binop_with_state = True
-                    if state_args >= 1 or binop_with_state:
+                        if self._references_any_variable(arg, loop_vars):
+                            has_state_arg = True
+                            break
+                    if has_state_arg:
                         for stmt in ast.walk(func_def):
                             if isinstance(stmt, ast.Assign):
-                                for target in stmt.targets:
-                                    if isinstance(target, ast.Name) and target.id.lower() in self.STATE_NAMES:
-                                        if stmt.value is node or any(
-                                            isinstance(n, ast.Call) and n is node
-                                            for n in ast.walk(stmt.value)
-                                            if isinstance(n, ast.Call)
-                                        ):
-                                            return True
-                                    if isinstance(target, ast.Subscript):
-                                        if isinstance(target.value, ast.Name) and target.value.id.lower() in self.STATE_NAMES:
-                                            if stmt.value is node or any(
-                                                isinstance(n, ast.Call) and n is node
-                                                for n in ast.walk(stmt.value)
-                                                if isinstance(n, ast.Call)
-                                            ):
-                                                return True
-                                        if isinstance(target.value, ast.Subscript):
-                                            if isinstance(target.value.value, ast.Name) and target.value.value.id.lower().startswith("dp"):
-                                                if stmt.value is node or any(
-                                                    isinstance(n, ast.Call) and n is node
-                                                    for n in ast.walk(stmt.value)
-                                                    if isinstance(n, ast.Call)
-                                                ):
-                                                    return True
+                                target_vars = set()
+                                self._collect_target_vars(stmt.targets, target_vars, loop_vars)
+                                if target_vars:
+                                    if stmt.value is node or any(
+                                        isinstance(n, ast.Call) and n is node
+                                        for n in ast.walk(stmt.value)
+                                        if isinstance(n, ast.Call)
+                                    ):
+                                        return True
+        return False
+
+    def _collect_target_vars(self, targets: list, result: set, loop_vars: set) -> None:
+        for target in targets:
+            if isinstance(target, ast.Name) and target.id in loop_vars:
+                result.add(target.id)
+            elif isinstance(target, ast.Tuple):
+                for elt in target.elts:
+                    if isinstance(elt, ast.Name) and elt.id in loop_vars:
+                        result.add(elt.id)
+            elif isinstance(target, ast.Subscript):
+                base = self._get_subscript_base(target)
+                if base and (base in loop_vars or base.lower().startswith("dp")):
+                    result.add(base)
+
+    def _collect_loop_assigned_vars(self, func_def: ast.FunctionDef) -> set:
+        vars_set = set()
+        for node in ast.walk(func_def):
+            if isinstance(node, (ast.For, ast.While)):
+                for sub in ast.walk(node):
+                    if isinstance(sub, ast.Assign):
+                        for target in sub.targets:
+                            self._collect_names_from_target(target, vars_set, None, None)
+        return vars_set
+
+    def _collect_names_from_target(self, target: ast.AST, names: set, dp_writes: dict, loop_node: ast.AST) -> None:
+        if isinstance(target, ast.Name):
+            names.add(target.id)
+        elif isinstance(target, ast.Tuple):
+            for elt in target.elts:
+                self._collect_names_from_target(elt, names, dp_writes, loop_node)
+        elif isinstance(target, ast.Subscript):
+            base = self._get_subscript_base(target)
+            if base:
+                names.add(base)
+
+    def _references_any_variable(self, node: ast.AST, vars_set: set) -> bool:
+        for sub in ast.walk(node):
+            if isinstance(sub, ast.Name) and sub.id in vars_set:
+                return True
+            if isinstance(sub, ast.Subscript):
+                base = self._get_subscript_base(sub)
+                if base and base in vars_set:
+                    return True
         return False
 
     def _find_small_dp_array(self, func_def: ast.FunctionDef) -> bool:
@@ -286,13 +288,18 @@ class DPStateMachineDetector(BaseDetector):
                 if isinstance(node.value, ast.Call):
                     if isinstance(node.value.func, ast.Name) and node.value.func.id in ("max", "min"):
                         for arg in node.value.args:
-                            if isinstance(arg, ast.Name) and arg.id.lower() in self.STATE_NAMES:
+                            if isinstance(arg, ast.Name):
                                 return True
                             if isinstance(arg, ast.Subscript):
-                                if isinstance(arg.value, ast.Name) and arg.value.id.lower() in self.STATE_NAMES:
+                                if isinstance(arg.value, ast.Name):
                                     return True
-                                if isinstance(arg.value, ast.Name) and arg.value.id.lower().startswith("dp"):
-                                    return True
+        return False
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_state_vars = any(e.type == "state_variables" for e in evidence)
+        has_transition = any(e.type == "state_transition" for e in evidence)
+        if has_state_vars and not has_transition:
+            return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:

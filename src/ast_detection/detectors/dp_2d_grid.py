@@ -30,6 +30,9 @@ class DP2DGridDetector(BaseDetector):
         secondary_count = sum([has_array, has_recurrence, has_aggregation])
         detected = has_grid_lookback and has_nested_loops and secondary_count >= 1
 
+        if self._has_anti_signals(evidence):
+            detected = False
+
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
@@ -226,6 +229,12 @@ class DP2DGridDetector(BaseDetector):
                                     name = side.value.id.lower()
                                     if name.startswith(("s", "str", "word", "text", "char")):
                                         return True
+        return False
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_string_compare = any(e.type == "string_compare" for e in evidence)
+        if has_string_compare:
+            return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:

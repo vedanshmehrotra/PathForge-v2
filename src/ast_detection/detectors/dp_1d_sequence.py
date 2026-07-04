@@ -29,6 +29,9 @@ class DP1DSequenceDetector(BaseDetector):
         secondary_count = sum([has_array, has_recurrence, has_aggregation])
         detected = has_nested_loops and has_inner_lookback and secondary_count >= 1
 
+        if self._has_anti_signals(evidence):
+            detected = False
+
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
@@ -163,6 +166,13 @@ class DP1DSequenceDetector(BaseDetector):
                         for arg in node.value.args:
                             if isinstance(arg, ast.Name) and arg.id.lower().startswith("dp"):
                                 return True
+        return False
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_secondary = any(e.type in ("dp_array_1d", "recurrence_expression", "result_aggregation") for e in evidence)
+        has_lookback_only = any(e.type == "inner_lookback" for e in evidence) and not has_secondary
+        if has_lookback_only:
+            return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:

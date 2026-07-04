@@ -36,9 +36,11 @@ class DP1DForwardDetector(BaseDetector):
         has_max_min = any(e.type == "max_min_recurrence" for e in evidence)
 
         secondary_count = sum([has_dp_array_1d, has_table_fill_loop, has_cache, has_base_case])
-        not_prefix_sum = has_multi_lookback or has_max_min or has_conditional or has_recursive_lookback
         effective_lookback = has_index_lookback or has_recursive_lookback
-        detected = effective_lookback and secondary_count >= 2 and not_prefix_sum
+        detected = effective_lookback and secondary_count >= 2
+
+        if self._has_anti_signals(evidence):
+            detected = False
 
         return DetectionResult(
             pattern_id=self.pattern_id,
@@ -306,6 +308,17 @@ class DP1DForwardDetector(BaseDetector):
                         if isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Sub):
                             has_arithmetic_arg = True
         return has_recursive_call and has_arithmetic_arg
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_index_lookback = any(e.type == "index_lookback" for e in evidence)
+        has_multi_lookback = any(e.type == "multi_level_lookback" for e in evidence)
+        has_max_min = any(e.type == "max_min_recurrence" for e in evidence)
+        has_conditional = any(e.type == "conditional_recurrence" for e in evidence)
+        has_recursive_lookback = any(e.type == "recursive_lookback" for e in evidence)
+        is_prefix_sum = has_index_lookback and not (has_multi_lookback or has_max_min or has_conditional or has_recursive_lookback)
+        if is_prefix_sum:
+            return True
+        return False
 
     def _calculate_confidence(self, evidence: list) -> float:
         if not evidence:

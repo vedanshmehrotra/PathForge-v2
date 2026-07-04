@@ -14,8 +14,6 @@ from src.ast_detection.detectors.base import BaseDetector, register_detector, De
 class DPKnapsackDetector(BaseDetector):
     pattern_id = "dp_knapsack"
 
-    WEIGHT_VARS = {"weight", "weights", "w", "wt", "capacity", "cap", "c", "amount", "amt", "target"}
-
     def detect(self, ast_root: ast.AST) -> DetectionResult:
         evidence = []
         self._detect_knapsack(ast_root, evidence)
@@ -30,6 +28,9 @@ class DPKnapsackDetector(BaseDetector):
 
         secondary_count = sum([has_array, has_nested, has_lookback])
         detected = has_capacity and has_max_min and secondary_count >= 1
+
+        if self._has_anti_signals(evidence):
+            detected = False
 
         return DetectionResult(
             pattern_id=self.pattern_id,
@@ -115,13 +116,14 @@ class DPKnapsackDetector(BaseDetector):
                     ops = node.test.ops
                     if any(isinstance(op, (ast.GtE, ast.Gt, ast.LtE, ast.Lt)) for op in ops):
                         for side in [node.test.left] + node.test.comparators:
-                            if isinstance(side, ast.Name) and side.id.lower() in self.WEIGHT_VARS:
-                                return True
                             if isinstance(side, ast.Subscript):
                                 if isinstance(side.value, ast.Name):
-                                    name = side.value.id.lower()
-                                    if name in self.WEIGHT_VARS or "weight" in name or name in ("weights", "coins", "nums"):
-                                        return True
+                                    return True
+                            if isinstance(side, ast.BinOp):
+                                for sub in ast.walk(side):
+                                    if isinstance(sub, ast.Subscript):
+                                        if isinstance(sub.value, ast.Name):
+                                            return True
         return False
 
     def _find_max_min_recurrence(self, func_def: ast.FunctionDef) -> bool:
@@ -210,6 +212,13 @@ class DPKnapsackDetector(BaseDetector):
                         if isinstance(cur.value, ast.Name) and cur.value.id.lower().startswith("dp"):
                             return True
                         cur = cur.value
+        return False
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_capacity = any(e.type == "capacity_compare" for e in evidence)
+        has_max_min = any(e.type == "max_min_recurrence" for e in evidence)
+        if has_capacity and not has_max_min:
+            return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:

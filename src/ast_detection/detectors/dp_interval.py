@@ -30,7 +30,10 @@ class DPIntervalDetector(BaseDetector):
         has_string = any(e.type == "string_compare" for e in evidence)
 
         supporting_count = sum([has_array, has_pair, has_lookback, has_recurrence])
-        detected = has_length_loop and supporting_count >= 2 and not has_string
+        detected = has_length_loop and supporting_count >= 2
+
+        if self._has_anti_signals(evidence):
+            detected = False
 
         return DetectionResult(
             pattern_id=self.pattern_id,
@@ -256,6 +259,12 @@ class DPIntervalDetector(BaseDetector):
                                     name = side.value.id.lower()
                                     if name in ("s", "str", "word", "text", "char", "a", "b", "p", "q", "t"):
                                         return True
+        return False
+
+    def _has_anti_signals(self, evidence: list) -> bool:
+        has_string = any(e.type == "string_compare" for e in evidence)
+        if has_string:
+            return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:
