@@ -1,25 +1,46 @@
-# Environment
+# 1. Environment files
 .env
+.env.local
+.env.production
+.env.*
+*.env
 
-# Python
+# 2. Node / frontend ignores
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# 3. Python backend ignores
 __pycache__/
 *.py[cod]
+*.pyc
+*.pyo
 .pytest_cache/
-
-# Virtual environments
+.mypy_cache/
 venv/
 .venv/
 env/
 
-# Old local database
-*.db
-*.sqlite
-*.sqlite3
+# 4. System / OS files
+.DS_Store
+Thumbs.db
 
-# IDE
+# 5. IDE / editor files
 .vscode/
 .idea/
 
-# OS
-.DS_Store
-Thumbs.db
+# 6. Logs and runtime artifacts
+*.log
+logs/
+*.sqlite
+*.sqlite3
+*.db
+
+# 7. Secrets and API keys
+.env.local
+.env.production.local
+.env.development.local
+supabase_keys*
+secrets*
