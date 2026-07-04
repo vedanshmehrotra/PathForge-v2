@@ -95,3 +95,20 @@ CREATE INDEX IF NOT EXISTS idx_submissions_problem ON submissions(problem_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_user_topic ON submissions(user_id, topic);
 CREATE INDEX IF NOT EXISTS idx_topic_profiles_user_elo ON topic_profiles(user_id, elo_rating);
 CREATE INDEX IF NOT EXISTS idx_recommendations_user_time ON recommendations(user_id, created_at);
+
+CREATE TABLE IF NOT EXISTS gap_signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    pattern_id TEXT NOT NULL,
+    gap_strength REAL NOT NULL DEFAULT 0.0 CHECK (gap_strength >= 0.0 AND gap_strength <= 1.0),
+    frequency INTEGER NOT NULL DEFAULT 0 CHECK (frequency >= 0),
+    last_seen TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(user_id, pattern_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_gap_signals_user ON gap_signals(user_id);
+CREATE INDEX IF NOT EXISTS idx_gap_signals_user_strength ON gap_signals(user_id, gap_strength DESC);
+CREATE INDEX IF NOT EXISTS idx_gap_signals_user_pattern ON gap_signals(user_id, pattern_id);

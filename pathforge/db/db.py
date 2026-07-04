@@ -41,7 +41,30 @@ def init_db(db_path=None):
     return connection
 
 
+def _ensure_gap_signals_table(connection):
+    tables = {row["name"] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    if "gap_signals" not in tables:
+        connection.execute("""
+            CREATE TABLE gap_signals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                pattern_id TEXT NOT NULL,
+                gap_strength REAL NOT NULL DEFAULT 0.0 CHECK (gap_strength >= 0.0 AND gap_strength <= 1.0),
+                frequency INTEGER NOT NULL DEFAULT 0 CHECK (frequency >= 0),
+                last_seen TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                UNIQUE(user_id, pattern_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        """)
+        connection.execute("CREATE INDEX idx_gap_signals_user ON gap_signals(user_id)")
+        connection.execute("CREATE INDEX idx_gap_signals_user_strength ON gap_signals(user_id, gap_strength DESC)")
+        connection.execute("CREATE INDEX idx_gap_signals_user_pattern ON gap_signals(user_id, pattern_id)")
+
+
 def _apply_lightweight_migrations(connection):
+    _ensure_gap_signals_table(connection)
     """Add new nullable columns when an older local SQLite file already exists."""
     columns = {row["name"] for row in connection.execute("PRAGMA table_info(submissions)").fetchall()}
     if "diagnosis_confidence" not in columns:
