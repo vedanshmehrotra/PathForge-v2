@@ -32,6 +32,7 @@ const AuthContext = createContext<AuthContextValue>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  console.log("AUTH_DEBUG_BUILD_V8");
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -51,7 +52,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
+    console.log("[AuthProvider] Before getSession()")
     supabase.auth.getSession().then(({ data: { session: s } }) => {
+      console.log("[AuthProvider] Session:", s ? "exists" : "null")
       setSession(s)
       setUser(s?.user ?? null)
       syncToken(s?.access_token ?? null)
@@ -64,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, s) => {
+      console.log("[AuthProvider] Event:", _event, "Session:", s ? "exists" : "null")
       setSession(s)
       setUser(s?.user ?? null)
       syncToken(s?.access_token ?? null)
@@ -78,13 +82,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [syncToken, loadProfile])
 
   const signInWithGoogle = useCallback(async () => {
+    const redirectTo =
+      process.env.NEXT_PUBLIC_REDIRECT_URL ||
+      `${window.location.origin}/auth/callback`
+    console.log("[AuthProvider] redirectTo:", redirectTo)
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo:
-          process.env.NEXT_PUBLIC_REDIRECT_URL ||
-          `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo },
     })
   }, [])
 

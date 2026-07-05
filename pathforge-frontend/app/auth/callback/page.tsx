@@ -9,13 +9,20 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    console.log("[Callback] Mounted")
+    console.log("[Callback] URL:", window.location.href)
+    console.log("[Callback] code:", new URLSearchParams(window.location.search).get("code"))
+
     supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[Callback] Event:", event, "Session:", session ? "exists" : "null")
       if (event === 'SIGNED_IN' && session) {
         router.push('/')
       }
     })
 
+    console.log("[Callback] Before getSession")
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("[Callback] Session:", session ? "exists" : "null")
       if (session) {
         router.push('/')
       } else {

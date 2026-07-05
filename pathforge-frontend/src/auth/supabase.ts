@@ -8,12 +8,12 @@ function getSupabaseClient() {
   const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
+  console.log("[SUPABASE] URL:", SUPABASE_URL)
+  console.log("[SUPABASE] ANON KEY PRESENT:", !!SUPABASE_ANON_KEY)
+  console.log("[SUPABASE] ANON KEY LENGTH:", SUPABASE_ANON_KEY.length)
+
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    if (typeof window !== 'undefined') {
-      console.warn(
-        'Supabase env vars not set. Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local',
-      )
-    }
+    console.error("[SUPABASE] CLIENT NOT CREATED")
     return null
   }
 
@@ -25,6 +25,8 @@ function getSupabaseClient() {
       flowType: 'pkce',
     },
   })
+
+  console.log("[SUPABASE] CLIENT CREATED")
 
   return _client
 }

@@ -37,6 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const title = TITLES[pathname] ?? 'PathForge'
   const { user, profile, loading, signInWithGoogle, signOut } = useAuth()
+  console.log("[AppShell]", { pathname, loading, authenticated: !!user })
 
   const displayName = profile?.display_name || user?.user_metadata?.full_name || ''
   const initials = displayName ? getInitials(displayName) : '??'
