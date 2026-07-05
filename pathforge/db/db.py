@@ -14,7 +14,7 @@ def get_connection(db_path=None):
     path = db_path or os.environ.get("PATHFORGE_DB_PATH") or DEFAULT_DB_PATH
     connection = sqlite3.connect(path)
     connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection.execute("PRAGMA foreign_keys = ON")  
     return connection
 
 
@@ -84,10 +84,26 @@ def _ensure_user_pattern_elo_table(connection):
         connection.execute("CREATE INDEX idx_user_pattern_elo_elo ON user_pattern_elo(elo DESC)")
 
 
+def _ensure_problem_ground_truth_table(connection):
+    tables = {row["name"] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    if "problem_ground_truth" not in tables:
+        connection.execute("""
+            CREATE TABLE problem_ground_truth (
+                problem_id INTEGER PRIMARY KEY,
+                patterns TEXT NOT NULL DEFAULT '[]',
+                confidence TEXT NOT NULL DEFAULT '{}',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE
+            )
+        """)
+
+
 def _apply_lightweight_migrations(connection):
+    """Add new nullable columns when an older local SQLite file already exists."""
     _ensure_gap_signals_table(connection)
     _ensure_user_pattern_elo_table(connection)
-    """Add new nullable columns when an older local SQLite file already exists."""
+    _ensure_problem_ground_truth_table(connection)
 
     user_columns = {row["name"] for row in connection.execute("PRAGMA table_info(users)").fetchall()}
     if "supabase_id" not in user_columns:

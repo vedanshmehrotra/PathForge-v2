@@ -129,3 +129,12 @@ CREATE TABLE IF NOT EXISTS user_pattern_elo (
 CREATE INDEX IF NOT EXISTS idx_user_pattern_elo_user ON user_pattern_elo(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_pattern_elo_user_pattern ON user_pattern_elo(user_id, pattern_id);
 CREATE INDEX IF NOT EXISTS idx_user_pattern_elo_elo ON user_pattern_elo(elo DESC);
+
+CREATE TABLE IF NOT EXISTS problem_ground_truth (
+    problem_id INTEGER PRIMARY KEY,
+    patterns TEXT NOT NULL DEFAULT '[]',
+    confidence TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE
+);
