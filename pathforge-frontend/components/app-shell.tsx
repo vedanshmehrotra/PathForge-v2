@@ -54,6 +54,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
+    if (pathname.startsWith('/auth/callback')) {
+      return <>{children}</>
+    }
+
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-4">
         <div className="flex items-center gap-2">
