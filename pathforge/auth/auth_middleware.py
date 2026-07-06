@@ -68,33 +68,41 @@ def verify_supabase_token(token: str) -> dict:
     try:
         unverified = jwt.get_unverified_header(token)
     except JWTError as e:
+        print(f"[AuthMiddleware] Malformed token header: {e}")
         raise HTTPException(status_code=401, detail=f"Malformed token header: {e}")
     except Exception as e:
+        print(f"[AuthMiddleware] Cannot decode token: {e}")
         raise HTTPException(status_code=401, detail=f"Cannot decode token: {e}")
 
     kid = unverified.get("kid")
     if not kid:
+        print("[AuthMiddleware] Missing kid in token header")
         raise HTTPException(status_code=401, detail="Missing kid in token header")
 
     try:
         jwk_data = _get_jwk(kid)
         if jwk_data is None:
+            print(f"[AuthMiddleware] No matching JWK found for kid: {kid}")
             raise HTTPException(status_code=401, detail="No matching JWK found")
-        public_key = jwk.construct(jwk_data)
+        # Pass the algorithm hint so python-jose constructs EC keys (ES256) correctly
+        alg = unverified.get("alg", "RS256")
+        public_key = jwk.construct(jwk_data, algorithm=alg)
     except HTTPException:
         raise
     except Exception as e:
+        print(f"[AuthMiddleware] JWK retrieval failed: {e}")
         raise HTTPException(status_code=401, detail=f"JWK retrieval failed: {e}")
 
     try:
         payload = jwt.decode(
             token,
             public_key,
-            algorithms=[Algorithms.RS256],
+            algorithms=[Algorithms.RS256, Algorithms.ES256],
             audience="authenticated",
             options={"verify_exp": True},
         )
     except JWTError as e:
+        print(f"[AuthMiddleware] Invalid token signature/claims: {e}")
         raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
 
     return payload
@@ -163,7 +171,9 @@ def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = None,
 ) -> VerifiedUser:
     auth_header = request.headers.get("Authorization", "")
+    print(f"[AuthMiddleware] Authorization Header: '{auth_header[:30]}...' (length: {len(auth_header)})")
     if not auth_header.startswith("Bearer "):
+        print(f"[AuthMiddleware] Rejected: Header does not start with 'Bearer '")
         raise HTTPException(
             status_code=401,
             detail="Missing or invalid Authorization header",

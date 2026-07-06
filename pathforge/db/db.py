@@ -107,7 +107,9 @@ def _apply_lightweight_migrations(connection):
 
     user_columns = {row["name"] for row in connection.execute("PRAGMA table_info(users)").fetchall()}
     if "supabase_id" not in user_columns:
-        connection.execute("ALTER TABLE users ADD COLUMN supabase_id TEXT UNIQUE")
+        # SQLite does not support ADD COLUMN ... UNIQUE; add the column then create the index
+        connection.execute("ALTER TABLE users ADD COLUMN supabase_id TEXT")
+        connection.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_supabase_id ON users(supabase_id)")
     columns = {row["name"] for row in connection.execute("PRAGMA table_info(submissions)").fetchall()}
     if "diagnosis_confidence" not in columns:
         connection.execute("ALTER TABLE submissions ADD COLUMN diagnosis_confidence REAL NOT NULL DEFAULT 0.0")

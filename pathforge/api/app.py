@@ -1,6 +1,7 @@
 """FastAPI application — thin orchestration layer for PathForge engines."""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pathforge.api.routes.analyze import router as analyze_router
 from pathforge.api.routes.gaps import router as gaps_router
 from pathforge.api.routes.elo_route import router as elo_router
@@ -13,6 +14,14 @@ def create_api() -> FastAPI:
         title="PathForge API",
         description="Learning signal pipeline — AST, Matching, Gap, Elo, Recommendation",
         version="2.0.0",
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     app.include_router(auth_router)
@@ -29,3 +38,4 @@ def create_api() -> FastAPI:
 
 
 app = create_api()
+

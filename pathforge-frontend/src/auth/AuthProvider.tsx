@@ -43,7 +43,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const p = await fetchMe()
       setProfile(p)
-    } catch {
+    } catch (err) {
+      console.error('[AuthProvider] loadProfile failed:', err)
       setProfile(null)
     }
   }, [])
