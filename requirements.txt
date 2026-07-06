@@ -2,3 +2,4 @@ Flask
 bcrypt
 PyJWT
 gunicorn
+python-dotenv
