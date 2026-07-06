@@ -9,24 +9,23 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log("[Callback] Mounted")
-    console.log("[Callback] URL:", window.location.href)
-    console.log("[Callback] code:", new URLSearchParams(window.location.search).get("code"))
+    const code = new URLSearchParams(window.location.search).get('code')
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log("[Callback] Event:", event, "Session:", session ? "exists" : "null")
-      if (event === 'SIGNED_IN' && session) {
-        router.push('/')
+    if (!code) {
+      setError('No authorization code received.')
+      return
+    }
+
+    supabase.auth.exchangeCodeForSession(code).then(({ data, error: exchangeError }) => {
+      if (exchangeError) {
+        console.error('[OAuth Exchange]', exchangeError)
+        setError(exchangeError.message)
+        return
       }
-    })
-
-    console.log("[Callback] Before getSession")
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("[Callback] Session:", session ? "exists" : "null")
-      if (session) {
+      if (data?.session) {
         router.push('/')
       } else {
-        setError('Authentication failed. Please try again.')
+        setError('Authentication completed but no session was returned.')
       }
     })
   }, [router])

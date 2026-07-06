@@ -8,12 +8,7 @@ function getSupabaseClient() {
   const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-  console.log("[SUPABASE] URL:", SUPABASE_URL)
-  console.log("[SUPABASE] ANON KEY PRESENT:", !!SUPABASE_ANON_KEY)
-  console.log("[SUPABASE] ANON KEY LENGTH:", SUPABASE_ANON_KEY.length)
-
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error("[SUPABASE] CLIENT NOT CREATED")
     return null
   }
 
@@ -21,12 +16,13 @@ function getSupabaseClient() {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true,
+      detectSessionInUrl: false,
       flowType: 'pkce',
     },
+    global: {
+      fetch: (url, init) => fetch(url, init),
+    },
   })
-
-  console.log("[SUPABASE] CLIENT CREATED")
 
   return _client
 }

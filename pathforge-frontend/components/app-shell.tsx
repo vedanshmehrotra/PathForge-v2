@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
 import { useAuth } from '@/auth/AuthProvider'
+import { signInWithGoogle } from '@/auth/authService'
 
 const NAV = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard, section: 'Overview' },
@@ -36,14 +37,17 @@ const TITLES: Record<string, string> = {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const title = TITLES[pathname] ?? 'PathForge'
-  const { user, profile, loading, signInWithGoogle, signOut } = useAuth()
-  console.log("[AppShell]", { pathname, loading, authenticated: !!user })
+  const { user, profile, loading, signOut } = useAuth()
 
   const displayName = profile?.display_name || user?.user_metadata?.full_name || ''
   const initials = displayName ? getInitials(displayName) : '??'
   const email = profile?.email || user?.email || ''
 
   if (loading) {
+    if (pathname.startsWith('/auth/callback')) {
+      return <>{children}</>
+    }
+
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
