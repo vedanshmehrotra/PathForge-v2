@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { analyzeCode, prepareProblem, fetchGaps, fetchElo, fetchRecommendations } from '@/services/api/endpoints'
-import { fetchAuthProfile } from '@/services/api/auth'
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -10,7 +9,6 @@ import type {
   GapResponse,
   EloResponse,
   RecommendResponse,
-  AuthProfile,
 } from '@/types/api'
 
 function useApiData<T>(
@@ -41,10 +39,6 @@ function useApiData<T>(
   }, [refresh])
 
   return { data, loading, error, refresh }
-}
-
-export function useAuthProfile() {
-  return useApiData<AuthProfile>(fetchAuthProfile)
 }
 
 export function useEloData(userId: number) {

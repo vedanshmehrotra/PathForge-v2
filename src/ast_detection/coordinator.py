@@ -39,9 +39,10 @@ class Coordinator:
             List of DetectionResult objects for patterns that were detected
             (non-empty evidence), sorted by confidence descending
         """
-        # Step 1: Filter to only results with non-empty evidence
+        # Step 1: Filter to only results with non-empty evidence and detected == True
         detected_results = [
-            result for result in detection_results if result.evidence
+            result for result in detection_results
+            if result.evidence and result.detected
         ]
 
         # Step 2: Sort by confidence descending
@@ -53,16 +54,16 @@ class Coordinator:
         self, detection_results: List[DetectionResult]
     ) -> List[DetectionResult]:
         """
-        Filter out DetectionResults with empty evidence.
+        Filter out DetectionResults with empty evidence or detected == False.
 
         Args:
             detection_results: List of DetectionResult objects from all detectors
 
         Returns:
-            List of DetectionResult objects with non-empty evidence
+            List of DetectionResult objects with non-empty evidence and detected == True
         """
         return [
-            result for result in detection_results if result.evidence
+            result for result in detection_results if result.evidence and result.detected
         ]
 
     def sort_by_confidence(

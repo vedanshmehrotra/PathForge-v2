@@ -5,20 +5,20 @@ import { Panel, PanelBody, PanelHeader, PanelTitle } from '@/components/ui/panel
 import { Badge } from '@/components/ui/badge'
 import { StatTile } from '@/components/ui/stat'
 import { useAuth } from '@/auth/AuthProvider'
-import { useAuthProfile } from '@/hooks/useApi'
+import { useEloData } from '@/hooks/useApi'
 import { getInitials } from '@/lib/utils'
 
 export function ProfileView() {
   const { profile: authProfile, user, signOut } = useAuth()
-  const { data: profileData } = useAuthProfile()
+  const { data: eloData } = useEloData(authProfile?.user_id ?? 0)
 
   const displayName =
     authProfile?.display_name || user?.user_metadata?.full_name || 'User'
   const email =
     authProfile?.email || user?.email || 'No email'
   const initials = getInitials(displayName)
-  const overallElo = profileData?.overall_elo ?? 0
-  const patternsTracked = profileData?.profiles?.length ?? 0
+  const overallElo = eloData?.summary?.average_elo ?? 0
+  const patternsTracked = eloData?.pattern_elo ? Object.keys(eloData.pattern_elo).length : 0
 
   return (
     <div className="flex flex-col gap-4">
@@ -37,7 +37,7 @@ export function ProfileView() {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base font-semibold">{displayName}</h2>
-              {profileData?.overall_elo && (
+              {overallElo > 0 && (
                 <Badge variant="accent">Elo {Math.round(overallElo)}</Badge>
               )}
             </div>
@@ -105,22 +105,24 @@ export function ProfileView() {
             <PanelTitle>Pattern Profiles</PanelTitle>
           </PanelHeader>
           <div className="divide-y divide-border">
-            {!profileData?.profiles?.length && (
+            {!patternsTracked && (
               <div className="px-4 py-6 text-center text-sm text-muted-foreground">
                 No pattern profiles yet. Submit code to initialize.
               </div>
             )}
-            {profileData?.profiles?.map((p) => (
-              <div
-                key={p.topic}
-                className="flex items-center justify-between px-4 py-2.5"
-              >
-                <span className="text-sm">{p.topic.replace(/_/g, ' ')}</span>
-                <span className="font-mono text-sm tabular-nums">
-                  {Math.round(p.elo_rating)}
-                </span>
-              </div>
-            ))}
+            {eloData?.pattern_elo && Object.entries(eloData.pattern_elo)
+              .sort(([, a], [, b]) => b - a)
+              .map(([topic, elo]) => (
+                <div
+                  key={topic}
+                  className="flex items-center justify-between px-4 py-2.5"
+                >
+                  <span className="text-sm">{topic.replace(/_/g, ' ')}</span>
+                  <span className="font-mono text-sm tabular-nums">
+                    {Math.round(elo)}
+                  </span>
+                </div>
+              ))}
           </div>
         </Panel>
       </div>

@@ -165,6 +165,8 @@ def run_persistence(
         "submission_id": submission_id,
         "profile_update": profile_update,
         "gap_signals_count": len(gap_output.get("gap_signals", [])),
+        "gap_output": gap_output,
         "elo_updates_count": len(elo_output.get("pattern_elo_updates", [])),
+        "elo_output": elo_output,
         "recommendation_id": recommendation_id,
     }

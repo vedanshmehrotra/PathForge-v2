@@ -181,18 +181,59 @@ class DPStateMachineDetector(BaseDetector):
                         if self._references_any_variable(arg, loop_vars):
                             has_state_arg = True
                             break
-                    if has_state_arg:
-                        for stmt in ast.walk(func_def):
-                            if isinstance(stmt, ast.Assign):
-                                target_vars = set()
-                                self._collect_target_vars(stmt.targets, target_vars, loop_vars)
-                                if target_vars:
-                                    if stmt.value is node or any(
-                                        isinstance(n, ast.Call) and n is node
-                                        for n in ast.walk(stmt.value)
-                                        if isinstance(n, ast.Call)
-                                    ):
+                    if not has_state_arg:
+                        continue
+                    for stmt in ast.walk(func_def):
+                        if isinstance(stmt, ast.Assign):
+                            target_vars = set()
+                            self._collect_target_vars(stmt.targets, target_vars, loop_vars)
+                            if target_vars:
+                                if stmt.value is node or any(
+                                    isinstance(n, ast.Call) and n is node
+                                    for n in ast.walk(stmt.value)
+                                    if isinstance(n, ast.Call)
+                                ):
+                                    target_var = next(iter(target_vars))
+                                    if self._has_state_on_left_of_binop(node, target_var, loop_vars):
                                         return True
+        return False
+
+    def _has_state_on_left_of_binop(self, call_node: ast.Call, target_var: str, loop_vars: set) -> bool:
+        """Check if the max/min call references another state variable on the left side
+        of a BinOp arg, or as a direct Subscript arg.
+
+        Genuine state machines write:  state = max(state, OTHER_STATE + value)
+                                       state = max(state, other_array[i], ...)
+        Running max patterns write:    var = max(var, value - var)   (state on the RIGHT)
+        """
+        for arg in call_node.args:
+            if isinstance(arg, ast.Name) and arg.id == target_var:
+                continue
+            if isinstance(arg, ast.BinOp):
+                if self._left_side_contains_other_state(arg, target_var, loop_vars):
+                    return True
+            if isinstance(arg, ast.Name) and arg.id in loop_vars and arg.id != target_var:
+                return True
+            if isinstance(arg, ast.Subscript):
+                base = self._get_subscript_base(arg)
+                if base and base in loop_vars:
+                    return True
+        return False
+
+    def _left_side_contains_other_state(self, node: ast.AST, target_var: str, loop_vars: set) -> bool:
+        """Recursively check only the LEFT branch of BinOps for a different state variable.
+
+        Genuine state machines write:  other_state + reward
+        Running max patterns write:    value - var   (state on the RIGHT, not LEFT)
+        """
+        if isinstance(node, ast.BinOp):
+            return self._left_side_contains_other_state(node.left, target_var, loop_vars)
+        if isinstance(node, ast.Name) and node.id in loop_vars and node.id != target_var:
+            return True
+        if isinstance(node, ast.Subscript):
+            base = self._get_subscript_base(node)
+            if base and base in loop_vars and base != target_var:
+                return True
         return False
 
     def _collect_target_vars(self, targets: list, result: set, loop_vars: set) -> None:

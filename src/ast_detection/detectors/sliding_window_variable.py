@@ -57,6 +57,9 @@ class SlidingWindowVariableDetector(BaseDetector):
             right_var = None
             if isinstance(node.target, ast.Name):
                 right_var = node.target.id
+            elif isinstance(node.target, ast.Tuple):
+                if node.target.elts and isinstance(node.target.elts[0], ast.Name):
+                    right_var = node.target.elts[0].id
 
             if right_var is None:
                 continue
@@ -96,7 +99,7 @@ class SlidingWindowVariableDetector(BaseDetector):
                             weight=0.30,
                         )
                     )
-            elif has_window_assign:
+            elif has_window_assign and self._is_index_based_loop(node):
                 evidence.append(
                     EvidenceItem(
                         type="window_expand",
@@ -125,7 +128,7 @@ class SlidingWindowVariableDetector(BaseDetector):
                         val = stmt.value
                         if isinstance(val, ast.Constant) and val.value == 0:
                             return target.id
-            elif isinstance(stmt, ast.FunctionDef):
+            elif isinstance(stmt, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
                 result = self._find_left_ptr_initialized_before(stmt, target_for)
                 if result:
                     return result
@@ -183,6 +186,17 @@ class SlidingWindowVariableDetector(BaseDetector):
                     for inner in ast.walk(comparator):
                         if isinstance(inner, ast.Name) and inner.id not in ("left", "right"):
                             return True
+        return False
+
+    def _is_index_based_loop(self, node: ast.For) -> bool:
+        """Check if the for loop iterates over indices (range/len/enumerate) not values."""
+        if isinstance(node.target, ast.Tuple):
+            return True
+        if isinstance(node.iter, ast.Call):
+            if isinstance(node.iter.func, ast.Name) and node.iter.func.id == "range":
+                return True
+            if isinstance(node.iter.func, ast.Attribute) and node.iter.func.attr == "keys":
+                return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:

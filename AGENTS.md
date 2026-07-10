@@ -51,13 +51,13 @@
 - Confidence values remain 0.0–1.0 in the backend; frontend multiplies by 100 for display.
 - A single shared helper function `pct()` is used for all confidence-to-percentage conversions.
 - Meter component defaults to `max=100`; all callers pass 0–100 values.
+- `AnalyzeResponse` exposes `problem_info`, `elo_updates`, `submission_gap` alongside `ast`, `match_result`, `persisted`.
+- `run_persistence()` returns full `elo_output` and `gap_output` dicts, not just counts.
+- Submission gap only populated when problem context exists (ctx != None); elo_updates always present.
 
 ## Relevant Files
-- `pathforge-frontend/components/analysis-view.tsx`: AST pattern confidence Meter + text, Matching Engine Meter + badge + matched/unmatched counts.
+- `pathforge/api/routes/analyze.py`: Full `AnalyzeResponse` with `ProblemInfo`, `EloUpdate`, `SubmissionGap` models; constructs canonical patterns from `ctx.accepted_solution_groups`.
+- `pathforge/services/persistence.py`: Returns `elo_output` and `gap_output` full dicts for use in response.
+- `pathforge-frontend/src/types/api.ts`: `CanonicalPattern`, `ProblemInfo`, `EloUpdate`, `SubmissionGap` interfaces.
+- `pathforge-frontend/components/analysis-view.tsx`: Reorganized panel flow: Problem Info → Detected Patterns → Matching Engine (canonical + verdict + reasoning) → Skill Changes (all Elo updates) → Gaps (submission gap + long-term signals).
 - `pathforge-frontend/components/charts.tsx`: `Meter({ value, max=100 })` — callers must pass 0–100 values.
-- `pathforge/llm/graphql_client.py`: Browser-like headers added, `GraphQLUnavailableError` defined.
-- `pathforge/services/ground_truth_builder.py`: Raises `GroundTruthError` on LLM failure instead of caching empty.
-- `pathforge/services/problem_resolver.py`: `pattern='[]'` default fix for new problems.
-- `pathforge/api/routes/analyze.py`: Structured `ProblemIdentifier` model, catches 502 errors.
-- `pathforge/api/routes/prepare_problem.py`: Same `ProblemIdentifier` + 502 handling.
-- `pathforge-frontend/src/types/api.ts`: `PrepareRequest`, `PrepareResponse`, structured `AnalyzeRequest.problem`.

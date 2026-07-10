@@ -100,13 +100,16 @@ def _ensure_problem_ground_truth_table(connection):
 
 
 def _ensure_problem_metadata_columns(connection):
-    """Add title_slug and description columns to problems table if missing."""
+    """Add title_slug, description, and updated_at columns to problems table if missing."""
     columns = {row["name"] for row in connection.execute("PRAGMA table_info(problems)").fetchall()}
     if "title_slug" not in columns:
         connection.execute("ALTER TABLE problems ADD COLUMN title_slug TEXT")
         connection.execute("CREATE INDEX IF NOT EXISTS idx_problems_title_slug ON problems(title_slug)")
     if "description" not in columns:
         connection.execute("ALTER TABLE problems ADD COLUMN description TEXT")
+    if "updated_at" not in columns:
+        connection.execute("ALTER TABLE problems ADD COLUMN updated_at TEXT")
+        connection.execute("UPDATE problems SET updated_at = created_at WHERE updated_at IS NULL")
     backfill = connection.execute(
         "SELECT COUNT(*) AS c FROM problems WHERE title_slug IS NULL AND link IS NOT NULL AND link LIKE '%/problems/%'"
         ).fetchone()["c"]

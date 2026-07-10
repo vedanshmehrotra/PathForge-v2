@@ -111,6 +111,12 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
         else:
             raise ValueError("Either leetcode_id or title_slug is required")
 
+    existing = connection.execute(
+        "SELECT * FROM problems WHERE title_slug = ?", (title_slug,)
+    ).fetchone()
+    if existing is not None:
+        return dict(existing)
+
     data = fetch_problem_by_slug(title_slug)
     if data is None:
         raise ValueError(

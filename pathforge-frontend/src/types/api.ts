@@ -8,9 +8,43 @@ export interface AnalyzeRequest {
   }
 }
 
+export interface CanonicalPattern {
+  name: string
+  confidence: number
+}
+
+export interface ProblemInfo {
+  leetcode_id?: number | null
+  title?: string | null
+  difficulty?: string | null
+  canonical_patterns: CanonicalPattern[]
+}
+
+export interface EloUpdate {
+  pattern_id: string
+  elo_before: number
+  elo_after: number
+  delta: number
+}
+
+export interface SubmissionGap {
+  detected_pattern_ids: string[]
+  missing_pattern_ids: string[]
+  gap_identified: boolean
+}
+
 export interface AnalyzeResponse {
   ast: Record<string, unknown>
   match_result: Record<string, unknown>
+  problem_info?: ProblemInfo | null
+  elo_updates?: EloUpdate[]
+  submission_gap?: SubmissionGap | null
+  persisted?: {
+    submission_id: number
+    gap_signals_count: number
+    elo_updates_count: number
+    recommendation_id?: number | null
+  }
 }
 
 export interface PrepareRequest {
@@ -74,7 +108,11 @@ export interface RecommendResponse {
     reason: string
     score: number
   }>
-  summary: Record<string, unknown>
+  summary: {
+    primary_weak_patterns: string[]
+    focus_area: string
+    recommendation_strategy: string
+  }
 }
 
 export interface UserProfile {
@@ -93,11 +131,17 @@ export interface UserProfile {
 
 export interface AuthProfile {
   profiles: Array<{
+    user_id: number
     topic: string
     elo_rating: number
-    peak_elo: number
-    samples: number
-    confidence: number
+    attempt_count: number
+    pass_count: number
+    pattern_match_count: number
+    accuracy: number
+    recent_failures: number
+    last_attempt_at: string | null
+    created_at: string
+    updated_at: string
   }>
   overall_elo: number
 }

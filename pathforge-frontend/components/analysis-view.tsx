@@ -8,7 +8,7 @@ import { Meter } from '@/components/charts'
 import { cn } from '@/lib/utils'
 import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
-import { useGapData, useEloData } from '@/hooks/useApi'
+import { useGapData } from '@/hooks/useApi'
 
 const SEVERITY = {
   high: { variant: 'danger' as const, label: 'HIGH' },
@@ -34,7 +34,6 @@ export function AnalysisView() {
   const { result, loading, error, run } = useAnalyzeCode()
   const prep = usePrepareProblem()
   const { data: gapData } = useGapData(profile?.user_id ?? 0)
-  const { data: eloData } = useEloData(profile?.user_id ?? 0)
 
   const handleRun = () => {
     if (profile) {
@@ -66,7 +65,9 @@ export function AnalysisView() {
     expected?: boolean
   }> | undefined
 
-  const matchResult = result?.match_result as Record<string, unknown> | undefined
+  const matchResult = result?.match_result as (Record<string, unknown> & { match_result?: string; reasoning_signals?: string[] }) | undefined
+  const canonicalPatterns = result?.problem_info?.canonical_patterns
+  const eloUpdates = result?.elo_updates
   const matchScore = (matchResult?.confidence_score as number) ?? 0
   const matchedCount = (matchResult?.matched_groups as unknown[])?.length ?? 0
   const unmatchedCount = (matchResult?.unmatched_patterns as unknown[])?.length ?? 0
@@ -137,6 +138,38 @@ export function AnalysisView() {
         <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
           {error}
         </div>
+      )}
+
+      {result?.problem_info && (
+        <Panel>
+          <PanelHeader>
+            <PanelTitle>
+              <ScanLine className="size-4 text-primary" />
+              Problem Info
+            </PanelTitle>
+            <Badge variant={DIFFICULTY_VARIANT[result.problem_info.difficulty ?? ''] ?? 'default'}>
+              {result.problem_info.difficulty}
+            </Badge>
+          </PanelHeader>
+          <PanelBody className="flex flex-col gap-3">
+            <p className="text-sm font-medium">{result.problem_info.title}</p>
+            {result.problem_info.canonical_patterns?.length > 0 && (
+              <div>
+                <p className="mb-1.5 font-mono text-[10px] uppercase text-muted-foreground">
+                  Expected Patterns
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {result.problem_info.canonical_patterns.map((p) => (
+                    <Badge key={p.name} variant="outline" className="font-mono text-[11px]">
+                      {p.name.replace(/_/g, ' ')}
+                      <span className="ml-1 text-muted-foreground">{pct(p.confidence)}%</span>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </PanelBody>
+        </Panel>
       )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
@@ -234,6 +267,37 @@ export function AnalysisView() {
                   <p className="font-mono text-lg tabular-nums text-warning">{unmatchedCount}</p>
                 </div>
               </div>
+              {canonicalPatterns && canonicalPatterns.length > 0 && (
+                <div className="rounded-md border border-border bg-secondary/20 p-3">
+                  <p className="mb-1.5 font-mono text-[10px] uppercase text-muted-foreground">
+                    Expected by Problem
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {canonicalPatterns.map((p) => (
+                      <Badge key={p.name} variant="outline" className="font-mono text-[10px]">
+                        {p.name.replace(/_/g, ' ')}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {matchResult?.match_result && (
+                <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <p className="mb-0.5 font-mono text-[10px] uppercase text-muted-foreground">Verdict</p>
+                  <p className="text-xs font-medium text-foreground">
+                    {matchResult.match_result === 'FULL_MATCH' && '✅ All expected patterns detected'}
+                    {matchResult.match_result === 'PARTIAL_MATCH' && '⚠️ Some expected patterns missing'}
+                    {matchResult.match_result === 'NO_MATCH' && '❌ No expected patterns detected'}
+                  </p>
+                  {Array.isArray(matchResult.reasoning_signals) && (
+                    <ul className="mt-1.5 list-inside list-disc space-y-0.5">
+                      {matchResult.reasoning_signals.slice(0, 6).map((s: string, i: number) => (
+                        <li key={i} className="text-[11px] text-muted-foreground">{s}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
             </PanelBody>
           </Panel>
         </div>
@@ -243,69 +307,92 @@ export function AnalysisView() {
         <Panel className="lg:col-span-2">
           <PanelHeader>
             <PanelTitle>
-              <TriangleAlert className="size-4 text-warning" />
-              Gap Signals
+              <Zap className="size-4 text-primary" />
+              Skill Changes
             </PanelTitle>
             <span className="font-mono text-[10px] text-muted-foreground">
-              {gapData?.gap_signals?.length ?? 0} signals
+              {eloUpdates?.length ?? 0} patterns updated
             </span>
           </PanelHeader>
-          <div className="divide-y divide-border">
-            {!gapData?.gap_signals?.length && (
-              <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                No gap signals yet.
+          <PanelBody className="flex flex-col gap-3">
+            {!eloUpdates?.length && (
+              <p className="text-xs text-muted-foreground">
+                Run analysis to see how your Elo ratings would change.
+              </p>
+            )}
+            {eloUpdates && eloUpdates.length > 0 && (
+              <div className="divide-y divide-border">
+                {eloUpdates.map((u) => (
+                  <div key={u.pattern_id} className="flex items-center gap-3 px-1 py-2">
+                    <p className="min-w-0 flex-1 truncate text-sm">
+                      {u.pattern_id.replace(/_/g, ' ')}
+                    </p>
+                    <div className="text-right">
+                      <p className="font-mono text-xs tabular-nums text-muted-foreground">
+                        {u.elo_before.toFixed(0)} → {u.elo_after.toFixed(0)}
+                      </p>
+                      <p
+                        className={cn(
+                          'font-mono text-xs tabular-nums',
+                          u.delta >= 0 ? 'text-success' : 'text-destructive',
+                        )}
+                      >
+                        {u.delta >= 0 ? '+' : ''}
+                        {u.delta.toFixed(0)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-            {gapData?.gap_signals?.map((g) => {
-              const severity = g.gap_strength >= 0.7 ? 'high' : g.gap_strength >= 0.4 ? 'medium' : 'low'
-              const meta = SEVERITY[severity]
-              return (
-                <div key={g.pattern_id} className="flex items-center gap-3 px-4 py-2.5">
-                  <Badge variant={meta.variant}>{meta.label}</Badge>
-                  <p className="flex-1 truncate text-sm">{g.pattern_id.replace(/_/g, ' ')}</p>
-                  <div className="w-24">
-                    <Meter value={g.gap_strength * 100} />
-                  </div>
-                  <span className="w-9 text-right font-mono text-xs tabular-nums text-muted-foreground">
-                    {Math.round(g.gap_strength * 100)}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
+          </PanelBody>
         </Panel>
 
         <Panel>
           <PanelHeader>
             <PanelTitle>
-              <Zap className="size-4 text-primary" />
-              Elo Update Preview
+              <TriangleAlert className="size-4 text-warning" />
+              Gaps
             </PanelTitle>
           </PanelHeader>
           <PanelBody className="flex flex-col gap-3">
-            {!result && (
-              <p className="text-xs text-muted-foreground">
-                Run analysis to see how your Elo would change based on detected patterns.
-              </p>
-            )}
-            {result && detectedPatterns?.[0] && (
-              <>
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase text-muted-foreground">
-                      {detectedPatterns[0].name ?? detectedPatterns[0].pattern_id?.replace(/_/g, ' ')}
-                    </p>
-                    <p className="mt-1 font-mono text-2xl font-semibold tabular-nums">
-                      {eloData?.pattern_elo?.[detectedPatterns[0].pattern_id ?? ''] ?? '-'}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  AST analysis complete. The matching engine compared detected patterns against expected
-                  patterns for this problem. Check gap signals for optimization opportunities.
+            {result?.submission_gap?.gap_identified && (
+              <div className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2">
+                <p className="mb-1 font-mono text-[10px] uppercase text-warning">Submission Gap</p>
+                <p className="mb-1.5 text-xs text-foreground/80">
+                  Missing {result.submission_gap.missing_pattern_ids.length} expected pattern
+                 {result.submission_gap.missing_pattern_ids.length > 1 ? 's' : ''}:
                 </p>
-              </>
+                <div className="flex flex-wrap gap-1.5">
+                  {result.submission_gap.missing_pattern_ids.map((id) => (
+                    <Badge key={id} variant="danger" className="font-mono text-[10px]">
+                      {id.replace(/_/g, ' ')}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             )}
+            <div>
+              <p className="mb-1.5 font-mono text-[10px] uppercase text-muted-foreground">
+                Long-Term Signals
+              </p>
+              {!gapData?.gap_signals?.length && (
+                <p className="text-xs text-muted-foreground">No gap signals yet.</p>
+              )}
+              {gapData?.gap_signals?.map((g) => {
+                const severity = g.gap_strength >= 0.7 ? 'high' : g.gap_strength >= 0.4 ? 'medium' : 'low'
+                const meta = SEVERITY[severity]
+                return (
+                  <div key={g.pattern_id} className="flex items-center gap-2 py-1.5">
+                    <Badge variant={meta.variant}>{meta.label}</Badge>
+                    <p className="flex-1 truncate text-xs">{g.pattern_id.replace(/_/g, ' ')}</p>
+                    <div className="w-16">
+                      <Meter value={Math.round(g.gap_strength * 100)} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </PanelBody>
         </Panel>
       </div>

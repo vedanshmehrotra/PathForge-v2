@@ -34,10 +34,17 @@ query problemData($titleSlug: String!) {
 }
 """
 
-_TITLE_SLUG_QUERY = """
-query problemTitle($questionId: String!) {
-  question(questionId: $questionId) {
-    titleSlug
+_LIST_QUERY = """
+query problemsetQuestionList($categorySlug: String, $limit: Int, $filters: QuestionListFilterInput) {
+  problemsetQuestionList: questionList(
+    categorySlug: $categorySlug
+    limit: $limit
+    filters: $filters
+  ) {
+    questions: data {
+      questionFrontendId
+      titleSlug
+    }
   }
 }
 """
@@ -81,18 +88,28 @@ def fetch_problem_by_slug(title_slug: str) -> Optional[dict]:
 
 
 def fetch_title_slug_by_id(question_id: int) -> Optional[str]:
-    """Resolve a numeric LeetCode problem ID to its title slug.
+    """Resolve a numeric LeetCode problem number (questionFrontendId) to its title slug.
 
-    Example: 1 -> 'two-sum'
+    Uses the problemset questionList search API to find the problem by its
+    public frontend ID. Example: 1 -> 'two-sum'
     Returns None if resolution fails.
     """
-    result = _post_graphql(_TITLE_SLUG_QUERY, {"questionId": str(question_id)})
+    search_term = str(question_id)
+    filters = {"searchKeywords": search_term}
+    result = _post_graphql(
+        _LIST_QUERY,
+        {"categorySlug": "", "limit": 15, "filters": filters},
+    )
     if result is None:
         return None
-    question = result.get("data", {}).get("question")
-    if not question:
+    data = result.get("data")
+    if not data:
         return None
-    return question.get("titleSlug")
+    questions = data.get("problemsetQuestionList", {}).get("questions", [])
+    for q in questions:
+        if q.get("questionFrontendId") == search_term:
+            return q.get("titleSlug")
+    return None
 
 
 def extract_title_slug_from_url(url: str) -> str:
