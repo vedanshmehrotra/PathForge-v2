@@ -6,7 +6,7 @@ import { Panel, PanelBody, PanelHeader, PanelTitle } from '@/components/ui/panel
 import { Badge } from '@/components/ui/badge'
 import { Meter } from '@/components/charts'
 import { cn } from '@/lib/utils'
-import { useAnalyzeCode } from '@/hooks/useApi'
+import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { useGapData, useEloData } from '@/hooks/useApi'
 
@@ -16,17 +16,44 @@ const SEVERITY = {
   low: { variant: 'default' as const, label: 'LOW' },
 } as const
 
+const DIFFICULTY_VARIANT: Record<string, 'success' | 'warning' | 'danger'> = {
+  Easy: 'success',
+  Medium: 'warning',
+  Hard: 'danger',
+}
+
+function pct(confidence: number): number {
+  return Math.round(confidence * 100)
+}
+
 export function AnalysisView() {
   const { profile } = useAuth()
   const [code, setCode] = useState('')
+  const [problemInput, setProblemInput] = useState('')
 
   const { result, loading, error, run } = useAnalyzeCode()
+  const prep = usePrepareProblem()
   const { data: gapData } = useGapData(profile?.user_id ?? 0)
   const { data: eloData } = useEloData(profile?.user_id ?? 0)
 
   const handleRun = () => {
     if (profile) {
-      run({ user_id: String(profile.user_id), code, language: 'python' })
+      const req: Parameters<typeof run>[0] = {
+        user_id: profile.user_id,
+        code,
+        language: 'python',
+      }
+      if (prep.result) {
+        req.problem = { leetcode_id: prep.result.leetcode_id }
+      }
+      run(req)
+    }
+  }
+
+  const handlePrepare = () => {
+    const val = problemInput.trim()
+    if (val) {
+      prep.run(val)
     }
   }
 
@@ -40,10 +67,10 @@ export function AnalysisView() {
   }> | undefined
 
   const matchResult = result?.match_result as Record<string, unknown> | undefined
-  const matchScore = matchResult?.overall_match as number ?? 0
-  const matchedCount = (matchResult?.matched_patterns as unknown[])?.length ?? 0
-  const divergentCount = (matchResult?.divergent_patterns as unknown[])?.length ?? 0
-  const totalCount = matchedCount + divergentCount
+  const matchScore = (matchResult?.confidence_score as number) ?? 0
+  const matchedCount = (matchResult?.matched_groups as unknown[])?.length ?? 0
+  const unmatchedCount = (matchResult?.unmatched_patterns as unknown[])?.length ?? 0
+  const totalCount = matchedCount + unmatchedCount
 
   return (
     <div className="flex flex-col gap-4">
@@ -56,13 +83,55 @@ export function AnalysisView() {
         </div>
         <button
           onClick={handleRun}
-          disabled={loading || !profile}
+          disabled={loading || !profile || prep.loading}
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {loading ? <Cpu className="size-4 animate-pulse" /> : <Play className="size-4" />}
           {loading ? 'Analyzing\u2026' : 'Run Analysis'}
         </button>
       </div>
+
+      <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-secondary/20 px-3 py-2">
+        <input
+          value={problemInput}
+          onChange={(e) => setProblemInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') handlePrepare() }}
+          placeholder="Enter a LeetCode Problem ID (e.g. 1, 3, 121) and click Prepare."
+          spellCheck={false}
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
+        />
+        {prep.result ? (
+          <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+            <Check className="size-3 text-success" />
+            <span className="font-medium text-foreground">{prep.result.title}</span>
+            <Badge variant={DIFFICULTY_VARIANT[prep.result.difficulty] ?? 'default'}>
+              {prep.result.difficulty}
+            </Badge>
+            <button
+              onClick={prep.clear}
+              className="ml-1 rounded p-0.5 text-muted-foreground/50 hover:text-foreground"
+              title="Clear problem"
+            >
+              <X className="size-3" />
+            </button>
+          </span>
+        ) : (
+          <button
+            onClick={handlePrepare}
+            disabled={!problemInput.trim() || prep.loading}
+            className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 font-mono text-[11px] font-medium text-secondary-foreground transition-opacity hover:opacity-80 disabled:opacity-50"
+          >
+            {prep.loading ? <Cpu className="size-3 animate-pulse" /> : <ScanLine className="size-3" />}
+            {prep.loading ? 'Preparing\u2026' : 'Prepare'}
+          </button>
+        )}
+      </div>
+
+      {prep.error && (
+        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          {prep.error}
+        </div>
+      )}
 
       {error && (
         <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
@@ -133,9 +202,9 @@ export function AnalysisView() {
                     </p>
                   </div>
                   <div className="w-16">
-                    <Meter value={d.confidence ?? 0} />
+                    <Meter value={pct(d.confidence ?? 0)} />
                   </div>
-                  <span className="w-9 text-right font-mono text-xs tabular-nums">{d.confidence ?? 0}%</span>
+                  <span className="w-9 text-right font-mono text-xs tabular-nums">{pct(d.confidence ?? 0)}%</span>
                 </div>
               ))}
             </div>
@@ -147,22 +216,22 @@ export function AnalysisView() {
                 <GitCompare className="size-4 text-primary" />
                 Matching Engine
               </PanelTitle>
-              <Badge variant={matchScore >= 80 ? 'success' : 'warning'}>{Math.round(matchScore)}% match</Badge>
+              <Badge variant={matchScore >= 0.8 ? 'success' : 'warning'}>{pct(matchScore)}% match</Badge>
             </PanelHeader>
             <PanelBody className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Expected pattern alignment</span>
-                <span className="font-mono text-sm tabular-nums">{Math.round(matchScore)}%</span>
+                <span className="font-mono text-sm tabular-nums">{pct(matchScore)}%</span>
               </div>
-              <Meter value={matchScore} />
+              <Meter value={pct(matchScore)} />
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <div className="rounded-md border border-border bg-secondary/40 p-2">
                   <p className="font-mono text-[10px] uppercase text-muted-foreground">matched</p>
                   <p className="font-mono text-lg tabular-nums text-success">{matchedCount}/{totalCount || 1}</p>
                 </div>
                 <div className="rounded-md border border-border bg-secondary/40 p-2">
-                  <p className="font-mono text-[10px] uppercase text-muted-foreground">divergent</p>
-                  <p className="font-mono text-lg tabular-nums text-warning">{divergentCount}</p>
+                  <p className="font-mono text-[10px] uppercase text-muted-foreground">unmatched</p>
+                  <p className="font-mono text-lg tabular-nums text-warning">{unmatchedCount}</p>
                 </div>
               </div>
             </PanelBody>

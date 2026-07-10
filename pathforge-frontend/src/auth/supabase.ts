@@ -12,9 +12,6 @@ function getSupabaseClient() {
     return null
   }
 
-  console.log("SUPABASE KEY RAW:", SUPABASE_ANON_KEY)
-  console.log("Starts with sb_publishable:", SUPABASE_ANON_KEY.startsWith("sb_publishable_"))
-  console.log("Starts with eyJ:", SUPABASE_ANON_KEY.startsWith("eyJ"))
 
   _client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {

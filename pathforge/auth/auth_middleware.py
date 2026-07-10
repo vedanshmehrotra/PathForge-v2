@@ -6,6 +6,7 @@ user to an internal PathForge user record.
 
 import json
 import os
+import sqlite3
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -116,10 +117,13 @@ def _ensure_local_user(payload: dict, db_path: str) -> int:
 
     connection = get_connection(db_path)
     try:
-        row = connection.execute(
-            "SELECT id, supabase_id FROM users WHERE supabase_id = ?",
-            (supabase_id,),
-        ).fetchone()
+        try:
+            row = connection.execute(
+                "SELECT id, supabase_id FROM users WHERE supabase_id = ?",
+                (supabase_id,),
+            ).fetchone()
+        except sqlite3.Error as e:
+            raise HTTPException(status_code=500, detail=f"Database error during user lookup: {e}")
 
         if row is not None:
             return int(row["id"])
@@ -131,28 +135,31 @@ def _ensure_local_user(payload: dict, db_path: str) -> int:
         )
 
         now = iso_now()
-        cursor = connection.execute(
-            """
-            INSERT INTO users (
-                username, email, password_hash, display_name,
-                experience_level, confident_areas, onboarding_complete,
-                supabase_id, created_at, updated_at
+        try:
+            cursor = connection.execute(
+                """
+                INSERT INTO users (
+                    username, email, password_hash, display_name,
+                    experience_level, confident_areas, onboarding_complete,
+                    supabase_id, created_at, updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    supabase_id,
+                    email or f"user-{supabase_id[:8]}@placeholder.com",
+                    "",
+                    display_name,
+                    "beginner",
+                    "[]",
+                    0,
+                    supabase_id,
+                    now,
+                    now,
+                ),
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                supabase_id,
-                email or f"user-{supabase_id[:8]}@placeholder.com",
-                "",
-                display_name,
-                "beginner",
-                "[]",
-                0,
-                supabase_id,
-                now,
-                now,
-            ),
-        )
+        except sqlite3.Error as e:
+            raise HTTPException(status_code=500, detail=f"Database error during user insert: {e}")
         connection.commit()
         return int(cursor.lastrowid)
     finally:
@@ -187,8 +194,14 @@ def get_current_user(
     supabase_id = payload.get("sub", "")
     email = payload.get("email", "")
 
-    db_path = config.DATABASE_PATH
-    user_id = _ensure_local_user(payload, db_path)
+    try:
+        db_path = config.DATABASE_PATH
+        user_id = _ensure_local_user(payload, db_path)
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AuthMiddleware] User resolution failed: {e}")
+        raise HTTPException(status_code=500, detail=f"User resolution failed: {e}")
 
     return VerifiedUser(
         user_id=user_id,

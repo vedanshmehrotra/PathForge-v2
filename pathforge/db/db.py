@@ -99,11 +99,34 @@ def _ensure_problem_ground_truth_table(connection):
         """)
 
 
+def _ensure_problem_metadata_columns(connection):
+    """Add title_slug and description columns to problems table if missing."""
+    columns = {row["name"] for row in connection.execute("PRAGMA table_info(problems)").fetchall()}
+    if "title_slug" not in columns:
+        connection.execute("ALTER TABLE problems ADD COLUMN title_slug TEXT")
+        connection.execute("CREATE INDEX IF NOT EXISTS idx_problems_title_slug ON problems(title_slug)")
+    if "description" not in columns:
+        connection.execute("ALTER TABLE problems ADD COLUMN description TEXT")
+    backfill = connection.execute(
+        "SELECT COUNT(*) AS c FROM problems WHERE title_slug IS NULL AND link IS NOT NULL AND link LIKE '%/problems/%'"
+        ).fetchone()["c"]
+    if backfill > 0:
+        connection.execute("""
+            UPDATE problems
+            SET title_slug = RTRIM(
+                SUBSTR(link, INSTR(link, '/problems/') + 10),
+                '/'
+            )
+            WHERE title_slug IS NULL AND link IS NOT NULL AND link LIKE '%/problems/%'
+        """)
+
+
 def _apply_lightweight_migrations(connection):
     """Add new nullable columns when an older local SQLite file already exists."""
     _ensure_gap_signals_table(connection)
     _ensure_user_pattern_elo_table(connection)
     _ensure_problem_ground_truth_table(connection)
+    _ensure_problem_metadata_columns(connection)
 
     user_columns = {row["name"] for row in connection.execute("PRAGMA table_info(users)").fetchall()}
     if "supabase_id" not in user_columns:

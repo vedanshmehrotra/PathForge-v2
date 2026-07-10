@@ -5,12 +5,17 @@ from pathforge.db.profile_manager import iso_now
 from pathforge.llm.openrouter_client import call_llm
 
 
+class GroundTruthError(Exception):
+    """Raised when ground truth generation fails (LLM unavailable, bad response, etc.)."""
+
+
 def build_ground_truth(problem_id: int, problem_description: str, connection) -> list[str]:
     raw = call_llm(problem_description)
 
     if raw is None:
-        _store_ground_truth(connection, problem_id, [], {})
-        return []
+        raise GroundTruthError(
+            "Ground truth generation failed: OpenRouter/LLM unavailable or returned no valid output"
+        )
 
     patterns = raw.get("patterns", [])
     confidence = raw.get("confidence", {})

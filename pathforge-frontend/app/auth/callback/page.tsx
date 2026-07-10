@@ -9,32 +9,73 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get('code')
+    console.log("[callback] mounted")
 
-    if (!code) {
-      setError('No authorization code received.')
-      return
-    }
+    async function handleCallback() {
+      const code = new URLSearchParams(window.location.search).get("code")
 
-    supabase.auth.exchangeCodeForSession(code).then(({ data, error: exchangeError }) => {
+      console.log("[callback] code:", code)
+
+      if (!code) {
+        console.log("[callback] no code found")
+
+        const { data: { session } } = await supabase.auth.getSession()
+
+        console.log("[callback] existing session:", !!session)
+
+        if (session) {
+          router.replace("/")
+          return
+        }
+
+        setError("No authorization code received. Please try signing in again.")
+        return
+      }
+
+      console.log("[callback] before exchange")
+
+      const { data, error: exchangeError } =
+        await supabase.auth.exchangeCodeForSession(code)
+
+      console.log("[callback] after exchange", {
+        session: !!data?.session,
+        error: exchangeError?.name,
+      })
+
       if (exchangeError) {
-        console.error('[OAuth Exchange]', exchangeError)
+        console.error("[OAuth Exchange]", exchangeError)
+
+        if (exchangeError.name === "AuthPKCECodeVerifierMissingError") {
+          const { data: { session } } = await supabase.auth.getSession()
+
+          console.log("[callback] fallback session:", !!session)
+
+          if (session) {
+            router.replace("/")
+            return
+          }
+        }
+
         setError(exchangeError.message)
         return
       }
+
       if (data?.session) {
-        router.push('/')
+        console.log("[callback] redirecting")
+        router.replace("/")
       } else {
-        setError('Authentication completed but no session was returned.')
+        setError("Authentication completed but no session was returned.")
       }
-    })
+    }
+
+    handleCallback()
   }, [router])
 
   if (error) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">
-          <p className="text-destructive">{error}</p>
+          <p className="text-destructive mb-2 text-sm">{error}</p>
           <button
             onClick={() => router.push('/')}
             className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"

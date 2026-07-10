@@ -1,6 +1,6 @@
 import csv
 from pathlib import Path
-
+from flask_cors import CORS
 from flask import Flask, jsonify, render_template
 
 import config
@@ -15,6 +15,13 @@ from pathforge.routes.submissions import submissions_bp
 def create_app(test_config=None):
     """Create and configure the PathForge Flask application."""
     app = Flask(__name__)
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=[
+            "http://localhost:3000"
+        ]
+    )
     app.config.update(
         SECRET_KEY=config.SECRET_KEY,
         JWT_SECRET=config.JWT_SECRET,

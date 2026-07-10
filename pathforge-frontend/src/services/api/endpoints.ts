@@ -2,6 +2,8 @@ import { apiRequest } from './client'
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
+  PrepareRequest,
+  PrepareResponse,
   GapRequest,
   GapResponse,
   EloRequest,
@@ -12,6 +14,13 @@ import type {
 
 export function analyzeCode(req: AnalyzeRequest): Promise<AnalyzeResponse> {
   return apiRequest<AnalyzeResponse>('/analyze', {
+    method: 'POST',
+    body: JSON.stringify(req),
+  })
+}
+
+export function prepareProblem(req: PrepareRequest): Promise<PrepareResponse> {
+  return apiRequest<PrepareResponse>('/prepare-problem', {
     method: 'POST',
     body: JSON.stringify(req),
   })

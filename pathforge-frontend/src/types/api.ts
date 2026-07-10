@@ -1,12 +1,31 @@
 export interface AnalyzeRequest {
-  user_id: string
+  user_id: number
   code: string
   language?: string
+  problem?: {
+    leetcode_id?: number
+    title_slug?: string
+  }
 }
 
 export interface AnalyzeResponse {
   ast: Record<string, unknown>
   match_result: Record<string, unknown>
+}
+
+export interface PrepareRequest {
+  problem: {
+    leetcode_id?: number
+    title_slug?: string
+  }
+}
+
+export interface PrepareResponse {
+  leetcode_id: number
+  title_slug: string
+  title: string
+  difficulty: string
+  topics: string[]
 }
 
 export interface GapRequest {

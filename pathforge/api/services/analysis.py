@@ -1,6 +1,6 @@
 """Analysis orchestration — AST + Matching Engine pipeline."""
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from src.ast_detection.run_analysis import ASTAnalysisEngine
 from src.matching_engine.matching_engine import MatchingEngine
 
@@ -9,7 +9,11 @@ _ast_engine = ASTAnalysisEngine()
 _matching_engine = MatchingEngine()
 
 
-def run_analysis(code: str, language: str = "python") -> Dict[str, Any]:
+def run_analysis(
+    code: str,
+    language: str = "python",
+    accepted_solution_groups: Optional[list] = None,
+) -> Dict[str, Any]:
     if language != "python":
         return {
             "error": f"Unsupported language: {language}",
@@ -36,14 +40,14 @@ def run_analysis(code: str, language: str = "python") -> Dict[str, Any]:
             "confidence": entry.get("confidence", 0.0),
         })
 
-    llm_groups = []
-    for entry in ast_for_matching:
-        llm_groups.append([entry["pattern_id"]])
-
-    if not llm_groups:
-        llm_groups = [["hash_map_lookup"]]
-
-    llm_input = {"accepted_solution_groups": llm_groups}
+    if accepted_solution_groups:
+        llm_input = {
+            "accepted_solution_groups": [
+                g["patterns"] for g in accepted_solution_groups
+            ],
+        }
+    else:
+        llm_input = {"accepted_solution_groups": [["hash_map_lookup"]]}
 
     try:
         match_result = _matching_engine.match(llm_input, ast_for_matching)
