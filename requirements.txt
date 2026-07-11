@@ -4,3 +4,7 @@ PyJWT
 gunicorn
 python-dotenv
 Flask-CORS
+fastapi
+uvicorn
+python-jose
+supabase
