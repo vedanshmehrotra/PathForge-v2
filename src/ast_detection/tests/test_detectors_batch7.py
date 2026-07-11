@@ -243,6 +243,62 @@ def insert(intervals, newInterval):
         result = self.detector.detect(ast.parse(code))
         assert result.detected == True
 
+    def test_detected_leetcode_1288_canonical_editorial(self):
+        code = """
+def removeCoveredIntervals(intervals):
+    intervals.sort(key=lambda x: (x[0], -x[1]))
+    count = 0
+    prev_end = 0
+    for start, end in intervals:
+        if start > prev_end:
+            count += 1
+            prev_end = end
+    return count
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == True
+        assert result.confidence >= 0.55
+        assert any(e.type == "interval_sorting" for e in result.evidence)
+        assert any(e.type == "interval_comparison" for e in result.evidence)
+
+    def test_detected_leetcode_1288_indexed_implementation(self):
+        code = """
+def removeCoveredIntervals(intervals):
+    intervals.sort(key=lambda x: (x[0], -x[1]))
+    count = 1
+    prev_end = intervals[0][1]
+    for i in range(1, len(intervals)):
+        if intervals[i][0] > prev_end:
+            count += 1
+            prev_end = intervals[i][1]
+    return count
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == True
+        assert any(e.type == "interval_sorting" for e in result.evidence)
+        assert any(e.type == "interval_comparison" for e in result.evidence)
+
+    def test_not_detected_brute_force_interval(self):
+        code = """
+def removeCoveredIntervals(intervals):
+    n = len(intervals)
+    result = 0
+    for i in range(n):
+        covered = False
+        for j in range(n):
+            if i != j:
+                a, b = intervals[i][0], intervals[i][1]
+                c, d = intervals[j][0], intervals[j][1]
+                if c <= a and b <= d:
+                    covered = True
+                    break
+        if not covered:
+            result += 1
+    return result
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == False
+
     def test_detect_is_deterministic(self):
         ast_root = ast.parse("x = 1")
         result1 = self.detector.detect(ast_root)

@@ -90,6 +90,21 @@ class GreedyIntervalDetector(BaseDetector):
                     )
                 )
 
+    def _find_tuple_unpacked_interval_vars(self, func_def: ast.FunctionDef) -> set:
+        """Find variable names created by tuple unpacking in for-loop targets.
+
+        Tracks ``for x, y in iterable:`` patterns where the loop target is a
+        Tuple of Name nodes.  Both the first-element and second-element names
+        are returned (they represent interval start/end values after sorting).
+        """
+        unpacked: set = set()
+        for child in ast.walk(func_def):
+            if isinstance(child, ast.For) and isinstance(child.target, ast.Tuple):
+                for elt in child.target.elts:
+                    if isinstance(elt, ast.Name):
+                        unpacked.add(elt.id)
+        return unpacked
+
     def _find_interval_sorting(self, func_def: ast.FunctionDef) -> bool:
         for child in ast.walk(func_def):
             if isinstance(child, ast.Call):
@@ -110,9 +125,22 @@ class GreedyIntervalDetector(BaseDetector):
             if isinstance(child, ast.Subscript):
                 if isinstance(child.slice, ast.Constant) and child.slice.value in (0, 1):
                     return True
+            if isinstance(child, ast.Attribute):
+                if child.attr in ("start", "end", "left", "right"):
+                    return True
+        return False
+
+    def _compare_involves_tracked(
+        self, compare_node: ast.Compare, tracked: set
+    ) -> bool:
+        """Return True if either side of *compare_node* is a tracked Name."""
+        for side in (compare_node.left, compare_node.comparators[0]):
+            if isinstance(side, ast.Name) and side.id in tracked:
+                return True
         return False
 
     def _find_interval_comparison(self, func_def: ast.FunctionDef) -> bool:
+        tracked = self._find_tuple_unpacked_interval_vars(func_def)
         for child in ast.walk(func_def):
             if isinstance(child, ast.Compare):
                 for side in (child.left, child.comparators[0]):
@@ -129,18 +157,25 @@ class GreedyIntervalDetector(BaseDetector):
                         if isinstance(side, ast.Subscript):
                             if isinstance(side.slice, ast.Constant) and side.slice.value in (0, 1):
                                 return True
+                if tracked and self._compare_involves_tracked(child, tracked):
+                    return True
             if isinstance(child, ast.If):
                 if isinstance(child.test, ast.Compare):
                     for side in (child.test.left, child.test.comparators[0]):
                         if isinstance(side, ast.Subscript):
                             if isinstance(side.slice, ast.Constant) and side.slice.value in (0, 1):
                                 return True
+                    if tracked and self._compare_involves_tracked(child.test, tracked):
+                        return True
         return False
 
     def _find_interval_merge_scheduling(self, func_def: ast.FunctionDef) -> bool:
+        tracked = self._find_tuple_unpacked_interval_vars(func_def)
         for child in ast.walk(func_def):
             if isinstance(child, ast.If):
                 has_interval_compare = self._has_interval_subscript_compare(child.test)
+                if not has_interval_compare and tracked:
+                    has_interval_compare = self._has_interval_compare_with_tracked(child.test, tracked)
                 if not has_interval_compare:
                     continue
                 bodies = list(child.body) + list(child.orelse)
@@ -169,19 +204,37 @@ class GreedyIntervalDetector(BaseDetector):
                                 return True
         return False
 
+    def _has_interval_compare_with_tracked(
+        self, test_node: ast.AST, tracked: set
+    ) -> bool:
+        """Like _has_interval_subscript_compare but also accepts tracked Names."""
+        for sub in ast.walk(test_node):
+            if isinstance(sub, ast.Compare):
+                if len(sub.ops) == 1 and isinstance(sub.ops[0], (ast.Lt, ast.LtE, ast.Gt, ast.GtE)):
+                    if self._compare_involves_tracked(sub, tracked):
+                        return True
+        return False
+
     def _find_greedy_selection(self, func_def: ast.FunctionDef) -> bool:
+        tracked = self._find_tuple_unpacked_interval_vars(func_def)
         for child in ast.walk(func_def):
             if isinstance(child, ast.If):
                 if isinstance(child.test, ast.Compare):
+                    has_subscript_gate = False
                     for side in (child.test.left, child.test.comparators[0]):
                         if isinstance(side, ast.Subscript):
                             if isinstance(side.slice, ast.Constant) and side.slice.value in (0, 1):
-                                for stmt in child.body:
-                                    if isinstance(stmt, ast.AugAssign):
-                                        if isinstance(stmt.target, ast.Name):
-                                            target = stmt.target.id.lower()
-                                            if any(kw in target for kw in ("count", "res", "cnt", "total")):
-                                                return True
+                                has_subscript_gate = True
+                                break
+                    if not has_subscript_gate and tracked:
+                        has_subscript_gate = self._compare_involves_tracked(child.test, tracked)
+                    if has_subscript_gate:
+                        for stmt in child.body:
+                            if isinstance(stmt, ast.AugAssign):
+                                if isinstance(stmt.target, ast.Name):
+                                    target = stmt.target.id.lower()
+                                    if any(kw in target for kw in ("count", "res", "cnt", "total")):
+                                        return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:
