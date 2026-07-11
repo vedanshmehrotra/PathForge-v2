@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://path-forge-v2.vercel.app'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://pathforge-v2.onrender.com'
 
 let _accessToken: string | null = null
 
