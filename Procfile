@@ -1,1 +1,1 @@
-web: gunicorn "pathforge:create_app()" --bind 0.0.0.0:$PORT
+web: uvicorn pathforge.api.app:app --host 0.0.0.0 --port $PORT
