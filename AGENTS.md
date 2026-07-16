@@ -37,9 +37,10 @@
 - Updated frontend `api.ts` — `AnalyzeRequest.user_id` changed from `string` to `number`.
 - Updated `analysis-view.tsx` — `handleRun` passes numeric `user_id`, updated placeholder text.
 - Verified all backend/frontend compilation (Python + TypeScript zero errors).
+- **PostgreSQL Migration (Batch 1-3)**: Added `psycopg2-binary` to requirements.txt. Created `pathforge/db/schema_pg.sql` with PostgreSQL syntax (SERIAL, LEAST, no AUTOINCREMENT, no PRAGMA). Rewrote `pathforge/db/db.py` to use psycopg2 connection pool with `PgConnection` wrapper mimicking sqlite3.Row dict access. Updated all SQL queries across 13 files: `?` → `%s`, `INSERT OR REPLACE` → `ON CONFLICT DO UPDATE`, `INSERT OR IGNORE` → `ON CONFLICT DO NOTHING`, `cursor.lastrowid` → `RETURNING id`, `json_extract()` → `->>` JSON operators, `MIN()` → `LEAST()`. Verified Python compilation (zero errors).
 
 ### In Progress
-- None.
+- PostgreSQL Migration: Batch 1-3 complete. Remaining: seed data migration from SQLite → Supabase, Render env var configuration.
 
 ### Blocked
 - None.

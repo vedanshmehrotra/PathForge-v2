@@ -79,19 +79,19 @@ def resolve_problem(
 def _find_problem_in_db(connection, leetcode_id, title_slug):
     if leetcode_id is not None:
         row = connection.execute(
-            "SELECT * FROM problems WHERE id = ?", (leetcode_id,)
+            "SELECT * FROM problems WHERE id = %s", (leetcode_id,)
         ).fetchone()
         if row:
             return dict(row)
     if title_slug:
         row = connection.execute(
-            "SELECT * FROM problems WHERE title_slug = ?", (title_slug,)
+            "SELECT * FROM problems WHERE title_slug = %s", (title_slug,)
         ).fetchone()
         if row:
             return dict(row)
     if leetcode_id is not None and title_slug:
         row = connection.execute(
-            "SELECT * FROM problems WHERE id = ? OR title_slug = ?",
+            "SELECT * FROM problems WHERE id = %s OR title_slug = %s",
             (leetcode_id, title_slug),
         ).fetchone()
         if row:
@@ -112,7 +112,7 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
             raise ValueError("Either leetcode_id or title_slug is required")
 
     existing = connection.execute(
-        "SELECT * FROM problems WHERE title_slug = ?", (title_slug,)
+        "SELECT * FROM problems WHERE title_slug = %s", (title_slug,)
     ).fetchone()
     if existing is not None:
         return dict(existing)
@@ -133,10 +133,18 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
 
     connection.execute(
         """
-        INSERT OR REPLACE INTO problems
+        INSERT INTO problems
             (id, title, difficulty, topics, title_slug, description,
              pattern, test_cases, link, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT(id) DO UPDATE SET
+            title = EXCLUDED.title,
+            difficulty = EXCLUDED.difficulty,
+            topics = EXCLUDED.topics,
+            title_slug = EXCLUDED.title_slug,
+            description = EXCLUDED.description,
+            link = EXCLUDED.link,
+            updated_at = EXCLUDED.updated_at
         """,
         (
             qid,
@@ -155,7 +163,7 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
     connection.commit()
 
     row = connection.execute(
-        "SELECT * FROM problems WHERE id = ?", (qid,)
+        "SELECT * FROM problems WHERE id = %s", (qid,)
     ).fetchone()
     return dict(row)
 
@@ -163,7 +171,7 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
 def _ensure_ground_truth(connection, row):
     pid = row["id"]
     existing = connection.execute(
-        "SELECT 1 FROM problem_ground_truth WHERE problem_id = ?", (pid,)
+        "SELECT 1 FROM problem_ground_truth WHERE problem_id = %s", (pid,)
     ).fetchone()
     if existing:
         return
@@ -179,7 +187,7 @@ def _ensure_ground_truth(connection, row):
 
 def _load_ground_truth(connection, problem_id):
     row = connection.execute(
-        "SELECT patterns, confidence FROM problem_ground_truth WHERE problem_id = ?",
+        "SELECT patterns, confidence FROM problem_ground_truth WHERE problem_id = %s",
         (problem_id,),
     ).fetchone()
     if row is None:

@@ -22,7 +22,7 @@ def load_submissions(connection, user_id: int) -> List[Dict[str, Any]]:
                expected_pattern, target_pattern, gap_identified, diagnosis_confidence,
                topic, attempt_number, submitted_at
         FROM submissions
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY submitted_at ASC
         """,
         (user_id,),
@@ -35,7 +35,7 @@ def load_gap_signals(connection, user_id: int) -> List[Dict[str, Any]]:
         """
         SELECT pattern_id, gap_strength, frequency, last_seen
         FROM gap_signals
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY gap_strength DESC
         """,
         (user_id,),
@@ -48,7 +48,7 @@ def load_user_pattern_elo(connection, user_id: int) -> Dict[str, float]:
         """
         SELECT pattern_id, elo
         FROM user_pattern_elo
-        WHERE user_id = ?
+        WHERE user_id = %s
         """,
         (user_id,),
     ).fetchall()
@@ -61,9 +61,9 @@ def load_recent_match_results(connection, user_id: int, limit: int = 10) -> List
         SELECT id, problem_id, verdict, detected_pattern, target_pattern,
                diagnosis_confidence, submitted_at
         FROM submissions
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY submitted_at DESC
-        LIMIT ?
+        LIMIT %s
         """,
         (user_id, limit),
     ).fetchall()
@@ -72,7 +72,7 @@ def load_recent_match_results(connection, user_id: int, limit: int = 10) -> List
 
 def load_user_info(connection, user_id: int) -> Optional[Dict[str, Any]]:
     row = connection.execute(
-        "SELECT id, username, experience_level, confident_areas, current_streak FROM users WHERE id = ?",
+        "SELECT id, username, experience_level, confident_areas, current_streak FROM users WHERE id = %s",
         (user_id,),
     ).fetchone()
     return dict(row) if row else None

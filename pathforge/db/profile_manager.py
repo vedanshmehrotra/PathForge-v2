@@ -37,19 +37,20 @@ def seed_initial_topic_profiles(connection, user_id, experience_level, confident
     for pattern in sorted(ALL_PATTERNS):
         bonus = 150.0 if any(pattern in BROAD_TOPIC_PATTERNS[area] for area in confident) else 0.0
         rows.append((user_id, pattern, EXPERIENCE_BASELINES[level] + bonus, timestamp, timestamp))
-    connection.executemany(
-        """
-        INSERT INTO topic_profiles (
-            user_id, topic, elo_rating, attempt_count, pass_count,
-            pattern_match_count, accuracy, recent_failures, created_at, updated_at
+    for row in rows:
+        connection.execute(
+            """
+            INSERT INTO topic_profiles (
+                user_id, topic, elo_rating, attempt_count, pass_count,
+                pattern_match_count, accuracy, recent_failures, created_at, updated_at
+            )
+            VALUES (%s, %s, %s, 0, 0, 0, 0.0, 0, %s, %s)
+            ON CONFLICT(user_id, topic) DO UPDATE SET
+                elo_rating = EXCLUDED.elo_rating,
+                updated_at = EXCLUDED.updated_at
+            """,
+            row,
         )
-        VALUES (?, ?, ?, 0, 0, 0, 0.0, 0, ?, ?)
-        ON CONFLICT(user_id, topic) DO UPDATE SET
-            elo_rating = excluded.elo_rating,
-            updated_at = excluded.updated_at
-        """,
-        rows,
-    )
     connection.commit()
     return {"seeded_patterns": len(rows), "baseline": EXPERIENCE_BASELINES[level], "confident_areas": sorted(confident)}
 
@@ -82,7 +83,7 @@ def update_topic_profile(
         """
         SELECT elo_rating, attempt_count, pass_count, pattern_match_count, recent_failures, created_at
         FROM topic_profiles
-        WHERE user_id = ? AND topic = ?
+        WHERE user_id = %s AND topic = %s
         """,
         (user_id, topic),
     ).fetchone()
@@ -117,16 +118,16 @@ def update_topic_profile(
             pattern_match_count, accuracy, recent_failures,
             last_attempt_at, created_at, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT(user_id, topic) DO UPDATE SET
-            elo_rating = excluded.elo_rating,
-            attempt_count = excluded.attempt_count,
-            pass_count = excluded.pass_count,
-            pattern_match_count = excluded.pattern_match_count,
-            accuracy = excluded.accuracy,
-            recent_failures = excluded.recent_failures,
-            last_attempt_at = excluded.last_attempt_at,
-            updated_at = excluded.updated_at
+            elo_rating = EXCLUDED.elo_rating,
+            attempt_count = EXCLUDED.attempt_count,
+            pass_count = EXCLUDED.pass_count,
+            pattern_match_count = EXCLUDED.pattern_match_count,
+            accuracy = EXCLUDED.accuracy,
+            recent_failures = EXCLUDED.recent_failures,
+            last_attempt_at = EXCLUDED.last_attempt_at,
+            updated_at = EXCLUDED.updated_at
         """,
         (
             user_id,
@@ -166,7 +167,7 @@ def get_user_profile(connection, user_id):
                pattern_match_count, accuracy, recent_failures,
                last_attempt_at, created_at, updated_at
         FROM topic_profiles
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY topic ASC
         """,
         (user_id,),
@@ -183,9 +184,9 @@ def get_recommendable_patterns(connection):
     would produce non-actionable topic_hint recommendations and are excluded.
     """
     rows = connection.execute(
-        """SELECT DISTINCT json_extract(p.pattern, '$[0]') AS pattern
+        """SELECT DISTINCT p.pattern::jsonb->>0 AS pattern
            FROM problems p
-           WHERE json_extract(p.pattern, '$[0]') IS NOT NULL"""
+           WHERE p.pattern::jsonb->>0 IS NOT NULL"""
     ).fetchall()
     return {row["pattern"] for row in rows}
 
@@ -199,7 +200,7 @@ def ensure_topic_profiles_exist(connection, user_id):
     back to the submission's topic field.
     """
     existing = connection.execute(
-        "SELECT COUNT(*) AS cnt FROM topic_profiles WHERE user_id = ?",
+        "SELECT COUNT(*) AS cnt FROM topic_profiles WHERE user_id = %s",
         (user_id,),
     ).fetchone()
     if existing and existing["cnt"] > 0:
@@ -213,7 +214,7 @@ def ensure_topic_profiles_exist(connection, user_id):
                COALESCE(p.difficulty, 'Easy') AS difficulty, s.submitted_at
         FROM submissions s
         LEFT JOIN problems p ON p.id = s.problem_id
-        WHERE s.user_id = ?
+        WHERE s.user_id = %s
         ORDER BY s.submitted_at ASC
         """,
         (user_id,),
@@ -252,18 +253,19 @@ def ensure_topic_profiles_exist(connection, user_id):
             td["last_attempt_at"], timestamp, timestamp,
         ))
 
-    connection.executemany(
-        """
-        INSERT INTO topic_profiles (
-            user_id, topic, elo_rating, attempt_count, pass_count,
-            pattern_match_count, accuracy, recent_failures,
-            last_attempt_at, created_at, updated_at
+    for row in rows:
+        connection.execute(
+            """
+            INSERT INTO topic_profiles (
+                user_id, topic, elo_rating, attempt_count, pass_count,
+                pattern_match_count, accuracy, recent_failures,
+                last_attempt_at, created_at, updated_at
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT(user_id, topic) DO NOTHING
+            """,
+            row,
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(user_id, topic) DO NOTHING
-        """,
-        rows,
-    )
     return len(rows)
 
 
@@ -281,7 +283,8 @@ def get_weakest_topics(connection, user_id, limit=5):
     recommendable = get_recommendable_patterns(connection)
     if not recommendable:
         return []
-    placeholders = ",".join("?" * len(recommendable))
+    placeholders = ",".join(["%s"] * len(recommendable))
+    params = [user_id] + sorted(recommendable) + [limit]
     rows = connection.execute(
         f"""
         SELECT user_id, topic, elo_rating, attempt_count, pass_count,
@@ -289,14 +292,14 @@ def get_weakest_topics(connection, user_id, limit=5):
                last_attempt_at, created_at, updated_at,
                 ((1600.0 - elo_rating) / 1200.0)
                 + (1.0 - accuracy)
-                + (MIN(recent_failures, 5) / 3.0) AS weakness_score
+                + (LEAST(recent_failures, 5) / 3.0) AS weakness_score
         FROM topic_profiles
-        WHERE user_id = ?
+        WHERE user_id = %s
           AND topic IN ({placeholders})
         ORDER BY weakness_score DESC, elo_rating ASC, accuracy ASC
-        LIMIT ?
+        LIMIT %s
         """,
-        (user_id, *sorted(recommendable), limit),
+        tuple(params),
     ).fetchall()
 
     if not rows:
@@ -308,14 +311,14 @@ def get_weakest_topics(connection, user_id, limit=5):
                    last_attempt_at, created_at, updated_at,
                     ((1600.0 - elo_rating) / 1200.0)
                     + (1.0 - accuracy)
-                    + (MIN(recent_failures, 5) / 3.0) AS weakness_score
+                    + (LEAST(recent_failures, 5) / 3.0) AS weakness_score
             FROM topic_profiles
-            WHERE user_id = ?
+            WHERE user_id = %s
               AND topic IN ({placeholders})
             ORDER BY weakness_score DESC, elo_rating ASC, accuracy ASC
-            LIMIT ?
+            LIMIT %s
             """,
-            (user_id, *sorted(recommendable), limit),
+            tuple(params),
         ).fetchall()
 
     return [dict(row) for row in rows]

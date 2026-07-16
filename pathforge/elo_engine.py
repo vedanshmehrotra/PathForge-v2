@@ -237,11 +237,11 @@ class EloEngine:
             connection.execute(
                 """
                 INSERT INTO user_pattern_elo (user_id, pattern_id, elo, last_updated, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 ON CONFLICT(user_id, pattern_id) DO UPDATE SET
-                    elo = excluded.elo,
-                    last_updated = excluded.last_updated,
-                    updated_at = excluded.updated_at
+                    elo = EXCLUDED.elo,
+                    last_updated = EXCLUDED.last_updated,
+                    updated_at = EXCLUDED.updated_at
                 """,
                 (
                     user_id,

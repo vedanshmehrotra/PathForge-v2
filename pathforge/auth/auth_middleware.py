@@ -6,11 +6,11 @@ user to an internal PathForge user record.
 
 import json
 import os
-import sqlite3
 from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
+import psycopg2
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, jwk, JWTError
@@ -119,10 +119,10 @@ def _ensure_local_user(payload: dict, db_path: str) -> int:
     try:
         try:
             row = connection.execute(
-                "SELECT id, supabase_id FROM users WHERE supabase_id = ?",
+                "SELECT id, supabase_id FROM users WHERE supabase_id = %s",
                 (supabase_id,),
             ).fetchone()
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             raise HTTPException(status_code=500, detail=f"Database error during user lookup: {e}")
 
         if row is not None:
@@ -143,7 +143,8 @@ def _ensure_local_user(payload: dict, db_path: str) -> int:
                     experience_level, confident_areas, onboarding_complete,
                     supabase_id, created_at, updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
                 """,
                 (
                     supabase_id,
@@ -158,10 +159,10 @@ def _ensure_local_user(payload: dict, db_path: str) -> int:
                     now,
                 ),
             )
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             raise HTTPException(status_code=500, detail=f"Database error during user insert: {e}")
         connection.commit()
-        return int(cursor.lastrowid)
+        return int(cursor.fetchone()["id"])
     finally:
         connection.close()
 

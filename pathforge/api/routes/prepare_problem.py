@@ -40,26 +40,29 @@ class PrepareResponse(BaseModel):
 def prepare_problem_endpoint(req: PrepareRequest):
     conn = get_connection(config.DATABASE_PATH)
     try:
-        ctx = resolve_problem(
-            conn,
-            leetcode_id=req.problem.leetcode_id,
-            title_slug=req.problem.title_slug,
-        )
-    except ValueError as e:
-        raise HTTPException(
-            status_code=404,
-            detail=f"This problem could not be prepared. Very recent or contest problems may not yet be available through the LeetCode GraphQL API. ({e})",
-        )
-    except (GraphQLUnavailableError, GroundTruthError) as e:
-        raise HTTPException(
-            status_code=502,
-            detail=f"This problem could not be prepared. Very recent or contest problems may not yet be available through the LeetCode GraphQL API. ({e})",
-        )
+        try:
+            ctx = resolve_problem(
+                conn,
+                leetcode_id=req.problem.leetcode_id,
+                title_slug=req.problem.title_slug,
+            )
+        except ValueError as e:
+            raise HTTPException(
+                status_code=404,
+                detail=f"This problem could not be prepared. Very recent or contest problems may not yet be available through the LeetCode GraphQL API. ({e})",
+            )
+        except (GraphQLUnavailableError, GroundTruthError) as e:
+            raise HTTPException(
+                status_code=502,
+                detail=f"This problem could not be prepared. Very recent or contest problems may not yet be available through the LeetCode GraphQL API. ({e})",
+            )
 
-    return PrepareResponse(
-        leetcode_id=ctx.leetcode_id,
-        title_slug=ctx.title_slug,
-        title=ctx.title,
-        difficulty=ctx.difficulty,
-        topics=ctx.topics,
-    )
+        return PrepareResponse(
+            leetcode_id=ctx.leetcode_id,
+            title_slug=ctx.title_slug,
+            title=ctx.title,
+            difficulty=ctx.difficulty,
+            topics=ctx.topics,
+        )
+    finally:
+        conn.close()

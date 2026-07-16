@@ -250,12 +250,12 @@ class GapSignalEngine:
             connection.execute(
                 """
                 INSERT INTO gap_signals (user_id, pattern_id, gap_strength, frequency, last_seen, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT(user_id, pattern_id) DO UPDATE SET
-                    gap_strength = excluded.gap_strength,
-                    frequency = excluded.frequency,
-                    last_seen = excluded.last_seen,
-                    updated_at = excluded.updated_at
+                    gap_strength = EXCLUDED.gap_strength,
+                    frequency = EXCLUDED.frequency,
+                    last_seen = EXCLUDED.last_seen,
+                    updated_at = EXCLUDED.updated_at
                 """,
                 (
                     user_id,

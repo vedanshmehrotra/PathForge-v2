@@ -129,13 +129,13 @@ def _select_problem(connection, user_id, topic, difficulty, exclude_problem_id=N
         """
         SELECT p.*
         FROM problems p
-        WHERE p.difficulty = ?
-          AND (p.topics LIKE ? OR json_extract(p.pattern, '$[0]') = ?)
-          AND (? IS NULL OR p.id != ?)
+        WHERE p.difficulty = %s
+          AND (p.topics LIKE %s OR p.pattern::jsonb->>0 = %s)
+          AND (%s IS NULL OR p.id != %s)
           AND NOT EXISTS (
               SELECT 1
               FROM submissions s
-              WHERE s.user_id = ?
+              WHERE s.user_id = %s
                 AND s.problem_id = p.id
                 AND s.verdict = 'pass'
           )
@@ -152,7 +152,7 @@ def _check_pattern_lock(connection, user_id, topic, verdict):
     if verdict == "pass":
         rows = connection.execute(
             """SELECT verdict FROM submissions
-               WHERE user_id = ? AND topic = ?
+               WHERE user_id = %s AND topic = %s
                ORDER BY submitted_at DESC LIMIT 3""",
             (user_id, topic),
         ).fetchall()
@@ -160,7 +160,7 @@ def _check_pattern_lock(connection, user_id, topic, verdict):
             return True
     elif verdict == "fail":
         row = connection.execute(
-            "SELECT recent_failures FROM topic_profiles WHERE user_id = ? AND topic = ?",
+            "SELECT recent_failures FROM topic_profiles WHERE user_id = %s AND topic = %s",
             (user_id, topic),
         ).fetchone()
         if row and int(row["recent_failures"]) >= 3:
@@ -172,7 +172,7 @@ def _consecutive_pass_count(connection, user_id, topic):
     """Return the number of consecutive pass verdicts for a topic (most recent first)."""
     rows = connection.execute(
         """SELECT verdict FROM submissions
-           WHERE user_id = ? AND topic = ?
+           WHERE user_id = %s AND topic = %s
            ORDER BY submitted_at DESC""",
         (user_id, topic),
     ).fetchall()
@@ -189,7 +189,7 @@ def _consecutive_recommendations_for_topic(connection, user_id, topic):
     """Return True if the same topic was recommended in the last 2 stored recommendations."""
     rows = connection.execute(
         """SELECT topic FROM recommendations
-           WHERE user_id = ?
+           WHERE user_id = %s
            ORDER BY created_at DESC LIMIT 2""",
         (user_id,),
     ).fetchall()
@@ -301,7 +301,7 @@ def gap_info_pattern(problem, topic):
 def _difficulty_for_user(connection, user_id, topic):
     """Return target difficulty for a user's current topic Elo."""
     row = connection.execute(
-        "SELECT elo_rating FROM topic_profiles WHERE user_id = ? AND topic = ?",
+        "SELECT elo_rating FROM topic_profiles WHERE user_id = %s AND topic = %s",
         (user_id, topic),
     ).fetchone()
     elo = float(row["elo_rating"]) if row else 800.0
@@ -326,5 +326,3 @@ def _move_difficulty(difficulty, delta):
 def _topic_from_problem(problem_record):
     """Return the first topic from a problem record's comma-separated topics."""
     return problem_record["topics"].split(",")[0].strip()
-
-

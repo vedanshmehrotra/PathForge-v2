@@ -75,7 +75,8 @@ def run_persistence(
             detected_confidence, expected_pattern, target_pattern, gap_identified,
             diagnosis_confidence, time_taken_seconds, attempt_number, topic, submitted_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
         """,
         (
             user_id,
@@ -94,7 +95,7 @@ def run_persistence(
             timestamp,
         ),
     )
-    submission_id = cursor.lastrowid
+    submission_id = cursor.fetchone()["id"]
 
     profile_update = None
     if problem_difficulty is not None:
@@ -132,14 +133,14 @@ def run_persistence(
     _update_user_streak(connection, user_id, timestamp)
 
     record = connection.execute(
-        "SELECT * FROM submissions WHERE id = ?", (submission_id,)
+        "SELECT * FROM submissions WHERE id = %s", (submission_id,)
     ).fetchone()
     submission_record = dict(record)
 
     problem_record = None
     if problem_id is not None:
         row = connection.execute(
-            "SELECT * FROM problems WHERE id = ?", (problem_id,)
+            "SELECT * FROM problems WHERE id = %s", (problem_id,)
         ).fetchone()
         if row:
             problem_record = dict(row)

@@ -52,7 +52,7 @@ def handle_submission(user_id, problem_id, verdict, connection):
 
 
 def _get_problem(connection, problem_id):
-    row = connection.execute("SELECT * FROM problems WHERE id = ?", (problem_id,)).fetchone()
+    row = connection.execute("SELECT * FROM problems WHERE id = %s", (problem_id,)).fetchone()
     if not row:
         raise ValueError(f"Problem not found: {problem_id}")
     return dict(row)
@@ -67,7 +67,7 @@ def _get_pattern(problem):
 
 def _next_attempt_number(connection, user_id, problem_id):
     row = connection.execute(
-        "SELECT COALESCE(MAX(attempt_number), 0) + 1 AS next_attempt FROM submissions WHERE user_id = ? AND problem_id = ?",
+        "SELECT COALESCE(MAX(attempt_number), 0) + 1 AS next_attempt FROM submissions WHERE user_id = %s AND problem_id = %s",
         (user_id, problem_id),
     ).fetchone()
     return int(row["next_attempt"])
@@ -90,7 +90,8 @@ def _save_submission(
             detected_confidence, expected_pattern, target_pattern, gap_identified,
             diagnosis_confidence, time_taken_seconds, attempt_number, topic, submitted_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
         """,
         (
             user_id,
@@ -111,12 +112,12 @@ def _save_submission(
     )
     # NOTE: Do not commit here. The caller (pipeline.py) must handle atomicity
     # by committing all changes (submission, streak, profile, recommendation) in one transaction.
-    return cursor.lastrowid
+    return cursor.fetchone()["id"]
 
 
 def _update_user_streak(connection, user_id, submitted_at):
     today = date.fromisoformat(submitted_at[:10])
-    row = connection.execute("SELECT current_streak, last_submission_date FROM users WHERE id = ?", (user_id,)).fetchone()
+    row = connection.execute("SELECT current_streak, last_submission_date FROM users WHERE id = %s", (user_id,)).fetchone()
     if not row:
         return
     last_date = date.fromisoformat(row["last_submission_date"]) if row["last_submission_date"] else None
@@ -127,7 +128,7 @@ def _update_user_streak(connection, user_id, submitted_at):
     else:
         streak = 1
     connection.execute(
-        "UPDATE users SET current_streak = ?, last_submission_date = ?, updated_at = ? WHERE id = ?",
+        "UPDATE users SET current_streak = %s, last_submission_date = %s, updated_at = %s WHERE id = %s",
         (streak, today.isoformat(), submitted_at, user_id),
     )
     # NOTE: Do not commit here. The caller (pipeline.py) must handle atomicity
@@ -135,5 +136,5 @@ def _update_user_streak(connection, user_id, submitted_at):
 
 
 def _get_submission(connection, submission_id):
-    row = connection.execute("SELECT * FROM submissions WHERE id = ?", (submission_id,)).fetchone()
+    row = connection.execute("SELECT * FROM submissions WHERE id = %s", (submission_id,)).fetchone()
     return dict(row)

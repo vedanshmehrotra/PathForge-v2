@@ -7,7 +7,7 @@ Provides:
 All routes use Supabase JWT verification via the auth middleware.
 """
 
-import sqlite3
+import psycopg2
 
 from fastapi import APIRouter, Depends, HTTPException
 from pathforge.auth.auth_middleware import (
@@ -41,11 +41,11 @@ def get_me(user: VerifiedUser = Depends(get_current_user)):
                 SELECT id, username, email, display_name, experience_level,
                        confident_areas, onboarding_complete, current_streak,
                        last_submission_date, created_at, updated_at
-                FROM users WHERE id = ?
+                FROM users WHERE id = %s
                 """,
                 (user.user_id,),
             ).fetchone()
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             raise HTTPException(status_code=500, detail=f"Database error: {e}")
         if row is None:
             raise HTTPException(status_code=404, detail="User not found")

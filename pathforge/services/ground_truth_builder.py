@@ -62,8 +62,12 @@ def _store_ground_truth(connection, problem_id: int, patterns: list[str], confid
 
     connection.execute(
         """
-        INSERT OR REPLACE INTO problem_ground_truth (problem_id, patterns, confidence, created_at, updated_at)
-        VALUES (?, ?, ?, COALESCE((SELECT created_at FROM problem_ground_truth WHERE problem_id = ?), ?), ?)
+        INSERT INTO problem_ground_truth (problem_id, patterns, confidence, created_at, updated_at)
+        VALUES (%s, %s, %s, COALESCE((SELECT created_at FROM problem_ground_truth WHERE problem_id = %s), %s), %s)
+        ON CONFLICT(problem_id) DO UPDATE SET
+            patterns = EXCLUDED.patterns,
+            confidence = EXCLUDED.confidence,
+            updated_at = EXCLUDED.updated_at
         """,
         (problem_id, patterns_json, confidence_json, problem_id, now, now),
     )
