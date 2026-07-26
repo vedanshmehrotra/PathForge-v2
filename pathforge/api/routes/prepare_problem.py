@@ -7,10 +7,11 @@ Runtime /analyze always remains fast and deterministic.
 
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from pathforge.services.problem_resolver import resolve_problem
+from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.ground_truth_builder import GroundTruthError
 from pathforge.llm.graphql_client import GraphQLUnavailableError
 from pathforge.db.db import get_connection
@@ -37,7 +38,8 @@ class PrepareResponse(BaseModel):
 
 
 @router.post("/prepare-problem", response_model=PrepareResponse)
-def prepare_problem_endpoint(req: PrepareRequest):
+def prepare_problem_endpoint(req: PrepareRequest, request: Request):
+    get_current_user(request)  # auth gate — user object not needed by this endpoint
     conn = get_connection(config.DATABASE_PATH)
     try:
         try:

@@ -2,14 +2,43 @@
 
 These tests verify the route handlers and service orchestration without
 requiring a running server. They test the FastAPI route logic via TestClient.
+
+Note: All protected endpoints now require JWT authentication. The fixture
+below mocks `get_current_user` on every protected route so functional tests
+don't need real tokens. Auth rejection is tested separately in auth_test.py.
 """
 
 import json
+from unittest.mock import patch
+
 import pytest
 from fastapi.testclient import TestClient
 from pathforge.api.app import app
+from pathforge.auth.auth_middleware import VerifiedUser
 
 client = TestClient(app)
+
+
+def _mock_user() -> VerifiedUser:
+    """Return a VerifiedUser for use in mocked auth."""
+    return VerifiedUser(user_id=1, supabase_id="mock-supabase-id", email="mock@test.com")
+
+
+@pytest.fixture(autouse=True)
+def _mock_auth():
+    """Mock JWT auth on every protected route for every test in this file."""
+    patches = [
+        patch("pathforge.api.routes.analyze.get_current_user", return_value=_mock_user()),
+        patch("pathforge.api.routes.recommend.get_current_user", return_value=_mock_user()),
+        patch("pathforge.api.routes.elo_route.get_current_user", return_value=_mock_user()),
+        patch("pathforge.api.routes.gaps.get_current_user", return_value=_mock_user()),
+        patch("pathforge.api.routes.prepare_problem.get_current_user", return_value=_mock_user()),
+    ]
+    for p in patches:
+        p.start()
+    yield
+    for p in patches:
+        p.stop()
 
 
 def test_health():

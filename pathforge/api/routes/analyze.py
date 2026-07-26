@@ -7,10 +7,11 @@ recommendations, and user streak.
 
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from pathforge.api.services.analysis import run_analysis
+from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.problem_resolver import resolve_problem
 from pathforge.services.ground_truth_builder import GroundTruthError
 from pathforge.services.persistence import run_persistence
@@ -75,7 +76,8 @@ class AnalyzeResponse(BaseModel):
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-def analyze_endpoint(req: AnalyzeRequest):
+def analyze_endpoint(req: AnalyzeRequest, request: Request):
+    user = get_current_user(request)
     conn = get_connection(config.DATABASE_PATH)
     try:
         groups = None
@@ -115,7 +117,7 @@ def analyze_endpoint(req: AnalyzeRequest):
         try:
             persisted = run_persistence(
                 connection=conn,
-                user_id=req.user_id,
+                user_id=user.user_id,
                 problem_id=ctx.leetcode_id if ctx else None,
                 problem_difficulty=ctx.difficulty if ctx else None,
                 code=req.code,

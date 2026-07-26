@@ -4,6 +4,8 @@ These tests verify the auth middleware, user mapping, and auth routes.
 JWT verification is tested with mock/computed tokens.
 """
 
+from unittest.mock import patch
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -43,13 +45,45 @@ def test_session_with_fake_token():
     assert resp.status_code == 401
 
 
-def test_analyze_still_works_without_auth():
+def test_analyze_rejects_without_auth():
+    """Unauthenticated /analyze must return 401."""
+    patch.stopall()
     resp = client.post("/analyze", json={
-        "user_id": "1",
+        "user_id": 1,
         "code": "x = 1",
         "language": "python",
     })
-    assert resp.status_code == 200
+    assert resp.status_code == 401
+
+
+def test_recommend_rejects_without_auth():
+    """Unauthenticated /recommend must return 401."""
+    patch.stopall()
+    resp = client.post("/recommend", json={"user_id": 1})
+    assert resp.status_code == 401
+
+
+def test_elo_rejects_without_auth():
+    """Unauthenticated /elo must return 401."""
+    patch.stopall()
+    resp = client.post("/elo", json={"user_id": 1})
+    assert resp.status_code == 401
+
+
+def test_gaps_rejects_without_auth():
+    """Unauthenticated /gaps must return 401."""
+    patch.stopall()
+    resp = client.post("/gaps", json={"user_id": 1})
+    assert resp.status_code == 401
+
+
+def test_prepare_problem_rejects_without_auth():
+    """Unauthenticated /prepare-problem must return 401."""
+    patch.stopall()
+    resp = client.post("/prepare-problem", json={
+        "problem": {"leetcode_id": 1},
+    })
+    assert resp.status_code == 401
 
 
 def test_me_with_fake_token():
@@ -76,13 +110,3 @@ def test_bearer_scheme_detection():
 def test_empty_authorization_header():
     resp = client.get("/auth/me", headers={"Authorization": ""})
     assert resp.status_code == 401
-
-
-def test_analyze_endpoint_accepts_token_field():
-    resp = client.post("/analyze", json={
-        "user_id": "1",
-        "code": "x = 1",
-        "language": "python",
-    })
-    assert resp.status_code == 200
-    assert "ast" in resp.json()
