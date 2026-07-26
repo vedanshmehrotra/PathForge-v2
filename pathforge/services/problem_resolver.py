@@ -7,7 +7,7 @@ This is the ONLY module allowed to:
 Runtime analysis must never call GraphQL or the LLM directly.
 Every other service reads from the DB only.
 """
-
+from psycopg2.extras import Json
 import json
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -153,8 +153,14 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
             topics,
             title_slug,
             description,
-            "[]",
-            data.get("exampleTestcases") or "",
+            Json([]),
+            Json(
+                [
+                    line.strip()
+                    for line in (data.get("exampleTestcases") or "").split("\n")
+                    if line.strip()
+                ]
+            ),
             link,
             now,
             now,
