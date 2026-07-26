@@ -153,7 +153,7 @@ def _ensure_local_user(payload: dict, db_path: str) -> int:
                     display_name,
                     "beginner",
                     "[]",
-                    0,
+                    False,
                     supabase_id,
                     now,
                     now,
