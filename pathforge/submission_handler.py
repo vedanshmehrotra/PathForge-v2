@@ -1,8 +1,8 @@
-import json
 from datetime import date, timedelta
 from typing import Union
 
 from pathforge.db.profile_manager import iso_now, update_topic_profile
+from pathforge.services import parse_problem_pattern
 
 
 def to_date(value: Union[str, date, None]) -> Union[date, None]:
@@ -79,7 +79,7 @@ def _get_problem(connection, problem_id):
 
 
 def _get_pattern(problem):
-    patterns = json.loads(problem["pattern"])
+    patterns = parse_problem_pattern(problem)
     if not patterns:
         raise ValueError(f"Problem {problem['id']} has no pattern")
     return patterns[0]

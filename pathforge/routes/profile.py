@@ -1,5 +1,3 @@
-import json
-
 from flask import Blueprint, current_app, request
 
 from pathforge.db.db import connect
@@ -7,6 +5,7 @@ from pathforge.db.profile_manager import get_user_profile, get_weakest_topics, i
 from pathforge.pattern_links import leetcode_url, pattern_options
 from pathforge.recommender import _difficulty_from_elo, _select_problem
 from pathforge.routes.auth import error, require_auth, success
+from pathforge.services import parse_problem_pattern
 
 profile_bp = Blueprint("profile", __name__, url_prefix="/api")
 
@@ -65,7 +64,7 @@ def recommend(user_id):
             d = _difficulty_from_elo(float(w["elo_rating"]))
             p = _select_problem(connection, user_id, t, d)
             if p:
-                patterns = json.loads(p["pattern"])
+                patterns = parse_problem_pattern(p)
                 topic = patterns[0] if patterns else t
                 difficulty, problem = d, p
                 break
@@ -75,7 +74,7 @@ def recommend(user_id):
             for d in ("Easy", "Medium", "Hard"):
                 p = _select_problem(connection, user_id, t, d)
                 if p:
-                    patterns = json.loads(p["pattern"])
+                    patterns = parse_problem_pattern(p)
                     topic = patterns[0] if patterns else t
                     difficulty, problem = d, p
                     break
@@ -83,7 +82,7 @@ def recommend(user_id):
         if not problem:
             p = _first_unsolved_problem(connection, user_id)
             if p:
-                topic = json.loads(p["pattern"])[0]
+                topic = parse_problem_pattern(p)[0]
                 difficulty = p["difficulty"]
                 problem = p
             else:

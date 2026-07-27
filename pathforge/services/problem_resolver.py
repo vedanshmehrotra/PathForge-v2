@@ -7,7 +7,6 @@ This is the ONLY module allowed to:
 Runtime analysis must never call GraphQL or the LLM directly.
 Every other service reads from the DB only.
 """
-from psycopg2.extras import Json
 import json
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -153,8 +152,8 @@ def _fetch_and_store_problem(connection, leetcode_id, title_slug):
             topics,
             title_slug,
             description,
-            Json([]),
-            Json(
+            json.dumps([]),
+            json.dumps(
                 [
                     line.strip()
                     for line in (data.get("exampleTestcases") or "").split("\n")
@@ -205,6 +204,8 @@ def _load_ground_truth(connection, problem_id):
     patterns: list = []
     confidence: dict = {}
 
+    # Deserialize at read boundary: TEXT columns return str, JSONB columns return
+    # already-parsed Python objects. Handle both exactly once.
     if isinstance(patterns_raw, str) and patterns_raw:
         try:
             parsed = json.loads(patterns_raw)
@@ -212,12 +213,16 @@ def _load_ground_truth(connection, problem_id):
                 patterns = parsed
         except (json.JSONDecodeError, TypeError):
             patterns = []
+    elif isinstance(patterns_raw, list):
+        patterns = patterns_raw
 
     if isinstance(confidence_raw, str) and confidence_raw:
         try:
             confidence = json.loads(confidence_raw)
         except (json.JSONDecodeError, TypeError):
             confidence = {}
+    elif isinstance(confidence_raw, dict):
+        confidence = confidence_raw
 
     if patterns:
         best_conf = max(confidence.values()) if confidence else 1.0

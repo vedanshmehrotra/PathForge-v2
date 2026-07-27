@@ -1,5 +1,6 @@
-import json
 import logging
+
+from pathforge.services import parse_problem_pattern
 
 from pathforge.db.profile_manager import get_weakest_topics
 from pathforge.pattern_links import leetcode_url
@@ -99,7 +100,7 @@ def get_recommendation(user_id, submission_result, problem_record, connection):
                 fd = _difficulty_from_elo(float(fb["elo_rating"]))
                 p = _select_problem(connection, user_id, ft, fd, exclude_problem_id=current_problem_id)
                 if p:
-                    patterns = json.loads(p["pattern"])
+                    patterns = parse_problem_pattern(p)
                     selected_topic = patterns[0] if patterns else ft
                     difficulty = fd
                     problem = p
@@ -228,7 +229,7 @@ def _rotate_topic(connection, user_id, exclude_topic):
         difficulty = _difficulty_from_elo(float(w["elo_rating"]))
         problem = _select_problem(connection, user_id, candidate, difficulty)
         if problem:
-            patterns = json.loads(problem["pattern"])
+            patterns = parse_problem_pattern(problem)
             return patterns[0] if patterns else candidate
         logger.info(
             "_rotate_topic: skipped topic '%s' (no available problem at %s for user %s)",

@@ -1,8 +1,8 @@
-import json
 from datetime import date, timedelta
 from typing import Dict, Any, Optional
 
 from pathforge.db.profile_manager import iso_now, update_topic_profile
+from pathforge.services import parse_problem_pattern
 from pathforge.api.services.loader import load_submissions
 from pathforge.gap_signal_engine import GapSignalEngine
 from pathforge.elo_engine import EloEngine
@@ -124,8 +124,6 @@ def create_submission(
     
     Returns a dict with submission_id, submission_record, topic, and pattern.
     """
-    import json
-    
     timestamp = submitted_at or iso_now()
     
     # Extract pattern and topic information
@@ -133,12 +131,9 @@ def create_submission(
     pattern = None
     
     if problem_data and problem_id:
-        try:
-            patterns = json.loads(problem_data.get("pattern", "[]"))
-            pattern = patterns[0] if patterns else None
-            topic = pattern or "unknown"
-        except (json.JSONDecodeError, TypeError):
-            topic = problem_data.get("difficulty", "unknown")
+        patterns = parse_problem_pattern(problem_data)
+        pattern = patterns[0] if patterns else None
+        topic = pattern or "unknown"
     
     # Calculate attempt number
     attempt_number = _calculate_attempt_number(connection, user_id, problem_id)
