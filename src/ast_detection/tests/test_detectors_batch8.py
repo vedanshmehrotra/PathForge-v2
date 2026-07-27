@@ -130,6 +130,66 @@ def minCostClimbingStairs(cost):
         result = self.detector.detect(ast.parse(code))
         assert result.detected == True
 
+    def test_not_detected_simple_if_condition(self):
+        """Should not crash on simple 'if a < b:' condition (ast.Compare)."""
+        code = """
+def solve(a, b):
+    if a < b:
+        return a
+    return b
+"""
+        result = self.detector.detect(ast.parse(code))
+        # No crash, and should not be detected as DP
+        assert result.detected == False
+
+    def test_not_detected_while_and_condition(self):
+        """Should not crash on 'while i < j and nums[i] == nums[i-1]:' (ast.BoolOp)."""
+        code = """
+def three_sum(nums):
+    nums.sort()
+    i, j = 0, len(nums) - 1
+    while i < j and nums[i] == nums[i - 1]:
+        i += 1
+    return nums
+"""
+        # This previously crashed with 'BoolOp' object has no attribute 'left'
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == False
+
+    def test_not_detected_while_or_condition(self):
+        """Should not crash on 'while left <= right or found:' (ast.BoolOp with ast.Name)."""
+        code = """
+def search(nums, target):
+    left, right = 0, len(nums) - 1
+    found = False
+    while left <= right or found:
+        mid = (left + right) // 2
+        if nums[mid] == target:
+            found = True
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return found
+"""
+        # This previously crashed with 'BoolOp' object has no attribute 'left'
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == False
+
+    def test_not_detected_if_and_condition(self):
+        """Should not crash on 'if i < j and nums[i] > nums[j]:' in a condition."""
+        code = """
+def count_inversions(nums):
+    count = 0
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if i < j and nums[i] > nums[j]:
+                count += 1
+    return count
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == False
+
     def test_detect_is_deterministic(self):
         ast_root = ast.parse("x = 1")
         result1 = self.detector.detect(ast_root)

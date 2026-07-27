@@ -169,14 +169,16 @@ class TestPartialMatch:
         assert result["match_result"] == "PARTIAL_MATCH"
         assert result["matched_groups"] == []
 
-    def test_low_confidence_full_match_becomes_partial(self):
+    def test_low_confidence_full_match_is_full_match(self):
+        """When all expected patterns are matched, verdict is FULL_MATCH regardless of confidence.
+        Confidence reflects AST detection reliability; verdict reflects coverage completeness."""
         engine = MatchingEngine()
         result = engine.match(
             {"accepted_solution_groups": [["dp_1d_forward"]]},
             [make_ast_entry("dp_1d_forward", 0.30)],
         )
-        assert result["match_result"] == "PARTIAL_MATCH"
-        assert result["confidence_score"] < MATCH_THRESHOLD
+        assert result["match_result"] == "FULL_MATCH"
+        assert result["confidence_score"] == 0.30
 
     def test_multiple_groups_some_partial(self):
         engine = MatchingEngine()
@@ -259,26 +261,31 @@ class TestConfidenceScore:
         )
         assert result["confidence_score"] == 0.60
 
-    def test_extra_ast_patterns_penalty(self):
+    def test_extra_ast_patterns_no_penalty_when_full_match(self):
+        """Auxiliary patterns should not penalize confidence when all expected patterns are matched."""
         engine = MatchingEngine()
         result = engine.match(
             {"accepted_solution_groups": [["dp_1d_forward"]]},
             [
                 make_ast_entry("dp_1d_forward", 0.85),
-                make_ast_entry("extra_pattern", 0.90),
+                make_ast_entry("sorting", 0.80),
+                make_ast_entry("prefix_sum", 0.60),
             ],
         )
-        assert result["confidence_score"] < 0.85
         assert result["match_result"] == "FULL_MATCH"
+        assert result["confidence_score"] == 0.85
 
     def test_missing_llm_pattern_penalty(self):
+        """When expected patterns are missing, extra AST patterns are still penalized."""
         engine = MatchingEngine()
         result = engine.match(
             {"accepted_solution_groups": [["dp_1d_forward", "dp_1d_sequence"]]},
             [make_ast_entry("dp_1d_forward", 0.90)],
         )
+        assert result["match_result"] == "PARTIAL_MATCH"
         assert result["confidence_score"] < 0.90
         assert result["confidence_score"] > 0.0
+        assert "dp_1d_sequence" in result["unmatched_patterns"]
 
 
 class TestUnmatchedPatterns:
@@ -364,6 +371,8 @@ class TestReasoningSignals:
 
 class TestEdgeCases:
     def test_overlapping_ast_detections(self):
+        """Extra patterns don't penalize when all expected patterns are matched.
+        Overlapping AST detections for the same pattern use the highest confidence."""
         engine = MatchingEngine()
         result = engine.match(
             {"accepted_solution_groups": [["dp_1d_forward"]]},
@@ -374,10 +383,8 @@ class TestEdgeCases:
             ],
         )
         assert result["match_result"] == "FULL_MATCH"
-        best_group_conf = 0.95
-        extra_penalty = 0.80 * 0.1
-        expected = best_group_conf - extra_penalty
-        assert result["confidence_score"] == pytest.approx(expected, rel=1e-3)
+        # No penalty — all expected patterns matched
+        assert result["confidence_score"] == 0.95
 
     def test_multiple_ast_patterns_same_group(self):
         engine = MatchingEngine()
@@ -423,6 +430,58 @@ class TestEdgeCases:
         )
         assert result["match_result"] == "FULL_MATCH"
         assert result["confidence_score"] == MATCH_THRESHOLD
+
+
+class TestRegressionNoAuxiliaryPenalty:
+    """Regression tests: auxiliary patterns should not penalize when all expected patterns are matched."""
+
+    def test_multiple_aux_patterns_no_penalty(self):
+        """Sorting, hashing, and pointer patterns should not reduce confidence
+        when the primary algorithmic pattern is also matched."""
+        engine = MatchingEngine()
+        result = engine.match(
+            {"accepted_solution_groups": [["two_pointers_opposite"]]},
+            [
+                make_ast_entry("two_pointers_opposite", 0.85),
+                make_ast_entry("sorting", 0.80),
+                make_ast_entry("hash_map_lookup", 0.65),
+                make_ast_entry("brute_force", 0.30),
+            ],
+        )
+        assert result["match_result"] == "FULL_MATCH"
+        assert result["confidence_score"] == 0.85
+        assert result["unmatched_patterns"] == []
+
+    def test_penalty_applied_when_expected_missing(self):
+        """Extra patterns ARE penalized when some expected patterns are missing.
+        This tests that the penalty logic still works for true partial matches."""
+        engine = MatchingEngine()
+        result = engine.match(
+            {"accepted_solution_groups": [["dp_1d_forward", "dp_1d_sequence"]]},
+            [
+                make_ast_entry("dp_1d_forward", 0.80),
+                make_ast_entry("sorting", 0.90),
+                make_ast_entry("hash_map_lookup", 0.70),
+            ],
+        )
+        # dp_1d_sequence is missing → PARTIAL_MATCH
+        assert result["match_result"] == "PARTIAL_MATCH"
+        # best_confidence = 0.80 / 2 = 0.40 (avg across group of size 2)
+        # extra penalty = (0.90 + 0.70) * 0.1 = 0.16
+        # final = 0.40 - 0.16 = 0.24
+        assert result["confidence_score"] == pytest.approx(0.24, rel=1e-3)
+
+    def test_low_confidence_still_full_match(self):
+        """The original inconsistent scenario: 1 expected, 1 matched, 0 unmatched,
+        but confidence < 0.6. Should now be FULL_MATCH with confidence reflected."""
+        engine = MatchingEngine()
+        result = engine.match(
+            {"accepted_solution_groups": [["dp_1d_forward"]]},
+            [make_ast_entry("dp_1d_forward", 0.31)],
+        )
+        assert result["match_result"] == "FULL_MATCH"
+        assert result["confidence_score"] == 0.31
+        assert result["unmatched_patterns"] == []
 
 
 class TestDeterminism:

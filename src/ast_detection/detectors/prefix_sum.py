@@ -28,6 +28,18 @@ class PrefixSumDetector(BaseDetector):
             detected=confidence > 0.0,
         )
 
+    def _is_prefix_name(self, node: ast.AST) -> bool:
+        """Check if an AST node refers to a prefix-like variable.
+
+        Handles both bare names (prefix) and attribute accesses (self.prefix)."""
+        if isinstance(node, ast.Name):
+            return True
+        if isinstance(node, ast.Attribute):
+            # Check if the attribute name suggests a prefix/cumulative array
+            attr_lower = node.attr.lower()
+            return any(kw in attr_lower for kw in ("prefix", "pref", "cum", "accu", "running"))
+        return False
+
     def _detect_prefix_array(self, ast_root: ast.AST, evidence: list) -> None:
         """Signal: prefix array construction with cumulative formula or append pattern.
 
@@ -39,6 +51,10 @@ class PrefixSumDetector(BaseDetector):
             prefix = [0]
             for num in nums:
                 prefix.append(prefix[-1] + num)
+
+            self.prefix = [0]
+            for num in nums:
+                self.prefix.append(self.prefix[-1] + num)
         """
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.For):
@@ -59,7 +75,7 @@ class PrefixSumDetector(BaseDetector):
                 if isinstance(stmt, ast.Assign):
                     for target in stmt.targets:
                         if isinstance(target, ast.Subscript):
-                            if isinstance(target.value, ast.Name) and (target.value.id in prefix_names or has_append):
+                            if self._is_prefix_name(target.value) and (isinstance(target.value, ast.Name) and target.value.id in prefix_names or has_append):
                                 value = stmt.value
                                 if isinstance(value, ast.BinOp) and isinstance(value.op, (ast.Add, ast.Mult, ast.Sub)):
                                     left = value.left
@@ -73,7 +89,7 @@ class PrefixSumDetector(BaseDetector):
                         for arg in call_node.args:
                             if isinstance(arg, ast.BinOp) and isinstance(arg.op, (ast.Add, ast.Mult, ast.Sub)):
                                 for sub in ast.walk(arg):
-                                    if isinstance(sub, ast.Subscript) and isinstance(sub.value, ast.Name):
+                                    if isinstance(sub, ast.Subscript) and self._is_prefix_name(sub.value):
                                         has_prefix_formula = True
 
             for stmt in node.body:
@@ -85,7 +101,7 @@ class PrefixSumDetector(BaseDetector):
                 evidence.append(
                     EvidenceItem(
                         type="prefix_array_construction",
-                        description=f"Prefix array built in loop: '{', '.join(prefix_names)}'",
+                        description=f"Prefix array built in loop with cumulative formula",
                         location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
                         weight=0.40,
                     )

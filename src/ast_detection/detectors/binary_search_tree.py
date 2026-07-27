@@ -89,30 +89,51 @@ class BinarySearchTreeDetector(BaseDetector):
                     )
                 )
 
+    def _extract_comparisons(self, test: ast.AST) -> list:
+        """Flatten a test expression into a list of comparison nodes.
+
+        Handles:
+        - ast.Compare: returns [compare_node]
+        - ast.BoolOp: recursively extracts from all values
+        - ast.UnaryOp (not): unwraps and recurses
+        - Other: returns [test_node]
+        """
+        if isinstance(test, ast.BoolOp):
+            result = []
+            for value in test.values:
+                result.extend(self._extract_comparisons(value))
+            return result
+        if isinstance(test, ast.UnaryOp):
+            return self._extract_comparisons(test.operand)
+        return [test]
+
+    def _check_compare_sides(self, comp: ast.Compare) -> bool:
+        """Check if a Compare node has BST-style value comparisons on any side.
+
+        Handles both single comparisons (left op right) and chained
+        comparisons (left op mid op right) by checking every operator pair.
+        """
+        for i, op in enumerate(comp.ops):
+            if not isinstance(op, (ast.Lt, ast.Gt, ast.LtE, ast.GtE)):
+                continue
+            left = comp.left if i == 0 else comp.comparators[i - 1]
+            right = comp.comparators[i]
+            if self._is_val_attribute(left) or self._is_val_attribute(right):
+                return True
+            if self._is_val_name(left) or self._is_val_name(right):
+                return True
+            if isinstance(left, ast.Attribute) and isinstance(right, ast.Attribute):
+                if left.attr in ("val", "value", "key", "data") or right.attr in ("val", "value", "key", "data"):
+                    return True
+        return False
+
     def _find_bst_comparison(self, func_def: ast.FunctionDef) -> bool:
         for child in ast.walk(func_def):
             if isinstance(child, ast.If):
-                test = child.test
-                comparisons = []
-
-                if isinstance(test, ast.Compare) and len(test.ops) == 1:
-                    comparisons.append(test)
-                elif isinstance(test, ast.BoolOp):
-                    for value in test.values:
-                        if isinstance(value, ast.Compare) and len(value.ops) == 1:
-                            comparisons.append(value)
-
+                comparisons = self._extract_comparisons(child.test)
                 for comp in comparisons:
-                    if not isinstance(comp.ops[0], (ast.Lt, ast.Gt, ast.LtE, ast.GtE)):
-                        continue
-                    left = comp.left
-                    right = comp.comparators[0]
-                    if self._is_val_attribute(left) or self._is_val_attribute(right):
-                        return True
-                    if self._is_val_name(left) or self._is_val_name(right):
-                        return True
-                    if isinstance(left, ast.Attribute) and isinstance(right, ast.Attribute):
-                        if left.attr in ("val", "value", "key", "data") or right.attr in ("val", "value", "key", "data"):
+                    if isinstance(comp, ast.Compare):
+                        if self._check_compare_sides(comp):
                             return True
         return False
 

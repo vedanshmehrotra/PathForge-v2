@@ -800,6 +800,42 @@ def isValidBST(root, min_val=float('-inf'), max_val=float('inf')):
         assert any(e.type == "bst_comparison" for e in result.evidence)
         assert any(e.type == "min_max_constraint" for e in result.evidence)
 
+    def test_detected_bst_validation_chained_comparison(self):
+        """BST validation with 'not (low < node.val < high)' — chained comparison + UnaryOp.
+        This variant was not detected before the fix because:
+        1. The 'not' keyword wraps the condition in ast.UnaryOp
+        2. 'low < node.val < high' is a chained ast.Compare with 2 ops
+        """
+        code = """
+def isValidBST(root):
+    def validate(node, low, high):
+        if not node:
+            return True
+        if not (low < node.val < high):
+            return False
+        return validate(node.left, low, node.val) and validate(node.right, node.val, high)
+    return validate(root, float('-inf'), float('inf'))
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == True
+        assert result.confidence > 0.0
+        assert any(e.type == "bst_comparison" for e in result.evidence)
+        assert any(e.type == "bst_recursion" for e in result.evidence)
+
+    def test_detected_bst_search_unaryop(self):
+        """BST search with 'not root or root.val == val' — UnaryOp condition."""
+        code = """
+def searchBST(root, val):
+    if not root or root.val == val:
+        return root
+    if val < root.val:
+        return searchBST(root.left, val)
+    return searchBST(root.right, val)
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == True
+        assert any(e.type == "bst_comparison" for e in result.evidence)
+
     def test_detected_bst_lowest_common_ancestor(self):
         code = """
 def lowestCommonAncestor(root, p, q):

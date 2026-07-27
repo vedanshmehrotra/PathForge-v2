@@ -142,8 +142,10 @@ class MatchingEngine:
             group_conf = group_weighted / gm["group_size"]
             best_confidence = max(best_confidence, group_conf)
 
+        has_full = any(m["is_fully_matched"] for m in group_matches)
+
         extra_ast = ast_pattern_set - all_llm_patterns
-        if extra_ast and best_confidence > 0.0:
+        if extra_ast and best_confidence > 0.0 and not has_full:
             extra_penalty = sum(ast_map.get(p, 0.0) for p in extra_ast) * EXTRA_PATTERN_PENALTY
             best_confidence = max(0.0, best_confidence - extra_penalty)
 
@@ -160,7 +162,7 @@ class MatchingEngine:
 
         has_full = any(m["is_fully_matched"] for m in group_matches)
 
-        if has_full and confidence >= MATCH_THRESHOLD:
+        if has_full:
             return "FULL_MATCH"
 
         has_any_overlap = any(m["overlap_count"] > 0 for m in group_matches)

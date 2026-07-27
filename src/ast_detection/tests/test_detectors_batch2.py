@@ -451,6 +451,24 @@ for num in nums:
         assert result.detected == True
         assert result.confidence > 0.0
 
+    def test_detected_class_based_prefix_sum(self):
+        """Class-based prefix sum with self.prefix — Attribute subscript.
+        This variant was not detected before the fix because the detector
+        only checked for ast.Name subscript values, not ast.Attribute."""
+        code = """
+class NumArray:
+    def __init__(self, nums):
+        self.prefix = [0]
+        for num in nums:
+            self.prefix.append(self.prefix[-1] + num)
+
+    def sumRange(self, left, right):
+        return self.prefix[right + 1] - self.prefix[left]
+"""
+        result = self.detector.detect(ast.parse(code))
+        assert result.detected == True
+        assert result.confidence > 0.0
+
     def test_detected_product_except_self(self):
         code = """
 n = len(nums)

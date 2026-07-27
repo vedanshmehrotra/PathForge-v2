@@ -255,15 +255,35 @@ class DP1DForwardDetector(BaseDetector):
                     return True
         return False
 
+    def _extract_conditions(self, test_node: ast.AST) -> list:
+        """Flatten a test expression into a list of simple condition nodes.
+
+        Handles:
+        - ast.Compare: returns [compare_node]
+        - ast.BoolOp: recursively extracts from all values
+        - ast.UnaryOp (not): unwraps and recurses
+        - Other: returns [test_node] (Name, Call, Constant, etc.)
+        """
+        if isinstance(test_node, ast.BoolOp):
+            conditions = []
+            for val in test_node.values:
+                conditions.extend(self._extract_conditions(val))
+            return conditions
+        if isinstance(test_node, ast.UnaryOp):
+            return self._extract_conditions(test_node.operand)
+        return [test_node]
+
     def _find_base_case(self, func_def: ast.FunctionDef) -> bool:
         for node in ast.walk(func_def):
             if isinstance(node, ast.If):
-                if isinstance(node.test, ast.Compare):
-                    for side in [node.test.left] + node.test.comparators:
-                        if isinstance(side, ast.Name) and side.id.lower() in ("n", "i", "idx", "index"):
-                            for stmt in node.body:
-                                if isinstance(stmt, ast.Return):
-                                    return True
+                conditions = self._extract_conditions(node.test)
+                for condition in conditions:
+                    if isinstance(condition, ast.Compare):
+                        for side in [condition.left] + condition.comparators:
+                            if isinstance(side, ast.Name) and side.id.lower() in ("n", "i", "idx", "index"):
+                                for stmt in node.body:
+                                    if isinstance(stmt, ast.Return):
+                                        return True
         return False
 
     def _find_result_aggregation(self, func_def: ast.FunctionDef) -> bool:
@@ -282,17 +302,20 @@ class DP1DForwardDetector(BaseDetector):
     def _find_conditional_recurrence(self, func_def: ast.FunctionDef) -> bool:
         for node in ast.walk(func_def):
             if isinstance(node, ast.If):
-                for side in [node.test.left]:
-                    if isinstance(side, ast.Name) and side.id.lower() in ("i", "j", "n", "idx"):
-                        for stmt in node.body:
-                            if isinstance(stmt, ast.Assign):
-                                for target in stmt.targets:
-                                    if isinstance(target, ast.Subscript):
-                                        if isinstance(target.value, ast.Name) and target.value.id.lower().startswith("dp"):
-                                            return True
-                    if isinstance(side, ast.Subscript):
-                        if isinstance(side.value, ast.Name) and side.value.id.lower().startswith("dp"):
-                            return True
+                conditions = self._extract_conditions(node.test)
+                for condition in conditions:
+                    if isinstance(condition, ast.Compare):
+                        for side in [condition.left] + condition.comparators:
+                            if isinstance(side, ast.Name) and side.id.lower() in ("i", "j", "n", "idx"):
+                                for stmt in node.body:
+                                    if isinstance(stmt, ast.Assign):
+                                        for target in stmt.targets:
+                                            if isinstance(target, ast.Subscript):
+                                                if isinstance(target.value, ast.Name) and target.value.id.lower().startswith("dp"):
+                                                    return True
+                            if isinstance(side, ast.Subscript):
+                                if isinstance(side.value, ast.Name) and side.value.id.lower().startswith("dp"):
+                                    return True
         return False
 
     def _find_recursive_lookback(self, func_def: ast.FunctionDef) -> bool:
