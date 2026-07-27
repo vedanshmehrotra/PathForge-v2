@@ -59,7 +59,7 @@ def run_persistence(
                 break
 
     unmatched = match_result.get("unmatched_patterns", [])
-    gap_identified = 1 if unmatched else 0
+    gap_identified = len(unmatched) > 0
     confidence_score = match_result.get("confidence_score", 0.0)
     topic = primary_pattern or expected_pattern or "unknown"
 

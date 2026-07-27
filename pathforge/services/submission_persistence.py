@@ -1,6 +1,3 @@
-// === Submission Persistence Shared Service ===
-// This file contains shared submission persistence logic for both legacy run_pipeline() and new run_persistence() flows
-
 import json
 from datetime import date, timedelta
 from typing import Dict, Any, Optional
@@ -97,7 +94,7 @@ def _save_submission_to_db(
             1.0,
             detected_pattern,
             None,
-            0,
+            False,
             1.0,
             None,
             attempt_number,
