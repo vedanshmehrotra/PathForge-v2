@@ -77,10 +77,9 @@ def insert_submission(connection, verdict="pass"):
             id, user_id, problem_id, code_text, verdict, detected_pattern,
             detected_confidence, expected_pattern, gap_identified,
             time_taken_seconds, attempt_number, topic, submitted_at
-        )
-        VALUES (
+        )            VALUES (
             1, 1, 1, 'code', ?, 'hash_map_lookup',
-            0.9, 'sliding_window_variable', 1,
+            0.9, 'sliding_window_variable', TRUE,
             1, 1, 'sliding_window_variable', '2026-06-04T00:00:00+00:00'
         )
         """,
@@ -270,7 +269,7 @@ def test_race_condition_atomicity_all_or_nothing(tmp_path):
         (user_before["last_recommendation_id"],)
     ).fetchone()
     if previous_recommendation:
-        assert previous_recommendation["acted_on"] == 1, "Previous recommendation not marked as acted_on"
+        assert previous_recommendation["acted_on"] == True, "Previous recommendation not marked as acted_on"
     
     connection.close()
 

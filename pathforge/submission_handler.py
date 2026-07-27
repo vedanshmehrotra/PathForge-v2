@@ -122,7 +122,7 @@ def _save_submission(
             1.0,
             detected_pattern,
             None,
-            0,
+            False,
             1.0,
             None,
             attempt_number,

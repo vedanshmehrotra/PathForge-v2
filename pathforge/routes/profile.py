@@ -124,7 +124,7 @@ def _stats(connection, user_id):
     """Return aggregate dashboard statistics for a user."""
     total = connection.execute("SELECT COUNT(*) AS count FROM submissions WHERE user_id = ?", (user_id,)).fetchone()["count"]
     solved = connection.execute(
-        "SELECT COUNT(DISTINCT problem_id) AS count FROM submissions WHERE user_id = ? AND verdict = 'pass' AND gap_identified = 0",
+        "SELECT COUNT(DISTINCT problem_id) AS count FROM submissions WHERE user_id = ? AND verdict = 'pass' AND gap_identified = FALSE",
         (user_id,),
     ).fetchone()["count"]
     accuracy_rows = connection.execute(
@@ -156,7 +156,7 @@ def _current_streak(connection, user_id):
     ).fetchall()
     streak = 0
     for row in rows:
-        if row["verdict"] == "pass" and row["gap_identified"] == 0:
+        if row["verdict"] == "pass" and row["gap_identified"] == False:
             streak += 1
         else:
             break
@@ -210,7 +210,7 @@ def _active_recommendation(connection, user_id):
         FROM users u
         JOIN recommendations r ON r.id = u.last_recommendation_id
         LEFT JOIN problems p ON p.id = r.problem_id
-        WHERE u.id = ? AND r.user_id = ? AND r.acted_on = 0
+        WHERE u.id = ? AND r.user_id = ? AND r.acted_on = FALSE
         """,
         (user_id, user_id),
     ).fetchone()
@@ -248,7 +248,7 @@ def _clear_active_recommendation(connection, user_id):
     row = connection.execute("SELECT last_recommendation_id FROM users WHERE id = ?", (user_id,)).fetchone()
     if row and row["last_recommendation_id"] is not None:
         connection.execute(
-            "UPDATE recommendations SET acted_on = 1, acted_on_at = ? WHERE id = ? AND user_id = ?",
+            "UPDATE recommendations SET acted_on = TRUE, acted_on_at = ? WHERE id = ? AND user_id = ?",
             (iso_now(), row["last_recommendation_id"], user_id),
         )
     connection.execute("UPDATE users SET last_recommendation_id = NULL, updated_at = ? WHERE id = ?", (iso_now(), user_id))

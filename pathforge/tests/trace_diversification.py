@@ -29,7 +29,7 @@ def seed(connection):
 def add_submission(connection, user_id, problem_id, verdict, topic, submitted_at):
     connection.execute(
         "INSERT INTO submissions (user_id, problem_id, code_text, verdict, detected_pattern, detected_confidence, expected_pattern, target_pattern, gap_identified, diagnosis_confidence, time_taken_seconds, attempt_number, topic, submitted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        (user_id, problem_id, "code", verdict, topic, 1.0, topic, None, 0, 1.0, None, 1, topic, submitted_at),
+        (user_id, problem_id, "code", verdict, topic, 1.0, topic, None, False, 1.0, None, 1, topic, submitted_at),
     )
     connection.commit()
 
@@ -87,7 +87,7 @@ def run_trace():
                 "detected_pattern": "hash_map_lookup",
                 "detected_confidence": 1.0,
                 "expected_pattern": "hash_map_lookup",
-                "gap_identified": 0,
+                "gap_identified": False,
                 "topic": "hash_map_lookup",
             },
             "gap_info": {
@@ -140,7 +140,7 @@ def run_trace():
                 "detected_pattern": "sliding_window_variable",
                 "detected_confidence": 1.0,
                 "expected_pattern": "sliding_window_variable",
-                "gap_identified": 0,
+                "gap_identified": False,
                 "topic": "sliding_window_variable",
             },
             "gap_info": {

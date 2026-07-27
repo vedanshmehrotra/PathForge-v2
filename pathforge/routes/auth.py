@@ -71,7 +71,7 @@ def register():
                     experience_level, confident_areas, onboarding_complete,
                     created_at, updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, TRUE, ?, ?)
                 """,
                 (username, email, password_hash, display_name, experience_level, json.dumps(confident_areas), now, now),
             )

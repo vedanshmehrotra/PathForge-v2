@@ -68,7 +68,7 @@ def _mark_last_recommendation_acted_on(connection, user_id):
     if not row or row["last_recommendation_id"] is None:
         return
     connection.execute(
-        "UPDATE recommendations SET acted_on = 1, acted_on_at = %s WHERE id = %s AND user_id = %s",
+        "UPDATE recommendations SET acted_on = TRUE, acted_on_at = %s WHERE id = %s AND user_id = %s",
         (iso_now(), row["last_recommendation_id"], user_id),
     )
     # NOTE: Do not commit here. The caller (run_pipeline) handles atomicity.
