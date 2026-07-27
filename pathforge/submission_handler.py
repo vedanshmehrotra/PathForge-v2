@@ -1,7 +1,27 @@
 import json
 from datetime import date, timedelta
+from typing import Union
 
 from pathforge.db.profile_manager import iso_now, update_topic_profile
+
+
+def to_date(value: Union[str, date, None]) -> Union[date, None]:
+    """Safely convert a value to a `datetime.date`.
+
+    Accepts:
+    - ``datetime.date`` — returned as-is.
+    - ISO-format string (e.g. ``"2026-07-27"``) — parsed via ``date.fromisoformat``.
+    - ``None`` — returns ``None``.
+
+    This exists because PostgreSQL ``DATE`` columns are returned by psycopg2
+    as ``datetime.date`` objects, not strings. Calling
+    ``date.fromisoformat(date_obj)`` would raise ``TypeError``.
+    """
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    return date.fromisoformat(value)
 
 
 def handle_submission(user_id, problem_id, verdict, connection):
@@ -116,11 +136,11 @@ def _save_submission(
 
 
 def _update_user_streak(connection, user_id, submitted_at):
-    today = date.fromisoformat(submitted_at[:10])
+    today = to_date(submitted_at[:10] if isinstance(submitted_at, str) else submitted_at)
     row = connection.execute("SELECT current_streak, last_submission_date FROM users WHERE id = %s", (user_id,)).fetchone()
     if not row:
         return
-    last_date = date.fromisoformat(row["last_submission_date"]) if row["last_submission_date"] else None
+    last_date = to_date(row["last_submission_date"])
     if last_date == today:
         streak = int(row["current_streak"] or 1)
     elif last_date == today - timedelta(days=1):
