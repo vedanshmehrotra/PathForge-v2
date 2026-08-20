@@ -7,7 +7,7 @@ Envelopes, and sequence partitioning.
 """
 
 import ast
-from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
 @register_detector
@@ -113,7 +113,7 @@ class DP1DSequenceDetector(BaseDetector):
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if isinstance(target, ast.Subscript):
-                        if isinstance(target.value, ast.Name) and target.value.id.lower().startswith("dp"):
+                        if isinstance(target.value, ast.Name) and is_dp_name(target.value.id):
                             return True
         return False
 
@@ -125,7 +125,7 @@ class DP1DSequenceDetector(BaseDetector):
                         dp_reads = 0
                         for sub in ast.walk(child):
                             if isinstance(sub, ast.Subscript):
-                                if isinstance(sub.value, ast.Name) and sub.value.id.lower().startswith("dp"):
+                                if isinstance(sub.value, ast.Name) and is_dp_name(sub.value.id):
                                     if isinstance(sub.slice, ast.Name) and sub.slice.id.lower() in ("j", "k", "prev", "p"):
                                         dp_reads += 1
                                     if isinstance(sub.slice, ast.BinOp):
@@ -154,7 +154,7 @@ class DP1DSequenceDetector(BaseDetector):
                         if isinstance(arg, ast.BinOp):
                             for sub in ast.walk(arg):
                                 if isinstance(sub, ast.Subscript):
-                                    if isinstance(sub.value, ast.Name) and sub.value.id.lower().startswith("dp"):
+                                    if isinstance(sub.value, ast.Name) and is_dp_name(sub.value.id):
                                         return True
         return False
 
@@ -164,7 +164,7 @@ class DP1DSequenceDetector(BaseDetector):
                 if isinstance(node.value, ast.Call):
                     if isinstance(node.value.func, ast.Name) and node.value.func.id in ("max", "min"):
                         for arg in node.value.args:
-                            if isinstance(arg, ast.Name) and arg.id.lower().startswith("dp"):
+                            if isinstance(arg, ast.Name) and is_dp_name(arg.id):
                                 return True
         return False
 

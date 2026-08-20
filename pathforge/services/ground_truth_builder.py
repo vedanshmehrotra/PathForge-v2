@@ -56,18 +56,31 @@ def _clamp_confidence(value) -> float:
 
 
 def _store_ground_truth(connection, problem_id: int, patterns: list[str], confidence: dict):
+    """Store ground truth with both legacy flat columns and new solution_groups."""
     now = iso_now()
     patterns_json = json.dumps(patterns)
     confidence_json = json.dumps(confidence) if confidence else "{}"
 
+    # Phase 0C: also store as structured solution_groups with evidence state
+    solution_groups = [
+        {
+            "id": "group_0",
+            "patterns": patterns,
+            "evidence": "llm_proposed",
+            "confidence": {p: confidence.get(p, 0.5) for p in patterns},
+        }
+    ]
+    solution_groups_json = json.dumps(solution_groups)
+
     connection.execute(
         """
-        INSERT INTO problem_ground_truth (problem_id, patterns, confidence, created_at, updated_at)
-        VALUES (%s, %s, %s, COALESCE((SELECT created_at FROM problem_ground_truth WHERE problem_id = %s), %s), %s)
+        INSERT INTO problem_ground_truth (problem_id, patterns, confidence, solution_groups, validation_status, created_at, updated_at)
+        VALUES (%s, %s, %s, %s, 'llm_proposed', COALESCE((SELECT created_at FROM problem_ground_truth WHERE problem_id = %s), %s), %s)
         ON CONFLICT(problem_id) DO UPDATE SET
             patterns = EXCLUDED.patterns,
             confidence = EXCLUDED.confidence,
+            solution_groups = EXCLUDED.solution_groups,
             updated_at = EXCLUDED.updated_at
         """,
-        (problem_id, patterns_json, confidence_json, problem_id, now, now),
+        (problem_id, patterns_json, confidence_json, solution_groups_json, problem_id, now, now),
     )

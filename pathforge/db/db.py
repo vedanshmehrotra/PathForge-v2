@@ -1,3 +1,4 @@
+import logging
 import os
 from contextlib import contextmanager
 from typing import Optional
@@ -5,6 +6,8 @@ from typing import Optional
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
+
+logger = logging.getLogger(__name__)
 
 
 _pool: Optional[psycopg2.pool.ThreadedConnectionPool] = None
@@ -116,7 +119,11 @@ def connect(db_path: Optional[str] = None):
 
 
 def init_db(db_path: Optional[str] = None) -> None:
-    """Verify all required tables exist. Perform zero schema mutations."""
+    """Verify all required tables exist, then apply idempotent schema migrations.
+
+    The migration section of schema_pg.sql contains ALTER TABLE statements
+    using ADD COLUMN IF NOT EXISTS which are safe to run repeatedly.
+    """
     conn = get_connection(db_path)
     try:
         cur = conn._conn.cursor()
@@ -129,7 +136,88 @@ def init_db(db_path: Optional[str] = None) -> None:
         if missing:
             raise RuntimeError(
                 f"Missing required tables: {', '.join(missing)}. "
-                "Run pathforge/db/migration.sql against the database first."
+                "Run pathforge/db/schema_pg.sql against the database first."
             )
+
+        # Apply idempotent migrations (ADD COLUMN IF NOT EXISTS, CREATE INDEX IF NOT EXISTS)
+        _apply_migrations(conn)
     finally:
         conn.close()
+
+
+def _strip_comment_lines(sql_text: str) -> str:
+    """Remove SQL comment-only lines (lines starting with --) from a statement.
+
+    Inline comments within a statement are preserved. Only lines that are
+    entirely a SQL comment (optionally with leading whitespace) are removed.
+    This allows classification of statements that have a leading comment
+    before the actual DDL keyword.
+    """
+    lines = sql_text.split("\n")
+    stripped_lines = [line for line in lines if not line.strip().startswith("--")]
+    return "\n".join(stripped_lines)
+
+
+def _classify_statement(stmt: str) -> str:
+    """Classify a SQL statement after stripping leading comments.
+
+    Returns:
+        'migration' for ALTER TABLE / CREATE INDEX (idempotent DDL)
+        'skip' for CREATE TABLE, comments, or other statements
+    """
+    cleaned = _strip_comment_lines(stmt).strip()
+    if not cleaned:
+        return "skip"
+    upper = cleaned.upper()
+    if upper.startswith("ALTER TABLE") or upper.startswith("CREATE INDEX"):
+        return "migration"
+    return "skip"
+
+
+def _extract_statements(sql: str) -> list[str]:
+    """Split SQL file into individual statements by semicolon delimiter.
+
+    Returns stripped, non-empty statement chunks.
+    """
+    statements = []
+    for raw in sql.split(";"):
+        stmt = raw.strip()
+        if stmt:
+            statements.append(stmt)
+    return statements
+
+
+def _apply_migrations(conn) -> None:
+    """Execute idempotent DDL statements from schema_pg.sql.
+
+    Strategy: Commit each statement individually. This ensures that if one
+    migration fails (e.g., incompatible type change), all prior successful
+    migrations are preserved. Each statement uses IF NOT EXISTS, making
+    re-execution safe.
+    """
+    import os
+    schema_path = os.path.join(os.path.dirname(__file__), "schema_pg.sql")
+    if not os.path.exists(schema_path):
+        return
+
+    with open(schema_path, "r") as f:
+        sql = f.read()
+
+    cur = conn._conn.cursor()
+    for stmt in _extract_statements(sql):
+        if _classify_statement(stmt) != "migration":
+            continue
+        # Reconstruct the executable SQL by stripping leading comment lines
+        # but preserving the actual DDL and any inline comments.
+        executable = _strip_comment_lines(stmt).strip()
+        try:
+            cur.execute(executable)
+            conn._conn.commit()
+        except Exception as exc:
+            # Roll back this single failed statement; prior commits are safe.
+            conn._conn.rollback()
+            logger.warning(
+                "Migration statement failed (continuing): %s — %s",
+                executable[:120],
+                exc,
+            )

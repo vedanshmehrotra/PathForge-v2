@@ -21,6 +21,15 @@ SCORE_FULL_MATCH = 1.0
 SCORE_PARTIAL_MATCH = 0.5
 SCORE_NO_MATCH = 0.0
 
+# Phase 2: Evidence K ceilings (applied as min-cap after existing K computation)
+EVIDENCE_K_CEILINGS = {
+    "structurally_observed": int(0.75 * DEFAULT_K),  # 24
+    "externally_listed": int(0.5 * DEFAULT_K),        # 16
+    "llm_proposed": 0,
+    "unobserved": 0,
+    "conflicted": 0,
+}
+
 REPEATED_SUCCESS_WINDOW = 5
 REPEATED_SUCCESS_SCORE_DECAY = 0.1
 REPEATED_FAILURE_SATURATION = 0.15
@@ -84,6 +93,7 @@ class EloEngine:
         ast_output: Optional[List[Dict[str, Any]]] = None,
         current_elos: Optional[Dict[str, float]] = None,
         pattern_histories: Optional[Dict[str, List[Dict[str, Any]]]] = None,
+        evidence_state: Optional[str] = None,
     ) -> Dict[str, Any]:
         match_result_str = match_result.get("match_result", "NO_MATCH")
         base_score = match_result_to_score(match_result_str)
@@ -119,6 +129,13 @@ class EloEngine:
             )
             pattern_history = histories.get(pattern_id, [])
             k = _compute_k(old_elo, gap_strength, len(pattern_history))
+            # Phase 2: apply evidence K ceiling
+            if evidence_state:
+                evidence_ceiling = EVIDENCE_K_CEILINGS.get(evidence_state, 0)
+                if evidence_ceiling > 0:
+                    k = min(k, evidence_ceiling)
+                else:
+                    k = 0
             drift_factor = _anti_drift_adjustment(match_result_str, pattern_history)
             adjusted_score = score * drift_factor
 

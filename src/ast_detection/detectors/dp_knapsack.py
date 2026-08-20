@@ -7,7 +7,7 @@ Subset Sum, Coin Change (as knapsack), Target Sum.
 """
 
 import ast
-from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
 @register_detector
@@ -149,10 +149,10 @@ class DPKnapsackDetector(BaseDetector):
 
     def _has_dp_reference(self, node: ast.AST) -> bool:
         if isinstance(node, ast.Subscript):
-            if isinstance(node.value, ast.Name) and node.value.id.lower().startswith("dp"):
+            if isinstance(node.value, ast.Name) and is_dp_name(node.value.id):
                 return True
             if isinstance(node.value, ast.Subscript):
-                if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                     return True
         if isinstance(node, ast.BinOp):
             return self._has_dp_reference(node.left) or self._has_dp_reference(node.right)
@@ -190,7 +190,7 @@ class DPKnapsackDetector(BaseDetector):
                     if isinstance(target, ast.Subscript):
                         cur = target
                         while isinstance(cur, ast.Subscript):
-                            if isinstance(cur.value, ast.Name) and cur.value.id.lower().startswith("dp"):
+                            if isinstance(cur.value, ast.Name) and is_dp_name(cur.value.id):
                                 return True
                             cur = cur.value
         return False
@@ -199,7 +199,7 @@ class DPKnapsackDetector(BaseDetector):
         for node in ast.walk(func_def):
             if isinstance(node, ast.Subscript):
                 if isinstance(node.value, ast.Subscript):
-                    if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                    if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                         return True
         return False
 
@@ -209,7 +209,7 @@ class DPKnapsackDetector(BaseDetector):
                 if isinstance(node.value, ast.Subscript):
                     cur = node.value
                     while isinstance(cur, ast.Subscript):
-                        if isinstance(cur.value, ast.Name) and cur.value.id.lower().startswith("dp"):
+                        if isinstance(cur.value, ast.Name) and is_dp_name(cur.value.id):
                             return True
                         cur = cur.value
         return False

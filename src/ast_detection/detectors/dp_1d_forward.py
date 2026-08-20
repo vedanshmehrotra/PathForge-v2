@@ -10,7 +10,7 @@ as valid DP even without explicit dp array creation.
 """
 
 import ast
-from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
 @register_detector
@@ -203,7 +203,7 @@ class DP1DForwardDetector(BaseDetector):
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if isinstance(target, ast.Subscript):
-                        if isinstance(target.value, ast.Name) and target.value.id.lower().startswith("dp"):
+                        if isinstance(target.value, ast.Name) and is_dp_name(target.value.id):
                             return True
         return False
 
@@ -211,7 +211,7 @@ class DP1DForwardDetector(BaseDetector):
         levels = set()
         for node in ast.walk(func_def):
             if isinstance(node, ast.Subscript):
-                if isinstance(node.value, ast.Name) and node.value.id.lower().startswith("dp"):
+                if isinstance(node.value, ast.Name) and is_dp_name(node.value.id):
                     if isinstance(node.slice, ast.BinOp) and isinstance(node.slice.op, ast.Sub):
                         if isinstance(node.slice.right, ast.Constant):
                             offset = node.slice.right.value
@@ -242,7 +242,7 @@ class DP1DForwardDetector(BaseDetector):
                 has_dp_lookback = False
                 for sub in ast.walk(node):
                     if isinstance(sub, ast.Subscript):
-                        if isinstance(sub.value, ast.Name) and sub.value.id.lower().startswith("dp"):
+                        if isinstance(sub.value, ast.Name) and is_dp_name(sub.value.id):
                             has_dp_lookback = True
                 if has_dp_lookback:
                     return True
@@ -290,12 +290,12 @@ class DP1DForwardDetector(BaseDetector):
         for node in ast.walk(func_def):
             if isinstance(node, ast.Return):
                 if isinstance(node.value, ast.Subscript):
-                    if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                    if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                         return True
                 if isinstance(node.value, ast.Call):
                     if isinstance(node.value.func, ast.Name) and node.value.func.id in ("max", "min"):
                         for arg in node.value.args:
-                            if isinstance(arg, ast.Name) and arg.id.lower().startswith("dp"):
+                            if isinstance(arg, ast.Name) and is_dp_name(arg.id):
                                 return True
         return False
 
@@ -311,10 +311,10 @@ class DP1DForwardDetector(BaseDetector):
                                     if isinstance(stmt, ast.Assign):
                                         for target in stmt.targets:
                                             if isinstance(target, ast.Subscript):
-                                                if isinstance(target.value, ast.Name) and target.value.id.lower().startswith("dp"):
+                                                if isinstance(target.value, ast.Name) and is_dp_name(target.value.id):
                                                     return True
                             if isinstance(side, ast.Subscript):
-                                if isinstance(side.value, ast.Name) and side.value.id.lower().startswith("dp"):
+                                if isinstance(side.value, ast.Name) and is_dp_name(side.value.id):
                                     return True
         return False
 

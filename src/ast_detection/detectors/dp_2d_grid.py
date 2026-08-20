@@ -7,7 +7,7 @@ Unique Paths, Maximal Square, Dungeon Game.
 """
 
 import ast
-from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
 @register_detector
@@ -128,7 +128,7 @@ class DP2DGridDetector(BaseDetector):
                     outer_name = None
                     if isinstance(node.value.value, ast.Name):
                         outer_name = node.value.value.id.lower()
-                    if outer_name and outer_name.startswith("dp"):
+                    if outer_name and is_dp_name(outer_name):
                         inner_slice = node.value.slice
                         outer_slice = node.slice
                         if isinstance(inner_slice, ast.BinOp) and isinstance(inner_slice.op, ast.Sub):
@@ -153,9 +153,9 @@ class DP2DGridDetector(BaseDetector):
                 for target in node.targets:
                     if isinstance(target, ast.Subscript):
                         if isinstance(target.value, ast.Subscript):
-                            if isinstance(target.value.value, ast.Name) and target.value.value.id.lower().startswith("dp"):
+                            if isinstance(target.value.value, ast.Name) and is_dp_name(target.value.value.id):
                                 return True
-                        if isinstance(target.value, ast.Name) and target.value.id.lower().startswith("dp"):
+                        if isinstance(target.value, ast.Name) and is_dp_name(target.value.id):
                             if isinstance(target.slice, ast.Subscript):
                                 return True
         return False
@@ -183,7 +183,7 @@ class DP2DGridDetector(BaseDetector):
                     has_max_min = True
             if isinstance(node, ast.Subscript):
                 if isinstance(node.value, ast.Subscript):
-                    if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                    if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                         slice1 = node.value.slice
                         slice2 = node.slice
                         if isinstance(slice1, ast.BinOp) or isinstance(slice2, ast.BinOp):
@@ -195,15 +195,15 @@ class DP2DGridDetector(BaseDetector):
             if isinstance(node, ast.Return):
                 if isinstance(node.value, ast.Subscript):
                     if isinstance(node.value.value, ast.Subscript):
-                        if isinstance(node.value.value.value, ast.Name) and node.value.value.value.id.lower().startswith("dp"):
+                        if isinstance(node.value.value.value, ast.Name) and is_dp_name(node.value.value.value.id):
                             return True
-                    if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                    if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                         if isinstance(node.value.slice, ast.UnaryOp) or isinstance(node.value.slice, ast.Constant):
                             return True
                 if isinstance(node.value, ast.Call):
                     if isinstance(node.value.func, ast.Name) and node.value.func.id in ("max", "min"):
                         for arg in node.value.args:
-                            if isinstance(arg, ast.Name) and arg.id.lower().startswith("dp"):
+                            if isinstance(arg, ast.Name) and is_dp_name(arg.id):
                                 return True
         return False
 

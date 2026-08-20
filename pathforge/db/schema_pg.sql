@@ -146,3 +146,12 @@ ALTER TABLE problems ADD COLUMN IF NOT EXISTS title_slug TEXT;
 ALTER TABLE problems ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE problems ADD COLUMN IF NOT EXISTS updated_at TEXT NOT NULL DEFAULT '';
 CREATE INDEX IF NOT EXISTS idx_problems_title_slug ON problems(title_slug);
+
+-- Phase 0B: submission evidence fields
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS verdict_type TEXT DEFAULT 'authoritative';
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS detected_patterns_json JSONB;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS code_hash TEXT;
+
+-- Phase 0C: ground truth solution groups
+ALTER TABLE problem_ground_truth ADD COLUMN IF NOT EXISTS solution_groups JSONB;
+ALTER TABLE problem_ground_truth ADD COLUMN IF NOT EXISTS validation_status TEXT DEFAULT 'unobserved';

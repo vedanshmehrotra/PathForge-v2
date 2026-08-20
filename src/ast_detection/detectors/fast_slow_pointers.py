@@ -42,7 +42,7 @@ class FastSlowPointersDetector(BaseDetector):
         Matches variable names like slow, fast, tortoise, hare, slow_ptr, fast_ptr.
         """
         detected_names = set()
-        target_names = {"slow", "fast", "tortoise", "hare", "slow_ptr", "fast_ptr"}
+        target_names = {"slow", "fast", "tortoise", "hare", "slow_ptr", "fast_ptr", "sp", "fp", "first", "second", "s", "f"}
         for node in ast.walk(ast_root):
             if isinstance(node, ast.Name):
                 name_lower = node.id.lower()
@@ -103,7 +103,7 @@ class FastSlowPointersDetector(BaseDetector):
                 return True   (cycle found)
         or equivalent comparison between pointer variables used in advancement.
         """
-        target_names = {"slow", "fast", "tortoise", "hare", "slow_ptr", "fast_ptr"}
+        target_names = {"slow", "fast", "tortoise", "hare", "slow_ptr", "fast_ptr", "sp", "fp", "first", "second", "s", "f"}
         pointer_pairs = set()
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.While):

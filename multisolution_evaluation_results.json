@@ -1,0 +1,2139 @@
+{
+  "summary": {
+    "A_current": {
+      "strategy_recall": 0.595,
+      "hallucinated_patterns": 8,
+      "consistent_across_trials": 36,
+      "total_problems": 42,
+      "parse_success": 42
+    },
+    "B_multi_solution": {
+      "strategy_recall": 0.762,
+      "hallucinated_patterns": 46,
+      "consistent_across_trials": 21,
+      "total_problems": 42,
+      "parse_success": 42
+    }
+  },
+  "per_problem": [
+    {
+      "id": "two_sum",
+      "category": "single",
+      "expected": [
+        [
+          "hash_map_lookup"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "hash_map_lookup"
+          ]
+        ],
+        "all_patterns": [
+          "hash_map_lookup"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "hash_map_lookup"
+          ],
+          [
+            "two_pointers_opposite"
+          ]
+        ],
+        "all_patterns": [
+          "hash_map_lookup",
+          "two_pointers_opposite"
+        ],
+        "reasoning": "The problem can be solved using different optimal strategies, primarily focusing on efficient lookups and combinations of elements to find the target sum.",
+        "hallucinated": [
+          "two_pointers_opposite"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    },
+    {
+      "id": "valid_parentheses",
+      "category": "single",
+      "expected": [
+        [
+          "monotonic_stack"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "dfs_recursive"
+          ]
+        ],
+        "all_patterns": [
+          "dfs_recursive"
+        ],
+        "reasoning": "",
+        "hallucinated": [
+          "dfs_recursive"
+        ],
+        "strategy_recall": 0.0,
+        "consistent": false
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "stack"
+          ],
+          [
+            "two_pointers_opposite"
+          ]
+        ],
+        "all_patterns": [
+          "stack",
+          "two_pointers_opposite"
+        ],
+        "reasoning": "The problem of validating brackets can be approached using different algorithmic strategies, primarily focusing on stack-based methods and two-pointer techniques.",
+        "hallucinated": [
+          "stack",
+          "two_pointers_opposite"
+        ],
+        "strategy_recall": 0.0,
+        "consistent": false
+      }
+    },
+    {
+      "id": "binary_tree_level_order",
+      "category": "two_approaches",
+      "expected": [
+        [
+          "bfs_level_order"
+        ],
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "bfs_level_order"
+          ]
+        ],
+        "all_patterns": [
+          "bfs_level_order"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "bfs_level_order"
+          ],
+          [
+            "dfs_recursive"
+          ]
+        ],
+        "all_patterns": [
+          "bfs_level_order",
+          "dfs_recursive"
+        ],
+        "reasoning": "The problem requires traversing a binary tree level by level, which can be efficiently achieved using breadth-first search (BFS) or depth-first search (DFS). Both strategies can yield the same result, but they utilize different traversal methods.",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    },
+    {
+      "id": "clone_graph",
+      "category": "two_approaches",
+      "expected": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "dfs_recursive"
+          ]
+        ],
+        "all_patterns": [
+          "dfs_recursive"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "dfs_recursive",
+            "hash_map_lookup"
+          ],
+          [
+            "bfs_level_order",
+            "hash_map_lookup"
+          ]
+        ],
+        "all_patterns": [
+          "dfs_recursive",
+          "hash_map_lookup",
+          "bfs_level_order",
+          "hash_map_lookup"
+        ],
+        "reasoning": "The problem of creating a deep copy of a graph can be approached using different strategies, primarily focusing on traversal methods to ensure all nodes and their connections are replicated correctly.",
+        "hallucinated": [
+          "hash_map_lookup",
+          "hash_map_lookup"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": false
+      }
+    },
+    {
+      "id": "number_of_islands",
+      "category": "two_approaches",
+      "expected": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "dfs_recursive"
+          ]
+        ],
+        "all_patterns": [
+          "dfs_recursive"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "dfs_recursive"
+          ],
+          [
+            "dfs_iterative"
+          ],
+          [
+            "bfs_level_order"
+          ]
+        ],
+        "all_patterns": [
+          "dfs_recursive",
+          "dfs_iterative",
+          "bfs_level_order"
+        ],
+        "reasoning": "The problem of counting islands in a binary grid can be approached using depth-first search (DFS) or breadth-first search (BFS) to explore and mark connected components of land. Both strategies effectively traverse the grid to identify distinct islands.",
+        "hallucinated": [
+          "dfs_iterative"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": false
+      }
+    },
+    {
+      "id": "max_subarray",
+      "category": "two_approaches",
+      "expected": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "greedy_local"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "dp_1d_forward"
+          ]
+        ],
+        "all_patterns": [
+          "dp_1d_forward"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": false
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "dp_1d_forward"
+          ],
+          [
+            "dp_1d_sequence"
+          ]
+        ],
+        "all_patterns": [
+          "dp_1d_forward",
+          "dp_1d_sequence"
+        ],
+        "reasoning": "The problem of finding the subarray with the largest sum can be efficiently solved using Kadane's algorithm, which utilizes dynamic programming principles. Additionally, a brute force approach can also be considered, though it is less optimal.",
+        "hallucinated": [
+          "dp_1d_sequence"
+        ],
+        "strategy_recall": 0.5,
+        "consistent": false
+      }
+    },
+    {
+      "id": "course_schedule",
+      "category": "two_approaches",
+      "expected": [
+        [
+          "topological_sort"
+        ],
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "topological_sort"
+          ]
+        ],
+        "all_patterns": [
+          "topological_sort"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "topological_sort",
+            "bfs_level_order"
+          ],
+          [
+            "topological_sort",
+            "dfs_recursive"
+          ]
+        ],
+        "all_patterns": [
+          "topological_sort",
+          "bfs_level_order",
+          "topological_sort",
+          "dfs_recursive"
+        ],
+        "reasoning": "The problem is about determining if all courses can be completed given their prerequisites, which can be modeled as a directed graph. The solution involves checking for cycles in this graph, which can be done using different strategies.",
+        "hallucinated": [
+          "bfs_level_order"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    },
+    {
+      "id": "word_ladder",
+      "category": "two_approaches",
+      "expected": [
+        [
+          "bfs_shortest_path"
+        ],
+        [
+          "bidirectional_search"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "bfs_shortest_path"
+          ]
+        ],
+        "all_patterns": [
+          "bfs_shortest_path"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "bfs_level_order"
+          ]
+        ],
+        "all_patterns": [
+          "bfs_level_order"
+        ],
+        "reasoning": "The problem can be approached using breadth-first search (BFS) to explore all possible transformations from the beginWord to the endWord, ensuring that we find the shortest path. Alternatively, a depth-first search (DFS) can be used to explore all paths, but it may not guarantee the shortest path without additional mechanisms. BFS is optimal for this problem due to its level-order nature, which naturally finds the shortest path in an unweighted graph.",
+        "hallucinated": [
+          "bfs_level_order"
+        ],
+        "strategy_recall": 0.0,
+        "consistent": false
+      }
+    },
+    {
+      "id": "climbing_stairs",
+      "category": "three_plus",
+      "expected": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "dp_1d_sequence"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "dp_1d_forward"
+          ]
+        ],
+        "all_patterns": [
+          "dp_1d_forward"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 0.5,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "dp_1d_forward"
+          ],
+          [
+            "dp_1d_sequence"
+          ]
+        ],
+        "all_patterns": [
+          "dp_1d_forward",
+          "dp_1d_sequence"
+        ],
+        "reasoning": "The problem can be solved using dynamic programming or by using a mathematical approach based on Fibonacci numbers.",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    },
+    {
+      "id": "combination_sum",
+      "category": "three_plus",
+      "expected": [
+        [
+          "backtracking_subset"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "backtracking_subset"
+          ]
+        ],
+        "all_patterns": [
+          "backtracking_subset"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "backtracking_subset"
+          ],
+          [
+            "dp_1d_forward"
+          ]
+        ],
+        "all_patterns": [
+          "backtracking_subset",
+          "dp_1d_forward"
+        ],
+        "reasoning": "The problem can be approached using backtracking to explore all possible combinations of candidates that sum to the target. Additionally, dynamic programming can be used to build up solutions based on previously computed results.",
+        "hallucinated": [
+          "dp_1d_forward"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    },
+    {
+      "id": "reverse_linked_list",
+      "category": "same_pattern_different_impl",
+      "expected": [
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "linked_list_reversal"
+          ]
+        ],
+        "all_patterns": [
+          "linked_list_reversal"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "linked_list_reversal"
+          ],
+          [
+            "linked_list_reversal",
+            "dfs_recursive"
+          ]
+        ],
+        "all_patterns": [
+          "linked_list_reversal",
+          "linked_list_reversal",
+          "dfs_recursive"
+        ],
+        "reasoning": "The problem of reversing a singly linked list can be approached using different strategies, primarily focusing on iterative and recursive methods.",
+        "hallucinated": [
+          "dfs_recursive"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": false
+      }
+    },
+    {
+      "id": "valid_anagram",
+      "category": "same_pattern_different_impl",
+      "expected": [
+        [
+          "hash_map_frequency"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "hash_map_frequency"
+          ]
+        ],
+        "all_patterns": [
+          "hash_map_frequency"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "hash_map_frequency"
+          ],
+          [
+            "sorting"
+          ]
+        ],
+        "all_patterns": [
+          "hash_map_frequency",
+          "sorting"
+        ],
+        "reasoning": "To determine if one string is an anagram of another, we can use different strategies that involve counting character frequencies or sorting the strings.",
+        "hallucinated": [
+          "sorting"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    },
+    {
+      "id": "meeting_rooms_ii",
+      "category": "different_patterns",
+      "expected": [
+        [
+          "sorting",
+          "monotonic_stack"
+        ],
+        [
+          "heap_top_k"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "greedy_interval"
+          ]
+        ],
+        "all_patterns": [
+          "greedy_interval"
+        ],
+        "reasoning": "",
+        "hallucinated": [
+          "greedy_interval"
+        ],
+        "strategy_recall": 0.0,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "greedy_interval",
+            "heap_top_k"
+          ],
+          [
+            "greedy_interval"
+          ]
+        ],
+        "all_patterns": [
+          "greedy_interval",
+          "heap_top_k",
+          "greedy_interval"
+        ],
+        "reasoning": "The problem can be approached using different strategies to determine the minimum number of conference rooms needed for overlapping meeting intervals. One approach involves sorting the intervals and using a priority queue to manage the end times of meetings, while another approach uses a greedy algorithm to count overlaps directly.",
+        "hallucinated": [
+          "greedy_interval",
+          "greedy_interval"
+        ],
+        "strategy_recall": 0.5,
+        "consistent": false
+      }
+    },
+    {
+      "id": "lru_cache",
+      "category": "different_patterns",
+      "expected": [
+        [
+          "hash_map_lookup",
+          "linked_list_reversal"
+        ]
+      ],
+      "A_current": {
+        "groups": [
+          [
+            "hash_map_lookup"
+          ],
+          [
+            "linked_list_reversal"
+          ]
+        ],
+        "all_patterns": [
+          "hash_map_lookup",
+          "linked_list_reversal"
+        ],
+        "reasoning": "",
+        "hallucinated": [],
+        "strategy_recall": 1.0,
+        "consistent": true
+      },
+      "B_multi_solution": {
+        "groups": [
+          [
+            "hash_map_lookup",
+            "hash_map_frequency"
+          ]
+        ],
+        "all_patterns": [
+          "hash_map_lookup",
+          "hash_map_frequency"
+        ],
+        "reasoning": "The problem requires designing a data structure that efficiently supports LRU cache operations, which can be achieved using a combination of a hash map and a doubly linked list to maintain the order of usage.",
+        "hallucinated": [
+          "hash_map_frequency"
+        ],
+        "strategy_recall": 1.0,
+        "consistent": true
+      }
+    }
+  ],
+  "raw_results": [
+    {
+      "problem_id": "two_sum",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "two_sum",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "two_sum",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "two_sum",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ],
+        [
+          "two_pointers_opposite"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "two_pointers_opposite"
+      ],
+      "reasoning": "The problem can be solved using different optimal strategies, primarily focusing on efficient lookups and combinations of elements to find the target sum."
+    },
+    {
+      "problem_id": "two_sum",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ],
+        [
+          "two_pointers_opposite"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "two_pointers_opposite"
+      ],
+      "reasoning": "The problem can be solved using different optimal strategies, including hash map lookups for efficient index retrieval and a two-pointer technique for sorted arrays."
+    },
+    {
+      "problem_id": "two_sum",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ],
+        [
+          "two_pointers_opposite"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "two_pointers_opposite"
+      ],
+      "reasoning": "The problem can be solved using different optimal strategies, primarily focusing on efficient lookups and combinations of elements to find the target sum."
+    },
+    {
+      "problem_id": "valid_parentheses",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "valid_parentheses",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "valid_parentheses",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "dfs_iterative"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "dfs_iterative"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "valid_parentheses",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "stack"
+        ],
+        [
+          "two_pointers_opposite"
+        ]
+      ],
+      "all_patterns": [
+        "stack",
+        "two_pointers_opposite"
+      ],
+      "reasoning": "The problem of validating brackets can be approached using different algorithmic strategies, primarily focusing on stack-based methods and two-pointer techniques."
+    },
+    {
+      "problem_id": "valid_parentheses",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "stack"
+        ],
+        [
+          "two_pointers_same"
+        ]
+      ],
+      "all_patterns": [
+        "stack",
+        "two_pointers_same"
+      ],
+      "reasoning": "The problem of validating brackets can be approached using different algorithmic strategies, primarily focusing on stack-based methods and two-pointer techniques."
+    },
+    {
+      "problem_id": "valid_parentheses",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "stack"
+        ],
+        [
+          "two_pointers_opposite"
+        ]
+      ],
+      "all_patterns": [
+        "stack",
+        "two_pointers_opposite"
+      ],
+      "reasoning": "The problem of validating brackets can be approached using different algorithmic strategies, primarily focusing on stack-based methods and two-pointer techniques."
+    },
+    {
+      "problem_id": "binary_tree_level_order",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "binary_tree_level_order",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "binary_tree_level_order",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "binary_tree_level_order",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ],
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order",
+        "dfs_recursive"
+      ],
+      "reasoning": "The problem requires traversing a binary tree level by level, which can be efficiently achieved using breadth-first search (BFS) or depth-first search (DFS). Both strategies can yield the same result, but they utilize different traversal methods."
+    },
+    {
+      "problem_id": "binary_tree_level_order",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ],
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order",
+        "dfs_recursive"
+      ],
+      "reasoning": "The problem requires traversing a binary tree level by level, which can be efficiently achieved using breadth-first search (BFS) or depth-first search (DFS). Both methods can yield the same result, but they utilize different strategies."
+    },
+    {
+      "problem_id": "binary_tree_level_order",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ],
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order",
+        "dfs_recursive"
+      ],
+      "reasoning": "The problem requires traversing a binary tree level by level, which can be efficiently achieved using breadth-first search (BFS) or depth-first search (DFS). Both strategies can yield the same result, but they utilize different traversal methods."
+    },
+    {
+      "problem_id": "clone_graph",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "clone_graph",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "clone_graph",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "clone_graph",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive",
+          "hash_map_lookup"
+        ],
+        [
+          "bfs_level_order",
+          "hash_map_lookup"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "hash_map_lookup",
+        "bfs_level_order",
+        "hash_map_lookup"
+      ],
+      "reasoning": "The problem of creating a deep copy of a graph can be approached using different strategies, primarily focusing on traversal methods to ensure all nodes and their connections are replicated correctly."
+    },
+    {
+      "problem_id": "clone_graph",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive",
+          "hash_map_frequency"
+        ],
+        [
+          "bfs_level_order",
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "hash_map_frequency",
+        "bfs_level_order",
+        "hash_map_frequency"
+      ],
+      "reasoning": "The problem of creating a deep copy of a graph can be approached using different strategies, primarily focusing on traversal methods to ensure all nodes and edges are copied correctly."
+    },
+    {
+      "problem_id": "clone_graph",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem requires creating a deep copy of a graph, which can be approached using depth-first search (DFS) or breadth-first search (BFS) to traverse the graph and create copies of nodes and their connections."
+    },
+    {
+      "problem_id": "number_of_islands",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "number_of_islands",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "number_of_islands",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "number_of_islands",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "dfs_iterative"
+        ],
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "dfs_iterative",
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem of counting islands in a binary grid can be approached using depth-first search (DFS) or breadth-first search (BFS) to explore and mark connected components of land. Both strategies effectively traverse the grid to identify distinct islands."
+    },
+    {
+      "problem_id": "number_of_islands",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem of counting islands in a binary grid can be approached using depth-first search (DFS) or breadth-first search (BFS) to explore and mark connected components of land. Both strategies effectively traverse the grid to identify distinct islands."
+    },
+    {
+      "problem_id": "number_of_islands",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem of counting islands in a 2D binary grid can be approached using depth-first search (DFS) or breadth-first search (BFS) to explore and mark connected components of land. Both strategies effectively traverse the grid to identify distinct islands."
+    },
+    {
+      "problem_id": "max_subarray",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "max_subarray",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "max_subarray",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_sequence"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_sequence"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "max_subarray",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "dp_1d_sequence"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward",
+        "dp_1d_sequence"
+      ],
+      "reasoning": "The problem of finding the subarray with the largest sum can be efficiently solved using Kadane's algorithm, which utilizes dynamic programming principles. Additionally, a brute force approach can also be considered, though it is less optimal."
+    },
+    {
+      "problem_id": "max_subarray",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "greedy_local"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward",
+        "greedy_local"
+      ],
+      "reasoning": "The problem of finding the subarray with the largest sum can be approached using different strategies, primarily focusing on dynamic programming and a greedy approach."
+    },
+    {
+      "problem_id": "max_subarray",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "greedy_local"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward",
+        "greedy_local"
+      ],
+      "reasoning": "The problem of finding the subarray with the largest sum can be approached using different strategies, primarily focusing on dynamic programming and a greedy approach."
+    },
+    {
+      "problem_id": "course_schedule",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "topological_sort"
+        ]
+      ],
+      "all_patterns": [
+        "topological_sort"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "course_schedule",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "topological_sort"
+        ]
+      ],
+      "all_patterns": [
+        "topological_sort"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "course_schedule",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "topological_sort"
+        ]
+      ],
+      "all_patterns": [
+        "topological_sort"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "course_schedule",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "topological_sort",
+          "bfs_level_order"
+        ],
+        [
+          "topological_sort",
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "topological_sort",
+        "bfs_level_order",
+        "topological_sort",
+        "dfs_recursive"
+      ],
+      "reasoning": "The problem is about determining if all courses can be completed given their prerequisites, which can be modeled as a directed graph. The solution involves checking for cycles in this graph, which can be done using different strategies."
+    },
+    {
+      "problem_id": "course_schedule",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "topological_sort",
+          "dfs_recursive"
+        ],
+        [
+          "topological_sort",
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "topological_sort",
+        "dfs_recursive",
+        "topological_sort",
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem can be approached using graph theory concepts, specifically by checking for cycles in a directed graph formed by the courses and their prerequisites. This can be done using depth-first search (DFS) or breadth-first search (BFS)."
+    },
+    {
+      "problem_id": "course_schedule",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "topological_sort",
+          "dfs_recursive"
+        ],
+        [
+          "topological_sort",
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "topological_sort",
+        "dfs_recursive",
+        "topological_sort",
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem is about determining if all courses can be completed given their prerequisites, which can be modeled as a directed graph. The main strategies involve checking for cycles in the graph, which can be done using depth-first search (DFS) or breadth-first search (BFS)."
+    },
+    {
+      "problem_id": "word_ladder",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_shortest_path"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_shortest_path"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "word_ladder",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_shortest_path"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_shortest_path"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "word_ladder",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_shortest_path"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_shortest_path"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "word_ladder",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order"
+      ],
+      "reasoning": "The problem can be approached using breadth-first search (BFS) to explore all possible transformations from the beginWord to the endWord, ensuring that we find the shortest path. Alternatively, a depth-first search (DFS) can be used to explore all paths, but it may not guarantee the shortest path without additional mechanisms. BFS is optimal for this problem due to its level-order nature, which naturally finds the shortest path in an unweighted graph."
+    },
+    {
+      "problem_id": "word_ladder",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order",
+          "hash_map_frequency"
+        ],
+        [
+          "dfs_recursive",
+          "backtracking_subset"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order",
+        "hash_map_frequency",
+        "dfs_recursive",
+        "backtracking_subset"
+      ],
+      "reasoning": "The problem requires finding the shortest transformation sequence from one word to another, which can be effectively solved using graph traversal techniques. Each word can be considered a node, and an edge exists between two nodes if the corresponding words differ by exactly one letter. This leads to two distinct approaches: BFS for shortest path and DFS with backtracking for exploring all paths."
+    },
+    {
+      "problem_id": "word_ladder",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "bfs_level_order",
+          "hash_map_frequency"
+        ],
+        [
+          "dfs_recursive",
+          "backtracking_subset"
+        ]
+      ],
+      "all_patterns": [
+        "bfs_level_order",
+        "hash_map_frequency",
+        "dfs_recursive",
+        "backtracking_subset"
+      ],
+      "reasoning": "The problem involves finding the shortest transformation sequence from one word to another, which can be effectively solved using graph traversal techniques. Each word can be treated as a node in a graph, and an edge exists between two nodes if the corresponding words differ by exactly one letter. This leads to two distinct optimal solution strategies: BFS for shortest path and DFS with backtracking for path exploration."
+    },
+    {
+      "problem_id": "climbing_stairs",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "climbing_stairs",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "climbing_stairs",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "climbing_stairs",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "dp_1d_sequence"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward",
+        "dp_1d_sequence"
+      ],
+      "reasoning": "The problem can be solved using dynamic programming or by using a mathematical approach based on Fibonacci numbers."
+    },
+    {
+      "problem_id": "climbing_stairs",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "dp_1d_sequence"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward",
+        "dp_1d_sequence"
+      ],
+      "reasoning": "The problem can be solved using dynamic programming or by recognizing it as a Fibonacci sequence problem. Both approaches yield the same result but utilize different strategies."
+    },
+    {
+      "problem_id": "climbing_stairs",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dp_1d_forward"
+        ],
+        [
+          "dp_1d_sequence"
+        ]
+      ],
+      "all_patterns": [
+        "dp_1d_forward",
+        "dp_1d_sequence"
+      ],
+      "reasoning": "The problem can be solved using dynamic programming or by using a mathematical approach based on Fibonacci numbers. Both methods yield the same result but utilize different strategies."
+    },
+    {
+      "problem_id": "combination_sum",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "backtracking_subset"
+        ]
+      ],
+      "all_patterns": [
+        "backtracking_subset"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "combination_sum",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "backtracking_subset"
+        ]
+      ],
+      "all_patterns": [
+        "backtracking_subset"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "combination_sum",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "backtracking_subset"
+        ]
+      ],
+      "all_patterns": [
+        "backtracking_subset"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "combination_sum",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "backtracking_subset"
+        ],
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "backtracking_subset",
+        "dp_1d_forward"
+      ],
+      "reasoning": "The problem can be approached using backtracking to explore all possible combinations of candidates that sum to the target. Additionally, dynamic programming can be used to build up solutions based on previously computed results."
+    },
+    {
+      "problem_id": "combination_sum",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "backtracking_subset"
+        ],
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "backtracking_subset",
+        "dp_1d_forward"
+      ],
+      "reasoning": "The problem can be approached using backtracking to explore all combinations of candidates that sum to the target. Additionally, dynamic programming can be used to build up solutions iteratively."
+    },
+    {
+      "problem_id": "combination_sum",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "backtracking_subset"
+        ],
+        [
+          "dp_1d_forward"
+        ]
+      ],
+      "all_patterns": [
+        "backtracking_subset",
+        "dp_1d_forward"
+      ],
+      "reasoning": "The problem can be approached using backtracking to explore all possible combinations of candidates that sum to the target. Additionally, dynamic programming can be utilized to build up solutions based on previously computed results."
+    },
+    {
+      "problem_id": "reverse_linked_list",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "linked_list_reversal"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "reverse_linked_list",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "linked_list_reversal"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "reverse_linked_list",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "linked_list_reversal"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "reverse_linked_list",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "linked_list_reversal"
+        ],
+        [
+          "linked_list_reversal",
+          "dfs_recursive"
+        ]
+      ],
+      "all_patterns": [
+        "linked_list_reversal",
+        "linked_list_reversal",
+        "dfs_recursive"
+      ],
+      "reasoning": "The problem of reversing a singly linked list can be approached using different strategies, primarily focusing on iterative and recursive methods."
+    },
+    {
+      "problem_id": "reverse_linked_list",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "linked_list_reversal"
+        ],
+        [
+          "dfs_recursive",
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "linked_list_reversal",
+        "dfs_recursive",
+        "linked_list_reversal"
+      ],
+      "reasoning": "The problem of reversing a singly linked list can be approached using different strategies, primarily focusing on iterative and recursive methods."
+    },
+    {
+      "problem_id": "reverse_linked_list",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "dfs_recursive"
+        ],
+        [
+          "dfs_iterative"
+        ],
+        [
+          "fast_slow_pointers"
+        ]
+      ],
+      "all_patterns": [
+        "dfs_recursive",
+        "dfs_iterative",
+        "fast_slow_pointers"
+      ],
+      "reasoning": "The problem of reversing a singly linked list can be approached using different algorithmic strategies, each with its own set of patterns."
+    },
+    {
+      "problem_id": "valid_anagram",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_frequency"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "valid_anagram",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_frequency"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "valid_anagram",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_frequency"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "valid_anagram",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_frequency"
+        ],
+        [
+          "sorting"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_frequency",
+        "sorting"
+      ],
+      "reasoning": "To determine if one string is an anagram of another, we can use different strategies that involve counting character frequencies or sorting the strings."
+    },
+    {
+      "problem_id": "valid_anagram",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_frequency"
+        ],
+        [
+          "sorting"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_frequency",
+        "sorting"
+      ],
+      "reasoning": "To determine if one string is an anagram of another, we can utilize different strategies that involve counting character frequencies or sorting the strings."
+    },
+    {
+      "problem_id": "valid_anagram",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_frequency"
+        ],
+        [
+          "sorting"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_frequency",
+        "sorting"
+      ],
+      "reasoning": "To determine if one string is an anagram of another, we can use different strategies that involve counting character frequencies or sorting the strings."
+    },
+    {
+      "problem_id": "meeting_rooms_ii",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "greedy_interval"
+        ]
+      ],
+      "all_patterns": [
+        "greedy_interval"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "meeting_rooms_ii",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "greedy_interval"
+        ]
+      ],
+      "all_patterns": [
+        "greedy_interval"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "meeting_rooms_ii",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "greedy_interval"
+        ]
+      ],
+      "all_patterns": [
+        "greedy_interval"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "meeting_rooms_ii",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "greedy_interval",
+          "heap_top_k"
+        ],
+        [
+          "greedy_interval"
+        ]
+      ],
+      "all_patterns": [
+        "greedy_interval",
+        "heap_top_k",
+        "greedy_interval"
+      ],
+      "reasoning": "The problem can be approached using different strategies to determine the minimum number of conference rooms needed for overlapping meeting intervals. One approach involves sorting the intervals and using a priority queue to manage the end times of meetings, while another approach uses a greedy algorithm to count overlaps directly."
+    },
+    {
+      "problem_id": "meeting_rooms_ii",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "greedy_interval"
+        ],
+        [
+          "dp_interval"
+        ]
+      ],
+      "all_patterns": [
+        "greedy_interval",
+        "dp_interval"
+      ],
+      "reasoning": "The problem can be approached using different strategies to determine the minimum number of conference rooms needed based on the meeting intervals provided."
+    },
+    {
+      "problem_id": "meeting_rooms_ii",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "greedy_interval"
+        ]
+      ],
+      "all_patterns": [
+        "greedy_interval"
+      ],
+      "reasoning": "The problem can be approached using different strategies to determine the minimum number of conference rooms needed based on the meeting intervals provided."
+    },
+    {
+      "problem_id": "lru_cache",
+      "prompt_design": "A_current",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ],
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "linked_list_reversal"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "lru_cache",
+      "prompt_design": "A_current",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ],
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "linked_list_reversal"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "lru_cache",
+      "prompt_design": "A_current",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup"
+        ],
+        [
+          "linked_list_reversal"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "linked_list_reversal"
+      ],
+      "reasoning": ""
+    },
+    {
+      "problem_id": "lru_cache",
+      "prompt_design": "B_multi_solution",
+      "trial": 0,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup",
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "hash_map_frequency"
+      ],
+      "reasoning": "The problem requires designing a data structure that efficiently supports LRU cache operations, which can be achieved using a combination of a hash map and a doubly linked list to maintain the order of usage."
+    },
+    {
+      "problem_id": "lru_cache",
+      "prompt_design": "B_multi_solution",
+      "trial": 1,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup",
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "hash_map_frequency"
+      ],
+      "reasoning": "The problem requires designing a data structure that efficiently supports LRU cache operations. The optimal solutions involve using a combination of a hash map for fast access and a doubly linked list for maintaining the order of usage."
+    },
+    {
+      "problem_id": "lru_cache",
+      "prompt_design": "B_multi_solution",
+      "trial": 2,
+      "parse_success": true,
+      "groups": [
+        [
+          "hash_map_lookup",
+          "hash_map_frequency"
+        ]
+      ],
+      "all_patterns": [
+        "hash_map_lookup",
+        "hash_map_frequency"
+      ],
+      "reasoning": "The problem requires designing a data structure that efficiently supports LRU cache operations, which can be achieved using a combination of a hash map and a doubly linked list to maintain the order of usage."
+    }
+  ]
+}

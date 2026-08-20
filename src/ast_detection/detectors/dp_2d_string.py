@@ -8,7 +8,7 @@ Subsequences.
 """
 
 import ast
-from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
 @register_detector
@@ -140,7 +140,7 @@ class DP2DStringDetector(BaseDetector):
         for node in ast.walk(func_def):
             if isinstance(node, ast.Subscript):
                 if isinstance(node.value, ast.Subscript):
-                    if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                    if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                         inner_slice = node.value.slice
                         outer_slice = node.slice
                         if isinstance(inner_slice, ast.BinOp) and isinstance(inner_slice.op, ast.Sub):
@@ -177,7 +177,7 @@ class DP2DStringDetector(BaseDetector):
                 for target in node.targets:
                     if isinstance(target, ast.Subscript):
                         if isinstance(target.value, ast.Subscript):
-                            if isinstance(target.value.value, ast.Name) and target.value.value.id.lower().startswith("dp"):
+                            if isinstance(target.value.value, ast.Name) and is_dp_name(target.value.value.id):
                                 return True
         return False
 
@@ -191,7 +191,7 @@ class DP2DStringDetector(BaseDetector):
                         if isinstance(arg, ast.BinOp):
                             for sub in ast.walk(arg):
                                 if isinstance(sub, ast.Subscript):
-                                    if isinstance(sub.value, ast.Name) and sub.value.id.lower().startswith("dp"):
+                                    if isinstance(sub.value, ast.Name) and is_dp_name(sub.value.id):
                                         return True
         return has_max_min
 
@@ -211,9 +211,9 @@ class DP2DStringDetector(BaseDetector):
             if isinstance(node, ast.Return):
                 if isinstance(node.value, ast.Subscript):
                     if isinstance(node.value.value, ast.Subscript):
-                        if isinstance(node.value.value.value, ast.Name) and node.value.value.value.id.lower().startswith("dp"):
+                        if isinstance(node.value.value.value, ast.Name) and is_dp_name(node.value.value.value.id):
                             return True
-                    if isinstance(node.value.value, ast.Name) and node.value.value.id.lower().startswith("dp"):
+                    if isinstance(node.value.value, ast.Name) and is_dp_name(node.value.value.id):
                         if isinstance(node.value.slice, ast.UnaryOp):
                             return True
         return False

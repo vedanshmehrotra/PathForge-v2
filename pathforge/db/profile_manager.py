@@ -76,8 +76,15 @@ def update_topic_profile(
     detected_pattern,
     expected_pattern,
     attempted_at=None,
+    evidence_ceiling=None,
 ):
-    """Upsert and update one user's per-topic skill profile after a submission."""
+    """Upsert and update one user's per-topic skill profile after a submission.
+
+    Args:
+        evidence_ceiling: Optional maximum K-factor for the ELO update.
+            When provided, the effective K is min(base_k, evidence_ceiling).
+            Use this to cap scoring authority based on ground-truth evidence.
+    """
     timestamp = attempted_at or iso_now()
     existing = connection.execute(
         """
@@ -104,7 +111,7 @@ def update_topic_profile(
         created_at = timestamp
 
     outcome = outcome_from_submission(verdict, detected_pattern, expected_pattern)
-    elo_after = update_elo(elo_before, difficulty, outcome)
+    elo_after = update_elo(elo_before, difficulty, outcome, k_ceiling=evidence_ceiling)
     new_attempt_count = attempt_count + 1
     new_pass_count = pass_count + (1 if verdict == "pass" else 0)
     new_pattern_match_count = pattern_match_count + (1 if verdict == "pass" and detected_pattern == expected_pattern else 0)

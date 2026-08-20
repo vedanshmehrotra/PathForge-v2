@@ -34,14 +34,23 @@ def calculate_expected(player_rating, opponent_rating):
     return 1 / (1 + 10 ** ((opponent_rating - player_rating) / 400))
 
 
-def update_elo(current_rating, difficulty, outcome):
-    """Return the updated Elo rating for a 1.0, 0.5, or 0.0 submission outcome."""
+def update_elo(current_rating, difficulty, outcome, k_ceiling=None):
+    """Return the updated Elo rating for a 1.0, 0.5, or 0.0 submission outcome.
+
+    Args:
+        k_ceiling: Optional maximum K-factor. When provided, the effective K
+            is min(base_k, k_ceiling). Use this to cap scoring authority for
+            ground truth with reduced evidence (e.g. structurally_observed).
+    """
     if outcome not in (0, 0.0, 0.5, 1, 1.0):
         raise ValueError("outcome must be 1.0, 0.5, or 0.0")
 
     opponent_rating = get_problem_rating(difficulty)
     expected = calculate_expected(current_rating, opponent_rating)
-    updated = current_rating + get_k_factor(difficulty) * (float(outcome) - expected)
+    k = get_k_factor(difficulty)
+    if k_ceiling is not None:
+        k = min(k, k_ceiling)
+    updated = current_rating + k * (float(outcome) - expected)
     return round(max(MIN_ELO, updated), 2)
 
 

@@ -192,7 +192,7 @@ def _ensure_ground_truth(connection, row):
 
 def _load_ground_truth(connection, problem_id):
     row = connection.execute(
-        "SELECT patterns, confidence FROM problem_ground_truth WHERE problem_id = %s",
+        "SELECT patterns, confidence, solution_groups, validation_status FROM problem_ground_truth WHERE problem_id = %s",
         (problem_id,),
     ).fetchone()
     if row is None:
@@ -200,43 +200,75 @@ def _load_ground_truth(connection, problem_id):
 
     patterns_raw = row["patterns"]
     confidence_raw = row["confidence"]
+    solution_groups_raw = row["solution_groups"] if "solution_groups" in row.keys() else None
+    validation_status = row["validation_status"] if "validation_status" in row.keys() else None
 
+    # Phase 0C: if solution_groups column exists and has data, use it directly
+    if solution_groups_raw is not None:
+        sg = _parse_json_field(solution_groups_raw)
+        if isinstance(sg, list) and sg:
+            # Each group already has patterns, evidence, confidence
+            # Ensure backward compat: fill missing fields
+            groups = []
+            all_confidence = {}
+            for g in sg:
+                if not isinstance(g, dict):
+                    continue
+                group_patterns = g.get("patterns", [])
+                if not group_patterns:
+                    continue
+                groups.append({
+                    "id": g.get("id", f"group_{len(groups)}"),
+                    "patterns": group_patterns,
+                    "evidence": g.get("evidence", validation_status or "unobserved"),
+                    "confidence": g.get("confidence", {}),
+                })
+                all_confidence.update(g.get("confidence", {}))
+            if groups:
+                return groups, all_confidence
+
+    # Fallback: legacy flat patterns column
     patterns: list = []
     confidence: dict = {}
 
-    # Deserialize at read boundary: TEXT columns return str, JSONB columns return
-    # already-parsed Python objects. Handle both exactly once.
-    if isinstance(patterns_raw, str) and patterns_raw:
-        try:
-            parsed = json.loads(patterns_raw)
-            if isinstance(parsed, list):
-                patterns = parsed
-        except (json.JSONDecodeError, TypeError):
-            patterns = []
-    elif isinstance(patterns_raw, list):
-        patterns = patterns_raw
-
-    if isinstance(confidence_raw, str) and confidence_raw:
-        try:
-            confidence = json.loads(confidence_raw)
-        except (json.JSONDecodeError, TypeError):
-            confidence = {}
-    elif isinstance(confidence_raw, dict):
-        confidence = confidence_raw
+    patterns = _parse_json_list(patterns_raw)
+    confidence = _parse_json_dict(confidence_raw)
 
     if patterns:
         best_conf = max(confidence.values()) if confidence else 1.0
         groups = [
             {
                 "id": "group_0",
-                "display_name": "Primary Solution",
-                "confidence": best_conf,
                 "patterns": patterns,
+                "evidence": validation_status or "unobserved",
+                "confidence": {p: confidence.get(p, best_conf) for p in patterns},
             }
         ]
         return groups, confidence
 
     return [], {}
+
+
+def _parse_json_field(raw):
+    """Parse a value that may be str (TEXT) or already-parsed (JSONB)."""
+    if isinstance(raw, str) and raw:
+        try:
+            return json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            return None
+    return raw
+
+
+def _parse_json_list(raw):
+    """Parse a JSON list from TEXT or JSONB."""
+    val = _parse_json_field(raw)
+    return val if isinstance(val, list) else []
+
+
+def _parse_json_dict(raw):
+    """Parse a JSON dict from TEXT or JSONB."""
+    val = _parse_json_field(raw)
+    return val if isinstance(val, dict) else {}
 
 
 def _parse_topics(raw: str) -> list:

@@ -1,0 +1,606 @@
+{
+  "overall": {
+    "total_cases": 1207,
+    "tp": 1021,
+    "fp": 0,
+    "fn": 186,
+    "tn": 0,
+    "precision_pct": 100.0,
+    "recall_pct": 84.59,
+    "f1_pct": 91.65,
+    "case_level_recall_pct": 91.35,
+    "seeds_passing": 243,
+    "seeds_total": 266
+  },
+  "failure_classification": {
+    "seed_failure": 23,
+    "inherited": 89,
+    "true_naming": 11,
+    "true_expression": 30,
+    "true_loop_form": 33,
+    "true_class_structure": 0,
+    "true_other": 0
+  },
+  "derived": {
+    "seed_level_fn": 23,
+    "inherited_fn": 89,
+    "true_variant_fn": 74
+  },
+  "recoverable": {
+    "true_naming": 11,
+    "true_expression": 30,
+    "true_loop_form": 33,
+    "true_class_structure": 0,
+    "true_other": 0,
+    "seed_level": 23,
+    "inherited_not_recoverable": 89,
+    "total_directly_recoverable": 74
+  },
+  "projected": {
+    "after_naming_fix": 85.5,
+    "after_naming_plus_expr": 87.99,
+    "after_all_variant_fixes": 90.72,
+    "after_seed_fixes": 92.63,
+    "ceiling_fn": 89
+  },
+  "per_detector": {
+    "hash_map_lookup": {
+      "total": 68,
+      "tp": 63,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "seed_passing": 14,
+      "seed_failing": 0,
+      "variant_passing": 49,
+      "variant_failing": 5,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "array_traversal": {
+      "total": 52,
+      "tp": 40,
+      "fp": 0,
+      "fn": 12,
+      "tn": 0,
+      "seed_passing": 15,
+      "seed_failing": 0,
+      "variant_passing": 25,
+      "variant_failing": 12,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "sorting": {
+      "total": 26,
+      "tp": 26,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 13,
+      "seed_failing": 0,
+      "variant_passing": 13,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "brute_force": {
+      "total": 58,
+      "tp": 58,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 9,
+      "seed_failing": 0,
+      "variant_passing": 49,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "hash_map_frequency": {
+      "total": 24,
+      "tp": 21,
+      "fp": 0,
+      "fn": 3,
+      "tn": 0,
+      "seed_passing": 14,
+      "seed_failing": 0,
+      "variant_passing": 7,
+      "variant_failing": 3,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "two_pointers_same": {
+      "total": 55,
+      "tp": 34,
+      "fp": 0,
+      "fn": 21,
+      "tn": 0,
+      "seed_passing": 8,
+      "seed_failing": 3,
+      "variant_passing": 26,
+      "variant_failing": 18,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "two_pointers_opposite": {
+      "total": 37,
+      "tp": 29,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "seed_passing": 9,
+      "seed_failing": 0,
+      "variant_passing": 20,
+      "variant_failing": 8,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "sliding_window_fixed": {
+      "total": 48,
+      "tp": 36,
+      "fp": 0,
+      "fn": 12,
+      "tn": 0,
+      "seed_passing": 6,
+      "seed_failing": 2,
+      "variant_passing": 30,
+      "variant_failing": 10,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "sliding_window_variable": {
+      "total": 53,
+      "tp": 53,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 9,
+      "seed_failing": 0,
+      "variant_passing": 44,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "prefix_sum": {
+      "total": 48,
+      "tp": 40,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "seed_passing": 9,
+      "seed_failing": 1,
+      "variant_passing": 31,
+      "variant_failing": 7,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "binary_search_standard": {
+      "total": 54,
+      "tp": 48,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "seed_passing": 8,
+      "seed_failing": 0,
+      "variant_passing": 40,
+      "variant_failing": 6,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "binary_search_rotated": {
+      "total": 20,
+      "tp": 9,
+      "fp": 0,
+      "fn": 11,
+      "tn": 0,
+      "seed_passing": 2,
+      "seed_failing": 1,
+      "variant_passing": 7,
+      "variant_failing": 10,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "binary_search_answer": {
+      "total": 37,
+      "tp": 17,
+      "fp": 0,
+      "fn": 20,
+      "tn": 0,
+      "seed_passing": 9,
+      "seed_failing": 2,
+      "variant_passing": 8,
+      "variant_failing": 18,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "heap_top_k": {
+      "total": 31,
+      "tp": 29,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "seed_passing": 10,
+      "seed_failing": 0,
+      "variant_passing": 19,
+      "variant_failing": 2,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "monotonic_stack": {
+      "total": 38,
+      "tp": 31,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "seed_passing": 7,
+      "seed_failing": 1,
+      "variant_passing": 24,
+      "variant_failing": 6,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "monotonic_deque": {
+      "total": 30,
+      "tp": 28,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "seed_passing": 6,
+      "seed_failing": 0,
+      "variant_passing": 22,
+      "variant_failing": 2,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "fast_slow_pointers": {
+      "total": 58,
+      "tp": 58,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 12,
+      "seed_failing": 0,
+      "variant_passing": 46,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "linked_list_reversal": {
+      "total": 24,
+      "tp": 16,
+      "fp": 0,
+      "fn": 8,
+      "tn": 0,
+      "seed_passing": 8,
+      "seed_failing": 2,
+      "variant_passing": 8,
+      "variant_failing": 6,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dfs_recursive": {
+      "total": 47,
+      "tp": 45,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "seed_passing": 10,
+      "seed_failing": 0,
+      "variant_passing": 35,
+      "variant_failing": 2,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dfs_iterative": {
+      "total": 23,
+      "tp": 23,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 5,
+      "seed_failing": 0,
+      "variant_passing": 18,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "bfs_level_order": {
+      "total": 33,
+      "tp": 33,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 5,
+      "seed_failing": 0,
+      "variant_passing": 28,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "bfs_shortest_path": {
+      "total": 16,
+      "tp": 4,
+      "fp": 0,
+      "fn": 12,
+      "tn": 0,
+      "seed_passing": 2,
+      "seed_failing": 2,
+      "variant_passing": 2,
+      "variant_failing": 10,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "binary_search_tree": {
+      "total": 44,
+      "tp": 33,
+      "fp": 0,
+      "fn": 11,
+      "tn": 0,
+      "seed_passing": 6,
+      "seed_failing": 2,
+      "variant_passing": 27,
+      "variant_failing": 9,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "topological_sort": {
+      "total": 18,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 4,
+      "seed_failing": 0,
+      "variant_passing": 14,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "union_find": {
+      "total": 19,
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 5,
+      "seed_failing": 0,
+      "variant_passing": 14,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "greedy_local": {
+      "total": 13,
+      "tp": 13,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 5,
+      "seed_failing": 0,
+      "variant_passing": 8,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "greedy_interval": {
+      "total": 10,
+      "tp": 6,
+      "fp": 0,
+      "fn": 4,
+      "tn": 0,
+      "seed_passing": 4,
+      "seed_failing": 1,
+      "variant_passing": 2,
+      "variant_failing": 3,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "backtracking_subset": {
+      "total": 25,
+      "tp": 25,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 5,
+      "seed_failing": 0,
+      "variant_passing": 20,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "backtracking_permutation": {
+      "total": 25,
+      "tp": 15,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "seed_passing": 3,
+      "seed_failing": 2,
+      "variant_passing": 12,
+      "variant_failing": 8,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_1d_forward": {
+      "total": 38,
+      "tp": 31,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "seed_passing": 5,
+      "seed_failing": 1,
+      "variant_passing": 26,
+      "variant_failing": 6,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_state_machine": {
+      "total": 20,
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 4,
+      "seed_failing": 0,
+      "variant_passing": 16,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_1d_sequence": {
+      "total": 17,
+      "tp": 12,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "seed_passing": 2,
+      "seed_failing": 1,
+      "variant_passing": 10,
+      "variant_failing": 4,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_2d_grid": {
+      "total": 27,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 3,
+      "seed_failing": 0,
+      "variant_passing": 24,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_2d_string": {
+      "total": 27,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 3,
+      "seed_failing": 0,
+      "variant_passing": 24,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_knapsack": {
+      "total": 17,
+      "tp": 7,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "seed_passing": 1,
+      "seed_failing": 2,
+      "variant_passing": 6,
+      "variant_failing": 8,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    },
+    "dp_interval": {
+      "total": 27,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "seed_passing": 3,
+      "seed_failing": 0,
+      "variant_passing": 24,
+      "variant_failing": 0,
+      "variant_passing_from_passing_seed": 0,
+      "variant_failing_from_passing_seed": 0
+    }
+  },
+  "per_detector_categories": {
+    "hash_map_lookup": {
+      "true_loop_form": 5
+    },
+    "array_traversal": {
+      "true_loop_form": 12
+    },
+    "hash_map_frequency": {
+      "true_loop_form": 3
+    },
+    "two_pointers_same": {
+      "true_loop_form": 2,
+      "inherited": 16,
+      "seed_failure": 3
+    },
+    "two_pointers_opposite": {
+      "true_expression": 8
+    },
+    "sliding_window_fixed": {
+      "inherited": 10,
+      "seed_failure": 2
+    },
+    "prefix_sum": {
+      "true_loop_form": 5,
+      "inherited": 2,
+      "seed_failure": 1
+    },
+    "binary_search_standard": {
+      "true_naming": 3,
+      "true_expression": 3
+    },
+    "binary_search_rotated": {
+      "inherited": 6,
+      "true_naming": 2,
+      "true_expression": 2,
+      "seed_failure": 1
+    },
+    "binary_search_answer": {
+      "true_expression": 16,
+      "inherited": 2,
+      "seed_failure": 2
+    },
+    "heap_top_k": {
+      "true_loop_form": 2
+    },
+    "monotonic_stack": {
+      "true_loop_form": 2,
+      "inherited": 4,
+      "seed_failure": 1
+    },
+    "monotonic_deque": {
+      "true_loop_form": 2
+    },
+    "linked_list_reversal": {
+      "inherited": 6,
+      "seed_failure": 2
+    },
+    "dfs_recursive": {
+      "true_naming": 2
+    },
+    "bfs_shortest_path": {
+      "inherited": 10,
+      "seed_failure": 2
+    },
+    "binary_search_tree": {
+      "true_expression": 1,
+      "inherited": 8,
+      "seed_failure": 2
+    },
+    "greedy_interval": {
+      "inherited": 3,
+      "seed_failure": 1
+    },
+    "backtracking_permutation": {
+      "inherited": 8,
+      "seed_failure": 2
+    },
+    "dp_1d_forward": {
+      "inherited": 6,
+      "seed_failure": 1
+    },
+    "dp_1d_sequence": {
+      "true_naming": 4,
+      "seed_failure": 1
+    },
+    "dp_knapsack": {
+      "inherited": 8,
+      "seed_failure": 2
+    }
+  }
+}
