@@ -17,6 +17,7 @@ from pathforge.services.ground_truth_builder import GroundTruthError
 from pathforge.services.persistence import run_persistence
 from pathforge.llm.graphql_client import GraphQLUnavailableError
 from pathforge.db.db import get_connection
+from pathforge.api.services.shadow_observability import record_shadow_result, get_shadow_log_dict
 import config
 
 router = APIRouter()
@@ -66,6 +67,36 @@ class SubmissionGap(BaseModel):
     gap_identified: bool
 
 
+class HybridPatternInfo(BaseModel):
+    """Per-pattern shadow detection info."""
+    pattern_id: str
+    ast_detected: bool
+    ast_confidence: float = 0.0
+    semantic_score: float = 0.0
+    hybrid_detected: bool = False
+    fusion_policy: str = ""
+    discrepancy_type: str = ""
+
+
+class HybridAnalysis(BaseModel):
+    """Optional shadow-mode hybrid analysis metadata."""
+    code_hash: str
+    hybrid_detections: dict[str, bool]
+    patterns: list[HybridPatternInfo]
+    ast_latency_ms: float = 0.0
+    semantic_latency_ms: float = 0.0
+
+
+class ShadowAnalysisResult(BaseModel):
+    """Shadow-mode analysis result from the new fact/technique/strategy path."""
+    structural_facts: list[dict] = []
+    technique_evidence: list[dict] = []
+    strategy_evidence: list[dict] = []
+    match_outcome: Optional[dict] = None
+    extractor_version: str = ""
+    elapsed_ms: float = 0.0
+
+
 class AnalyzeResponse(BaseModel):
     ast: dict
     match_result: dict
@@ -73,6 +104,8 @@ class AnalyzeResponse(BaseModel):
     elo_updates: list[EloUpdate] = []
     submission_gap: Optional[SubmissionGap] = None
     persisted: PersistenceInfo
+    hybrid_analysis: Optional[HybridAnalysis] = None
+    shadow_analysis: Optional[ShadowAnalysisResult] = None
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
@@ -162,6 +195,55 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 gap_identified=len(missing_ids) > 0,
             )
 
+        # --- Shadow-mode hybrid analysis (observational only) ---
+        hybrid_analysis = None
+        try:
+            from src.ast_detection.semantic.shadow_detector import ShadowDetector
+            _shadow = ShadowDetector()
+            _shadow_result = _shadow.analyze_safe(req.code)
+            record_shadow_result(_shadow_result)
+
+            if _shadow_result:
+                patterns_info = []
+                for disc in _shadow_result.discrepancies:
+                    patterns_info.append(HybridPatternInfo(
+                        pattern_id=disc.pattern_id,
+                        ast_detected=disc.ast_detected,
+                        ast_confidence=disc.ast_confidence,
+                        semantic_score=disc.sem_score,
+                        hybrid_detected=disc.hybrid_detected,
+                        fusion_policy=disc.fusion_policy,
+                        discrepancy_type=disc.discrepancy_type,
+                    ))
+                hybrid_analysis = HybridAnalysis(
+                    code_hash=_shadow_result.code_hash,
+                    hybrid_detections=_shadow_result.hybrid_detections,
+                    patterns=patterns_info,
+                    ast_latency_ms=_shadow_result.ast_latency_ms,
+                    semantic_latency_ms=_shadow_result.sem_latency_ms,
+                )
+        except Exception:
+            # Shadow analysis must never affect production
+            pass
+
+        # --- Shadow analysis: new fact/technique/strategy path (observational only) ---
+        shadow_result = None
+        submission_id = persisted["submission_id"]
+        try:
+            from pathforge.ast_analysis.shadow.shadow_runner import run_shadow_analysis
+            from pathforge.ast_analysis.shadow.persistence import (
+                persist_shadow_analysis, compute_code_hash,
+            )
+            shadow_raw = run_shadow_analysis(req.code, solution_groups=groups)
+            if shadow_raw:
+                shadow_result = ShadowAnalysisResult(**shadow_raw)
+                # Persist shadow results to the submission row
+                code_hash = compute_code_hash(req.code)
+                persist_shadow_analysis(conn, submission_id, code_hash, shadow_raw)
+        except Exception:
+            # Shadow analysis must never affect production
+            pass
+
         return AnalyzeResponse(
             ast=result["ast"],
             match_result=result["match_result"],
@@ -174,6 +256,8 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 elo_updates_count=persisted["elo_updates_count"],
                 recommendation_id=persisted.get("recommendation_id"),
             ),
+            hybrid_analysis=hybrid_analysis,
+            shadow_analysis=shadow_result,
         )
     finally:
         conn.close()

@@ -203,24 +203,32 @@ def _load_ground_truth(connection, problem_id):
     solution_groups_raw = row["solution_groups"] if "solution_groups" in row.keys() else None
     validation_status = row["validation_status"] if "validation_status" in row.keys() else None
 
-    # Phase 0C: if solution_groups column exists and has data, use it directly
+    # Phase 3B: if solution_groups column exists and has data, use it directly
     if solution_groups_raw is not None:
         sg = _parse_json_field(solution_groups_raw)
         if isinstance(sg, list) and sg:
-            # Each group already has patterns, evidence, confidence
-            # Ensure backward compat: fill missing fields
             groups = []
             all_confidence = {}
             for g in sg:
                 if not isinstance(g, dict):
                     continue
-                group_patterns = g.get("patterns", [])
-                if not group_patterns:
+                # Support both legacy format (patterns/evidence/confidence)
+                # and new V1 format (required/optional/excluded/threshold/authority_tier)
+                required = g.get("required", g.get("patterns", []))
+                if not required:
                     continue
                 groups.append({
                     "id": g.get("id", f"group_{len(groups)}"),
-                    "patterns": group_patterns,
-                    "evidence": g.get("evidence", validation_status or "unobserved"),
+                    "version": g.get("version", 1),
+                    "required": required,
+                    "optional": g.get("optional", []),
+                    "excluded": g.get("excluded", []),
+                    "threshold": g.get("threshold", 0.5),
+                    "authority_tier": g.get("authority_tier", g.get("evidence", validation_status or "unobserved")),
+                    "provenance": g.get("provenance", []),
+                    # Legacy fields for backward compatibility
+                    "patterns": required,
+                    "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                     "confidence": g.get("confidence", {}),
                 })
                 all_confidence.update(g.get("confidence", {}))

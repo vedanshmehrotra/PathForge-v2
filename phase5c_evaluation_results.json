@@ -1,0 +1,2910 @@
+{
+  "summary": {
+    "total": 276,
+    "safety_counts": {
+      "correct_confirmed": 103,
+      "correct_unresolved": 129,
+      "incorrect_unresolved": 36,
+      "false_positive": 8
+    },
+    "total_tp": 113,
+    "total_fp": 174,
+    "total_fn": 37
+  },
+  "metrics": {
+    "strategy_bfs_shortest_path": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 6,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.667
+    },
+    "strategy_binary_search": {
+      "tp": 17,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "strategy_dfs_backtracking": {
+      "tp": 9,
+      "fp": 0,
+      "fn": 7,
+      "precision": 1.0,
+      "recall": 0.562,
+      "f1": 0.72
+    },
+    "strategy_dp_bottom_up": {
+      "tp": 16,
+      "fp": 5,
+      "fn": 4,
+      "precision": 0.762,
+      "recall": 0.8,
+      "f1": 0.78
+    },
+    "strategy_dp_top_down": {
+      "tp": 10,
+      "fp": 0,
+      "fn": 3,
+      "precision": 1.0,
+      "recall": 0.769,
+      "f1": 0.87
+    },
+    "strategy_linked_list_traversal": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "strategy_monotonic_stack_strategy": {
+      "tp": 6,
+      "fp": 2,
+      "fn": 2,
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1": 0.75
+    },
+    "strategy_sliding_window": {
+      "tp": 21,
+      "fp": 2,
+      "fn": 9,
+      "precision": 0.913,
+      "recall": 0.7,
+      "f1": 0.792
+    },
+    "strategy_two_pointers_opposite": {
+      "tp": 12,
+      "fp": 4,
+      "fn": 2,
+      "precision": 0.75,
+      "recall": 0.857,
+      "f1": 0.8
+    },
+    "strategy_union_find": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.857
+    },
+    "technique_bidirectional_index_scan": {
+      "tp": 0,
+      "fp": 16,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_carry_propagation": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_fixed_window_maintenance": {
+      "tp": 0,
+      "fp": 19,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_iterative_table_filling": {
+      "tp": 0,
+      "fp": 21,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_linked_list_traversal": {
+      "tp": 10,
+      "fp": 1,
+      "fn": 1,
+      "precision": 0.909,
+      "recall": 0.909,
+      "f1": 0.909
+    },
+    "technique_loop_state_tracking": {
+      "tp": 0,
+      "fp": 39,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_monotonic_stack_maintenance": {
+      "tp": 0,
+      "fp": 8,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_recursive_branching": {
+      "tp": 0,
+      "fp": 22,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "technique_sequential_accumulation": {
+      "tp": 0,
+      "fp": 32,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  },
+  "results": [
+    {
+      "name": "bs_standard",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.35
+    },
+    {
+      "name": "bs_renamed_vars",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.1
+    },
+    {
+      "name": "bs_overflow_safe",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.08
+    },
+    {
+      "name": "bs_true_div",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.01
+    },
+    {
+      "name": "bs_rshift",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.02
+    },
+    {
+      "name": "bs_rotated",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.72
+    },
+    {
+      "name": "bs_answer_space",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.91
+    },
+    {
+      "name": "bs_leftmost",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.19
+    },
+    {
+      "name": "bs_class_method",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.0
+    },
+    {
+      "name": "bs_nested_if",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.01
+    },
+    {
+      "name": "bs_early_return",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.09
+    },
+    {
+      "name": "bs_no_midpoint_two_pointers",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.97
+    },
+    {
+      "name": "bs_while_without_midpoint",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.58
+    },
+    {
+      "name": "bs_recursive",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.58
+    },
+    {
+      "name": "bs_three_conditions",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.0
+    },
+    {
+      "name": "bs_overflow_safe_renamed",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.06
+    },
+    {
+      "name": "bs_alternate_condition",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.86
+    },
+    {
+      "name": "bs_find_insert",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.0
+    },
+    {
+      "name": "bs_min_in_rotated",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.82
+    },
+    {
+      "name": "bs_peak_element",
+      "expected_strategy": "binary_search",
+      "detected_strategies": [
+        "binary_search"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.84
+    },
+    {
+      "name": "tp_palindrome",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.61
+    },
+    {
+      "name": "tp_container_water",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.13
+    },
+    {
+      "name": "tp_3sum",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.89
+    },
+    {
+      "name": "tp_two_sum_sorted",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.93
+    },
+    {
+      "name": "tp_trapping_rain",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.54
+    },
+    {
+      "name": "tp_remove_duplicates",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.53
+    },
+    {
+      "name": "tp_merge_sorted",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.37
+    },
+    {
+      "name": "tp_valid_mountain",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.74
+    },
+    {
+      "name": "tp_pair_sum_sorted",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.32
+    },
+    {
+      "name": "tp_palindrome_renamed",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.98
+    },
+    {
+      "name": "tp_move_zeroes",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.78
+    },
+    {
+      "name": "tp_reverse_string",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.97
+    },
+    {
+      "name": "tp_sorted_squares",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.0
+    },
+    {
+      "name": "tp_interval_intersection",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.72
+    },
+    {
+      "name": "tp_4sum",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.37
+    },
+    {
+      "name": "tp_slow_fast_cycle",
+      "expected_strategy": "linked_list_traversal",
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.79
+    },
+    {
+      "name": "tp_two_pointer_while_true",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.86
+    },
+    {
+      "name": "tp_comparator_driven",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.52
+    },
+    {
+      "name": "tp_partition",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.74
+    },
+    {
+      "name": "tp_converge_with_state",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.04
+    },
+    {
+      "name": "sw_longest_substring",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.84
+    },
+    {
+      "name": "sw_max_avg_subarray",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.64
+    },
+    {
+      "name": "sw_longest_ones(self)",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.05
+    },
+    {
+      "name": "sw_min_window_substring",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.88
+    },
+    {
+      "name": "sw_max_consecutive_ones",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.98
+    },
+    {
+      "name": "sw_permutation_in_string",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.99
+    },
+    {
+      "name": "sw_subarray_sum_k",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance",
+        "iterative_table_filling"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 0.65
+    },
+    {
+      "name": "sw_renamed_window",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.79
+    },
+    {
+      "name": "sw_for_with_inner_while",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.48
+    },
+    {
+      "name": "sw_contains_nearby_duplicate",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.66
+    },
+    {
+      "name": "sw_grumpy_bookstore",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.87
+    },
+    {
+      "name": "sw_longest_substring_k_distinct",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.15
+    },
+    {
+      "name": "sw_max_points_from_cards",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.57
+    },
+    {
+      "name": "sw_fruits_into_baskets",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.15
+    },
+    {
+      "name": "sw_no_inner_while",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.47
+    },
+    {
+      "name": "sw_variable_renamed_complex",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.33
+    },
+    {
+      "name": "sw_without_hash",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.5
+    },
+    {
+      "name": "sw_class_style",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.78
+    },
+    {
+      "name": "sw_with_counter",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.14
+    },
+    {
+      "name": "fw_max_sum_k",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.69
+    },
+    {
+      "name": "fw_average_k",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.2
+    },
+    {
+      "name": "fw_size_param",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.85
+    },
+    {
+      "name": "fw_const_offset",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.72
+    },
+    {
+      "name": "fw_class_method",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.73
+    },
+    {
+      "name": "fw_count_occurrences",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.25
+    },
+    {
+      "name": "fw_no_offset_different_code",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.87
+    },
+    {
+      "name": "fw_with_helper",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.99
+    },
+    {
+      "name": "fw_max_sum_subarray_k_renamed",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.64
+    },
+    {
+      "name": "fw_negative_k",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.62
+    },
+    {
+      "name": "fw_nested_loop_not_window",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.67
+    },
+    {
+      "name": "fw_matrix_row",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.74
+    },
+    {
+      "name": "fw_different_structure",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "fixed_window_maintenance",
+        "sequential_accumulation"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.95
+    },
+    {
+      "name": "fw_not_k_parameter",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.49
+    },
+    {
+      "name": "fw_no_offset_at_all",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.37
+    },
+    {
+      "name": "dfs_subsets",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.69
+    },
+    {
+      "name": "dfs_permutations",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.83
+    },
+    {
+      "name": "dfs_nqueens",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.42
+    },
+    {
+      "name": "dfs_combination_sum",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.18
+    },
+    {
+      "name": "dfs_word_search",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 3.53
+    },
+    {
+      "name": "dfs_restore_ip",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 2.33
+    },
+    {
+      "name": "dfs_letter_combinations",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.06
+    },
+    {
+      "name": "dfs_palindrome_partition",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.22
+    },
+    {
+      "name": "dfs_combination_sum_2",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.39
+    },
+    {
+      "name": "dfs_gen_parentheses",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.88
+    },
+    {
+      "name": "dfs_not_backtracking_linear",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.22
+    },
+    {
+      "name": "dfs_fibonacci(self)",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.45
+    },
+    {
+      "name": "dfs_tree_traversal_no_backtrack",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.35
+    },
+    {
+      "name": "dfs_renamed_backtrack",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.76
+    },
+    {
+      "name": "dfs_class_style",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.75
+    },
+    {
+      "name": "dfs_maze_solver",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.75
+    },
+    {
+      "name": "dfs_permute_unique",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [
+        "dfs_backtracking",
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.66
+    },
+    {
+      "name": "dfs_nqueens_renamed",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.51
+    },
+    {
+      "name": "dfs_graph_dfs_no_backtrack",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "dfs_sudoku_solver",
+      "expected_strategy": "dfs_backtracking",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 2.84
+    },
+    {
+      "name": "dp_memo_fib",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.59
+    },
+    {
+      "name": "dp_climbing_stairs",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.51
+    },
+    {
+      "name": "dp_coin_change_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.9
+    },
+    {
+      "name": "dp_renamed_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.27
+    },
+    {
+      "name": "dp_house_robber_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.59
+    },
+    {
+      "name": "dp_grid_path_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.55
+    },
+    {
+      "name": "dp_word_break_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.66
+    },
+    {
+      "name": "dp_longest_common_subseq_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.0
+    },
+    {
+      "name": "dp_edit_distance_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.48
+    },
+    {
+      "name": "dp_plain_recursion_not_dp",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.64
+    },
+    {
+      "name": "dp_plain_recursion_fib_no_memo",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.91
+    },
+    {
+      "name": "dp_lru_cache_class",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.68
+    },
+    {
+      "name": "dp_memo_renamed",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "dp_with_lru_cache",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.44
+    },
+    {
+      "name": "dp_maze_path_memo",
+      "expected_strategy": "dp_top_down",
+      "detected_strategies": [
+        "dp_top_down"
+      ],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.74
+    },
+    {
+      "name": "dp_bottomup_fib",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.88
+    },
+    {
+      "name": "dp_house_robber",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.06
+    },
+    {
+      "name": "dp_coin_change",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.04
+    },
+    {
+      "name": "dp_longest_increasing",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.82
+    },
+    {
+      "name": "dp_grid_unique_paths",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "dp_knapsack",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.56
+    },
+    {
+      "name": "dp_lcs",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.51
+    },
+    {
+      "name": "dp_climbing_stairs_bottomup",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.85
+    },
+    {
+      "name": "dp_min_path_sum",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.75
+    },
+    {
+      "name": "dp_edit_distance",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.35
+    },
+    {
+      "name": "dp_egg_drop",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.1
+    },
+    {
+      "name": "dp_word_break_bottomup",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.01
+    },
+    {
+      "name": "dp_renamed_bottomup",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.83
+    },
+    {
+      "name": "dp_prefix_sum",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.67
+    },
+    {
+      "name": "dp_not_dp_generic_loop",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.54
+    },
+    {
+      "name": "dp_generic_array_ops",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.59
+    },
+    {
+      "name": "dp_bottomup_renamed(self)",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.93
+    },
+    {
+      "name": "dp_house_robber_space_optimized",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.42
+    },
+    {
+      "name": "dp_2d_grid_bottomup(self)",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.79
+    },
+    {
+      "name": "bfs_graph_shortest",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [
+        "bfs_shortest_path"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.25
+    },
+    {
+      "name": "bfs_level_order",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [
+        "bfs_shortest_path"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.13
+    },
+    {
+      "name": "bfs_word_ladder",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.81
+    },
+    {
+      "name": "bfs_renamed",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [
+        "bfs_shortest_path"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.58
+    },
+    {
+      "name": "bfs_islands(self)",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 3.88
+    },
+    {
+      "name": "bfs_rotten_oranges",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 4.48
+    },
+    {
+      "name": "bfs_dfs_no_queue",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.65
+    },
+    {
+      "name": "bfs_not_shortest_path",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.51
+    },
+    {
+      "name": "bfs_grid_bfs_renamed",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 2.64
+    },
+    {
+      "name": "bfs_multi_source",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 3.76
+    },
+    {
+      "name": "bfs_no_visited_tracking",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "bfs_with_level_count",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [
+        "bfs_shortest_path"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.21
+    },
+    {
+      "name": "bfs_open_lock",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 2.14
+    },
+    {
+      "name": "bfs_sliding_puzzle",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [
+        "bfs_shortest_path"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.33
+    },
+    {
+      "name": "uf_classic",
+      "expected_strategy": "union_find",
+      "detected_strategies": [
+        "union_find"
+      ],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.52
+    },
+    {
+      "name": "uf_inline",
+      "expected_strategy": "union_find",
+      "detected_strategies": [
+        "union_find"
+      ],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.48
+    },
+    {
+      "name": "uf_renamed(self)",
+      "expected_strategy": "union_find",
+      "detected_strategies": [
+        "union_find"
+      ],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.67
+    },
+    {
+      "name": "uf_no_rank",
+      "expected_strategy": "union_find",
+      "detected_strategies": [
+        "union_find"
+      ],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.98
+    },
+    {
+      "name": "uf_with_size",
+      "expected_strategy": "union_find",
+      "detected_strategies": [
+        "union_find"
+      ],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.02
+    },
+    {
+      "name": "uf_accounts_merge",
+      "expected_strategy": "union_find",
+      "detected_strategies": [
+        "union_find"
+      ],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 2.17
+    },
+    {
+      "name": "uf_not_union_find_parent_array",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.5
+    },
+    {
+      "name": "uf_not_union_find_tree(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.3
+    },
+    {
+      "name": "uf_renamed_with_path_splitting",
+      "expected_strategy": "union_find",
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.07
+    },
+    {
+      "name": "uf_weighted_union(self)",
+      "expected_strategy": "union_find",
+      "detected_strategies": [],
+      "detected_techniques": [
+        "sequential_accumulation"
+      ],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 1.48
+    },
+    {
+      "name": "ll_reversal",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.6
+    },
+    {
+      "name": "ll_merge_two",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.13
+    },
+    {
+      "name": "ll_cycle_detection",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.94
+    },
+    {
+      "name": "ll_add_two_numbers",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "carry_propagation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.97
+    },
+    {
+      "name": "ll_reverse_pairs",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.56
+    },
+    {
+      "name": "ll_remove_nth(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.72
+    },
+    {
+      "name": "ll_rotate_list(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.89
+    },
+    {
+      "name": "ll_swap_pairs",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.35
+    },
+    {
+      "name": "ll_flatten(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.21
+    },
+    {
+      "name": "ll_simple_traversal_not_ll(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.47
+    },
+    {
+      "name": "ll_copy_random_list(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.34
+    },
+    {
+      "name": "ll_reversed_between(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.84
+    },
+    {
+      "name": "ll_odd_even(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "ll_palindrome(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.49
+    },
+    {
+      "name": "ll_partition(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "linked_list_traversal"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.08
+    },
+    {
+      "name": "ms_next_greater",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.89
+    },
+    {
+      "name": "ms_daily_temperatures",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [
+        "dp_bottom_up",
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling",
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.89
+    },
+    {
+      "name": "ms_histogram",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.89
+    },
+    {
+      "name": "ms_stock_span",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "ms_next_greater_renamed",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.82
+    },
+    {
+      "name": "ms_asteroid_collision",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 1.04
+    },
+    {
+      "name": "ms_decode_string(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.53
+    },
+    {
+      "name": "ms_min_stack(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.01
+    },
+    {
+      "name": "ms_valid_parentheses",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.0
+    },
+    {
+      "name": "ms_calculator(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 2.88
+    },
+    {
+      "name": "ms_nested_iterator(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.11
+    },
+    {
+      "name": "ms_largest_hist_renamed",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 2.14
+    },
+    {
+      "name": "ms_trap_rain_water_stack",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 1.67
+    },
+    {
+      "name": "ms_next_greater_circular",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.08
+    },
+    {
+      "name": "ms_sum_subarray_mins(self)",
+      "expected_strategy": "monotonic_stack_strategy",
+      "detected_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "detected_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.54
+    },
+    {
+      "name": "ps_basic",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.51
+    },
+    {
+      "name": "ps_range_sum",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "incorrect_unresolved",
+      "latency_ms": 0.5
+    },
+    {
+      "name": "ps_subarray_sum_k",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.59
+    },
+    {
+      "name": "ps_running_total",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.32
+    },
+    {
+      "name": "ps_2d_prefix(self)",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.74
+    },
+    {
+      "name": "ps_cumulative_sum",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.47
+    },
+    {
+      "name": "ps_contiguous_subarrays",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.56
+    },
+    {
+      "name": "ps_not_prefix_just_sum",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.21
+    },
+    {
+      "name": "ps_pivot_index",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.5
+    },
+    {
+      "name": "ps_product_except_self(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.71
+    },
+    {
+      "name": "rec_factorial",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.23
+    },
+    {
+      "name": "rec_fibonacci_no_memo",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.39
+    },
+    {
+      "name": "rec_power(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.52
+    },
+    {
+      "name": "rec_sum_list",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.26
+    },
+    {
+      "name": "rec_string_length(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.21
+    },
+    {
+      "name": "rec_tower_of_hanoi(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.48
+    },
+    {
+      "name": "rec_gcd",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.2
+    },
+    {
+      "name": "rec_reverse_string(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.28
+    },
+    {
+      "name": "rec_linear_search",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.44
+    },
+    {
+      "name": "rec_count_paths(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.35
+    },
+    {
+      "name": "stack_valid_parens",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.81
+    },
+    {
+      "name": "stack_eval_rpn(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.74
+    },
+    {
+      "name": "stack_min_stack(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.86
+    },
+    {
+      "name": "stack_stock_span(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.62
+    },
+    {
+      "name": "stack_nested_iterator(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.98
+    },
+    {
+      "name": "stack_implement_queue(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.84
+    },
+    {
+      "name": "stack_balanced_parens(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.85
+    },
+    {
+      "name": "stack_browser_history(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.89
+    },
+    {
+      "name": "stack_baseball(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.22
+    },
+    {
+      "name": "stack_remove_duplicates(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.67
+    },
+    {
+      "name": "heap_kth_largest(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.21
+    },
+    {
+      "name": "heap_top_k(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.28
+    },
+    {
+      "name": "heap_merge_k_sorted(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "carry_propagation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.46
+    },
+    {
+      "name": "heap_median_finder(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.96
+    },
+    {
+      "name": "heap_last_stone(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.07
+    },
+    {
+      "name": "heap_task_scheduler(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.72
+    },
+    {
+      "name": "heap_k_closest(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.36
+    },
+    {
+      "name": "heap_reorganize_string(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 2.37
+    },
+    {
+      "name": "heap_relative_ranks(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.99
+    },
+    {
+      "name": "greedy_activity_selection",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.5
+    },
+    {
+      "name": "greedy_jump_game(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.38
+    },
+    {
+      "name": "greedy_best_time_to_buy(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.53
+    },
+    {
+      "name": "greedy_gas_station(self)",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 0.7
+    },
+    {
+      "name": "greedy_partition_labels(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.74
+    },
+    {
+      "name": "greedy_merge_intervals(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.72
+    },
+    {
+      "name": "greedy_climb_stairs_not_dp(self)",
+      "expected_strategy": "dp_bottom_up",
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 0.67
+    },
+    {
+      "name": "greedy_assign_cookies(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.63
+    },
+    {
+      "name": "greedy_lecture_rooms(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.74
+    },
+    {
+      "name": "greedy_not_greedy_array(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.65
+    },
+    {
+      "name": "hash_two_sum(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.9
+    },
+    {
+      "name": "hash_group_anagrams(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.48
+    },
+    {
+      "name": "hash_contains_duplicate(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.23
+    },
+    {
+      "name": "hash_longest_consecutive(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.16
+    },
+    {
+      "name": "hash_ransom_note(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.23
+    },
+    {
+      "name": "hash_isomorphic_strings(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.8
+    },
+    {
+      "name": "hash_valid_sudoku(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.63
+    },
+    {
+      "name": "hash_subarray_sum_k(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.57
+    },
+    {
+      "name": "hash_minimum_window(self)",
+      "expected_strategy": "sliding_window",
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.86
+    },
+    {
+      "name": "hash_frequency_sort(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.26
+    },
+    {
+      "name": "arr_max_subarray(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.38
+    },
+    {
+      "name": "arr_best_time_buy(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.38
+    },
+    {
+      "name": "arr_merge_sorted(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.47
+    },
+    {
+      "name": "arr_remove_duplicates(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.54
+    },
+    {
+      "name": "arr_product_except_self(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.62
+    },
+    {
+      "name": "arr_rotate_array(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.29
+    },
+    {
+      "name": "arr_find_disappeared(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.25
+    },
+    {
+      "name": "arr_contains_nearby_almost(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.72
+    },
+    {
+      "name": "arr_sort_colors(self)",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 1.57
+    },
+    {
+      "name": "arr_next_permutation(self)",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 0.9
+    },
+    {
+      "name": "neg_bfs_no_visited",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.68
+    },
+    {
+      "name": "neg_dfs_no_state_restore",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.33
+    },
+    {
+      "name": "neg_stack_not_monotonic",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.86
+    },
+    {
+      "name": "neg_linked_not_manipulation",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "carry_propagation"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.64
+    },
+    {
+      "name": "neg_dp_no_memo(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.4
+    },
+    {
+      "name": "neg_heap_not_strategy(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.27
+    },
+    {
+      "name": "neg_greedy_not_strategy(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.6
+    },
+    {
+      "name": "neg_hash_not_strategy(self)",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "dp_bottom_up"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance",
+        "iterative_table_filling"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 0.66
+    },
+    {
+      "name": "neg_sorting_not_dp",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 1.78
+    },
+    {
+      "name": "neg_linear_scan_not_bs",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.3
+    },
+    {
+      "name": "neg_hash_not_binary_search",
+      "expected_strategy": null,
+      "detected_strategies": [
+        "sliding_window"
+      ],
+      "detected_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "safety": "false_positive",
+      "latency_ms": 0.73
+    },
+    {
+      "name": "neg_two_pointer_not_opposite(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.49
+    },
+    {
+      "name": "neg_dp_no_lookback",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.39
+    },
+    {
+      "name": "neg_backtrack_no_recursion",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.34
+    },
+    {
+      "name": "neg_bfs_tree_no_queue(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [
+        "recursive_branching"
+      ],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.9
+    },
+    {
+      "name": "neg_union_find_parent_only",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.98
+    },
+    {
+      "name": "neg_monotonic_not_stack",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.36
+    },
+    {
+      "name": "neg_sliding_not_window(self)",
+      "expected_strategy": "two_pointers_opposite",
+      "detected_strategies": [
+        "two_pointers_opposite"
+      ],
+      "detected_techniques": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.3
+    },
+    {
+      "name": "neg_queue_not_bfs",
+      "expected_strategy": "bfs_shortest_path",
+      "detected_strategies": [
+        "bfs_shortest_path"
+      ],
+      "detected_techniques": [],
+      "safety": "correct_confirmed",
+      "latency_ms": 1.63
+    },
+    {
+      "name": "neg_mixed_not_any_strategy(self)",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.54
+    },
+    {
+      "name": "edge_empty_code",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.03
+    },
+    {
+      "name": "edge_single_return",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.04
+    },
+    {
+      "name": "edge_no_functions",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.08
+    },
+    {
+      "name": "edge_nested_classes",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.1
+    },
+    {
+      "name": "edge_decorators",
+      "expected_strategy": null,
+      "detected_strategies": [],
+      "detected_techniques": [],
+      "safety": "correct_unresolved",
+      "latency_ms": 0.08
+    }
+  ]
+}

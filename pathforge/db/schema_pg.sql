@@ -155,3 +155,15 @@ ALTER TABLE submissions ADD COLUMN IF NOT EXISTS code_hash TEXT;
 -- Phase 0C: ground truth solution groups
 ALTER TABLE problem_ground_truth ADD COLUMN IF NOT EXISTS solution_groups JSONB;
 ALTER TABLE problem_ground_truth ADD COLUMN IF NOT EXISTS validation_status TEXT DEFAULT 'unobserved';
+
+-- Phase 3A: shadow analysis persistence
+-- Canonical structural facts (re-derivable source of truth)
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS structural_facts_json JSONB;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS shadow_extractor_version TEXT;
+-- Derived technique/strategy evidence (cached projections)
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS technique_evidence_json JSONB;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS strategy_evidence_json JSONB;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS shadow_match_outcome_json JSONB;
+-- Version tracking for re-derivation
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS shadow_technique_def_version TEXT;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS shadow_strategy_def_version TEXT;
