@@ -302,13 +302,25 @@ class TestLinkedListTraversal:
         fact_types = {f["fact_type"] for f in result["structural_facts"]}
         assert "multiple_pointer_traversal" in fact_types
 
-    def test_add_two_numbers_not_linked_list_traversal(self):
-        """Add Two Numbers MUST remain carry_propagation, not linked_list_traversal."""
+    def test_add_two_numbers_both_techniques_fire(self):
+        """Add Two Numbers: both carry_propagation and linked_list_traversal fire.
+
+        Per the architecture, techniques are reusable, non-exclusive evidence.
+        Both techniques should fire when their structural conditions are met.
+        carry_propagation has higher centrality because it is the more specific
+        technique for this pattern.
+        """
         result = run_shadow_analysis(ADD_TWO_NUMBERS)
         assert result is not None
         tech_ids = {t["technique_id"] for t in result["technique_evidence"]}
         assert "carry_propagation" in tech_ids
-        assert "linked_list_traversal" not in tech_ids
+        assert "linked_list_traversal" in tech_ids
+        # carry_propagation should have higher centrality (more specific)
+        for t in result["technique_evidence"]:
+            if t["technique_id"] == "carry_propagation":
+                assert t["centrality"] >= 0.75  # Higher centrality
+            elif t["technique_id"] == "linked_list_traversal":
+                assert t["centrality"] <= 0.75  # Lower centrality when carry present
 
     def test_simple_traversal_not_detected(self):
         """Simple traversal without rewiring should NOT detect linked_list_traversal."""

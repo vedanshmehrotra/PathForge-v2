@@ -212,16 +212,19 @@ def _load_ground_truth(connection, problem_id):
             for g in sg:
                 if not isinstance(g, dict):
                     continue
-                # Support both legacy format (patterns/evidence/confidence)
-                # and new V1 format (required/optional/excluded/threshold/authority_tier)
-                required = g.get("required", g.get("patterns", []))
                 # Preserve original legacy patterns for the production matcher.
-                # The production MatchingEngine does flat pattern-ID matching against
-                # AST detector output (legacy IDs). The "required" field contains
-                # V1 concept IDs which the production matcher cannot match.
-                legacy_patterns = g.get("patterns")
-                if legacy_patterns is None:
-                    legacy_patterns = required
+                legacy_patterns = g.get("patterns", [])
+                if not legacy_patterns:
+                    legacy_patterns = g.get("required", [])
+
+                # Determine required concepts for the shadow matcher.
+                # If the group has a "required" field with V1 concepts, use it.
+                # If it only has legacy "patterns", apply V1 vocabulary mapping.
+                has_v1_required = "required" in g and g["required"]
+                if has_v1_required:
+                    required = g["required"]
+                else:
+                    required = _map_legacy_patterns_to_v1(legacy_patterns)
 
                 groups.append({
                     "id": g.get("id", f"group_{len(groups)}"),
@@ -233,8 +236,6 @@ def _load_ground_truth(connection, problem_id):
                     "authority_tier": g.get("authority_tier", g.get("evidence", validation_status or "unobserved")),
                     "provenance": g.get("provenance", []),
                     # Legacy fields for backward compatibility
-                    # "patterns" preserves the original LLM pattern IDs so the
-                    # production MatchingEngine can match against AST output.
                     "patterns": legacy_patterns,
                     "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                     "confidence": g.get("confidence", {}),
@@ -251,10 +252,15 @@ def _load_ground_truth(connection, problem_id):
     confidence = _parse_json_dict(confidence_raw)
 
     if patterns:
+        # Map legacy patterns to V1 concepts for shadow matcher
+        required = _map_legacy_patterns_to_v1(patterns)
         best_conf = max(confidence.values()) if confidence else 1.0
         groups = [
             {
                 "id": "group_0",
+                "required": required,
+                "optional": [],
+                "excluded": [],
                 "patterns": patterns,
                 "evidence": validation_status or "unobserved",
                 "confidence": {p: confidence.get(p, best_conf) for p in patterns},
@@ -263,6 +269,23 @@ def _load_ground_truth(connection, problem_id):
         return groups, confidence
 
     return [], {}
+
+
+def _map_legacy_patterns_to_v1(patterns: list) -> list:
+    """Map legacy pattern IDs to V1 technique/strategy concepts.
+
+    Uses the same PATTERN_TO_V1_MAPPING from the ground truth builder.
+    This ensures that even legacy groups stored before Phase 4A can produce
+    V1 concept IDs for the shadow matcher.
+    """
+    from pathforge.services.ground_truth_builder import PATTERN_TO_V1_MAPPING
+
+    required = set()
+    for pattern in patterns:
+        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+        if mapping and mapping.get("required"):
+            required.update(mapping["required"])
+    return sorted(required) if required else []
 
 
 def _parse_json_field(raw):

@@ -8,7 +8,7 @@
       "false_positive": 8
     },
     "total_tp": 113,
-    "total_fp": 174,
+    "total_fp": 176,
     "total_fn": 37
   },
   "metrics": {
@@ -126,11 +126,11 @@
     },
     "technique_linked_list_traversal": {
       "tp": 10,
-      "fp": 1,
+      "fp": 3,
       "fn": 1,
-      "precision": 0.909,
+      "precision": 0.769,
       "recall": 0.909,
-      "f1": 0.909
+      "f1": 0.833
     },
     "technique_loop_state_tracking": {
       "tp": 0,
@@ -176,7 +176,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.31
+      "latency_ms": 1.38
     },
     {
       "name": "bs_renamed_vars",
@@ -188,7 +188,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.29
+      "latency_ms": 1.13
     },
     {
       "name": "bs_overflow_safe",
@@ -200,7 +200,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.12
+      "latency_ms": 1.14
     },
     {
       "name": "bs_true_div",
@@ -212,7 +212,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.02
+      "latency_ms": 1.33
     },
     {
       "name": "bs_rshift",
@@ -224,7 +224,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.03
+      "latency_ms": 1.3
     },
     {
       "name": "bs_rotated",
@@ -236,7 +236,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.75
+      "latency_ms": 1.8
     },
     {
       "name": "bs_answer_space",
@@ -248,7 +248,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.92
+      "latency_ms": 1.07
     },
     {
       "name": "bs_leftmost",
@@ -260,7 +260,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.2
+      "latency_ms": 1.25
     },
     {
       "name": "bs_class_method",
@@ -272,7 +272,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.01
+      "latency_ms": 1.03
     },
     {
       "name": "bs_nested_if",
@@ -284,7 +284,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.14
+      "latency_ms": 1.04
     },
     {
       "name": "bs_early_return",
@@ -296,7 +296,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.01
+      "latency_ms": 1.02
     },
     {
       "name": "bs_no_midpoint_two_pointers",
@@ -310,7 +310,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.1
+      "latency_ms": 0.95
     },
     {
       "name": "bs_while_without_midpoint",
@@ -320,7 +320,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.8
+      "latency_ms": 0.51
     },
     {
       "name": "bs_recursive",
@@ -330,7 +330,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.83
+      "latency_ms": 0.56
     },
     {
       "name": "bs_three_conditions",
@@ -342,7 +342,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.65
+      "latency_ms": 1.02
     },
     {
       "name": "bs_overflow_safe_renamed",
@@ -354,7 +354,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.74
+      "latency_ms": 1.08
     },
     {
       "name": "bs_alternate_condition",
@@ -366,7 +366,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.34
+      "latency_ms": 0.86
     },
     {
       "name": "bs_find_insert",
@@ -378,7 +378,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.52
+      "latency_ms": 2.8
     },
     {
       "name": "bs_min_in_rotated",
@@ -390,7 +390,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.17
+      "latency_ms": 1.36
     },
     {
       "name": "bs_peak_element",
@@ -402,7 +402,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.09
+      "latency_ms": 1.34
     },
     {
       "name": "tp_palindrome",
@@ -415,7 +415,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.64
+      "latency_ms": 0.98
     },
     {
       "name": "tp_container_water",
@@ -429,7 +429,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.1
+      "latency_ms": 1.3
     },
     {
       "name": "tp_3sum",
@@ -443,7 +443,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.86
+      "latency_ms": 1.9
     },
     {
       "name": "tp_two_sum_sorted",
@@ -457,7 +457,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.0
+      "latency_ms": 0.96
     },
     {
       "name": "tp_trapping_rain",
@@ -471,7 +471,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.59
+      "latency_ms": 1.6
     },
     {
       "name": "tp_remove_duplicates",
@@ -490,7 +490,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.31
+      "latency_ms": 1.37
     },
     {
       "name": "tp_valid_mountain",
@@ -498,7 +498,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.78
+      "latency_ms": 0.84
     },
     {
       "name": "tp_pair_sum_sorted",
@@ -512,7 +512,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.94
+      "latency_ms": 2.0
     },
     {
       "name": "tp_palindrome_renamed",
@@ -525,7 +525,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.64
+      "latency_ms": 1.18
     },
     {
       "name": "tp_move_zeroes",
@@ -533,7 +533,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.53
+      "latency_ms": 0.95
     },
     {
       "name": "tp_reverse_string",
@@ -546,7 +546,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.65
+      "latency_ms": 1.17
     },
     {
       "name": "tp_sorted_squares",
@@ -560,7 +560,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.33
+      "latency_ms": 1.98
     },
     {
       "name": "tp_interval_intersection",
@@ -568,7 +568,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.42
+      "latency_ms": 1.93
     },
     {
       "name": "tp_4sum",
@@ -582,7 +582,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 2.4
+      "latency_ms": 2.85
     },
     {
       "name": "tp_slow_fast_cycle",
@@ -593,7 +593,7 @@
         "sequential_accumulation"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.82
+      "latency_ms": 0.98
     },
     {
       "name": "tp_two_pointer_while_true",
@@ -601,7 +601,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.87
+      "latency_ms": 1.06
     },
     {
       "name": "tp_comparator_driven",
@@ -609,7 +609,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.53
+      "latency_ms": 0.66
     },
     {
       "name": "tp_partition",
@@ -617,7 +617,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.73
+      "latency_ms": 0.9
     },
     {
       "name": "tp_converge_with_state",
@@ -630,7 +630,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.88
+      "latency_ms": 2.67
     },
     {
       "name": "sw_longest_substring",
@@ -642,7 +642,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.79
+      "latency_ms": 1.02
     },
     {
       "name": "sw_max_avg_subarray",
@@ -654,7 +654,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.51
+      "latency_ms": 0.62
     },
     {
       "name": "sw_longest_ones(self)",
@@ -668,7 +668,7 @@
         "sequential_accumulation"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.06
+      "latency_ms": 1.13
     },
     {
       "name": "sw_min_window_substring",
@@ -681,7 +681,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 2.93
+      "latency_ms": 2.1
     },
     {
       "name": "sw_max_consecutive_ones",
@@ -695,7 +695,7 @@
         "sequential_accumulation"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.48
+      "latency_ms": 1.12
     },
     {
       "name": "sw_permutation_in_string",
@@ -703,7 +703,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.48
+      "latency_ms": 1.16
     },
     {
       "name": "sw_subarray_sum_k",
@@ -716,7 +716,7 @@
         "iterative_table_filling"
       ],
       "safety": "false_positive",
-      "latency_ms": 0.86
+      "latency_ms": 0.77
     },
     {
       "name": "sw_renamed_window",
@@ -728,7 +728,7 @@
         "loop_state_tracking"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.92
+      "latency_ms": 0.89
     },
     {
       "name": "sw_for_with_inner_while",
@@ -740,7 +740,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.5
+      "latency_ms": 0.56
     },
     {
       "name": "sw_contains_nearby_duplicate",
@@ -752,7 +752,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.67
+      "latency_ms": 0.76
     },
     {
       "name": "sw_grumpy_bookstore",
@@ -764,7 +764,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.86
+      "latency_ms": 0.99
     },
     {
       "name": "sw_longest_substring_k_distinct",
@@ -772,7 +772,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.17
+      "latency_ms": 1.6
     },
     {
       "name": "sw_max_points_from_cards",
@@ -780,7 +780,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.56
+      "latency_ms": 0.62
     },
     {
       "name": "sw_fruits_into_baskets",
@@ -788,7 +788,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.15
+      "latency_ms": 1.21
     },
     {
       "name": "sw_no_inner_while",
@@ -800,7 +800,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.48
+      "latency_ms": 0.49
     },
     {
       "name": "sw_variable_renamed_complex",
@@ -808,7 +808,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.42
+      "latency_ms": 0.33
     },
     {
       "name": "sw_without_hash",
@@ -820,7 +820,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.6
+      "latency_ms": 0.53
     },
     {
       "name": "sw_class_style",
@@ -840,7 +840,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.35
+      "latency_ms": 1.15
     },
     {
       "name": "fw_max_sum_k",
@@ -852,7 +852,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.17
+      "latency_ms": 0.52
     },
     {
       "name": "fw_average_k",
@@ -864,7 +864,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.21
+      "latency_ms": 0.63
     },
     {
       "name": "fw_size_param",
@@ -876,7 +876,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.83
+      "latency_ms": 0.53
     },
     {
       "name": "fw_const_offset",
@@ -888,7 +888,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.72
+      "latency_ms": 0.49
     },
     {
       "name": "fw_class_method",
@@ -900,7 +900,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.75
+      "latency_ms": 0.49
     },
     {
       "name": "fw_count_occurrences",
@@ -908,7 +908,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.27
+      "latency_ms": 0.82
     },
     {
       "name": "fw_no_offset_different_code",
@@ -920,7 +920,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.78
+      "latency_ms": 0.6
     },
     {
       "name": "fw_with_helper",
@@ -928,7 +928,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.81
+      "latency_ms": 0.67
     },
     {
       "name": "fw_max_sum_subarray_k_renamed",
@@ -940,7 +940,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.52
+      "latency_ms": 0.53
     },
     {
       "name": "fw_negative_k",
@@ -952,7 +952,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.48
+      "latency_ms": 0.53
     },
     {
       "name": "fw_nested_loop_not_window",
@@ -960,7 +960,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.6
+      "latency_ms": 0.62
     },
     {
       "name": "fw_matrix_row",
@@ -972,7 +972,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.74
+      "latency_ms": 0.77
     },
     {
       "name": "fw_different_structure",
@@ -986,7 +986,7 @@
         "sequential_accumulation"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.95
+      "latency_ms": 1.05
     },
     {
       "name": "fw_not_k_parameter",
@@ -994,7 +994,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.5
+      "latency_ms": 0.59
     },
     {
       "name": "fw_no_offset_at_all",
@@ -1002,7 +1002,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.37
+      "latency_ms": 0.42
     },
     {
       "name": "dfs_subsets",
@@ -1012,7 +1012,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 0.69
+      "latency_ms": 1.36
     },
     {
       "name": "dfs_permutations",
@@ -1022,7 +1022,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 0.82
+      "latency_ms": 1.61
     },
     {
       "name": "dfs_nqueens",
@@ -1030,7 +1030,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.56
+      "latency_ms": 2.25
     },
     {
       "name": "dfs_combination_sum",
@@ -1040,7 +1040,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.46
+      "latency_ms": 1.26
     },
     {
       "name": "dfs_word_search",
@@ -1050,7 +1050,7 @@
         "recursive_branching"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 2.22
+      "latency_ms": 1.62
     },
     {
       "name": "dfs_restore_ip",
@@ -1058,7 +1058,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.44
+      "latency_ms": 1.31
     },
     {
       "name": "dfs_letter_combinations",
@@ -1066,7 +1066,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.79
+      "latency_ms": 0.81
     },
     {
       "name": "dfs_palindrome_partition",
@@ -1076,7 +1076,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.07
+      "latency_ms": 1.08
     },
     {
       "name": "dfs_combination_sum_2",
@@ -1086,7 +1086,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.19
+      "latency_ms": 1.28
     },
     {
       "name": "dfs_gen_parentheses",
@@ -1096,7 +1096,7 @@
         "recursive_branching"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.78
+      "latency_ms": 0.79
     },
     {
       "name": "dfs_not_backtracking_linear",
@@ -1104,7 +1104,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.19
+      "latency_ms": 0.2
     },
     {
       "name": "dfs_fibonacci(self)",
@@ -1116,7 +1116,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.39
+      "latency_ms": 0.44
     },
     {
       "name": "dfs_tree_traversal_no_backtrack",
@@ -1136,7 +1136,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 0.67
+      "latency_ms": 1.14
     },
     {
       "name": "dfs_class_style",
@@ -1146,7 +1146,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 0.63
+      "latency_ms": 1.39
     },
     {
       "name": "dfs_maze_solver",
@@ -1158,7 +1158,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.52
+      "latency_ms": 2.57
     },
     {
       "name": "dfs_permute_unique",
@@ -1171,7 +1171,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.37
+      "latency_ms": 2.51
     },
     {
       "name": "dfs_nqueens_renamed",
@@ -1179,7 +1179,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.63
+      "latency_ms": 3.49
     },
     {
       "name": "dfs_graph_dfs_no_backtrack",
@@ -1187,7 +1187,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.57
+      "latency_ms": 0.79
     },
     {
       "name": "dfs_sudoku_solver",
@@ -1195,7 +1195,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 2.12
+      "latency_ms": 4.53
     },
     {
       "name": "dp_memo_fib",
@@ -1207,7 +1207,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.41
+      "latency_ms": 0.81
     },
     {
       "name": "dp_climbing_stairs",
@@ -1219,7 +1219,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.39
+      "latency_ms": 0.54
     },
     {
       "name": "dp_coin_change_memo",
@@ -1227,7 +1227,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.62
+      "latency_ms": 0.83
     },
     {
       "name": "dp_renamed_memo",
@@ -1239,7 +1239,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.71
+      "latency_ms": 0.74
     },
     {
       "name": "dp_house_robber_memo",
@@ -1251,7 +1251,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.01
+      "latency_ms": 0.48
     },
     {
       "name": "dp_grid_path_memo",
@@ -1263,7 +1263,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.81
+      "latency_ms": 0.5
     },
     {
       "name": "dp_word_break_memo",
@@ -1271,7 +1271,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.91
+      "latency_ms": 0.61
     },
     {
       "name": "dp_longest_common_subseq_memo",
@@ -1283,7 +1283,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.24
+      "latency_ms": 0.96
     },
     {
       "name": "dp_edit_distance_memo",
@@ -1295,7 +1295,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.38
+      "latency_ms": 1.04
     },
     {
       "name": "dp_plain_recursion_not_dp",
@@ -1303,7 +1303,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.36
+      "latency_ms": 0.27
     },
     {
       "name": "dp_plain_recursion_fib_no_memo",
@@ -1313,7 +1313,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.36
+      "latency_ms": 0.25
     },
     {
       "name": "dp_lru_cache_class",
@@ -1321,7 +1321,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.67
+      "latency_ms": 10.42
     },
     {
       "name": "dp_memo_renamed",
@@ -1333,7 +1333,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.67
+      "latency_ms": 0.78
     },
     {
       "name": "dp_with_lru_cache",
@@ -1353,7 +1353,7 @@
         "recursive_branching"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.61
+      "latency_ms": 0.63
     },
     {
       "name": "dp_bottomup_fib",
@@ -1365,7 +1365,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.55
+      "latency_ms": 0.57
     },
     {
       "name": "dp_house_robber",
@@ -1377,7 +1377,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.81
+      "latency_ms": 0.83
     },
     {
       "name": "dp_coin_change",
@@ -1389,7 +1389,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.28
+      "latency_ms": 0.84
     },
     {
       "name": "dp_longest_increasing",
@@ -1397,7 +1397,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.22
+      "latency_ms": 0.73
     },
     {
       "name": "dp_grid_unique_paths",
@@ -1409,7 +1409,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.08
+      "latency_ms": 0.73
     },
     {
       "name": "dp_knapsack",
@@ -1421,7 +1421,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 2.15
+      "latency_ms": 1.4
     },
     {
       "name": "dp_lcs",
@@ -1433,7 +1433,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.79
+      "latency_ms": 1.42
     },
     {
       "name": "dp_climbing_stairs_bottomup",
@@ -1457,7 +1457,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.49
+      "latency_ms": 1.59
     },
     {
       "name": "dp_edit_distance",
@@ -1469,7 +1469,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.82
+      "latency_ms": 1.89
     },
     {
       "name": "dp_egg_drop",
@@ -1481,7 +1481,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.35
+      "latency_ms": 2.69
     },
     {
       "name": "dp_word_break_bottomup",
@@ -1489,7 +1489,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.92
+      "latency_ms": 2.12
     },
     {
       "name": "dp_renamed_bottomup",
@@ -1497,7 +1497,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.72
+      "latency_ms": 1.31
     },
     {
       "name": "dp_prefix_sum",
@@ -1509,7 +1509,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.39
+      "latency_ms": 0.65
     },
     {
       "name": "dp_not_dp_generic_loop",
@@ -1517,7 +1517,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.26
+      "latency_ms": 0.35
     },
     {
       "name": "dp_generic_array_ops",
@@ -1525,7 +1525,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.32
+      "latency_ms": 0.41
     },
     {
       "name": "dp_bottomup_renamed(self)",
@@ -1537,7 +1537,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.89
+      "latency_ms": 0.95
     },
     {
       "name": "dp_house_robber_space_optimized",
@@ -1545,7 +1545,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.36
+      "latency_ms": 0.35
     },
     {
       "name": "dp_2d_grid_bottomup(self)",
@@ -1557,7 +1557,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.71
+      "latency_ms": 0.73
     },
     {
       "name": "bfs_graph_shortest",
@@ -1567,7 +1567,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.23
+      "latency_ms": 1.17
     },
     {
       "name": "bfs_level_order",
@@ -1577,7 +1577,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.55
+      "latency_ms": 1.44
     },
     {
       "name": "bfs_word_ladder",
@@ -1585,7 +1585,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.8
+      "latency_ms": 1.78
     },
     {
       "name": "bfs_renamed",
@@ -1595,7 +1595,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.05
+      "latency_ms": 1.06
     },
     {
       "name": "bfs_islands(self)",
@@ -1605,7 +1605,7 @@
         "loop_state_tracking"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 3.26
+      "latency_ms": 4.88
     },
     {
       "name": "bfs_rotten_oranges",
@@ -1613,7 +1613,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 3.27
+      "latency_ms": 3.49
     },
     {
       "name": "bfs_dfs_no_queue",
@@ -1621,7 +1621,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.56
+      "latency_ms": 0.6
     },
     {
       "name": "bfs_not_shortest_path",
@@ -1629,7 +1629,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.47
+      "latency_ms": 0.5
     },
     {
       "name": "bfs_grid_bfs_renamed",
@@ -1637,7 +1637,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 4.3
+      "latency_ms": 2.59
     },
     {
       "name": "bfs_multi_source",
@@ -1645,7 +1645,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 3.39
+      "latency_ms": 3.59
     },
     {
       "name": "bfs_no_visited_tracking",
@@ -1653,7 +1653,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.75
+      "latency_ms": 0.85
     },
     {
       "name": "bfs_with_level_count",
@@ -1663,7 +1663,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.35
+      "latency_ms": 1.88
     },
     {
       "name": "bfs_open_lock",
@@ -1671,7 +1671,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 2.12
+      "latency_ms": 3.68
     },
     {
       "name": "bfs_sliding_puzzle",
@@ -1681,7 +1681,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 2.18
+      "latency_ms": 3.59
     },
     {
       "name": "uf_classic",
@@ -1693,7 +1693,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.25
+      "latency_ms": 1.65
     },
     {
       "name": "uf_inline",
@@ -1705,7 +1705,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.31
+      "latency_ms": 1.51
     },
     {
       "name": "uf_renamed(self)",
@@ -1717,7 +1717,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.41
+      "latency_ms": 1.58
     },
     {
       "name": "uf_no_rank",
@@ -1729,7 +1729,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.83
+      "latency_ms": 1.25
     },
     {
       "name": "uf_with_size",
@@ -1741,7 +1741,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.45
+      "latency_ms": 1.95
     },
     {
       "name": "uf_accounts_merge",
@@ -1753,7 +1753,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.87
+      "latency_ms": 3.03
     },
     {
       "name": "uf_not_union_find_parent_array",
@@ -1761,7 +1761,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.53
+      "latency_ms": 0.77
     },
     {
       "name": "uf_not_union_find_tree(self)",
@@ -1769,7 +1769,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.26
+      "latency_ms": 0.54
     },
     {
       "name": "uf_renamed_with_path_splitting",
@@ -1779,7 +1779,7 @@
         "recursive_branching"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.94
+      "latency_ms": 1.69
     },
     {
       "name": "uf_weighted_union(self)",
@@ -1789,7 +1789,7 @@
         "sequential_accumulation"
       ],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.28
+      "latency_ms": 2.36
     },
     {
       "name": "ll_reversal",
@@ -1799,7 +1799,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.5
+      "latency_ms": 0.73
     },
     {
       "name": "ll_merge_two",
@@ -1809,7 +1809,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.97
+      "latency_ms": 1.17
     },
     {
       "name": "ll_cycle_detection",
@@ -1820,17 +1820,18 @@
         "sequential_accumulation"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.78
+      "latency_ms": 1.32
     },
     {
       "name": "ll_add_two_numbers",
       "expected_strategy": null,
       "detected_strategies": [],
       "detected_techniques": [
-        "carry_propagation"
+        "carry_propagation",
+        "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.21
+      "latency_ms": 1.66
     },
     {
       "name": "ll_reverse_pairs",
@@ -1840,7 +1841,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.48
+      "latency_ms": 0.77
     },
     {
       "name": "ll_remove_nth(self)",
@@ -1850,7 +1851,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.94
+      "latency_ms": 0.82
     },
     {
       "name": "ll_rotate_list(self)",
@@ -1860,7 +1861,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.34
+      "latency_ms": 1.02
     },
     {
       "name": "ll_swap_pairs",
@@ -1868,7 +1869,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.51
+      "latency_ms": 0.42
     },
     {
       "name": "ll_flatten(self)",
@@ -1878,7 +1879,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.74
+      "latency_ms": 1.36
     },
     {
       "name": "ll_simple_traversal_not_ll(self)",
@@ -1886,7 +1887,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.66
+      "latency_ms": 0.62
     },
     {
       "name": "ll_copy_random_list(self)",
@@ -1894,7 +1895,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.55
+      "latency_ms": 2.47
     },
     {
       "name": "ll_reversed_between(self)",
@@ -1904,7 +1905,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.81
+      "latency_ms": 1.59
     },
     {
       "name": "ll_odd_even(self)",
@@ -1914,7 +1915,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.75
+      "latency_ms": 1.46
     },
     {
       "name": "ll_palindrome(self)",
@@ -1922,7 +1923,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.46
+      "latency_ms": 0.92
     },
     {
       "name": "ll_partition(self)",
@@ -1932,7 +1933,7 @@
         "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.02
+      "latency_ms": 1.71
     },
     {
       "name": "ms_next_greater",
@@ -1944,7 +1945,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.8
+      "latency_ms": 1.01
     },
     {
       "name": "ms_daily_temperatures",
@@ -1958,7 +1959,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.83
+      "latency_ms": 0.98
     },
     {
       "name": "ms_histogram",
@@ -1970,7 +1971,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.78
+      "latency_ms": 2.45
     },
     {
       "name": "ms_stock_span",
@@ -1982,7 +1983,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.72
+      "latency_ms": 0.83
     },
     {
       "name": "ms_next_greater_renamed",
@@ -1990,7 +1991,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.76
+      "latency_ms": 0.92
     },
     {
       "name": "ms_asteroid_collision",
@@ -2002,7 +2003,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "false_positive",
-      "latency_ms": 0.96
+      "latency_ms": 1.11
     },
     {
       "name": "ms_decode_string(self)",
@@ -2010,7 +2011,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.25
+      "latency_ms": 1.53
     },
     {
       "name": "ms_min_stack(self)",
@@ -2018,7 +2019,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.74
+      "latency_ms": 0.95
     },
     {
       "name": "ms_valid_parentheses",
@@ -2026,7 +2027,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.65
+      "latency_ms": 0.81
     },
     {
       "name": "ms_calculator(self)",
@@ -2034,7 +2035,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.92
+      "latency_ms": 2.15
     },
     {
       "name": "ms_nested_iterator(self)",
@@ -2042,7 +2043,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.8
+      "latency_ms": 0.93
     },
     {
       "name": "ms_largest_hist_renamed",
@@ -2050,7 +2051,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 1.73
+      "latency_ms": 1.93
     },
     {
       "name": "ms_trap_rain_water_stack",
@@ -2062,7 +2063,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "false_positive",
-      "latency_ms": 1.24
+      "latency_ms": 1.42
     },
     {
       "name": "ms_next_greater_circular",
@@ -2074,7 +2075,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.88
+      "latency_ms": 1.22
     },
     {
       "name": "ms_sum_subarray_mins(self)",
@@ -2086,7 +2087,7 @@
         "monotonic_stack_maintenance"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.33
+      "latency_ms": 1.44
     },
     {
       "name": "ps_basic",
@@ -2098,7 +2099,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.4
+      "latency_ms": 0.49
     },
     {
       "name": "ps_range_sum",
@@ -2106,7 +2107,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "incorrect_unresolved",
-      "latency_ms": 0.39
+      "latency_ms": 0.47
     },
     {
       "name": "ps_subarray_sum_k",
@@ -2114,7 +2115,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.48
+      "latency_ms": 0.57
     },
     {
       "name": "ps_running_total",
@@ -2122,7 +2123,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.27
+      "latency_ms": 0.34
     },
     {
       "name": "ps_2d_prefix(self)",
@@ -2134,7 +2135,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.32
+      "latency_ms": 1.42
     },
     {
       "name": "ps_cumulative_sum",
@@ -2142,7 +2143,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.36
+      "latency_ms": 0.45
     },
     {
       "name": "ps_contiguous_subarrays",
@@ -2150,7 +2151,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.48
+      "latency_ms": 0.55
     },
     {
       "name": "ps_not_prefix_just_sum",
@@ -2158,7 +2159,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.18
+      "latency_ms": 0.2
     },
     {
       "name": "ps_pivot_index",
@@ -2166,7 +2167,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.44
+      "latency_ms": 0.51
     },
     {
       "name": "ps_product_except_self(self)",
@@ -2174,7 +2175,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.62
+      "latency_ms": 0.68
     },
     {
       "name": "rec_factorial",
@@ -2182,7 +2183,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.43
+      "latency_ms": 0.28
     },
     {
       "name": "rec_fibonacci_no_memo",
@@ -2192,7 +2193,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.42
+      "latency_ms": 0.29
     },
     {
       "name": "rec_power(self)",
@@ -2200,7 +2201,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.71
+      "latency_ms": 0.53
     },
     {
       "name": "rec_sum_list",
@@ -2208,7 +2209,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.37
+      "latency_ms": 0.27
     },
     {
       "name": "rec_string_length(self)",
@@ -2216,7 +2217,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.3
+      "latency_ms": 0.22
     },
     {
       "name": "rec_tower_of_hanoi(self)",
@@ -2224,7 +2225,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.7
+      "latency_ms": 0.61
     },
     {
       "name": "rec_gcd",
@@ -2240,7 +2241,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.75
+      "latency_ms": 0.57
     },
     {
       "name": "rec_linear_search",
@@ -2248,7 +2249,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.43
+      "latency_ms": 0.32
     },
     {
       "name": "rec_count_paths(self)",
@@ -2256,7 +2257,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.4
+      "latency_ms": 0.28
     },
     {
       "name": "stack_valid_parens",
@@ -2264,7 +2265,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.96
+      "latency_ms": 0.7
     },
     {
       "name": "stack_eval_rpn(self)",
@@ -2272,7 +2273,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.71
+      "latency_ms": 1.53
     },
     {
       "name": "stack_min_stack(self)",
@@ -2280,7 +2281,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.7
+      "latency_ms": 1.09
     },
     {
       "name": "stack_stock_span(self)",
@@ -2288,7 +2289,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.51
+      "latency_ms": 0.84
     },
     {
       "name": "stack_nested_iterator(self)",
@@ -2296,7 +2297,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.78
+      "latency_ms": 1.08
     },
     {
       "name": "stack_implement_queue(self)",
@@ -2304,7 +2305,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.72
+      "latency_ms": 0.85
     },
     {
       "name": "stack_balanced_parens(self)",
@@ -2312,7 +2313,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.68
+      "latency_ms": 0.81
     },
     {
       "name": "stack_browser_history(self)",
@@ -2320,7 +2321,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.72
+      "latency_ms": 0.88
     },
     {
       "name": "stack_baseball(self)",
@@ -2328,7 +2329,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.03
+      "latency_ms": 1.21
     },
     {
       "name": "stack_remove_duplicates(self)",
@@ -2336,7 +2337,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.44
+      "latency_ms": 0.54
     },
     {
       "name": "heap_kth_largest(self)",
@@ -2344,7 +2345,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.16
+      "latency_ms": 0.19
     },
     {
       "name": "heap_top_k(self)",
@@ -2352,17 +2353,18 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.26
+      "latency_ms": 0.3
     },
     {
       "name": "heap_merge_k_sorted(self)",
       "expected_strategy": null,
       "detected_strategies": [],
       "detected_techniques": [
-        "carry_propagation"
+        "carry_propagation",
+        "linked_list_traversal"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.21
+      "latency_ms": 1.44
     },
     {
       "name": "heap_median_finder(self)",
@@ -2370,7 +2372,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.74
+      "latency_ms": 0.95
     },
     {
       "name": "heap_last_stone(self)",
@@ -2378,7 +2380,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.96
+      "latency_ms": 1.23
     },
     {
       "name": "heap_task_scheduler(self)",
@@ -2386,7 +2388,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.37
+      "latency_ms": 1.7
     },
     {
       "name": "heap_k_closest(self)",
@@ -2394,7 +2396,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.23
+      "latency_ms": 0.3
     },
     {
       "name": "heap_reorganize_string(self)",
@@ -2402,7 +2404,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 2.22
+      "latency_ms": 2.68
     },
     {
       "name": "heap_relative_ranks(self)",
@@ -2410,7 +2412,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.91
+      "latency_ms": 1.33
     },
     {
       "name": "greedy_activity_selection",
@@ -2418,7 +2420,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.49
+      "latency_ms": 0.65
     },
     {
       "name": "greedy_jump_game(self)",
@@ -2426,7 +2428,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.38
+      "latency_ms": 0.48
     },
     {
       "name": "greedy_best_time_to_buy(self)",
@@ -2434,7 +2436,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.5
+      "latency_ms": 0.65
     },
     {
       "name": "greedy_gas_station(self)",
@@ -2446,7 +2448,7 @@
         "loop_state_tracking"
       ],
       "safety": "false_positive",
-      "latency_ms": 0.7
+      "latency_ms": 0.86
     },
     {
       "name": "greedy_partition_labels(self)",
@@ -2454,7 +2456,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.74
+      "latency_ms": 0.9
     },
     {
       "name": "greedy_merge_intervals(self)",
@@ -2462,7 +2464,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.69
+      "latency_ms": 0.82
     },
     {
       "name": "greedy_climb_stairs_not_dp(self)",
@@ -2474,7 +2476,7 @@
         "iterative_table_filling"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 0.64
+      "latency_ms": 0.79
     },
     {
       "name": "greedy_assign_cookies(self)",
@@ -2482,7 +2484,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.62
+      "latency_ms": 0.74
     },
     {
       "name": "greedy_lecture_rooms(self)",
@@ -2490,7 +2492,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.5
+      "latency_ms": 0.6
     },
     {
       "name": "greedy_not_greedy_array(self)",
@@ -2498,7 +2500,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.41
+      "latency_ms": 0.45
     },
     {
       "name": "hash_two_sum(self)",
@@ -2506,7 +2508,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.48
+      "latency_ms": 0.56
     },
     {
       "name": "hash_group_anagrams(self)",
@@ -2514,7 +2516,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.39
+      "latency_ms": 0.49
     },
     {
       "name": "hash_contains_duplicate(self)",
@@ -2522,7 +2524,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.2
+      "latency_ms": 0.17
     },
     {
       "name": "hash_longest_consecutive(self)",
@@ -2533,7 +2535,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.81
+      "latency_ms": 0.99
     },
     {
       "name": "hash_ransom_note(self)",
@@ -2541,7 +2543,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.16
+      "latency_ms": 0.21
     },
     {
       "name": "hash_isomorphic_strings(self)",
@@ -2549,7 +2551,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.72
+      "latency_ms": 0.95
     },
     {
       "name": "hash_valid_sudoku(self)",
@@ -2557,7 +2559,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.42
+      "latency_ms": 1.76
     },
     {
       "name": "hash_subarray_sum_k(self)",
@@ -2565,7 +2567,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.72
+      "latency_ms": 0.62
     },
     {
       "name": "hash_minimum_window(self)",
@@ -2578,7 +2580,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 2.8
+      "latency_ms": 2.96
     },
     {
       "name": "hash_frequency_sort(self)",
@@ -2586,7 +2588,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.39
+      "latency_ms": 0.47
     },
     {
       "name": "arr_max_subarray(self)",
@@ -2594,7 +2596,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.59
+      "latency_ms": 0.62
     },
     {
       "name": "arr_best_time_buy(self)",
@@ -2602,7 +2604,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.57
+      "latency_ms": 0.62
     },
     {
       "name": "arr_merge_sorted(self)",
@@ -2612,7 +2614,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 2.0
+      "latency_ms": 2.32
     },
     {
       "name": "arr_remove_duplicates(self)",
@@ -2620,7 +2622,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.68
+      "latency_ms": 0.82
     },
     {
       "name": "arr_product_except_self(self)",
@@ -2628,7 +2630,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.65
+      "latency_ms": 0.85
     },
     {
       "name": "arr_rotate_array(self)",
@@ -2636,7 +2638,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.29
+      "latency_ms": 0.34
     },
     {
       "name": "arr_find_disappeared(self)",
@@ -2644,7 +2646,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.25
+      "latency_ms": 0.26
     },
     {
       "name": "arr_contains_nearby_almost(self)",
@@ -2652,7 +2654,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.69
+      "latency_ms": 0.79
     },
     {
       "name": "arr_sort_colors(self)",
@@ -2666,7 +2668,7 @@
         "sequential_accumulation"
       ],
       "safety": "false_positive",
-      "latency_ms": 1.62
+      "latency_ms": 1.69
     },
     {
       "name": "arr_next_permutation(self)",
@@ -2679,7 +2681,7 @@
         "sequential_accumulation"
       ],
       "safety": "false_positive",
-      "latency_ms": 0.98
+      "latency_ms": 1.03
     },
     {
       "name": "neg_bfs_no_visited",
@@ -2687,7 +2689,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.7
+      "latency_ms": 0.75
     },
     {
       "name": "neg_dfs_no_state_restore",
@@ -2697,7 +2699,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.32
+      "latency_ms": 0.59
     },
     {
       "name": "neg_stack_not_monotonic",
@@ -2705,7 +2707,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 1.47
+      "latency_ms": 1.74
     },
     {
       "name": "neg_linked_not_manipulation",
@@ -2715,7 +2717,7 @@
         "carry_propagation"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.34
+      "latency_ms": 0.41
     },
     {
       "name": "neg_dp_no_memo(self)",
@@ -2723,7 +2725,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.23
+      "latency_ms": 0.28
     },
     {
       "name": "neg_heap_not_strategy(self)",
@@ -2731,7 +2733,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.23
+      "latency_ms": 0.48
     },
     {
       "name": "neg_greedy_not_strategy(self)",
@@ -2739,7 +2741,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.45
+      "latency_ms": 0.97
     },
     {
       "name": "neg_hash_not_strategy(self)",
@@ -2752,7 +2754,7 @@
         "iterative_table_filling"
       ],
       "safety": "false_positive",
-      "latency_ms": 0.75
+      "latency_ms": 0.95
     },
     {
       "name": "neg_sorting_not_dp",
@@ -2762,7 +2764,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 1.61
+      "latency_ms": 3.63
     },
     {
       "name": "neg_linear_scan_not_bs",
@@ -2770,7 +2772,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.35
+      "latency_ms": 0.56
     },
     {
       "name": "neg_hash_not_binary_search",
@@ -2782,7 +2784,7 @@
         "fixed_window_maintenance"
       ],
       "safety": "false_positive",
-      "latency_ms": 0.69
+      "latency_ms": 0.86
     },
     {
       "name": "neg_two_pointer_not_opposite(self)",
@@ -2790,7 +2792,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.48
+      "latency_ms": 0.56
     },
     {
       "name": "neg_dp_no_lookback",
@@ -2798,7 +2800,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.37
+      "latency_ms": 0.41
     },
     {
       "name": "neg_backtrack_no_recursion",
@@ -2806,7 +2808,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.28
+      "latency_ms": 0.32
     },
     {
       "name": "neg_bfs_tree_no_queue(self)",
@@ -2816,7 +2818,7 @@
         "recursive_branching"
       ],
       "safety": "correct_unresolved",
-      "latency_ms": 0.77
+      "latency_ms": 1.06
     },
     {
       "name": "neg_union_find_parent_only",
@@ -2824,7 +2826,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.84
+      "latency_ms": 1.04
     },
     {
       "name": "neg_monotonic_not_stack",
@@ -2832,7 +2834,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.32
+      "latency_ms": 0.39
     },
     {
       "name": "neg_sliding_not_window(self)",
@@ -2846,7 +2848,7 @@
         "sequential_accumulation"
       ],
       "safety": "correct_confirmed",
-      "latency_ms": 1.1
+      "latency_ms": 1.35
     },
     {
       "name": "neg_queue_not_bfs",
@@ -2856,7 +2858,7 @@
       ],
       "detected_techniques": [],
       "safety": "correct_confirmed",
-      "latency_ms": 1.43
+      "latency_ms": 2.44
     },
     {
       "name": "neg_mixed_not_any_strategy(self)",
@@ -2864,7 +2866,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.5
+      "latency_ms": 0.92
     },
     {
       "name": "edge_empty_code",
@@ -2872,7 +2874,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.03
+      "latency_ms": 0.05
     },
     {
       "name": "edge_single_return",
@@ -2880,7 +2882,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.04
+      "latency_ms": 0.05
     },
     {
       "name": "edge_no_functions",
@@ -2888,7 +2890,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.08
+      "latency_ms": 0.09
     },
     {
       "name": "edge_nested_classes",
@@ -2896,7 +2898,7 @@
       "detected_strategies": [],
       "detected_techniques": [],
       "safety": "correct_unresolved",
-      "latency_ms": 0.09
+      "latency_ms": 0.11
     },
     {
       "name": "edge_decorators",

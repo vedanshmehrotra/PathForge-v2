@@ -1,0 +1,6563 @@
+{
+  "summary": {
+    "total": 276,
+    "cases_with_strategy": 139,
+    "cases_without_strategy": 137,
+    "true_positives": 95,
+    "false_negatives": 43,
+    "false_positives_strategy": 1,
+    "correct_unresolved": 137,
+    "spurious_confirmed": 0,
+    "shadow_errors": 2,
+    "prod_vs_shadow_disagree": 140,
+    "true_positive_rate": 0.6834532374100719,
+    "false_negative_rate": 0.30935251798561153,
+    "false_positive_rate_strategy": 0.007194244604316547,
+    "spurious_confirmed_rate": 0.0,
+    "correct_unresolved_rate": 1.0,
+    "avg_techniques_per_submission": 0.6630434782608695,
+    "pct_no_strategy": 0.5833333333333334,
+    "pct_technique_only": 0.11956521739130435,
+    "satisfaction_mean": 0.0
+  },
+  "per_strategy": {
+    "bfs_shortest_path": {
+      "total": 12,
+      "tp": 6,
+      "fp": 0,
+      "fn": 6,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "binary_search": {
+      "total": 17,
+      "tp": 17,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "dfs_backtracking": {
+      "total": 16,
+      "tp": 1,
+      "fp": 0,
+      "fn": 15,
+      "precision": 1.0,
+      "recall": 0.0625,
+      "f1": 0.11764705882352941
+    },
+    "dp_bottom_up": {
+      "total": 20,
+      "tp": 16,
+      "fp": 0,
+      "fn": 4,
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1": 0.8888888888888888
+    },
+    "dp_top_down": {
+      "total": 13,
+      "tp": 10,
+      "fp": 0,
+      "fn": 3,
+      "precision": 1.0,
+      "recall": 0.7692307692307693,
+      "f1": 0.8695652173913043
+    },
+    "linked_list_traversal": {
+      "total": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "monotonic_stack_strategy": {
+      "total": 8,
+      "tp": 6,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571428571428571
+    },
+    "sliding_window": {
+      "total": 30,
+      "tp": 21,
+      "fp": 0,
+      "fn": 9,
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235294117647058
+    },
+    "two_pointers_opposite": {
+      "total": 14,
+      "tp": 12,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.8571428571428571,
+      "f1": 0.9230769230769231
+    },
+    "union_find": {
+      "total": 8,
+      "tp": 6,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571428571428571
+    }
+  },
+  "cases": [
+    {
+      "name": "bs_standard",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_renamed_vars",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_overflow_safe",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_true_div",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_rshift",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_rotated",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "binary_search_rotated",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_answer_space",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_answer",
+        "greedy_local",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_leftmost",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_class_method",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_nested_if",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_early_return",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_no_midpoint_two_pointers",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_while_without_midpoint",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "bs_recursive",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "self_recursive_call",
+        "recursive_call_in_conditional",
+        "early_termination",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "bs_three_conditions",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_overflow_safe_renamed",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_alternate_condition",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_find_insert",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_min_in_rotated",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bs_peak_element",
+      "expected_strategy": "binary_search",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "binary_search"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "midpoint_calculation",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "while_loop_comparison",
+        "conditional_index_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_palindrome",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_container_water",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_3sum",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite",
+        "array_traversal",
+        "brute_force",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_two_sum_sorted",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_trapping_rain",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_remove_duplicates",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "tp_merge_sorted",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "tp_valid_mountain",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "index_lookback",
+        "while_loop_comparison"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "tp_pair_sum_sorted",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_palindrome_renamed",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_move_zeroes",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "tp_reverse_string",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan"
+      ],
+      "shadow_fact_types": [
+        "accumulator_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_sorted_squares",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_interval_intersection",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "tp_4sum",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "two_pointers_opposite",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "tp_slow_fast_cycle",
+      "expected_strategy": "linked_list_traversal",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "fast_slow_pointers",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "while_loop_comparison",
+        "linked_attribute_access"
+      ],
+      "classification": "false_positive_wrong_strategy"
+    },
+    {
+      "name": "tp_two_pointer_while_true",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "opposite_direction_updates"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "tp_comparator_driven",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "tp_partition",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "tp_converge_with_state",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "hash_map_frequency",
+        "sliding_window_variable"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_longest_substring",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup",
+        "dp_state_machine",
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_max_avg_subarray",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_longest_ones(self)",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "sliding_window_variable",
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update",
+        "opposite_direction_updates"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "sw_min_window_substring",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "hash_map_frequency",
+        "sliding_window_variable"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_max_consecutive_ones",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "sliding_window_variable",
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update",
+        "opposite_direction_updates"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "sw_permutation_in_string",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "conditional_index_update",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "sw_subarray_sum_k",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling",
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback",
+        "conditional_index_update",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "sw_renamed_window",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup",
+        "dp_state_machine",
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_for_with_inner_while",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_contains_nearby_duplicate",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "window_size_constant"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_grumpy_bookstore",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_longest_substring_k_distinct",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sliding_window_variable",
+        "brute_force",
+        "array_traversal",
+        "greedy_local",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "sw_max_points_from_cards",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "sw_fruits_into_baskets",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sliding_window_variable",
+        "brute_force",
+        "array_traversal",
+        "greedy_local",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "sw_no_inner_while",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_variable_renamed_complex",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "ERROR",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "sw_without_hash",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_class_style",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup",
+        "dp_state_machine",
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "sw_with_counter",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_frequency",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "fw_max_sum_k",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_average_k",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_size_param",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_const_offset",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_class_method",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_count_occurrences",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "fw_no_offset_different_code",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_state_machine",
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_with_helper",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "fw_max_sum_subarray_k_renamed",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_negative_k",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_nested_loop_not_window",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "fw_matrix_row",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "fw_different_structure",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates",
+        "index_lookback"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "fw_not_k_parameter",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "fw_no_offset_at_all",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dfs_subsets",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "array_traversal",
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "state_restoration"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_permutations",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "backtracking_subset",
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "state_restoration"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_nqueens",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dfs_combination_sum",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "brute_force",
+        "array_traversal",
+        "dfs_recursive"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "state_restoration"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_word_search",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force",
+        "dfs_recursive"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "self_recursive_call",
+        "early_termination",
+        "indexed_write",
+        "multiple_recursive_paths"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dfs_restore_ip",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dfs_letter_combinations",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dfs_palindrome_partition",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "brute_force",
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "state_restoration"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_combination_sum_2",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "brute_force",
+        "array_traversal",
+        "dfs_recursive",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "self_recursive_call",
+        "state_restoration",
+        "early_termination",
+        "index_lookback"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_gen_parentheses",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "multiple_recursive_paths",
+        "self_recursive_call",
+        "recursive_call_in_conditional"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dfs_not_backtracking_linear",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dfs_fibonacci(self)",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dfs_tree_traversal_no_backtrack",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "greedy_local",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "linked_attribute_access",
+        "early_termination",
+        "self_recursive_call",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dfs_renamed_backtrack",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "state_restoration"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_class_style",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "array_traversal",
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "state_restoration"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_maze_solver",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "backtracking_subset",
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "visited_tracking",
+        "state_restoration",
+        "early_termination",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dfs_permute_unique",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "backtracking_subset",
+        "dfs_recursive",
+        "backtracking_permutation",
+        "brute_force",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dfs_backtracking",
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "self_recursive_call",
+        "state_restoration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write"
+      ],
+      "classification": "false_negative_detected_not_confirmed"
+    },
+    {
+      "name": "dfs_nqueens_renamed",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dfs_graph_dfs_no_backtrack",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "hash_map_lookup",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "visited_tracking"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dfs_sudoku_solver",
+      "expected_strategy": "dfs_backtracking",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dfs_recursive"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "indexed_write"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_memo_fib",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_climbing_stairs",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_coin_change_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_renamed_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "recursive_call_in_conditional",
+        "parent_root_merge",
+        "early_termination",
+        "accumulator_update",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_house_robber_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "greedy_local",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "parent_root_merge",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_grid_path_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_word_break_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_longest_common_subseq_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "recursive_call_in_conditional",
+        "parent_root_merge",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_edit_distance_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "recursive_call_in_conditional",
+        "parent_root_merge",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_plain_recursion_not_dp",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dp_plain_recursion_fib_no_memo",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dp_lru_cache_class",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "ERROR",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dp_memo_renamed",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_with_lru_cache",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_maze_path_memo",
+      "expected_strategy": "dp_top_down",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_top_down"
+      ],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "multiple_recursive_paths"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_bottomup_fib",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_1d_forward",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_house_robber",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_1d_forward",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_coin_change",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_longest_increasing",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_1d_sequence",
+        "dp_knapsack",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_grid_unique_paths",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_interval",
+        "dp_2d_grid",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_knapsack",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_2d_grid",
+        "dp_knapsack",
+        "dp_interval",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_lcs",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_2d_string",
+        "dp_interval",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_climbing_stairs_bottomup",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_1d_forward",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_min_path_sum",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_2d_grid",
+        "dp_interval",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_edit_distance",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_2d_string",
+        "dp_interval",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_egg_drop",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_2d_grid",
+        "dp_interval",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_word_break_bottomup",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_renamed_bottomup",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_1d_sequence",
+        "dp_knapsack",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "dp_prefix_sum",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_not_dp_generic_loop",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dp_generic_array_ops",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dp_bottomup_renamed(self)",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_1d_forward",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "dp_house_robber_space_optimized",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dp_state_machine",
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "dp_2d_grid_bottomup(self)",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_interval",
+        "dp_2d_grid",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bfs_graph_shortest",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_shortest_path",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "bfs_shortest_path"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "neighbor_traversal",
+        "early_termination",
+        "indexed_write",
+        "queue_dequeue",
+        "visited_tracking"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bfs_level_order",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_level_order",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "bfs_shortest_path"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "linked_structure_traversal",
+        "linked_attribute_access",
+        "queue_dequeue"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bfs_word_ladder",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "bfs_shortest_path",
+        "brute_force",
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "queue_dequeue",
+        "visited_tracking"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "bfs_renamed",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "bfs_shortest_path",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "bfs_shortest_path"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "neighbor_traversal",
+        "early_termination",
+        "queue_dequeue",
+        "visited_tracking"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bfs_islands(self)",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "bfs_level_order"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "queue_dequeue"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "bfs_rotten_oranges",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "bfs_shortest_path",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "queue_dequeue"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "bfs_dfs_no_queue",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "hash_map_lookup",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "self_recursive_call",
+        "visited_tracking"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "bfs_not_shortest_path",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "while_loop_truthiness",
+        "queue_dequeue"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "bfs_grid_bfs_renamed",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "brute_force",
+        "bfs_shortest_path"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "index_lookback",
+        "queue_dequeue",
+        "visited_tracking"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "bfs_multi_source",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "bfs_level_order"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "indexed_write",
+        "queue_dequeue"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "bfs_no_visited_tracking",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_level_order",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "while_loop_truthiness",
+        "queue_dequeue"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "bfs_with_level_count",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_shortest_path",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "bfs_shortest_path"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "linked_attribute_access",
+        "queue_dequeue"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "bfs_open_lock",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "brute_force",
+        "bfs_shortest_path",
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "queue_dequeue",
+        "visited_tracking"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "bfs_sliding_puzzle",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_shortest_path",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "bfs_shortest_path"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "neighbor_traversal",
+        "early_termination",
+        "queue_dequeue",
+        "visited_tracking"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_classic",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "union_find"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "parent_pointer_chase",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_inline",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "union_find"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "parent_pointer_chase",
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_renamed(self)",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "union_find"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "parent_pointer_chase",
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_no_rank",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "union_find"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "parent_pointer_chase",
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_with_size",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "union_find"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "parent_pointer_chase",
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_accounts_merge",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup",
+        "hash_map_frequency",
+        "sorting",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "union_find"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "parent_pointer_chase",
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "uf_not_union_find_parent_array",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "uf_not_union_find_tree(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "uf_renamed_with_path_splitting",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "self_recursive_call",
+        "recursive_call_in_conditional",
+        "early_termination",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "uf_weighted_union(self)",
+      "expected_strategy": "union_find",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "union_find"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "indexed_write",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "ll_reversal",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "linked_list_reversal",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "early_termination",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_merge_two",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "node_constructor",
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "conditional_index_update",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_cycle_detection",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "fast_slow_pointers",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "while_loop_comparison",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_add_two_numbers",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "carry_propagation",
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "node_constructor",
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access",
+        "carry_propagation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_reverse_pairs",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "linked_list_reversal",
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "early_termination",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_remove_nth(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "node_constructor",
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_rotate_list(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_swap_pairs",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_flatten(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "linked_list_reversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "stack_operation",
+        "multiple_pointer_traversal",
+        "early_termination",
+        "conditional_pop",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_simple_traversal_not_ll(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_copy_random_list(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "node_constructor",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "linked_attribute_access",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_reversed_between(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "node_constructor",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_odd_even(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_palindrome(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ll_partition(self)",
+      "expected_strategy": null,
+      "expected_techniques": [
+        "linked_list_traversal"
+      ],
+      "prod_patterns": [
+        "two_pointers_same"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "node_constructor",
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "conditional_index_update",
+        "pointer_rewiring",
+        "linked_attribute_access"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_next_greater",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "monotonic_stack",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "conditional_pop",
+        "indexed_write",
+        "monotonic_comparison",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ms_daily_temperatures",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "monotonic_stack",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up",
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling",
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "conditional_pop",
+        "index_lookback",
+        "indexed_write",
+        "monotonic_comparison"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ms_histogram",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "monotonic_stack",
+        "dp_state_machine",
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "stack_operation",
+        "early_termination",
+        "accumulator_update",
+        "conditional_pop",
+        "monotonic_comparison"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ms_stock_span",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "monotonic_stack",
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "conditional_pop",
+        "indexed_write",
+        "monotonic_comparison"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ms_next_greater_renamed",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "monotonic_stack",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "ms_asteroid_collision",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "monotonic_stack",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "conditional_pop",
+        "monotonic_comparison"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_decode_string(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_min_stack(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_valid_parentheses",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_calculator(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sliding_window_variable"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_nested_iterator(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_largest_hist_renamed",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "monotonic_stack",
+        "dp_state_machine",
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_truthiness"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "ms_trap_rain_water_stack",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "monotonic_stack",
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "conditional_pop",
+        "accumulator_update",
+        "conditional_index_update",
+        "monotonic_comparison"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ms_next_greater_circular",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "monotonic_stack",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "conditional_pop",
+        "indexed_write",
+        "monotonic_comparison",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ms_sum_subarray_mins(self)",
+      "expected_strategy": "monotonic_stack_strategy",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "monotonic_stack_strategy"
+      ],
+      "shadow_techniques": [
+        "monotonic_stack_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "stack_operation",
+        "early_termination",
+        "accumulator_update",
+        "conditional_pop",
+        "monotonic_comparison"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ps_basic",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ps_range_sum",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback"
+      ],
+      "classification": "false_negative_not_detected"
+    },
+    {
+      "name": "ps_subarray_sum_k",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ps_running_total",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "prefix_sum",
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ps_2d_prefix(self)",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "ps_cumulative_sum",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ps_contiguous_subarrays",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ps_not_prefix_just_sum",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ps_pivot_index",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "ps_product_except_self(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_factorial",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_fibonacci_no_memo",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_power(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_sum_list",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_string_length(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_tower_of_hanoi(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_gcd",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_reverse_string(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_linear_search",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "self_recursive_call"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "rec_count_paths(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_valid_parens",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_eval_rpn(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_min_stack(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_stock_span(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_nested_iterator(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_implement_queue(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_balanced_parens(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_browser_history(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_baseball(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "stack_remove_duplicates(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_kth_largest(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_top_k(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_frequency",
+        "heap_top_k",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_merge_k_sorted(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "carry_propagation",
+        "linked_list_traversal"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "node_constructor",
+        "multiple_pointer_traversal",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "pointer_rewiring",
+        "linked_attribute_access",
+        "carry_propagation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_median_finder(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_last_stone(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k",
+        "fast_slow_pointers"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_task_scheduler(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "heap_top_k",
+        "hash_map_frequency",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "while_loop_truthiness",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_k_closest(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_reorganize_string(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination",
+        "while_loop_truthiness"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "heap_relative_ranks(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "sorting",
+        "greedy_interval"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_activity_selection",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sorting",
+        "greedy_interval"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_jump_game(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_best_time_to_buy(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "index_lookback",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_gas_station(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_partition_labels(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_merge_intervals(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sorting",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_climb_stairs_not_dp(self)",
+      "expected_strategy": "dp_bottom_up",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "dp_1d_forward",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "cache_write",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "greedy_assign_cookies(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "neighbor_traversal",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_lecture_rooms(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "sorting",
+        "heap_top_k"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "greedy_not_greedy_array(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_two_sum(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_group_anagrams(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_frequency",
+        "sorting"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_contains_duplicate(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_longest_consecutive(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "dp_state_machine",
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_ransom_note(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_isomorphic_strings(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_valid_sudoku(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_subarray_sum_k(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum",
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write",
+        "cache_lookup"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "hash_minimum_window(self)",
+      "expected_strategy": "sliding_window",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force",
+        "array_traversal",
+        "hash_map_frequency",
+        "sliding_window_variable"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "indexed_write"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "hash_frequency_sort(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_frequency"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_max_subarray(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dp_state_machine",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_best_time_buy(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_merge_sorted(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "recursive_branching",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_remove_duplicates(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_product_except_self(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_rotate_array(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "indexed_write",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_find_disappeared(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_contains_nearby_almost(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_sort_colors(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "arr_next_permutation(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "iterative_table_filling"
+      ],
+      "shadow_fact_types": [
+        "accumulator_update",
+        "index_lookback",
+        "while_loop_comparison",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_bfs_no_visited",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_level_order",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "while_loop_truthiness",
+        "queue_dequeue"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_dfs_no_state_restore",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "greedy_local",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "linked_attribute_access",
+        "early_termination",
+        "self_recursive_call",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_stack_not_monotonic",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "stack_operation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_linked_not_manipulation",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "carry_propagation"
+      ],
+      "shadow_fact_types": [
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "linked_attribute_access",
+        "carry_propagation"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_dp_no_memo(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_heap_not_strategy(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "heap_top_k"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_greedy_not_strategy(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "sliding_window_variable",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_hash_not_strategy(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "dp_bottom_up"
+      ],
+      "shadow_techniques": [
+        "iterative_table_filling",
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "index_lookback",
+        "indexed_write",
+        "cache_lookup",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_sorting_not_dp",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "recursive_branching",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "self_recursive_call",
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison",
+        "conditional_index_update",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_linear_scan_not_bs",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_hash_not_binary_search",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "hash_map_lookup",
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "sliding_window"
+      ],
+      "shadow_techniques": [
+        "fixed_window_maintenance"
+      ],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "window_size_constant",
+        "early_termination",
+        "index_lookback",
+        "visited_tracking"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_two_pointer_not_opposite(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "indexed_write",
+        "parent_root_merge"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_dp_no_lookback",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_backtrack_no_recursion",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_bfs_tree_no_queue(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "recursive_branching"
+      ],
+      "shadow_fact_types": [
+        "recursive_depth_tracking",
+        "self_recursive_call",
+        "early_termination",
+        "linked_attribute_access",
+        "multiple_recursive_paths"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_union_find_parent_only",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal",
+        "hash_map_lookup",
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "neighbor_traversal",
+        "self_recursive_call",
+        "early_termination",
+        "visited_tracking"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_monotonic_not_stack",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [
+        "array_traversal"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "early_termination",
+        "index_lookback"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "neg_sliding_not_window(self)",
+      "expected_strategy": "two_pointers_opposite",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "two_pointers_opposite",
+        "greedy_local"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "two_pointers_opposite"
+      ],
+      "shadow_techniques": [
+        "sequential_accumulation",
+        "bidirectional_index_scan",
+        "loop_state_tracking"
+      ],
+      "shadow_fact_types": [
+        "variable_use_in_loop_body",
+        "early_termination",
+        "accumulator_update",
+        "conditional_index_update",
+        "while_loop_comparison",
+        "opposite_direction_updates"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "neg_queue_not_bfs",
+      "expected_strategy": "bfs_shortest_path",
+      "expected_techniques": [],
+      "prod_patterns": [
+        "bfs_shortest_path",
+        "prefix_sum",
+        "brute_force"
+      ],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "CONFIRMED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [
+        "bfs_shortest_path"
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "for_loop_iteration",
+        "while_loop_truthiness",
+        "early_termination",
+        "accumulator_update",
+        "linked_structure_traversal",
+        "linked_attribute_access",
+        "queue_dequeue"
+      ],
+      "classification": "true_positive"
+    },
+    {
+      "name": "neg_mixed_not_any_strategy(self)",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        "sequential_accumulation"
+      ],
+      "shadow_fact_types": [
+        "early_termination",
+        "accumulator_update",
+        "while_loop_comparison"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "edge_empty_code",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "edge_single_return",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "edge_no_functions",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "edge_nested_classes",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    },
+    {
+      "name": "edge_decorators",
+      "expected_strategy": null,
+      "expected_techniques": [],
+      "prod_patterns": [],
+      "prod_match": "NO_MATCH",
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_satisfaction": 0.0,
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_types": [
+        "early_termination"
+      ],
+      "classification": "correct_unresolved"
+    }
+  ]
+}

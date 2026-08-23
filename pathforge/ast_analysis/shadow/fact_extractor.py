@@ -265,33 +265,25 @@ class _FactExtractor(ast.NodeVisitor):
     def _detect_while_comparison(self, node: ast.While):
         """While-loop with comparison on index variables that are modified.
 
+        Handles:
+        - Bare Compare:          while i < n:
+        - BoolOp(And, [Compare]): while i < n and total > 0:
+        - BoolOp(Or, [Compare]):  while i < n or force:
+        - Nested BoolOp:         while (i < n and running > 0) or force:
+
         Also emits while_loop_truthiness for truthiness-based loops
         (e.g., while queue: while stack:).
         """
         test = node.test
         if isinstance(test, ast.Compare):
-            # Collect all Name nodes in the comparison
-            comp_names = set()
-            for child in ast.walk(test):
-                if isinstance(child, ast.Name):
-                    comp_names.add(child.id)
-            if not comp_names:
-                return
-            # Check if any compared variable is modified in the loop body
-            modified = self._collect_body_modified_names(node.body)
-            # Also check augmented assignments (+=, -=)
-            modified.update(self._collect_body_augmented_names(node.body))
-            modified_names = comp_names & modified
-            if not modified_names:
-                return
-            self._facts.append(StructuralFact(
-                fact_type="while_loop_comparison",
-                ast_ref=_ref(node),
-                attributes={
-                    "compared_variables": sorted(comp_names),
-                    "modified_variables": sorted(modified_names),
-                },
-            ))
+            self._emit_while_comparison_from_compares(node, [test])
+        elif isinstance(test, ast.BoolOp):
+            # Decompose BoolOp into its Compare components.
+            # A BoolOp(And/Or, [Compare, Compare, ...]) or nested BoolOps
+            # all contribute comparison conditions to the same while loop.
+            compares = self._collect_compare_from_boolop(test)
+            if compares:
+                self._emit_while_comparison_from_compares(node, compares)
         elif isinstance(test, ast.Name):
             # Truthiness-based while loop: while queue:, while stack:
             self._facts.append(StructuralFact(
@@ -299,6 +291,49 @@ class _FactExtractor(ast.NodeVisitor):
                 ast_ref=_ref(node),
                 attributes={"variable": test.id},
             ))
+
+    def _emit_while_comparison_from_compares(self, node: ast.While, compares: list):
+        """Emit while_loop_comparison from a list of Compare nodes.
+
+        Collects all Name nodes across all comparisons and checks whether
+        any compared variable is modified in the loop body.
+        """
+        comp_names = set()
+        for cmp in compares:
+            for child in ast.walk(cmp):
+                if isinstance(child, ast.Name):
+                    comp_names.add(child.id)
+        if not comp_names:
+            return
+        modified = self._collect_body_modified_names(node.body)
+        modified.update(self._collect_body_augmented_names(node.body))
+        modified_names = comp_names & modified
+        if not modified_names:
+            return
+        self._facts.append(StructuralFact(
+            fact_type="while_loop_comparison",
+            ast_ref=_ref(node),
+            attributes={
+                "compared_variables": sorted(comp_names),
+                "modified_variables": sorted(modified_names),
+            },
+        ))
+
+    def _collect_compare_from_boolop(self, node: ast.BoolOp) -> list:
+        """Recursively collect all Compare nodes from a BoolOp tree.
+
+        Handles:
+        - BoolOp(And, [Compare, Compare])  →  [Compare, Compare]
+        - BoolOp(And, [BoolOp(Or, [...])])  →  flattened
+        - Nested: BoolOp(Or, [BoolOp(And, [Compare, Compare]), Compare])
+        """
+        compares = []
+        for value in node.values:
+            if isinstance(value, ast.Compare):
+                compares.append(value)
+            elif isinstance(value, ast.BoolOp):
+                compares.extend(self._collect_compare_from_boolop(value))
+        return compares
 
     def _detect_opposite_updates_in_loop(self, node: ast.While):
         """Two variables updated in opposite directions within the same loop body."""

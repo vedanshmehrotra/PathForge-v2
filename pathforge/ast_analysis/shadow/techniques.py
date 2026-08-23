@@ -399,11 +399,10 @@ def _detect_linked_list_traversal(facts: list[StructuralFact]) -> Optional[Techn
     if not has_rewiring and not has_multi_pointer:
         return None
 
-    # Must NOT be carry_propagation (Add Two Numbers case)
-    # Carry propagation is a more specific technique for linked-list arithmetic
-    has_carry = "carry_propagation" in types
-    if has_carry:
-        return None
+    # NOTE: carry_propagation guard removed. Per architecture, techniques are
+    # reusable, non-exclusive evidence. Both carry_propagation AND
+    # linked_list_traversal can fire for Add Two Numbers. The matching layer
+    # handles which technique is relevant to which solution group.
 
     supporting = []
     for f in facts:
@@ -411,12 +410,18 @@ def _detect_linked_list_traversal(facts: list[StructuralFact]) -> Optional[Techn
                            "multiple_pointer_traversal"):
             supporting.append(f.fact_id)
 
+    # Lower centrality slightly when carry_propagation is also present,
+    # since carry_propagation is the more specific technique for this case.
+    has_carry = "carry_propagation" in types
+    centrality = 0.7 if has_carry else 0.8
+    confidence = 0.8 if has_carry else 0.85
+
     return TechniqueEvidence(
         technique_id="linked_list_traversal",
         technique_version="1.0.0",
         supporting_fact_ids=supporting,
-        presence_confidence=0.85,
-        centrality=0.8,
+        presence_confidence=confidence,
+        centrality=centrality,
     )
 
 
