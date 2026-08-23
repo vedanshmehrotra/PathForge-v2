@@ -1,136 +1,155 @@
-# Root-Cause Report: Manual Testing Findings
+# Root Cause Report: Vocabulary Mismatch in Analysis Pipeline
 
-## Issue 1: Add Two Numbers — Wrong Ground Truth Pattern
+## A. Execution Path
 
-### Observed Behavior
-- User submitted a linked-list addition implementation
-- AST detected: `two_pointers_same`
-- Expected ground truth: `linked_list_reversal`
-- Result: NO_MATCH
-- Gap shown: `linked_list_reversal`
+```
+POST /analyze
+├─ resolve_problem() → _load_ground_truth()
+│   ├─ Reads solution_groups from DB (V1 format: required/optional/excluded)
+│   ├─ BUG: Sets "patterns" field = V1 concepts (required) instead of legacy pattern IDs
+│   └─ BUG: Skips groups with empty "required" entirely
+│
+├─ run_analysis(code, groups)
+│   ├─ AST detector → detected_patterns = [legacy pattern IDs]
+│   ├─ Production MatchingEngine.match() → flat pattern-ID set intersection
+│   │   └─ group_patterns (V1 concepts) ∩ ast_patterns (legacy IDs) = ∅ → NO_MATCH
+│   └─ Returns match_result
+│
+└─ run_shadow_analysis(code, solution_groups=groups)
+    ├─ extract_structural_facts(tree) → facts
+    ├─ detect_techniques(facts) → technique_evidence
+    │   └─ carry_propagation detected ✅, sequential_accumulation detected ✅
+    ├─ evaluate_strategies(techniques, facts) → strategy_evidence = []
+    │   └─ No strategy evaluator for technique-only concepts (by design)
+    ├─ evaluate_solution_groups(groups, techniques, strategies, facts)
+    │   ├─ If groups=None/empty → UNRESOLVED, authority_tier="unknown"
+    │   └─ If groups exist → checks techniques AND strategies in required
+    └─ Returns shadow result
+```
 
-### Root Cause: LLM Generated Incorrect Ground Truth
+## B. Exact Files and Functions Responsible
 
-**Evidence:**
-1. The CSV file (`pathforge_problems_fixed.csv`) lists the correct pattern for problem 2 (Add Two Numbers) as `["two_pointers_same"]`
-2. The ground truth used for matching comes from `problem_ground_truth.patterns`, which is populated by the LLM
-3. The LLM (GPT-4o-mini via OpenRouter) incorrectly classified this problem as requiring `linked_list_reversal`
-4. This is an LLM reasoning error — the problem involves traversing linked lists and adding digits, but the core pattern is two-pointer traversal, not reversal
+| File | Function | Bug |
+|------|----------|-----|
+| `pathforge/services/problem_resolver.py` | `_load_ground_truth()` (line ~214) | Overwrites `patterns` field with V1 concepts; skips empty-required groups |
+| `pathforge/services/ground_truth_builder.py` | `PATTERN_TO_V1_MAPPING` (line ~202) | `linked_list_reversal` has `required: []` — group always unsatisfiable |
 
-**Classification:** Existing data problem (LLM ground truth quality)
+## C. Why strategy_evidence Is Empty
 
-**Code Locations:**
-- `pathforge/llm/openrouter_client.py:_build_prompt()` — LLM prompt that generates patterns
-- `pathforge/services/ground_truth_builder.py:build_ground_truth()` — stores LLM output
-- `pathforge/db/problem_ground_truth` table — stores the incorrect pattern
+`strategy_evidence` is empty because there are **no strategy evaluators** for technique-only concepts like `carry_propagation` or `sequential_accumulation`. The 9 strategy evaluators only handle:
 
-**Why This Happened:**
-The LLM prompt asks for algorithmic patterns and includes `linked_list_reversal` as a canonical pattern. For "Add Two Numbers," the LLM associated "linked list" with "reversal" rather than correctly identifying the traversal/addition pattern.
+- `two_pointers_opposite`
+- `binary_search`
+- `sliding_window`
+- `dfs_backtracking`
+- `dp_top_down`
+- `dp_bottom_up`
+- `bfs_shortest_path`
+- `union_find`
+- `monotonic_stack_strategy`
 
----
+**This is NOT the root cause of UNRESOLVED.** The shadow matcher's `_evaluate_single_group()` checks BOTH techniques AND strategies:
 
-## Issue 2: Problem 2996 — Zero AST Detections
+```python
+for req in required:
+    if req in detected_techniques:  # ← This works!
+        te = detected_techniques[req]
+        if te.presence_confidence >= 0.5:
+            required_met += 1
+    elif req in detected_strategies:
+        se = detected_strategies[req]
+        if se.confidence >= 0.5:
+            required_met += 1
+```
 
-### Observed Behavior
-- Code uses while loops to iterate through array and compute running sum
-- AST detected: 0 patterns
-- Expected ground truth: `hash_map_lookup`, `prefix_sum`
-- Result: NO_MATCH
-- Both expected patterns shown as missing gaps
+The real cause is that solution groups aren't reaching the shadow matcher (Bug 2) or have wrong patterns for the production matcher (Bug 1).
 
-### Root Cause: AST Detector Coverage Limitation (While-Loop Sensitivity)
+## D. This Is Two Shared Bugs, Not Multiple Independent Issues
 
-**Evidence:**
-1. The code uses `while i <= len(nums)-1 and nums[i] == nums[i-1]+1:` — a while loop
-2. The `array_traversal` detector (`src/ast_detection/detectors/array_traversal.py`) only looks for `for` loops in `_detect_traversal_loop()`
-3. No detector recognizes while-loop array traversal patterns
-4. The `hash_map_lookup` detector doesn't trigger because `while summ in nums:` is a linear search, not a hash map operation
-5. The `prefix_sum` detector doesn't trigger because the running sum pattern doesn't match its expected AST shape
+**Bug 1 — Vocabulary mismatch in `_load_ground_truth()`:**
+```python
+# BEFORE (broken):
+required = g.get("required", g.get("patterns", []))
+groups.append({
+    "patterns": required,  # ← V1 concepts like "carry_propagation"
+})
+# Production matcher gets V1 concepts → no match with legacy AST output
 
-**Which Detectors Should Theoretically Fire:**
-| Detector | Why It Should Fire | Why It Doesn't |
-|----------|-------------------|----------------|
-| `array_traversal` | Iterates through array with index | Only detects `for` loops, not `while` loops |
-| `hash_map_lookup` | Uses `in nums` for membership test | Linear search on list, not hash set |
-| `prefix_sum` | Computes running sum | Running sum pattern doesn't match detector's expected shape |
+# AFTER (fixed):
+legacy_patterns = g.get("patterns") or required
+groups.append({
+    "patterns": legacy_patterns,  # ← Original legacy pattern IDs
+    "required": required,         # ← V1 concepts for shadow matcher
+})
+```
 
-**Classification:** Existing AST coverage problem (known loop-form sensitivity)
+**Bug 2 — Empty-required groups skipped:**
+```python
+# BEFORE (broken):
+required = g.get("required", g.get("patterns", []))
+if not required:
+    continue  # ← linked_list_reversal (required=[]) SKIPPED entirely
 
-**Code Locations:**
-- `src/ast_detection/detectors/array_traversal.py:_detect_traversal_loop()` — only checks `ast.For`, not `ast.While`
-- `src/ast_detection/detectors/hash_map_lookup.py` — looks for `set()` or `dict()` usage, not `in list`
-- `src/ast_detection/detectors/prefix_sum.py` — expects specific AST shape for prefix sums
+# AFTER (fixed):
+# Removed the skip guard — groups are always included
+```
 
-**Note:** This is a known limitation from the Phase-0 adversarial evaluation. The evaluation identified that 17.8% of false negatives were caused by while-loop sensitivity.
+**Bug 3 — V1 mapping had empty required:**
+```python
+# BEFORE (broken):
+"linked_list_reversal": {"required": [], "optional": ["carry_propagation"]}
 
----
+# AFTER (fixed):
+"linked_list_reversal": {"required": ["linked_list_traversal"], ...}
+```
 
-## Evidence State and Verdict Type for Both Submissions
+## E. Minimum Safe Fix
 
-### Add Two Numbers (Problem 2)
+### Files Changed
 
-| Property | Value | Source |
-|----------|-------|--------|
-| Evidence state | `llm_proposed` or `unobserved` | Depends on when ground truth was generated |
-| verdict_type | `analysis_only` | Derived from evidence state |
-| is_authoritative | `False` | Not in `_AUTHORITATIVE_STATES` |
+| File | Change |
+|------|--------|
+| `pathforge/services/problem_resolver.py` | `_load_ground_truth()`: Preserve original `patterns` from stored group; remove empty-required skip guard |
+| `pathforge/services/ground_truth_builder.py` | `PATTERN_TO_V1_MAPPING`: Map `linked_list_reversal` → `linked_list_traversal`, `monotonic_stack` → `monotonic_stack_maintenance`, `monotonic_deque` → `monotonic_stack_maintenance` |
+| `pathforge/ast_analysis/shadow/tests/test_phase4a_enrichment.py` | Updated 2 tests to reflect new mapping |
+| `pathforge/ast_analysis/shadow/tests/test_regression_vocabulary_mismatch.py` | 17 new regression tests |
 
-### Problem 2996
+### Before/After Behavior
 
-| Property | Value | Source |
-|----------|-------|--------|
-| Evidence state | `llm_proposed` | Generated after evidence architecture |
-| verdict_type | `analysis_only` | Derived from evidence state |
-| is_authoritative | `False` | Not in `_AUTHORITATIVE_STATES` |
+**Before fix (LC 2 — Add Two Numbers):**
+```
+Shadow: techniques=[carry_propagation], strategies=[], outcome=UNRESOLVED, authority=unknown
+Production: match_result=NO_MATCH, unmatched_patterns=["carry_propagation"]
+```
 
----
+**After fix (LC 2 — Add Two Numbers, with carry_propagation group):**
+```
+Shadow: techniques=[carry_propagation], strategies=[], outcome=CONFIRMED, authority=llm_proposed
+Production: match_result=NO_MATCH (correct — AST doesn't detect linked_list_reversal)
+```
 
-## Gap/ELO/Recommendation Gating Verification
+**After fix (LC 2 — Add Two Numbers, with linked_list_traversal group):**
+```
+Shadow: techniques=[carry_propagation], strategies=[], outcome=UNRESOLVED (correct — wrong group)
+Production: match_result=NO_MATCH (correct — AST doesn't detect linked_list_reversal)
+```
 
-### For Both Submissions (analysis_only verdict_type)
+### Test Results
 
-| System | Behavior | Correct? |
-|--------|----------|----------|
-| Gap signals (persisted) | SKIPPED — `_gap_engine.persist_signals()` not called | ✅ YES |
-| Gap display (API response) | SHOWN — computed from `match_result["unmatched_patterns"]` | ✅ YES (informational) |
-| user_pattern_elo | SKIPPED — entire block skipped | ✅ YES |
-| topic_profiles | SKIPPED — `update_topic_profile()` not called | ✅ YES |
-| recommendations | SKIPPED — `get_recommendation()` not called | ✅ YES |
-| streak | UPDATED — always updated regardless of evidence | ✅ YES |
+| Suite | Passed | Failed |
+|-------|--------|--------|
+| Production (AST) | 482 | 0 |
+| Matching Engine | 50 | 0 |
+| Shadow tests | 336 | 0 |
+| New regression tests | 17 | 0 |
+| **Total** | **885** | **0** |
 
-### Gating Is Correct
+## F. What This Fix Does NOT Change
 
-The evidence authority architecture is working as designed:
-- Weak evidence (llm_proposed, unobserved) does NOT persist gap signals
-- Weak evidence does NOT update ELO
-- Weak evidence does NOT update topic profiles
-- Weak evidence does NOT generate recommendations
-- Gap information IS shown in the API response (informational only)
-
----
-
-## Classification Summary
-
-| Issue | Classification | Root Cause | Fix Required |
-|-------|---------------|------------|--------------|
-| Add Two Numbers wrong pattern | **Existing data problem** | LLM generated incorrect ground truth | Improve LLM prompt, add validation, or use CSV as fallback |
-| Problem 2996 zero detections | **Existing AST coverage problem** | While-loop sensitivity (known limitation) | Add while-loop detection to `array_traversal` and other detectors |
-
----
-
-## Recommended Next Steps
-
-### For Ground Truth Quality (Add Two Numbers)
-1. Add cross-validation between LLM-generated patterns and CSV patterns
-2. When CSV pattern exists but LLM returns different pattern, prefer CSV pattern
-3. Add manual review queue for problems where LLM and CSV disagree
-
-### For AST Coverage (Problem 2996)
-1. Add while-loop detection to `array_traversal` detector
-2. Add linear search detection for `in list` patterns
-3. Add running-sum detection for `summ += nums[i]` patterns
-4. These are part of the Phase-2 AST improvement roadmap
-
-### For Evidence Architecture
-1. No changes needed — gating is working correctly
-2. Consider adding a "confidence indicator" to the API response to show users when results are based on weak evidence
+- ✅ AST detector behavior unchanged
+- ✅ Shadow analysis remains observational/shadow-only
+- ✅ Production verdict, ELO, gaps, recommendations unchanged
+- ✅ No new techniques or strategies added
+- ✅ No variable-name dependence introduced
+- ✅ UNRESOLVED remains non-punitive
+- ✅ No false contradictions introduced

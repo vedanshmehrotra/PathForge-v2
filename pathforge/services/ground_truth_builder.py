@@ -200,22 +200,22 @@ PATTERN_TO_V1_MAPPING = {
         "note": "Fast/slow pointers map to bidirectional_index_scan technique",
     },
     "linked_list_reversal": {
-        "required": [],
-        "optional": ["carry_propagation"],
+        "required": ["linked_list_traversal"],
+        "optional": ["pointer_rewiring", "multiple_pointer_traversal"],
         "excluded": ["two_pointers_opposite"],
-        "note": "No direct V1 technique for reversal; preserve as unresolved",
+        "note": "Linked-list reversal maps to linked_list_traversal technique (requires pointer manipulation)",
     },
     "monotonic_stack": {
-        "required": [],
-        "optional": [],
+        "required": ["monotonic_stack_maintenance"],
+        "optional": ["stack_operation", "monotonic_comparison"],
         "excluded": [],
-        "note": "No direct V1 technique for monotonic stack",
+        "note": "Monotonic stack maps to monotonic_stack_maintenance technique",
     },
     "monotonic_deque": {
-        "required": [],
-        "optional": [],
+        "required": ["monotonic_stack_maintenance"],
+        "optional": ["stack_operation", "monotonic_comparison"],
         "excluded": [],
-        "note": "No direct V1 technique for monotonic deque",
+        "note": "Monotonic deque maps to monotonic_stack_maintenance technique (deque = stack variant)",
     },
     # Binary Search
     "binary_search_standard": {

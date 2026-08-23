@@ -158,10 +158,10 @@ class TestVocabularyMapping:
         mapping = PATTERN_TO_V1_MAPPING["union_find"]
         assert "union_find" in mapping["required"]
 
-    def test_linked_list_reversal_unmapped(self):
-        """linked_list_reversal has no direct V1 technique."""
+    def test_linked_list_reversal_mapped(self):
+        """linked_list_reversal maps to linked_list_traversal technique."""
         mapping = PATTERN_TO_V1_MAPPING["linked_list_reversal"]
-        assert len(mapping["required"]) == 0
+        assert "linked_list_traversal" in mapping["required"]
 
     def test_hash_map_unmapped(self):
         """hash_map_lookup has no direct V1 technique."""
@@ -631,14 +631,14 @@ class TestEdgeCases:
         assert len(groups) >= 1
 
     def test_unmapped_patterns_preserved(self):
-        """Unmapped patterns are preserved in diagnostic metadata."""
+        """Mapped patterns produce required concepts."""
         groups = _build_solution_groups(
             ["linked_list_reversal"],
             {"linked_list_reversal": 0.8},
         )
         assert len(groups) >= 1
-        # linked_list_reversal is unmapped → no required concepts
-        assert len(groups[0].get("required", [])) == 0
+        # linked_list_reversal now maps to linked_list_traversal
+        assert "linked_list_traversal" in groups[0].get("required", [])
 
     def test_threshold_boundary_values(self):
         """Threshold boundary values are accepted."""

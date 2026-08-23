@@ -215,8 +215,14 @@ def _load_ground_truth(connection, problem_id):
                 # Support both legacy format (patterns/evidence/confidence)
                 # and new V1 format (required/optional/excluded/threshold/authority_tier)
                 required = g.get("required", g.get("patterns", []))
-                if not required:
-                    continue
+                # Preserve original legacy patterns for the production matcher.
+                # The production MatchingEngine does flat pattern-ID matching against
+                # AST detector output (legacy IDs). The "required" field contains
+                # V1 concept IDs which the production matcher cannot match.
+                legacy_patterns = g.get("patterns")
+                if legacy_patterns is None:
+                    legacy_patterns = required
+
                 groups.append({
                     "id": g.get("id", f"group_{len(groups)}"),
                     "version": g.get("version", 1),
@@ -227,7 +233,9 @@ def _load_ground_truth(connection, problem_id):
                     "authority_tier": g.get("authority_tier", g.get("evidence", validation_status or "unobserved")),
                     "provenance": g.get("provenance", []),
                     # Legacy fields for backward compatibility
-                    "patterns": required,
+                    # "patterns" preserves the original LLM pattern IDs so the
+                    # production MatchingEngine can match against AST output.
+                    "patterns": legacy_patterns,
                     "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                     "confidence": g.get("confidence", {}),
                 })
