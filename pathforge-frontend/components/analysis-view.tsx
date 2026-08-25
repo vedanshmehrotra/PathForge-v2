@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { useGapData } from '@/hooks/useApi'
+import { ExperimentalPanel } from '@/components/experimental-panel'
 
 const SEVERITY = {
   high: { variant: 'danger' as const, label: 'HIGH' },
@@ -396,6 +397,8 @@ export function AnalysisView() {
           </PanelBody>
         </Panel>
       </div>
+
+      <ExperimentalPanel shadowAnalysis={result?.shadow_analysis} />
     </div>
   )
 }

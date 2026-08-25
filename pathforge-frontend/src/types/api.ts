@@ -33,6 +33,39 @@ export interface SubmissionGap {
   gap_identified: boolean
 }
 
+export interface ShadowMatchOutcome {
+  outcome: 'CONFIRMED' | 'UNRESOLVED' | 'CONTRADICTED'
+  satisfied_group_ids: string[]
+  authority_tier: string
+  primary_strategy: string | null
+  reasoning: string[]
+  technique_count: number
+  strategy_count: number
+  fact_count: number
+}
+
+export interface ShadowAnalysisResult {
+  structural_facts: Record<string, unknown>[]
+  technique_evidence: Array<{
+    technique_id: string
+    technique_version: string
+    supporting_fact_ids: string[]
+    presence_confidence: number
+    centrality: number
+  }>
+  strategy_evidence: Array<{
+    strategy_id: string
+    strategy_version: string
+    supporting_technique_ids: string[]
+    supporting_fact_ids: string[]
+    confidence: number
+    problem_context_signals: Record<string, unknown>
+  }>
+  match_outcome?: ShadowMatchOutcome | null
+  extractor_version: string
+  elapsed_ms: number
+}
+
 export interface AnalyzeResponse {
   ast: Record<string, unknown>
   match_result: Record<string, unknown>
@@ -45,6 +78,7 @@ export interface AnalyzeResponse {
     elo_updates_count: number
     recommendation_id?: number | null
   }
+  shadow_analysis?: ShadowAnalysisResult | null
 }
 
 export interface PrepareRequest {
