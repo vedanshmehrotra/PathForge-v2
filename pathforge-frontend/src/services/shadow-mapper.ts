@@ -27,15 +27,15 @@ const STRATEGY_NAMES: Record<string, string> = {
 }
 
 const TECHNIQUE_NAMES: Record<string, string> = {
-  sequential_accumulation: 'Sequential Accumulation',
-  bidirectional_index_scan: 'Bidirectional Index Scan',
-  recursive_branching: 'Recursive Branching',
-  carry_propagation: 'Carry Propagation',
-  loop_state_tracking: 'Loop State Tracking',
-  iterative_table_filling: 'Iterative Table Filling',
-  linked_list_traversal: 'Linked List Traversal',
-  fixed_window_maintenance: 'Fixed Window Maintenance',
-  monotonic_stack_maintenance: 'Monotonic Stack',
+  sequential_accumulation: 'Running total',
+  bidirectional_index_scan: 'Two-way scan',
+  recursive_branching: 'Recursive branching',
+  carry_propagation: 'Carry propagation',
+  loop_state_tracking: 'State tracking in loops',
+  iterative_table_filling: 'Table building',
+  linked_list_traversal: 'Linked list walk',
+  fixed_window_maintenance: 'Fixed window',
+  monotonic_stack_maintenance: 'Monotonic stack',
 }
 
 // ============================================================
@@ -77,31 +77,28 @@ function generateExplanation(
   outcome: string,
   strategies: string[],
   techniques: string[],
-  reasoning: string[],
+  _reasoning: string[],
 ): string {
   if (outcome === 'CONFIRMED' && strategies.length > 0) {
     const name = STRATEGY_NAMES[strategies[0]] ?? strategies[0]
-    const techNames = techniques
-      .map((t) => TECHNIQUE_NAMES[t] ?? t)
-      .slice(0, 2)
-    if (techNames.length > 0) {
-      return `The code exhibits ${techNames.join(' and ')} patterns, consistent with a ${name} approach.`
-    }
-    return `The code patterns are consistent with a ${name} approach.`
+    return `The solution follows a ${name} approach for this problem.`
+  }
+
+  if (outcome === 'CONFIRMED' && techniques.length > 0) {
+    const techName = TECHNIQUE_NAMES[techniques[0]] ?? techniques[0]
+    return `The solution uses ${techName.toLowerCase()}, which matches the expected approach.`
+  }
+
+  if (outcome === 'CONFIRMED') {
+    return 'The solution matches the expected approach for this problem.'
   }
 
   if (outcome === 'CONTRADICTED') {
-    return 'The code appears to use a different approach from the one expected for this problem.'
+    return 'The code appears to use a different approach from what is expected for this problem.'
   }
 
   // UNRESOLVED
-  if (techniques.length === 0) {
-    return 'The code contains useful signals, but there isn\'t enough evidence to identify the approach confidently.'
-  }
-  const techNames = techniques
-    .map((t) => TECHNIQUE_NAMES[t] ?? t)
-    .slice(0, 2)
-  return `The code shows ${techNames.join(' and ')} signals, but there isn\'t enough evidence to confirm a specific approach.`
+  return 'The code contains some relevant patterns, but there isn\'t enough information to confirm the approach with confidence.'
 }
 
 // ============================================================
@@ -191,35 +188,41 @@ export function mapShadowToDisplay(
     .map((s) => STRATEGY_NAMES[s.strategy_id] ?? s.strategy_id)
     .filter(Boolean)
 
-  // For CONFIRMED: show the primary strategy
-  // For UNRESOLVED/CONTRADICTED: show up to 2 candidate names
+  // Map technique IDs to user-friendly names for fallback display
+  const techniqueNames = techniques
+    .map((t) => TECHNIQUE_NAMES[t.technique_id] ?? t.technique_id)
+    .filter(Boolean)
+
+  // Build the approach list depending on outcome.
+  // CONFIRMED: show the primary strategy (or technique fallback)
+  // UNRESOLVED: show up to 2 candidate names (or 'unclear' if too many)
+  // CONTRADICTED: always 'unclear'
   let approaches: string[]
   if (outcome.outcome === 'CONFIRMED') {
-    approaches = strategyNames.length > 0 ? [strategyNames[0]] : []
-  } else if (outcome.outcome === 'UNRESOLVED' && strategyNames.length <= 2) {
+    approaches = strategyNames.length > 0 ? [strategyNames[0]] : techniqueNames.length > 0 ? [techniqueNames[0]] : []
+  } else if (outcome.outcome === 'UNRESOLVED' && strategyNames.length <= 2 && strategyNames.length > 0) {
     approaches = strategyNames
   } else if (outcome.outcome === 'UNRESOLVED' && strategyNames.length > 2) {
-    // Too many candidates → show "unclear"
-    approaches = []
+    approaches = [] // too many candidates
   } else {
     approaches = []
   }
 
-  // Confidence from the best strategy or best technique
+  // Confidence from the best strategy or best technique (only meaningful for CONFIRMED)
   const bestConfidence =
-    sortedStrategies.length > 0
-      ? sortedStrategies[0].confidence
-      : techniques.length > 0
-        ? Math.max(...techniques.map((t) => t.presence_confidence))
-        : 0
+    outcome.outcome === 'CONFIRMED'
+      ? sortedStrategies.length > 0
+        ? sortedStrategies[0].confidence
+        : techniques.length > 0
+          ? Math.max(...techniques.map((t) => t.presence_confidence))
+          : 0
+      : 0
 
   const status = outcomeStatus(outcome.outcome, bestConfidence)
-  const techniqueIds = techniques.map((t) => t.technique_id)
-
   const explanation = generateExplanation(
     outcome.outcome,
     strategyIds(strategies),
-    techniqueIds,
+    techniqueNames,
     outcome.reasoning ?? [],
   )
 
@@ -228,8 +231,10 @@ export function mapShadowToDisplay(
     status,
     statusLabel: STATUS_LABELS[status],
     approaches:
-      approaches.length > 0 ? approaches : ['Approach unclear'],
-    confidence: outcome.outcome === 'UNRESOLVED' ? '—' : confidenceLevel(bestConfidence),
+      approaches.length > 0 ? approaches
+        : outcome.outcome === 'CONFIRMED' ? ['Approach detected']
+        : ['Approach unclear'],
+    confidence: outcome.outcome === 'CONFIRMED' ? confidenceLevel(bestConfidence) : '—',
     explanation,
     developerDetails: {
       outcome: outcome.outcome,

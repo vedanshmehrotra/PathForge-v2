@@ -50,6 +50,14 @@ export function AnalysisView() {
     }
   }
 
+  // Clear stale prepare result when user edits the input after a prepare
+  const handleProblemInputChange = (val: string) => {
+    if (prep.result && val.trim() !== problemInput.trim()) {
+      prep.clear()
+    }
+    setProblemInput(val)
+  }
+
   const handlePrepare = () => {
     const val = problemInput.trim()
     if (val) {
@@ -96,7 +104,7 @@ export function AnalysisView() {
       <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-secondary/20 px-3 py-2">
         <input
           value={problemInput}
-          onChange={(e) => setProblemInput(e.target.value)}
+          onChange={(e) => handleProblemInputChange(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handlePrepare() }}
           placeholder="Enter a LeetCode Problem ID (e.g. 1, 3, 121) and click Prepare."
           spellCheck={false}

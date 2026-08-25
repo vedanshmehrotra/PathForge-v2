@@ -146,11 +146,9 @@ export function ExperimentalPanel({ shadowAnalysis }: ExperimentalPanelProps) {
         {/* Approach */}
         <div>
           <p className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">
-            {data.status === 'likely_match'
-              ? 'Likely approach'
-              : data.approaches[0] === 'Approach unclear'
-                ? 'Possible approaches'
-                : 'Detected signals'}
+            {data.approaches[0] === 'Approach unclear'
+              ? 'Approach'
+              : 'Likely approach'}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {data.approaches.map((name) => (
