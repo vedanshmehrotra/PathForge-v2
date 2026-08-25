@@ -17,7 +17,11 @@ from pathforge.services.ground_truth_builder import GroundTruthError
 from pathforge.services.persistence import run_persistence
 from pathforge.llm.graphql_client import GraphQLUnavailableError
 from pathforge.db.db import get_connection
-from pathforge.api.services.shadow_observability import record_shadow_result, get_shadow_log_dict
+from pathforge.api.services.shadow_observability import (
+    record_shadow_result, get_shadow_log_dict,
+    record_shadow_pipeline_result, record_shadow_parse_failure,
+    record_shadow_extraction_failure, get_pipeline_log_dict,
+)
 import config
 
 router = APIRouter()
@@ -235,11 +239,57 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 persist_shadow_analysis, compute_code_hash,
             )
             shadow_raw = run_shadow_analysis(req.code, solution_groups=groups)
-            if shadow_raw:
+            if shadow_raw is None:
+                # shadow_runner swallows all exceptions (SyntaxError, etc.)
+                record_shadow_parse_failure()
+            else:
                 shadow_result = ShadowAnalysisResult(**shadow_raw)
                 # Persist shadow results to the submission row
                 code_hash = compute_code_hash(req.code)
                 persist_shadow_analysis(conn, submission_id, code_hash, shadow_raw)
+
+                # --- Record pipeline observability (observational only) ---
+                _facts = shadow_raw.get("structural_facts", [])
+                _outcome_data = shadow_raw.get("match_outcome", {})
+                _outcome_str = _outcome_data.get("outcome", "UNRESOLVED")
+                _strategies = shadow_raw.get("strategy_evidence", [])
+                _primary_strat = _outcome_data.get("primary_strategy", None)
+                _has_groups = groups is not None and len(groups) > 0
+                _has_techniques = len(shadow_raw.get("technique_evidence", [])) > 0
+                _has_strategies = len(_strategies) > 0
+
+                # Track extraction failure (facts list is empty)
+                if not _facts:
+                    record_shadow_extraction_failure()
+
+                # Determine unresolved category for UNRESOLVED outcomes
+                _unresolved_cat = None
+                if _outcome_str == "UNRESOLVED":
+                    if not _has_groups:
+                        _unresolved_cat = "no_groups"
+                    elif not _has_techniques:
+                        _unresolved_cat = "empty_extraction"
+                    elif not _has_strategies:
+                        _unresolved_cat = "no_technique_match"
+                    else:
+                        _unresolved_cat = "below_threshold"
+
+                record_shadow_pipeline_result(
+                    outcome=_outcome_str,
+                    elapsed_ms=shadow_raw.get("elapsed_ms", 0.0),
+                    strategy_id=_primary_strat,
+                    satisfaction_score=_outcome_data.get("satisfaction_score", 0.0),
+                    satisfied_group_ids=_outcome_data.get("satisfied_group_ids", []),
+                    authority_tier=_outcome_data.get("authority_tier", ""),
+                    techniques_detected=[t["technique_id"] for t in shadow_raw.get("technique_evidence", [])],
+                    strategies_detected=[s["strategy_id"] for s in _strategies],
+                    extractor_version=shadow_raw.get("extractor_version", ""),
+                    code_hash=code_hash,
+                    has_groups=_has_groups,
+                    has_techniques=_has_techniques,
+                    has_strategies=_has_strategies,
+                    unresolved_category=_unresolved_cat,
+                )
         except Exception:
             # Shadow analysis must never affect production
             pass
