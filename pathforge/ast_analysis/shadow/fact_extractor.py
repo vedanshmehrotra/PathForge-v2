@@ -226,6 +226,7 @@ class _FactExtractor(ast.NodeVisitor):
         self._detect_cache_lookup(node)
         self._detect_neighbor_traversal(node)
         self._detect_window_size_constant(node)
+        self._detect_subscript_index_access(node)
         self.generic_visit(node)
 
     def visit_BinOp(self, node: ast.BinOp):
@@ -321,6 +322,11 @@ class _FactExtractor(ast.NodeVisitor):
 
         Collects all Name nodes across all comparisons and checks whether
         any compared variable is modified in the loop body.
+
+        When no compared variable is modified but other variables are modified
+        in the body, emits with cross_variable=true. This captures sliding-window
+        shrink loops where the compared state expression differs from the pointer
+        being advanced (e.g., ``while freq[x] > k: left += 1``).
         """
         comp_names = set()
         for cmp in compares:
@@ -332,16 +338,30 @@ class _FactExtractor(ast.NodeVisitor):
         modified = self._collect_body_modified_names(node.body)
         modified.update(self._collect_body_augmented_names(node.body))
         modified_names = comp_names & modified
-        if not modified_names:
-            return
-        self._facts.append(StructuralFact(
-            fact_type="while_loop_comparison",
-            ast_ref=_ref(node),
-            attributes={
-                "compared_variables": sorted(comp_names),
-                "modified_variables": sorted(modified_names),
-            },
-        ))
+        if modified_names:
+            # Same-variable path: compared var is also modified (two-pointers, binary search)
+            self._facts.append(StructuralFact(
+                fact_type="while_loop_comparison",
+                ast_ref=_ref(node),
+                attributes={
+                    "compared_variables": sorted(comp_names),
+                    "modified_variables": sorted(modified_names),
+                },
+            ))
+        elif modified:
+            # Cross-variable path: body modifies variables not in the comparison.
+            # Captures sliding-window shrink loops where the condition checks
+            # a computed state (dict lookup, accumulator) but the body advances
+            # a different pointer variable.
+            self._facts.append(StructuralFact(
+                fact_type="while_loop_comparison",
+                ast_ref=_ref(node),
+                attributes={
+                    "compared_variables": sorted(comp_names),
+                    "modified_variables": sorted(modified),
+                    "cross_variable": True,
+                },
+            ))
 
     def _collect_compare_from_boolop(self, node: ast.BoolOp) -> list:
         """Recursively collect all Compare nodes from a BoolOp tree.
@@ -437,7 +457,12 @@ class _FactExtractor(ast.NodeVisitor):
                     return
 
     def _detect_loop_body_conditional_updates(self, node: ast.While):
-        """Conditional index/pointer updates inside a loop body."""
+        """Conditional index/pointer updates inside a loop body.
+
+        Detects both:
+        - if-statement branches with pointer updates (existing)
+        - while-loop shrink bodies with pointer updates (sliding-window)
+        """
         for stmt in node.body:
             if isinstance(stmt, ast.If):
                 cond_vars = self._collect_name_ids(stmt.test)
@@ -454,6 +479,21 @@ class _FactExtractor(ast.NodeVisitor):
                             "condition_variables": sorted(cond_vars),
                             "updated_variables": sorted(all_updated),
                             "branch": "if",
+                        },
+                    ))
+            elif isinstance(stmt, ast.While):
+                # Nested while-loop shrink phase: variables modified in the
+                # body are conditionally updated by the while condition.
+                cond_vars = self._collect_name_ids(stmt.test)
+                updated_in_body = self._collect_augmented_names_in(stmt.body)
+                if updated_in_body:
+                    self._facts.append(StructuralFact(
+                        fact_type="conditional_index_update",
+                        ast_ref=_ref(stmt),
+                        attributes={
+                            "condition_variables": sorted(cond_vars),
+                            "updated_variables": sorted(updated_in_body),
+                            "branch": "while",
                         },
                     ))
 
@@ -579,7 +619,12 @@ class _FactExtractor(ast.NodeVisitor):
         ))
 
     def _detect_conditional_index_update_in_for(self, node: ast.For):
-        """Conditional index/pointer updates inside a for-loop body."""
+        """Conditional index/pointer updates inside a for-loop body.
+
+        Detects both:
+        - if-statement branches with pointer updates (existing)
+        - while-loop shrink bodies with pointer updates (sliding-window)
+        """
         for stmt in node.body:
             if isinstance(stmt, ast.If):
                 cond_vars = self._collect_name_ids(stmt.test)
@@ -596,11 +641,30 @@ class _FactExtractor(ast.NodeVisitor):
                             "branch": "if",
                         },
                     ))
+            elif isinstance(stmt, ast.While):
+                # While-loop shrink phase: the body runs only while the
+                # condition holds, so variables modified in the body are
+                # conditionally updated.  This captures sliding-window
+                # shrink loops like ``while freq[x] > k: left += 1``.
+                cond_vars = self._collect_name_ids(stmt.test)
+                updated_in_body = self._collect_augmented_names_in(stmt.body)
+                if updated_in_body:
+                    self._facts.append(StructuralFact(
+                        fact_type="conditional_index_update",
+                        ast_ref=_ref(stmt),
+                        attributes={
+                            "condition_variables": sorted(cond_vars),
+                            "updated_variables": sorted(updated_in_body),
+                            "branch": "while",
+                        },
+                    ))
 
     def _detect_variable_use_in_loop_body_for(self, node: ast.For):
         """Detect conditionally-updated variables used in later for-loop expressions.
 
-        Same logic as _detect_variable_use_in_loop_body but for for-loops.
+        Extends the original logic to also detect variables modified inside
+        nested while-loop bodies (sliding-window shrink phases) that are used
+        in the while condition itself or in subsequent statements.
         """
         cond_vars = set()
         for stmt in node.body:
@@ -608,12 +672,23 @@ class _FactExtractor(ast.NodeVisitor):
                 updated = self._collect_augmented_names_in(stmt.body)
                 updated.update(self._collect_augmented_names_in(stmt.orelse) if stmt.orelse else set())
                 cond_vars.update(updated)
+            elif isinstance(stmt, ast.While):
+                # Variables modified inside a while-shrink body are conditionally
+                # updated and may be used in the while condition itself
+                # (e.g., ``while total >= target: total -= nums[left]``).
+                updated = self._collect_augmented_names_in(stmt.body)
+                cond_vars.update(updated)
         if not cond_vars:
             return
         for stmt in node.body:
             if isinstance(stmt, ast.If):
                 continue
             used_in_stmt = set()
+            if isinstance(stmt, ast.While):
+                # For while statements, also check the condition for variable use
+                for child in ast.walk(stmt.test):
+                    if isinstance(child, ast.Name):
+                        used_in_stmt.add(child.id)
             for child in ast.walk(stmt):
                 if isinstance(child, ast.Name):
                     used_in_stmt.add(child.id)
@@ -988,23 +1063,34 @@ class _FactExtractor(ast.NodeVisitor):
         This captures the sliding-window pattern: a variable (e.g., left) is
         conditionally updated, then used in a later expression like
         max(max_len, right - left + 1). This is a def-use observation.
+
+        Extended to also detect variables modified inside nested while-loop
+        bodies (shrink phases) that are used in the while condition itself.
         """
-        # Get conditionally updated variables
+        # Get conditionally updated variables from if-statements
         cond_vars = set()
         for stmt in node.body:
             if isinstance(stmt, ast.If):
                 updated = self._collect_augmented_names_in(stmt.body)
                 updated.update(self._collect_augmented_names_in(stmt.orelse) if stmt.orelse else set())
                 cond_vars.update(updated)
+            elif isinstance(stmt, ast.While):
+                # Variables modified inside a nested while-loop body are
+                # conditionally updated and may be used in the while condition.
+                updated = self._collect_augmented_names_in(stmt.body)
+                cond_vars.update(updated)
         if not cond_vars:
             return
         # Check if these variables appear in statements AFTER the conditional
         for stmt in node.body:
             if isinstance(stmt, ast.If):
-                # Check statements after this if-block
                 continue
-            # This is a statement outside the if-block
             used_in_stmt = set()
+            if isinstance(stmt, ast.While):
+                # For while statements, also check the condition for variable use
+                for child in ast.walk(stmt.test):
+                    if isinstance(child, ast.Name):
+                        used_in_stmt.add(child.id)
             for child in ast.walk(stmt):
                 if isinstance(child, ast.Name):
                     used_in_stmt.add(child.id)
@@ -1279,6 +1365,41 @@ class _FactExtractor(ast.NodeVisitor):
                             "offset_name": offset_name,
                         },
                     ))
+
+    # ----------------------------------------------------------------
+    # Subscript index tracking
+    # ----------------------------------------------------------------
+
+    def _detect_subscript_index_access(self, node: ast.Subscript):
+        """Track which variables are used as subscript indices.
+
+        Emits subscript_index_access facts for each Name variable found
+        in the subscript position (the slice). This allows downstream
+        detectors to distinguish pointer variables (used as array indices)
+        from accumulators (used in arithmetic only).
+
+        Detects:
+        - arr[i]       → index variable: i
+        - arr[i-1]     → index variables: i
+        - arr[left]    → index variable: left
+        - s[right]     → index variable: right
+        """
+        slice_node = node.slice
+        index_vars = set()
+        if isinstance(slice_node, ast.Name):
+            index_vars.add(slice_node.id)
+        elif isinstance(slice_node, ast.BinOp):
+            # i-1, i+1, i-j, etc.
+            if isinstance(slice_node.left, ast.Name):
+                index_vars.add(slice_node.left.id)
+            if isinstance(slice_node.right, ast.Name):
+                index_vars.add(slice_node.right.id)
+        if index_vars:
+            self._facts.append(StructuralFact(
+                fact_type="subscript_index_access",
+                ast_ref=_ref(node),
+                attributes={"index_variables": sorted(index_vars)},
+            ))
 
     # ----------------------------------------------------------------
     # Phase 5A: Monotonic stack

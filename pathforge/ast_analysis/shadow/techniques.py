@@ -114,6 +114,20 @@ def _detect_sequential_accumulation(facts: list[StructuralFact]) -> Optional[Tec
     )
 
 
+def _collect_subscript_index_vars(facts: list[StructuralFact]) -> set:
+    """Collect variable names that appear as subscript indices.
+
+    Uses subscript_index_access facts to identify variables used for
+    array/string indexing. This structural signal distinguishes
+    pointer variables (used as indices) from accumulators (used in arithmetic).
+    """
+    index_vars = set()
+    for f in facts:
+        if f.fact_type == "subscript_index_access":
+            index_vars.update(f.attributes.get("index_variables", []))
+    return index_vars
+
+
 def _detect_bidirectional_index_scan(facts: list[StructuralFact]) -> Optional[TechniqueEvidence]:
     """T3: Bidirectional Index Scan
 
@@ -122,6 +136,12 @@ def _detect_bidirectional_index_scan(facts: list[StructuralFact]) -> Optional[Te
     2. opposite_direction_updates (one variable incremented, one decremented)
 
     Both facts must reference the same loop.
+
+    Structural guard: both the incremented and decremented variables must
+    appear as subscript indices (indexed_write or index_lookback). This
+    distinguishes genuine two-pointer scans (both variables index arrays)
+    from accumulator-based sliding windows (only one variable indexes,
+    the other accumulates state).
     """
     types = _fact_types(facts)
 
@@ -145,6 +165,14 @@ def _detect_bidirectional_index_scan(facts: list[StructuralFact]) -> Optional[Te
 
     # At least one compared variable should be in the opposite-direction set
     if not (compared & all_direction_vars):
+        return None
+
+    # Structural guard: both variables must be used as subscript indices.
+    # In a genuine two-pointer scan, both left and right index the same array
+    # (e.g., arr[left], arr[right]). In an accumulator-based sliding window,
+    # only the pointer indexes the array; the accumulator is used in arithmetic.
+    index_vars = _collect_subscript_index_vars(facts)
+    if not (bool(inc & index_vars) and bool(dec & index_vars)):
         return None
 
     supporting = [
