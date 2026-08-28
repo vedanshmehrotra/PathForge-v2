@@ -267,6 +267,18 @@ def _evaluate_sliding_window(
     if has_midpoint:
         return None
 
+    # Absence constraint: must NOT have all three monotonic-stack facts.
+    # Monotonic-stack pop loops produce the same structural signature as
+    # sliding-window shrink loops (conditional update + def-use chain),
+    # but stack_operation + monotonic_comparison + conditional_pop are
+    # monotonic-stack-specific facts that never co-occur with genuine
+    # sliding-window implementations.
+    has_stack_op = "stack_operation" in fact_types
+    has_mono_comp = "monotonic_comparison" in fact_types
+    has_cond_pop = "conditional_pop" in fact_types
+    if has_stack_op and has_mono_comp and has_cond_pop:
+        return None
+
     # Determine which path fired
     if fixed_window:
         supporting_techniques = ["fixed_window_maintenance"]
