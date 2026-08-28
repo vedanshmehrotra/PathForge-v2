@@ -75,12 +75,24 @@ class PrefixSumDetector(BaseDetector):
                 if isinstance(stmt, ast.Assign):
                     for target in stmt.targets:
                         if isinstance(target, ast.Subscript):
-                            if self._is_prefix_name(target.value) and (isinstance(target.value, ast.Name) and target.value.id in prefix_names or has_append):
+                            target_var = target.value.id if isinstance(target.value, ast.Name) else None
+                            if target_var and (target_var in prefix_names or has_append):
                                 value = stmt.value
                                 if isinstance(value, ast.BinOp) and isinstance(value.op, (ast.Add, ast.Mult, ast.Sub)):
                                     left = value.left
                                     if isinstance(left, ast.Subscript):
-                                        has_prefix_formula = True
+                                        # Check that the BinOp references a DIFFERENT subscripted variable
+                                        # (prefix[i] = prefix[i-1] + arr[i-1] is prefix sum;
+                                        #  dp[i] = dp[i-1] + dp[i-2] is DP, not prefix sum)
+                                        left_var = left.value.id if isinstance(left.value, ast.Name) else None
+                                        right_has_different_subscript = False
+                                        for n in ast.walk(value.right):
+                                            if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Name):
+                                                if n.value.id != target_var:
+                                                    right_has_different_subscript = True
+                                                    break
+                                        if right_has_different_subscript:
+                                            has_prefix_formula = True
                 call_node = stmt
                 if isinstance(stmt, ast.Expr):
                     call_node = stmt.value
@@ -92,10 +104,16 @@ class PrefixSumDetector(BaseDetector):
                                     if isinstance(sub, ast.Subscript) and self._is_prefix_name(sub.value):
                                         has_prefix_formula = True
 
+            # Only count as accumulator if the augmented assignment is on a
+            # prefix-like variable (not just any += in the loop body)
             for stmt in node.body:
                 if isinstance(stmt, ast.AugAssign):
                     if isinstance(stmt.op, (ast.Add, ast.Mult, ast.Sub)):
-                        has_accumulator = True
+                        if isinstance(stmt.target, ast.Name) and stmt.target.id in prefix_names:
+                            has_accumulator = True
+                        elif isinstance(stmt.target, ast.Subscript):
+                            if self._is_prefix_name(stmt.target.value):
+                                has_accumulator = True
 
             if has_prefix_formula or has_accumulator:
                 evidence.append(

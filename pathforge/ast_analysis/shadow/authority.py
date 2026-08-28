@@ -12,7 +12,7 @@ It only provides the infrastructure for recording them.
 Automatic upgrades are deferred to Phase 6+.
 """
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 
@@ -62,7 +62,7 @@ class AuthorityUpgradeRecord:
         self.previous_tier = previous_tier
         self.new_tier = new_tier
         self.evidence_sources = evidence_sources or []
-        self.timestamp = timestamp or datetime.utcnow().isoformat()
+        self.timestamp = timestamp or datetime.now(timezone.utc).isoformat()
         self.actor = actor
         self.reason = reason
 

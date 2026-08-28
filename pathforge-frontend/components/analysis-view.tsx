@@ -297,6 +297,7 @@ export function AnalysisView() {
                     {matchResult.match_result === 'FULL_MATCH' && '✅ All expected patterns detected'}
                     {matchResult.match_result === 'PARTIAL_MATCH' && '⚠️ Some expected patterns missing'}
                     {matchResult.match_result === 'NO_MATCH' && '❌ No expected patterns detected'}
+                    {matchResult.match_result === 'NO_GROUND_TRUTH' && 'ℹ️ No verified ground truth available'}
                   </p>
                   {Array.isArray(matchResult.reasoning_signals) && (
                     <ul className="mt-1.5 list-inside list-disc space-y-0.5">

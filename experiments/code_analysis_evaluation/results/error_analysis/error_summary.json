@@ -1,0 +1,14 @@
+{
+  "total_errors": 24,
+  "legacy_errors": {
+    "UNKNOWN": 10,
+    "PARSER_FAILURE": 1
+  },
+  "shadow_errors": {
+    "TECHNIQUE_DETECTION_FAILURE": 5,
+    "UNKNOWN": 7,
+    "PARSER_FAILURE": 1
+  },
+  "legacy_total": 11,
+  "shadow_total": 13
+}

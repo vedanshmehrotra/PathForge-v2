@@ -1,4 +1,5 @@
 """Unit tests for the Gap Signal Engine."""
+from datetime import datetime, timezone, timedelta
 
 from pathforge.gap_signal_engine import GapSignalEngine, _recency_weight, _confidence_penalty, _classify_gap_level
 
@@ -218,7 +219,13 @@ def test_recency_weight_empty():
 
 
 def test_recency_weight_recent():
-    timestamps = ["2026-07-04T12:00:00", "2026-07-04T13:00:00", "2026-07-04T14:00:00"]
+    """Recent timestamps should produce a positive recency weight."""
+    now = datetime.now(timezone.utc)
+    timestamps = [
+        (now - timedelta(hours=3)).isoformat(),
+        (now - timedelta(hours=2)).isoformat(),
+        (now - timedelta(hours=1)).isoformat(),
+    ]
     w = _recency_weight(timestamps)
     assert w > 0.0
     assert w <= 1.0

@@ -34,9 +34,23 @@ class TwoPointersSameDetector(BaseDetector):
             while fast < len(arr):
                 slow += 1
                 fast += 2
+
+        Excludes loops with midpoint calculations (binary search).
         """
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.While):
+                continue
+
+            # Exclude binary search: check for midpoint calculation
+            has_midpoint = False
+            for child in ast.walk(node):
+                if isinstance(child, ast.BinOp) and isinstance(child.op, (ast.FloorDiv, ast.Div, ast.RShift)):
+                    if isinstance(child.right, ast.Constant) and child.right.value in (2, 1):
+                        left = child.left
+                        if isinstance(left, ast.BinOp) and isinstance(left.op, ast.Add):
+                            has_midpoint = True
+                            break
+            if has_midpoint:
                 continue
 
             increments = self._collect_increments_in_body(node.body)
@@ -79,6 +93,9 @@ class TwoPointersSameDetector(BaseDetector):
             while fast and fast.next:
                 slow = slow.next
                 fast = fast.next.next
+
+        Requires linked-list traversal (.next access) to avoid false positives
+        on binary search and other two-variable while loops.
         """
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.While):
@@ -105,7 +122,9 @@ class TwoPointersSameDetector(BaseDetector):
                         has_next_ref = True
                         break
 
-                if has_next_ref or not evidence:
+                # Only fire if linked-list traversal is present (.next access)
+                # This prevents false positives on binary search and similar patterns
+                if has_next_ref:
                     evidence.append(
                         EvidenceItem(
                             type="offset_pointer_assignment",

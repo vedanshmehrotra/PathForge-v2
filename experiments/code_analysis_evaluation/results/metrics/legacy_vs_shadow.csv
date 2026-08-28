@@ -1,0 +1,7 @@
+concept,legacy_precision,legacy_recall,legacy_f1,legacy_support,shadow_precision,shadow_recall,shadow_f1,shadow_support,precision_diff,recall_diff,f1_diff
+binary_search_standard,1.0,1.0,1.0,1,0.0,0.0,0.0,1,-1.0,-1.0,-1.0
+hash_map_lookup,1.0,1.0,1.0,2,0.0,0.0,0.0,2,-1.0,-1.0,-1.0
+sliding_window_fixed,0.0,0.0,0.0,2,1.0,1.0,1.0,2,1.0,1.0,1.0
+sliding_window_variable,1.0,0.5,0.6667,2,0.0,0.0,0.0,2,-1.0,-0.5,-0.6667
+two_pointers_opposite,1.0,1.0,1.0,3,1.0,1.0,1.0,3,0.0,0.0,0.0
+two_pointers_same,0.0,0.0,0.0,1,0.0,0.0,0.0,1,0.0,0.0,0.0

@@ -1,0 +1,2585 @@
+[
+  {
+    "submission_id": "sub_0001",
+    "problem_id": 0,
+    "problem_title": "Template: hash_map_lookup",
+    "target_concepts": [
+      "hash_map_lookup"
+    ],
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 12.2,
+      "detected_patterns": [
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: enumerate(nums)",
+              "location": "3:4",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: seen[num]",
+              "location": "7:8",
+              "weight": 0.35
+            },
+            {
+              "type": "element_update",
+              "description": "Sequential element update: seen[num] = i",
+              "location": "7:8",
+              "weight": 0.3
+            }
+          ]
+        },
+        {
+          "pattern_id": "hash_map_lookup",
+          "confidence": 0.8,
+          "evidence": [
+            {
+              "type": "dict_creation",
+              "description": "Empty dictionary creation: seen = {}",
+              "location": "2:4",
+              "weight": 0.25
+            },
+            {
+              "type": "membership_check",
+              "description": "Membership check: complement in seen",
+              "location": "5:11",
+              "weight": 0.35
+            },
+            {
+              "type": "loop_structure",
+              "description": "Loop providing lookup context",
+              "location": "3:4",
+              "weight": 0.2
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: enumerate(nums)",
+                "location": "3:4",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: seen[num]",
+                "location": "7:8",
+                "weight": 0.35
+              },
+              {
+                "type": "element_update",
+                "description": "Sequential element update: seen[num] = i",
+                "location": "7:8",
+                "weight": 0.3
+              }
+            ]
+          },
+          {
+            "pattern_id": "hash_map_lookup",
+            "confidence": 0.8,
+            "evidence": [
+              {
+                "type": "dict_creation",
+                "description": "Empty dictionary creation: seen = {}",
+                "location": "2:4",
+                "weight": 0.25
+              },
+              {
+                "type": "membership_check",
+                "description": "Membership check: complement in seen",
+                "location": "5:11",
+                "weight": 0.35
+              },
+              {
+                "type": "loop_structure",
+                "description": "Loop providing lookup context",
+                "location": "3:4",
+                "weight": 0.2
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.842030Z",
+        "patterns_checked": 36,
+        "patterns_detected": 2
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "3:4",
+          "attributes": {
+            "loop_variable": "i",
+            "is_range": false
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "early_termination",
+          "ast_ref": "6:12",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "cache_lookup",
+          "ast_ref": "6:20",
+          "attributes": {
+            "cache_variable": "seen"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "indexed_write",
+          "ast_ref": "7:8",
+          "attributes": {
+            "structure": "seen",
+            "index_type": "Name"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "parent_root_merge",
+          "ast_ref": "7:8",
+          "attributes": {
+            "structure": "seen",
+            "value_type": "name"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "cache_lookup",
+          "ast_ref": "7:8",
+          "attributes": {
+            "cache_variable": "seen"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_006",
+          "fact_type": "early_termination",
+          "ast_ref": "8:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [],
+      "strategy_evidence": [],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 0,
+        "strategy_count": 0,
+        "fact_count": 7
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 0.7
+    }
+  },
+  {
+    "submission_id": "sub_0002",
+    "problem_id": 0,
+    "problem_title": "Template: hash_map_lookup",
+    "target_concepts": [
+      "hash_map_lookup"
+    ],
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 16.36,
+      "detected_patterns": [
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "for_loop_over_collection",
+              "description": "Iteration over collection 's'",
+              "location": "5:4",
+              "weight": 0.35
+            },
+            {
+              "type": "for_loop_over_collection",
+              "description": "Iteration over collection 't'",
+              "location": "7:4",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: count[c]",
+              "location": "6:8",
+              "weight": 0.35
+            },
+            {
+              "type": "element_update",
+              "description": "Sequential element update: count[c] = count.get(c, 0) + 1",
+              "location": "6:8",
+              "weight": 0.3
+            },
+            {
+              "type": "element_usage",
+              "description": "Loop variable 'c' used in body",
+              "location": "5:4",
+              "weight": 0.3
+            }
+          ]
+        },
+        {
+          "pattern_id": "hash_map_lookup",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "dict_creation",
+              "description": "Empty dictionary creation: count = {}",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "membership_check",
+              "description": "Membership check: c not in count",
+              "location": "8:11",
+              "weight": 0.35
+            },
+            {
+              "type": "loop_structure",
+              "description": "Loop providing lookup context",
+              "location": "5:4",
+              "weight": 0.2
+            },
+            {
+              "type": "loop_structure",
+              "description": "Loop providing lookup context",
+              "location": "7:4",
+              "weight": 0.2
+            }
+          ]
+        },
+        {
+          "pattern_id": "hash_map_frequency",
+          "confidence": 0.8,
+          "evidence": [
+            {
+              "type": "empty_dict_creation",
+              "description": "Empty dictionary for counting: count = {}",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "frequency_increment",
+              "description": "Frequency increment pattern: count[c] = count.get(c, 0) + 1",
+              "location": "6:8",
+              "weight": 0.35
+            },
+            {
+              "type": "counting_loop",
+              "description": "Loop over elements",
+              "location": "5:4",
+              "weight": 0.2
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "for_loop_over_collection",
+                "description": "Iteration over collection 's'",
+                "location": "5:4",
+                "weight": 0.35
+              },
+              {
+                "type": "for_loop_over_collection",
+                "description": "Iteration over collection 't'",
+                "location": "7:4",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: count[c]",
+                "location": "6:8",
+                "weight": 0.35
+              },
+              {
+                "type": "element_update",
+                "description": "Sequential element update: count[c] = count.get(c, 0) + 1",
+                "location": "6:8",
+                "weight": 0.3
+              },
+              {
+                "type": "element_usage",
+                "description": "Loop variable 'c' used in body",
+                "location": "5:4",
+                "weight": 0.3
+              }
+            ]
+          },
+          {
+            "pattern_id": "hash_map_lookup",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "dict_creation",
+                "description": "Empty dictionary creation: count = {}",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "membership_check",
+                "description": "Membership check: c not in count",
+                "location": "8:11",
+                "weight": 0.35
+              },
+              {
+                "type": "loop_structure",
+                "description": "Loop providing lookup context",
+                "location": "5:4",
+                "weight": 0.2
+              },
+              {
+                "type": "loop_structure",
+                "description": "Loop providing lookup context",
+                "location": "7:4",
+                "weight": 0.2
+              }
+            ]
+          },
+          {
+            "pattern_id": "hash_map_frequency",
+            "confidence": 0.8,
+            "evidence": [
+              {
+                "type": "empty_dict_creation",
+                "description": "Empty dictionary for counting: count = {}",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "frequency_increment",
+                "description": "Frequency increment pattern: count[c] = count.get(c, 0) + 1",
+                "location": "6:8",
+                "weight": 0.35
+              },
+              {
+                "type": "counting_loop",
+                "description": "Loop over elements",
+                "location": "5:4",
+                "weight": 0.2
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.859183Z",
+        "patterns_checked": 36,
+        "patterns_detected": 3
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "early_termination",
+          "ast_ref": "3:8",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "5:4",
+          "attributes": {
+            "loop_variable": "c",
+            "is_range": false
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "indexed_write",
+          "ast_ref": "6:8",
+          "attributes": {
+            "structure": "count",
+            "index_type": "Name"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "7:4",
+          "attributes": {
+            "loop_variable": "c",
+            "is_range": false
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "early_termination",
+          "ast_ref": "9:12",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "indexed_write",
+          "ast_ref": "10:8",
+          "attributes": {
+            "structure": "count",
+            "index_type": "Name"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_006",
+          "fact_type": "early_termination",
+          "ast_ref": "12:12",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_007",
+          "fact_type": "early_termination",
+          "ast_ref": "13:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [],
+      "strategy_evidence": [],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 0,
+        "strategy_count": 0,
+        "fact_count": 8
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 0.81
+    }
+  },
+  {
+    "submission_id": "sub_0003",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_fixed",
+    "target_concepts": [
+      "sliding_window_fixed"
+    ],
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 11.97,
+      "detected_patterns": [
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 0.7,
+          "evidence": [
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: range(k, len(nums))",
+              "location": "4:4",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: nums[:k]",
+              "location": "2:21",
+              "weight": 0.35
+            }
+          ]
+        },
+        {
+          "pattern_id": "greedy_local",
+          "confidence": 0.35,
+          "evidence": [
+            {
+              "type": "local_optimum_selection",
+              "description": "Local optimum selection via max/min or running best",
+              "location": "1:0",
+              "weight": 0.35
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 0.7,
+            "evidence": [
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: range(k, len(nums))",
+                "location": "4:4",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: nums[:k]",
+                "location": "2:21",
+                "weight": 0.35
+              }
+            ]
+          },
+          {
+            "pattern_id": "greedy_local",
+            "confidence": 0.35,
+            "evidence": [
+              {
+                "type": "local_optimum_selection",
+                "description": "Local optimum selection via max/min or running best",
+                "location": "1:0",
+                "weight": 0.35
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.872011Z",
+        "patterns_checked": 36,
+        "patterns_detected": 2
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "4:4",
+          "attributes": {
+            "loop_variable": "i",
+            "is_range": true
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "accumulator_update",
+          "ast_ref": "5:8",
+          "attributes": {
+            "variable": "window_sum",
+            "operator": "Add",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "index_lookback",
+          "ast_ref": "5:32",
+          "attributes": {
+            "structure": "nums",
+            "lookback": "sub"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "window_size_constant",
+          "ast_ref": "5:32",
+          "attributes": {
+            "structure": "nums",
+            "offset": 0,
+            "offset_type": "parameter",
+            "offset_name": "k"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "accumulator_update",
+          "ast_ref": "6:8",
+          "attributes": {
+            "variable": "max_sum",
+            "operator": "unknown",
+            "syntax_form": "equal_sign"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "early_termination",
+          "ast_ref": "7:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [
+        {
+          "technique_id": "fixed_window_maintenance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_003"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "strategy_evidence": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "fixed_window_maintenance"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_003"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        }
+      ],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 1,
+        "strategy_count": 1,
+        "fact_count": 6
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 0.6
+    }
+  },
+  {
+    "submission_id": "sub_0004",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_fixed",
+    "target_concepts": [
+      "sliding_window_fixed"
+    ],
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 18.46,
+      "detected_patterns": [
+        {
+          "pattern_id": "dp_state_machine",
+          "confidence": 0.8,
+          "evidence": [
+            {
+              "type": "state_variables",
+              "description": "Multiple named state variables detected",
+              "location": "1:0",
+              "weight": 0.3
+            },
+            {
+              "type": "state_transition",
+              "description": "State transition via max/min between competing states",
+              "location": "1:0",
+              "weight": 0.3
+            },
+            {
+              "type": "table_fill_loop",
+              "description": "Single loop iterating over input, updating states",
+              "location": "1:0",
+              "weight": 0.2
+            }
+          ]
+        },
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 0.7,
+          "evidence": [
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: range(k, len(nums))",
+              "location": "4:4",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: nums[:k]",
+              "location": "2:15",
+              "weight": 0.35
+            }
+          ]
+        },
+        {
+          "pattern_id": "greedy_local",
+          "confidence": 0.35,
+          "evidence": [
+            {
+              "type": "local_optimum_selection",
+              "description": "Local optimum selection via max/min or running best",
+              "location": "1:0",
+              "weight": 0.35
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "dp_state_machine",
+            "confidence": 0.8,
+            "evidence": [
+              {
+                "type": "state_variables",
+                "description": "Multiple named state variables detected",
+                "location": "1:0",
+                "weight": 0.3
+              },
+              {
+                "type": "state_transition",
+                "description": "State transition via max/min between competing states",
+                "location": "1:0",
+                "weight": 0.3
+              },
+              {
+                "type": "table_fill_loop",
+                "description": "Single loop iterating over input, updating states",
+                "location": "1:0",
+                "weight": 0.2
+              }
+            ]
+          },
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 0.7,
+            "evidence": [
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: range(k, len(nums))",
+                "location": "4:4",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: nums[:k]",
+                "location": "2:15",
+                "weight": 0.35
+              }
+            ]
+          },
+          {
+            "pattern_id": "greedy_local",
+            "confidence": 0.35,
+            "evidence": [
+              {
+                "type": "local_optimum_selection",
+                "description": "Local optimum selection via max/min or running best",
+                "location": "1:0",
+                "weight": 0.35
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.891073Z",
+        "patterns_checked": 36,
+        "patterns_detected": 3
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "4:4",
+          "attributes": {
+            "loop_variable": "i",
+            "is_range": true
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "accumulator_update",
+          "ast_ref": "5:8",
+          "attributes": {
+            "variable": "curr",
+            "operator": "Add",
+            "syntax_form": "equal_sign"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "index_lookback",
+          "ast_ref": "5:22",
+          "attributes": {
+            "structure": "nums",
+            "lookback": "sub"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "window_size_constant",
+          "ast_ref": "5:22",
+          "attributes": {
+            "structure": "nums",
+            "offset": 0,
+            "offset_type": "parameter",
+            "offset_name": "k"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "accumulator_update",
+          "ast_ref": "6:8",
+          "attributes": {
+            "variable": "best",
+            "operator": "unknown",
+            "syntax_form": "equal_sign"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "early_termination",
+          "ast_ref": "7:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [
+        {
+          "technique_id": "fixed_window_maintenance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_003"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "strategy_evidence": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "fixed_window_maintenance"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_003"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        }
+      ],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 1,
+        "strategy_count": 1,
+        "fact_count": 6
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 1.04
+    }
+  },
+  {
+    "submission_id": "sub_0005",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_variable",
+    "target_concepts": [
+      "sliding_window_variable"
+    ],
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 23.59,
+      "detected_patterns": [
+        {
+          "pattern_id": "hash_map_lookup",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "set_creation",
+              "description": "Set creation: seen = set()",
+              "location": "2:4",
+              "weight": 0.25
+            },
+            {
+              "type": "membership_check",
+              "description": "Membership check: s[right] in seen",
+              "location": "6:14",
+              "weight": 0.35
+            },
+            {
+              "type": "loop_structure",
+              "description": "Loop providing lookup context",
+              "location": "5:4",
+              "weight": 0.2
+            },
+            {
+              "type": "loop_structure",
+              "description": "Loop providing lookup context",
+              "location": "6:8",
+              "weight": 0.2
+            }
+          ]
+        },
+        {
+          "pattern_id": "sliding_window_variable",
+          "confidence": 0.9,
+          "evidence": [
+            {
+              "type": "window_shrink_variable",
+              "description": "Variable window shrink via 'left++' in inner while loop",
+              "location": "6:8",
+              "weight": 0.4
+            },
+            {
+              "type": "window_expand",
+              "description": "Window expands via right pointer 'right'",
+              "location": "5:4",
+              "weight": 0.2
+            },
+            {
+              "type": "window_validity_check",
+              "description": "Window validity condition in while loop",
+              "location": "6:8",
+              "weight": 0.3
+            }
+          ]
+        },
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 0.7,
+          "evidence": [
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: range(len(s))",
+              "location": "5:4",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: s[right]",
+              "location": "6:14",
+              "weight": 0.35
+            }
+          ]
+        },
+        {
+          "pattern_id": "greedy_local",
+          "confidence": 0.6,
+          "evidence": [
+            {
+              "type": "local_optimum_selection",
+              "description": "Local optimum selection via max/min or running best",
+              "location": "1:0",
+              "weight": 0.35
+            },
+            {
+              "type": "forward_progress",
+              "description": "Forward progress via index/pointer advancing monotonically",
+              "location": "1:0",
+              "weight": 0.25
+            }
+          ]
+        },
+        {
+          "pattern_id": "brute_force",
+          "confidence": 0.55,
+          "evidence": [
+            {
+              "type": "nested_loops",
+              "description": "Nested loop structure indicating exhaustive iteration",
+              "location": "5:4",
+              "weight": 0.35
+            },
+            {
+              "type": "range_enumeration",
+              "description": "Range-based exhaustive iteration: range(len(s))",
+              "location": "5:4",
+              "weight": 0.2
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "hash_map_lookup",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "set_creation",
+                "description": "Set creation: seen = set()",
+                "location": "2:4",
+                "weight": 0.25
+              },
+              {
+                "type": "membership_check",
+                "description": "Membership check: s[right] in seen",
+                "location": "6:14",
+                "weight": 0.35
+              },
+              {
+                "type": "loop_structure",
+                "description": "Loop providing lookup context",
+                "location": "5:4",
+                "weight": 0.2
+              },
+              {
+                "type": "loop_structure",
+                "description": "Loop providing lookup context",
+                "location": "6:8",
+                "weight": 0.2
+              }
+            ]
+          },
+          {
+            "pattern_id": "sliding_window_variable",
+            "confidence": 0.9,
+            "evidence": [
+              {
+                "type": "window_shrink_variable",
+                "description": "Variable window shrink via 'left++' in inner while loop",
+                "location": "6:8",
+                "weight": 0.4
+              },
+              {
+                "type": "window_expand",
+                "description": "Window expands via right pointer 'right'",
+                "location": "5:4",
+                "weight": 0.2
+              },
+              {
+                "type": "window_validity_check",
+                "description": "Window validity condition in while loop",
+                "location": "6:8",
+                "weight": 0.3
+              }
+            ]
+          },
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 0.7,
+            "evidence": [
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: range(len(s))",
+                "location": "5:4",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: s[right]",
+                "location": "6:14",
+                "weight": 0.35
+              }
+            ]
+          },
+          {
+            "pattern_id": "greedy_local",
+            "confidence": 0.6,
+            "evidence": [
+              {
+                "type": "local_optimum_selection",
+                "description": "Local optimum selection via max/min or running best",
+                "location": "1:0",
+                "weight": 0.35
+              },
+              {
+                "type": "forward_progress",
+                "description": "Forward progress via index/pointer advancing monotonically",
+                "location": "1:0",
+                "weight": 0.25
+              }
+            ]
+          },
+          {
+            "pattern_id": "brute_force",
+            "confidence": 0.55,
+            "evidence": [
+              {
+                "type": "nested_loops",
+                "description": "Nested loop structure indicating exhaustive iteration",
+                "location": "5:4",
+                "weight": 0.35
+              },
+              {
+                "type": "range_enumeration",
+                "description": "Range-based exhaustive iteration: range(len(s))",
+                "location": "5:4",
+                "weight": 0.2
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.915775Z",
+        "patterns_checked": 36,
+        "patterns_detected": 5
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "visited_tracking",
+          "ast_ref": "2:4",
+          "attributes": {
+            "variable": "seen"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "5:4",
+          "attributes": {
+            "loop_variable": "right",
+            "is_range": true
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "accumulator_update",
+          "ast_ref": "8:12",
+          "attributes": {
+            "variable": "left",
+            "operator": "Add",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "accumulator_update",
+          "ast_ref": "10:8",
+          "attributes": {
+            "variable": "max_len",
+            "operator": "unknown",
+            "syntax_form": "equal_sign"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "early_termination",
+          "ast_ref": "11:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [],
+      "strategy_evidence": [],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 0,
+        "strategy_count": 0,
+        "fact_count": 5
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 1.22
+    }
+  },
+  {
+    "submission_id": "sub_0006",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_variable",
+    "target_concepts": [
+      "sliding_window_variable"
+    ],
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "legacy": {
+      "success": false,
+      "error": "Invalid Python syntax: invalid syntax (<unknown>, line 18)",
+      "error_type": "ValueError",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\PathForge - v2\\src\\ast_detection\\parser.py\", line 109, in parse\n    ast_root = ast.parse(code_string)\n  File \"C:\\Program Files\\Python313\\Lib\\ast.py\", line 54, in parse\n    return compile(source, filename, mode, flags,\n                   _feature_version=feature_version, optimize=optimize)\n  File \"<unknown>\", line 18\n    return s[start:end+1] if end < float('inf') else\n                                                    ^\nSyntaxError: invalid syntax\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"D:\\PathForge - v2\\experiments\\code_analysis_evaluation\\runners\\run_evaluation.py\", line 42, in run_legacy_analysis\n    result = self.ast_engine.analyze(code)\n  File \"D:\\PathForge - v2\\src\\ast_detection\\run_analysis.py\", line 51, in analyze\n    ast_root = self.parser.parse(code_string)\n  File \"D:\\PathForge - v2\\src\\ast_detection\\parser.py\", line 111, in parse\n    raise ValueError(f\"Invalid Python syntax: {e}\")\nValueError: Invalid Python syntax: invalid syntax (<unknown>, line 18)\n"
+    },
+    "shadow": {
+      "success": false,
+      "error": "Shadow analysis returned None (parse failure or exception)",
+      "error_type": "SHADOW_RETURNED_NONE"
+    }
+  },
+  {
+    "submission_id": "sub_0007",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_opposite",
+    "target_concepts": [
+      "two_pointers_opposite"
+    ],
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 17.5,
+      "detected_patterns": [
+        {
+          "pattern_id": "two_pointers_opposite",
+          "confidence": 0.9,
+          "evidence": [
+            {
+              "type": "left_pointer_increment",
+              "description": "Left pointer 'left' increments toward center",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "right_pointer_decrement",
+              "description": "Right pointer 'right' decrements toward center",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "convergence_loop",
+              "description": "While loop converging left < right",
+              "location": "4:4",
+              "weight": 0.4
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "two_pointers_opposite",
+            "confidence": 0.9,
+            "evidence": [
+              {
+                "type": "left_pointer_increment",
+                "description": "Left pointer 'left' increments toward center",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "right_pointer_decrement",
+                "description": "Right pointer 'right' decrements toward center",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "convergence_loop",
+                "description": "While loop converging left < right",
+                "location": "4:4",
+                "weight": 0.4
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.941090Z",
+        "patterns_checked": 36,
+        "patterns_detected": 1
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "accumulator_update",
+          "ast_ref": "2:4",
+          "attributes": {
+            "variable": "s",
+            "operator": "unknown",
+            "syntax_form": "equal_sign"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "while_loop_comparison",
+          "ast_ref": "4:4",
+          "attributes": {
+            "compared_variables": [
+              "left",
+              "right"
+            ],
+            "modified_variables": [
+              "left",
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "opposite_direction_updates",
+          "ast_ref": "4:4",
+          "attributes": {
+            "incremented": [
+              "left"
+            ],
+            "decremented": [
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "early_termination",
+          "ast_ref": "6:12",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "accumulator_update",
+          "ast_ref": "7:8",
+          "attributes": {
+            "variable": "left",
+            "operator": "Add",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "accumulator_update",
+          "ast_ref": "8:8",
+          "attributes": {
+            "variable": "right",
+            "operator": "Sub",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_006",
+          "fact_type": "early_termination",
+          "ast_ref": "9:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_004",
+            "fact_005"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        }
+      ],
+      "strategy_evidence": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 2,
+        "strategy_count": 1,
+        "fact_count": 7
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 1.01
+    }
+  },
+  {
+    "submission_id": "sub_0008",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_opposite",
+    "target_concepts": [
+      "two_pointers_opposite"
+    ],
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 15.17,
+      "detected_patterns": [
+        {
+          "pattern_id": "two_pointers_opposite",
+          "confidence": 0.9,
+          "evidence": [
+            {
+              "type": "left_pointer_increment",
+              "description": "Left pointer 'left' increments toward center",
+              "location": "3:4",
+              "weight": 0.25
+            },
+            {
+              "type": "right_pointer_decrement",
+              "description": "Right pointer 'right' decrements toward center",
+              "location": "3:4",
+              "weight": 0.25
+            },
+            {
+              "type": "convergence_loop",
+              "description": "While loop converging left < right",
+              "location": "3:4",
+              "weight": 0.4
+            }
+          ]
+        },
+        {
+          "pattern_id": "greedy_local",
+          "confidence": 0.55,
+          "evidence": [
+            {
+              "type": "immediate_decision",
+              "description": "Immediate decision committing to a locally optimal choice",
+              "location": "1:0",
+              "weight": 0.3
+            },
+            {
+              "type": "forward_progress",
+              "description": "Forward progress via index/pointer advancing monotonically",
+              "location": "1:0",
+              "weight": 0.25
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "two_pointers_opposite",
+            "confidence": 0.9,
+            "evidence": [
+              {
+                "type": "left_pointer_increment",
+                "description": "Left pointer 'left' increments toward center",
+                "location": "3:4",
+                "weight": 0.25
+              },
+              {
+                "type": "right_pointer_decrement",
+                "description": "Right pointer 'right' decrements toward center",
+                "location": "3:4",
+                "weight": 0.25
+              },
+              {
+                "type": "convergence_loop",
+                "description": "While loop converging left < right",
+                "location": "3:4",
+                "weight": 0.4
+              }
+            ]
+          },
+          {
+            "pattern_id": "greedy_local",
+            "confidence": 0.55,
+            "evidence": [
+              {
+                "type": "immediate_decision",
+                "description": "Immediate decision committing to a locally optimal choice",
+                "location": "1:0",
+                "weight": 0.3
+              },
+              {
+                "type": "forward_progress",
+                "description": "Forward progress via index/pointer advancing monotonically",
+                "location": "1:0",
+                "weight": 0.25
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.957325Z",
+        "patterns_checked": 36,
+        "patterns_detected": 2
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "while_loop_comparison",
+          "ast_ref": "3:4",
+          "attributes": {
+            "compared_variables": [
+              "left",
+              "right"
+            ],
+            "modified_variables": [
+              "left",
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "opposite_direction_updates",
+          "ast_ref": "3:4",
+          "attributes": {
+            "incremented": [
+              "left"
+            ],
+            "decremented": [
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "conditional_index_update",
+          "ast_ref": "5:8",
+          "attributes": {
+            "condition_variables": [
+              "curr",
+              "target"
+            ],
+            "updated_variables": [
+              "left",
+              "right"
+            ],
+            "branch": "if"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "variable_use_in_loop_body",
+          "ast_ref": "3:4",
+          "attributes": {
+            "variables": [
+              "left",
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "early_termination",
+          "ast_ref": "6:12",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "accumulator_update",
+          "ast_ref": "8:12",
+          "attributes": {
+            "variable": "left",
+            "operator": "Add",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_006",
+          "fact_type": "accumulator_update",
+          "ast_ref": "10:12",
+          "attributes": {
+            "variable": "right",
+            "operator": "Sub",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_007",
+          "fact_type": "early_termination",
+          "ast_ref": "11:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_005",
+            "fact_006"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "strategy_evidence": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 3,
+        "strategy_count": 1,
+        "fact_count": 8
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 1.34
+    }
+  },
+  {
+    "submission_id": "sub_0009",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_opposite",
+    "target_concepts": [
+      "two_pointers_opposite"
+    ],
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 33.56,
+      "detected_patterns": [
+        {
+          "pattern_id": "two_pointers_opposite",
+          "confidence": 0.9,
+          "evidence": [
+            {
+              "type": "left_pointer_increment",
+              "description": "Left pointer 'left' increments toward center",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "right_pointer_decrement",
+              "description": "Right pointer 'right' decrements toward center",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "convergence_loop",
+              "description": "While loop converging left < right",
+              "location": "4:4",
+              "weight": 0.4
+            }
+          ]
+        },
+        {
+          "pattern_id": "greedy_local",
+          "confidence": 0.6,
+          "evidence": [
+            {
+              "type": "local_optimum_selection",
+              "description": "Local optimum selection via max/min or running best",
+              "location": "1:0",
+              "weight": 0.35
+            },
+            {
+              "type": "forward_progress",
+              "description": "Forward progress via index/pointer advancing monotonically",
+              "location": "1:0",
+              "weight": 0.25
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "two_pointers_opposite",
+            "confidence": 0.9,
+            "evidence": [
+              {
+                "type": "left_pointer_increment",
+                "description": "Left pointer 'left' increments toward center",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "right_pointer_decrement",
+                "description": "Right pointer 'right' decrements toward center",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "convergence_loop",
+                "description": "While loop converging left < right",
+                "location": "4:4",
+                "weight": 0.4
+              }
+            ]
+          },
+          {
+            "pattern_id": "greedy_local",
+            "confidence": 0.6,
+            "evidence": [
+              {
+                "type": "local_optimum_selection",
+                "description": "Local optimum selection via max/min or running best",
+                "location": "1:0",
+                "weight": 0.35
+              },
+              {
+                "type": "forward_progress",
+                "description": "Forward progress via index/pointer advancing monotonically",
+                "location": "1:0",
+                "weight": 0.25
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:51.977982Z",
+        "patterns_checked": 36,
+        "patterns_detected": 2
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "while_loop_comparison",
+          "ast_ref": "4:4",
+          "attributes": {
+            "compared_variables": [
+              "left",
+              "right"
+            ],
+            "modified_variables": [
+              "left",
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "opposite_direction_updates",
+          "ast_ref": "4:4",
+          "attributes": {
+            "incremented": [
+              "left"
+            ],
+            "decremented": [
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "conditional_index_update",
+          "ast_ref": "7:8",
+          "attributes": {
+            "condition_variables": [
+              "height",
+              "left",
+              "right"
+            ],
+            "updated_variables": [
+              "left",
+              "right"
+            ],
+            "branch": "if"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "variable_use_in_loop_body",
+          "ast_ref": "4:4",
+          "attributes": {
+            "variables": [
+              "left",
+              "right"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "accumulator_update",
+          "ast_ref": "6:8",
+          "attributes": {
+            "variable": "max_water",
+            "operator": "unknown",
+            "syntax_form": "equal_sign"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "accumulator_update",
+          "ast_ref": "8:12",
+          "attributes": {
+            "variable": "left",
+            "operator": "Add",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_006",
+          "fact_type": "accumulator_update",
+          "ast_ref": "10:12",
+          "attributes": {
+            "variable": "right",
+            "operator": "Sub",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_007",
+          "fact_type": "early_termination",
+          "ast_ref": "11:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_005",
+            "fact_006"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "strategy_evidence": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 3,
+        "strategy_count": 1,
+        "fact_count": 8
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 3.0
+    }
+  },
+  {
+    "submission_id": "sub_0010",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_same",
+    "target_concepts": [
+      "two_pointers_same"
+    ],
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 33.69,
+      "detected_patterns": [
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: range(1, len(nums))",
+              "location": "5:4",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: nums[fast]",
+              "location": "6:11",
+              "weight": 0.35
+            },
+            {
+              "type": "element_update",
+              "description": "Sequential element update: nums[slow] = nums[fast]",
+              "location": "8:12",
+              "weight": 0.3
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: range(1, len(nums))",
+                "location": "5:4",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: nums[fast]",
+                "location": "6:11",
+                "weight": 0.35
+              },
+              {
+                "type": "element_update",
+                "description": "Sequential element update: nums[slow] = nums[fast]",
+                "location": "8:12",
+                "weight": 0.3
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:52.029045Z",
+        "patterns_checked": 36,
+        "patterns_detected": 1
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "early_termination",
+          "ast_ref": "3:8",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "5:4",
+          "attributes": {
+            "loop_variable": "fast",
+            "is_range": true
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "conditional_index_update",
+          "ast_ref": "6:8",
+          "attributes": {
+            "condition_variables": [
+              "fast",
+              "nums",
+              "slow"
+            ],
+            "updated_variables": [
+              "slow"
+            ],
+            "branch": "if"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "accumulator_update",
+          "ast_ref": "7:12",
+          "attributes": {
+            "variable": "slow",
+            "operator": "Add",
+            "syntax_form": "augmented"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_004",
+          "fact_type": "indexed_write",
+          "ast_ref": "8:12",
+          "attributes": {
+            "structure": "nums",
+            "index_type": "Name"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_005",
+          "fact_type": "parent_root_merge",
+          "ast_ref": "8:12",
+          "attributes": {
+            "structure": "nums",
+            "value_type": "subscript"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_006",
+          "fact_type": "early_termination",
+          "ast_ref": "9:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [],
+      "strategy_evidence": [],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 0,
+        "strategy_count": 0,
+        "fact_count": 7
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 1.47
+    }
+  },
+  {
+    "submission_id": "sub_0011",
+    "problem_id": 0,
+    "problem_title": "Incorrect Two Sum (O(n^2))",
+    "target_concepts": [],
+    "solution_correctness": "incorrect",
+    "style": "incorrect",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 33.81,
+      "detected_patterns": [
+        {
+          "pattern_id": "array_traversal",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: range(len(nums))",
+              "location": "3:4",
+              "weight": 0.35
+            },
+            {
+              "type": "iterator_based_loop",
+              "description": "Iterator-based loop: range(len(nums))",
+              "location": "4:8",
+              "weight": 0.35
+            },
+            {
+              "type": "subscript_access",
+              "description": "Element access via subscript: nums[i]",
+              "location": "5:15",
+              "weight": 0.35
+            }
+          ]
+        },
+        {
+          "pattern_id": "brute_force",
+          "confidence": 0.75,
+          "evidence": [
+            {
+              "type": "nested_loops",
+              "description": "Nested loop structure indicating exhaustive iteration",
+              "location": "3:4",
+              "weight": 0.35
+            },
+            {
+              "type": "range_enumeration",
+              "description": "Range-based exhaustive iteration: range(len(nums))",
+              "location": "3:4",
+              "weight": 0.2
+            },
+            {
+              "type": "range_enumeration",
+              "description": "Range-based exhaustive iteration: range(len(nums))",
+              "location": "4:8",
+              "weight": 0.2
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "array_traversal",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: range(len(nums))",
+                "location": "3:4",
+                "weight": 0.35
+              },
+              {
+                "type": "iterator_based_loop",
+                "description": "Iterator-based loop: range(len(nums))",
+                "location": "4:8",
+                "weight": 0.35
+              },
+              {
+                "type": "subscript_access",
+                "description": "Element access via subscript: nums[i]",
+                "location": "5:15",
+                "weight": 0.35
+              }
+            ]
+          },
+          {
+            "pattern_id": "brute_force",
+            "confidence": 0.75,
+            "evidence": [
+              {
+                "type": "nested_loops",
+                "description": "Nested loop structure indicating exhaustive iteration",
+                "location": "3:4",
+                "weight": 0.35
+              },
+              {
+                "type": "range_enumeration",
+                "description": "Range-based exhaustive iteration: range(len(nums))",
+                "location": "3:4",
+                "weight": 0.2
+              },
+              {
+                "type": "range_enumeration",
+                "description": "Range-based exhaustive iteration: range(len(nums))",
+                "location": "4:8",
+                "weight": 0.2
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:52.064404Z",
+        "patterns_checked": 36,
+        "patterns_detected": 2
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "3:4",
+          "attributes": {
+            "loop_variable": "i",
+            "is_range": true
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "for_loop_iteration",
+          "ast_ref": "4:8",
+          "attributes": {
+            "loop_variable": "j",
+            "is_range": true
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "early_termination",
+          "ast_ref": "6:16",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "early_termination",
+          "ast_ref": "7:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [],
+      "strategy_evidence": [],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 0,
+        "strategy_count": 0,
+        "fact_count": 4
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 1.15
+    }
+  },
+  {
+    "submission_id": "sub_0012",
+    "problem_id": 0,
+    "problem_title": "Buggy Binary Search",
+    "target_concepts": [
+      "binary_search_standard"
+    ],
+    "solution_correctness": "incorrect",
+    "style": "incorrect",
+    "variant": null,
+    "legacy": {
+      "success": true,
+      "elapsed_ms": 23.4,
+      "detected_patterns": [
+        {
+          "pattern_id": "binary_search_standard",
+          "confidence": 1.0,
+          "evidence": [
+            {
+              "type": "binary_midpoint",
+              "description": "Midpoint calculation: (left + right) // 2",
+              "location": "4:4",
+              "weight": 0.35
+            },
+            {
+              "type": "boundary_update",
+              "description": "Boundary update: left = mid + 1 or right = mid - 1",
+              "location": "4:4",
+              "weight": 0.25
+            },
+            {
+              "type": "mid_comparison",
+              "description": "Element comparison at mid index",
+              "location": "4:4",
+              "weight": 0.3
+            },
+            {
+              "type": "left_right_boundary",
+              "description": "Binary search while loop with left/right boundaries",
+              "location": "4:4",
+              "weight": 0.2
+            }
+          ]
+        },
+        {
+          "pattern_id": "two_pointers_same",
+          "confidence": 0.3,
+          "evidence": [
+            {
+              "type": "offset_pointer_assignment",
+              "description": "Loop with 2 pointer variables; 1 in condition",
+              "location": "4:4",
+              "weight": 0.3
+            }
+          ]
+        }
+      ],
+      "detection_summary": {},
+      "raw_output": {
+        "detected_patterns": [
+          {
+            "pattern_id": "binary_search_standard",
+            "confidence": 1.0,
+            "evidence": [
+              {
+                "type": "binary_midpoint",
+                "description": "Midpoint calculation: (left + right) // 2",
+                "location": "4:4",
+                "weight": 0.35
+              },
+              {
+                "type": "boundary_update",
+                "description": "Boundary update: left = mid + 1 or right = mid - 1",
+                "location": "4:4",
+                "weight": 0.25
+              },
+              {
+                "type": "mid_comparison",
+                "description": "Element comparison at mid index",
+                "location": "4:4",
+                "weight": 0.3
+              },
+              {
+                "type": "left_right_boundary",
+                "description": "Binary search while loop with left/right boundaries",
+                "location": "4:4",
+                "weight": 0.2
+              }
+            ]
+          },
+          {
+            "pattern_id": "two_pointers_same",
+            "confidence": 0.3,
+            "evidence": [
+              {
+                "type": "offset_pointer_assignment",
+                "description": "Loop with 2 pointer variables; 1 in condition",
+                "location": "4:4",
+                "weight": 0.3
+              }
+            ]
+          }
+        ],
+        "engine_version": "2.0.0",
+        "analyzed_at": "2026-08-26T08:28:52.088980Z",
+        "patterns_checked": 36,
+        "patterns_detected": 2
+      }
+    },
+    "shadow": {
+      "success": true,
+      "structural_facts": [
+        {
+          "fact_id": "fact_000",
+          "fact_type": "while_loop_comparison",
+          "ast_ref": "4:4",
+          "attributes": {
+            "compared_variables": [
+              "left",
+              "right"
+            ],
+            "modified_variables": [
+              "left"
+            ]
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_001",
+          "fact_type": "midpoint_calculation",
+          "ast_ref": "5:14",
+          "attributes": {
+            "form": "(left + right) // 2"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_002",
+          "fact_type": "early_termination",
+          "ast_ref": "7:12",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        },
+        {
+          "fact_id": "fact_003",
+          "fact_type": "early_termination",
+          "ast_ref": "10:4",
+          "attributes": {
+            "statement": "return"
+          },
+          "extractor_version": "1.0.0"
+        }
+      ],
+      "technique_evidence": [],
+      "strategy_evidence": [],
+      "match_outcome": {
+        "outcome": "UNRESOLVED",
+        "satisfied_group_ids": [],
+        "authority_tier": "unknown",
+        "primary_strategy": null,
+        "reasoning": [
+          "No solution groups provided for matching"
+        ],
+        "technique_count": 0,
+        "strategy_count": 0,
+        "fact_count": 4
+      },
+      "extractor_version": "1.0.0",
+      "elapsed_ms": 2.5
+    }
+  }
+]

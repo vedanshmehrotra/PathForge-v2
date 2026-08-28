@@ -1,0 +1,419 @@
+{
+  "vocabulary_version": "1.0.0",
+  "source_branch": "current",
+  "date_created": "2026-08-26",
+  "concepts": [
+    {
+      "concept_id": "hash_map_lookup",
+      "display_name": "Hash Map Lookup",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/hash_map_lookup.py",
+      "detection_layer": "ast",
+      "notes": "Detects dictionary/set membership checks, key lookups"
+    },
+    {
+      "concept_id": "hash_map_frequency",
+      "display_name": "Hash Map Frequency Counting",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/frequency_counting.py",
+      "detection_layer": "ast",
+      "notes": "Detects frequency counting patterns using dictionaries"
+    },
+    {
+      "concept_id": "prefix_sum",
+      "display_name": "Prefix Sum",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/prefix_sum.py",
+      "detection_layer": "ast",
+      "notes": "Detects running sum / prefix accumulation patterns"
+    },
+    {
+      "concept_id": "sliding_window_fixed",
+      "display_name": "Fixed Sliding Window",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/sliding_window_fixed.py",
+      "shadow_technique": "fixed_window_maintenance",
+      "shadow_strategy": "sliding_window",
+      "detection_layer": "ast+shadow",
+      "notes": "Window with constant size offset"
+    },
+    {
+      "concept_id": "sliding_window_variable",
+      "display_name": "Variable Sliding Window",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/sliding_window_variable.py",
+      "shadow_technique": "loop_state_tracking",
+      "shadow_strategy": "sliding_window",
+      "detection_layer": "ast+shadow",
+      "notes": "Window with conditional expansion/contraction"
+    },
+    {
+      "concept_id": "two_pointers_opposite",
+      "display_name": "Two Pointers (Opposite Direction)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/two_pointers_opposite.py",
+      "shadow_technique": "bidirectional_index_scan",
+      "shadow_strategy": "two_pointers_opposite",
+      "detection_layer": "ast+shadow",
+      "notes": "Left/right pointer convergence pattern"
+    },
+    {
+      "concept_id": "two_pointers_same",
+      "display_name": "Two Pointers (Same Direction)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/two_pointers_same.py",
+      "detection_layer": "ast",
+      "notes": "Fast/slow pointer pattern"
+    },
+    {
+      "concept_id": "dfs_recursive",
+      "display_name": "DFS (Recursive)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/dfs_recursive.py",
+      "shadow_technique": "recursive_branching",
+      "shadow_strategy": "dfs_backtracking",
+      "detection_layer": "ast+shadow",
+      "notes": "Recursive DFS without state restoration"
+    },
+    {
+      "concept_id": "dfs_iterative",
+      "display_name": "DFS (Iterative)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dfs_iterative.py",
+      "detection_layer": "ast",
+      "notes": "Stack-based iterative DFS"
+    },
+    {
+      "concept_id": "bfs_level_order",
+      "display_name": "BFS Level Order",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/bfs_level_order.py",
+      "detection_layer": "ast",
+      "notes": "BFS with level tracking"
+    },
+    {
+      "concept_id": "bfs_shortest_path",
+      "display_name": "BFS Shortest Path",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/bfs_shortest_path.py",
+      "shadow_strategy": "bfs_shortest_path",
+      "detection_layer": "ast+shadow",
+      "notes": "BFS on unweighted graph"
+    },
+    {
+      "concept_id": "topological_sort",
+      "display_name": "Topological Sort",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/topological_sort.py",
+      "detection_layer": "ast",
+      "notes": "DAG ordering detection"
+    },
+    {
+      "concept_id": "union_find",
+      "display_name": "Union-Find",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/union_find.py",
+      "shadow_strategy": "union_find",
+      "detection_layer": "ast+shadow",
+      "notes": "Disjoint set with path compression"
+    },
+    {
+      "concept_id": "binary_search_tree",
+      "display_name": "Binary Search Tree",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/binary_search_tree.py",
+      "detection_layer": "ast",
+      "notes": "BST traversal/operations"
+    },
+    {
+      "concept_id": "dp_1d_forward",
+      "display_name": "DP 1D Forward",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_1d_forward.py",
+      "detection_layer": "ast",
+      "notes": "Linear DP forward traversal"
+    },
+    {
+      "concept_id": "dp_1d_sequence",
+      "display_name": "DP 1D Sequence",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_1d_sequence.py",
+      "detection_layer": "ast",
+      "notes": "Sequence DP patterns"
+    },
+    {
+      "concept_id": "dp_2d_grid",
+      "display_name": "DP 2D Grid",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_2d_grid.py",
+      "detection_layer": "ast",
+      "notes": "2D grid DP (grid paths, edit distance)"
+    },
+    {
+      "concept_id": "dp_2d_string",
+      "display_name": "DP 2D String",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_2d_string.py",
+      "detection_layer": "ast",
+      "notes": "String DP (LCS, edit distance)"
+    },
+    {
+      "concept_id": "dp_knapsack",
+      "display_name": "DP Knapsack",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_knapsack.py",
+      "detection_layer": "ast",
+      "notes": "Knapsack / subset sum patterns"
+    },
+    {
+      "concept_id": "dp_interval",
+      "display_name": "DP Interval",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_interval.py",
+      "detection_layer": "ast",
+      "notes": "Interval DP patterns"
+    },
+    {
+      "concept_id": "dp_state_machine",
+      "display_name": "DP State Machine",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/dp_state_machine.py",
+      "detection_layer": "ast",
+      "notes": "State machine DP (stock problems)"
+    },
+    {
+      "concept_id": "fast_slow_pointers",
+      "display_name": "Fast/Slow Pointers",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/fast_slow_pointers.py",
+      "detection_layer": "ast",
+      "notes": "Floyd's cycle detection"
+    },
+    {
+      "concept_id": "linked_list_reversal",
+      "display_name": "Linked List Reversal",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/linked_list_reversal.py",
+      "detection_layer": "ast",
+      "notes": "In-place linked list reversal"
+    },
+    {
+      "concept_id": "monotonic_stack",
+      "display_name": "Monotonic Stack",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/monotonic_stack.py",
+      "shadow_technique": "monotonic_stack_maintenance",
+      "shadow_strategy": "monotonic_stack_strategy",
+      "detection_layer": "ast+shadow",
+      "notes": "Monotonic decreasing/increasing stack"
+    },
+    {
+      "concept_id": "monotonic_deque",
+      "display_name": "Monotonic Deque",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/monotonic_queue.py",
+      "detection_layer": "ast",
+      "notes": "Monotonic deque for sliding window max/min"
+    },
+    {
+      "concept_id": "binary_search_standard",
+      "display_name": "Binary Search (Standard)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/binary_search_classic.py",
+      "shadow_strategy": "binary_search",
+      "detection_layer": "ast+shadow",
+      "notes": "Classic binary search on sorted array"
+    },
+    {
+      "concept_id": "binary_search_rotated",
+      "display_name": "Binary Search (Rotated Array)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/binary_search_rotated.py",
+      "detection_layer": "ast",
+      "notes": "Binary search on rotated sorted array"
+    },
+    {
+      "concept_id": "binary_search_answer",
+      "display_name": "Binary Search on Answer",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/binary_search_answer.py",
+      "detection_layer": "ast",
+      "notes": "Binary search on answer space"
+    },
+    {
+      "concept_id": "heap_top_k",
+      "display_name": "Heap / Top K",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/heap_priority_queue.py",
+      "detection_layer": "ast",
+      "notes": "Priority queue / heap operations"
+    },
+    {
+      "concept_id": "greedy_local",
+      "display_name": "Greedy (Local)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/greedy_local.py",
+      "detection_layer": "ast",
+      "notes": "Local greedy choice patterns"
+    },
+    {
+      "concept_id": "greedy_interval",
+      "display_name": "Greedy (Interval)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": false,
+      "legacy_detector_file": "src/ast_detection/detectors/greedy_interval.py",
+      "detection_layer": "ast",
+      "notes": "Interval scheduling / activity selection"
+    },
+    {
+      "concept_id": "backtracking_permutation",
+      "display_name": "Backtracking (Permutation)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/backtracking_permutation.py",
+      "shadow_technique": "recursive_branching",
+      "shadow_strategy": "dfs_backtracking",
+      "detection_layer": "ast+shadow",
+      "notes": "Permutation generation with state restoration"
+    },
+    {
+      "concept_id": "backtracking_subset",
+      "display_name": "Backtracking (Subset)",
+      "legacy_detector_exists": true,
+      "shadow_detector_exists": true,
+      "legacy_detector_file": "src/ast_detection/detectors/backtracking_subset.py",
+      "shadow_technique": "recursive_branching",
+      "shadow_strategy": "dfs_backtracking",
+      "detection_layer": "ast+shadow",
+      "notes": "Subset generation with state restoration"
+    },
+    {
+      "concept_id": "sequential_accumulation",
+      "display_name": "Sequential Accumulation",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "sequential_accumulation",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: while-loop accumulator pattern"
+    },
+    {
+      "concept_id": "carry_propagation",
+      "display_name": "Carry Propagation",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "carry_propagation",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: linked-list carry propagation (Add Two Numbers)"
+    },
+    {
+      "concept_id": "recursive_branching",
+      "display_name": "Recursive Branching",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "recursive_branching",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: function calls itself in multiple branches"
+    },
+    {
+      "concept_id": "loop_state_tracking",
+      "display_name": "Loop State Tracking",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "loop_state_tracking",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: state variable updated conditionally in loop"
+    },
+    {
+      "concept_id": "iterative_table_filling",
+      "display_name": "Iterative Table Filling",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "iterative_table_filling",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: DP table filled iteratively"
+    },
+    {
+      "concept_id": "linked_list_traversal",
+      "display_name": "Linked List Traversal",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "linked_list_traversal",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: .next pointer traversal with rewiring"
+    },
+    {
+      "concept_id": "fixed_window_maintenance",
+      "display_name": "Fixed Window Maintenance",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "fixed_window_maintenance",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: constant-offset window access"
+    },
+    {
+      "concept_id": "monotonic_stack_maintenance",
+      "display_name": "Monotonic Stack Maintenance",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_technique": "monotonic_stack_maintenance",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only technique: stack with monotonic comparison"
+    },
+    {
+      "concept_id": "dp_top_down",
+      "display_name": "DP Top-Down (Memoization)",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_strategy": "dp_top_down",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only strategy: recursive with cache lookup/write"
+    },
+    {
+      "concept_id": "dp_bottom_up",
+      "display_name": "DP Bottom-Up",
+      "legacy_detector_exists": false,
+      "shadow_detector_exists": true,
+      "shadow_strategy": "dp_bottom_up",
+      "detection_layer": "shadow",
+      "notes": "Shadow-only strategy: iterative table filling"
+    }
+  ],
+  "summary": {
+    "total_concepts": 42,
+    "legacy_only": 24,
+    "shadow_only": 11,
+    "both_systems": 7,
+    "concepts_with_legacy_detector": 33,
+    "concepts_with_shadow_detector": 18
+  }
+}

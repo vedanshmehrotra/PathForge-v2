@@ -111,7 +111,7 @@ def run_persistence(
         (
             user_id,
             problem_id,
-            code[:1000] if code else "",
+            code or "",
             verdict,
             primary_pattern,
             primary_confidence,

@@ -1,0 +1,82 @@
+{
+  "legacy": {
+    "system": "legacy",
+    "avg_confidence_correct": 0,
+    "avg_confidence_incorrect": 0,
+    "num_correct": 0,
+    "num_incorrect": 0,
+    "distribution_by_confidence_bin": {
+      "0.0-0.3": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.3-0.5": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.5-0.7": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.7-0.9": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.9-1.0": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      }
+    },
+    "calibration_assessment": "not_correlated"
+  },
+  "shadow": {
+    "system": "shadow",
+    "avg_confidence_correct": 0.9,
+    "avg_confidence_incorrect": 0.8292,
+    "num_correct": 3,
+    "num_incorrect": 12,
+    "distribution_by_confidence_bin": {
+      "0.0-0.3": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.3-0.5": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.5-0.7": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.7-0.9": {
+        "total": 9,
+        "correct": 0,
+        "incorrect": 9,
+        "accuracy": 0.0
+      },
+      "0.9-1.0": {
+        "total": 6,
+        "correct": 3,
+        "incorrect": 3,
+        "accuracy": 0.5
+      }
+    },
+    "calibration_assessment": "appears_correlated"
+  }
+}

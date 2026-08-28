@@ -1,0 +1,9 @@
+{
+  "total_submissions": 12,
+  "legacy_success": 11,
+  "legacy_errors": 1,
+  "shadow_success": 11,
+  "shadow_errors": 1,
+  "legacy_success_rate": 0.9166666666666666,
+  "shadow_success_rate": 0.9166666666666666
+}

@@ -8,8 +8,11 @@ Runtime analysis must never call GraphQL or the LLM directly.
 Every other service reads from the DB only.
 """
 import json
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 from pathforge.db.profile_manager import iso_now
 from pathforge.llm.graphql_client import (
@@ -58,7 +61,7 @@ def resolve_problem(
 
     _ensure_ground_truth(connection, row)
 
-    groups, confidence = _load_ground_truth(connection, pid)
+    groups, confidence = _load_ground_truth(connection, pid, row)
 
     topics = _parse_topics(row.get("topics") or "")
     description = row.get("description") or ""
@@ -190,18 +193,54 @@ def _ensure_ground_truth(connection, row):
     connection.commit()
 
 
-def _load_ground_truth(connection, problem_id):
-    row = connection.execute(
+def _load_csv_patterns(connection, problem_id):
+    """Load CSV-curated patterns from problems.pattern.
+
+    Returns the pattern list if non-empty, None otherwise.
+    """
+    try:
+        row = connection.execute(
+            "SELECT pattern FROM problems WHERE id = %s", (problem_id,)
+        ).fetchone()
+        if not row:
+            return None
+        pattern = row["pattern"]
+        if isinstance(pattern, str):
+            pattern = json.loads(pattern)
+        if pattern and isinstance(pattern, list) and len(pattern) > 0:
+            return pattern
+        return None
+    except Exception:
+        return None
+
+
+def _load_ground_truth(connection, problem_id, problem_row=None):
+    """Load ground truth for a problem.
+
+    Reconciliation logic:
+    - If problems.pattern (CSV-curated) is non-empty, use it as the production
+      matcher's pattern list. This prevents incorrect LLM labels from causing
+      false NO_MATCH results.
+    - The shadow matcher's V1 fields (required/optional/excluded) are NEVER
+      modified by reconciliation.
+    - If problems.pattern is empty, LLM ground truth is used but marked as
+      unverified.
+    - Conflicts between curated and LLM patterns are logged.
+    """
+    gt_row = connection.execute(
         "SELECT patterns, confidence, solution_groups, validation_status FROM problem_ground_truth WHERE problem_id = %s",
         (problem_id,),
     ).fetchone()
-    if row is None:
+    if gt_row is None:
         return [], {}
 
-    patterns_raw = row["patterns"]
-    confidence_raw = row["confidence"]
-    solution_groups_raw = row["solution_groups"] if "solution_groups" in row.keys() else None
-    validation_status = row["validation_status"] if "validation_status" in row.keys() else None
+    patterns_raw = gt_row["patterns"]
+    confidence_raw = gt_row["confidence"]
+    solution_groups_raw = gt_row["solution_groups"] if "solution_groups" in gt_row.keys() else None
+    validation_status = gt_row["validation_status"] if "validation_status" in gt_row.keys() else None
+
+    # Load CSV-curated patterns from problems.pattern
+    csv_patterns = _load_csv_patterns(connection, problem_id)
 
     # Phase 3B: if solution_groups column exists and has data, use it directly
     if solution_groups_raw is not None:
@@ -226,6 +265,30 @@ def _load_ground_truth(connection, problem_id):
                 else:
                     required = _map_legacy_patterns_to_v1(legacy_patterns)
 
+                # --- RECONCILIATION ---
+                # If CSV-curated patterns exist and differ from LLM patterns,
+                # use CSV patterns for the production matcher.
+                # The V1 fields (required/optional/excluded) are NEVER modified.
+                production_patterns = legacy_patterns
+                provenance = list(g.get("provenance", []))
+                authority = g.get("authority_tier", g.get("evidence", validation_status or "unobserved"))
+
+                if csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
+                    logger.warning(
+                        "Ground truth conflict for problem %d: "
+                        "CSV=%s, LLM=%s. Using CSV for production matcher.",
+                        problem_id, csv_patterns, legacy_patterns,
+                    )
+                    production_patterns = csv_patterns
+                    provenance.append("csv_curated_override")
+                    authority = "human_curated"
+                elif csv_patterns:
+                    # Patterns agree — CSV is authoritative but no conflict
+                    production_patterns = csv_patterns
+                    if authority != "human_curated":
+                        authority = "human_curated"
+                        provenance.append("csv_curated")
+
                 groups.append({
                     "id": g.get("id", f"group_{len(groups)}"),
                     "version": g.get("version", 1),
@@ -233,10 +296,11 @@ def _load_ground_truth(connection, problem_id):
                     "optional": g.get("optional", []),
                     "excluded": g.get("excluded", []),
                     "threshold": g.get("threshold", 0.5),
-                    "authority_tier": g.get("authority_tier", g.get("evidence", validation_status or "unobserved")),
-                    "provenance": g.get("provenance", []),
+                    "authority_tier": authority,
+                    "provenance": provenance,
                     # Legacy fields for backward compatibility
-                    "patterns": legacy_patterns,
+                    # "patterns" is the production matcher input
+                    "patterns": production_patterns,
                     "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                     "confidence": g.get("confidence", {}),
                 })
@@ -252,6 +316,17 @@ def _load_ground_truth(connection, problem_id):
     confidence = _parse_json_dict(confidence_raw)
 
     if patterns:
+        # Apply reconciliation to fallback path too
+        if csv_patterns and sorted(csv_patterns) != sorted(patterns):
+            logger.warning(
+                "Ground truth conflict for problem %d (fallback): "
+                "CSV=%s, LLM=%s. Using CSV.",
+                problem_id, csv_patterns, patterns,
+            )
+            patterns = csv_patterns
+        elif csv_patterns:
+            patterns = csv_patterns
+
         # Map legacy patterns to V1 concepts for shadow matcher
         required = _map_legacy_patterns_to_v1(patterns)
         best_conf = max(confidence.values()) if confidence else 1.0

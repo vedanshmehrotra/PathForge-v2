@@ -1,0 +1,13 @@
+concept,system,precision,recall,f1,false_positive_rate,false_negative_rate,tp,fp,fn,tn,support
+binary_search_standard,legacy,1.0,1.0,1.0,0.0,0.0,1,0,0,0,1
+hash_map_lookup,legacy,1.0,1.0,1.0,0.0,0.0,2,0,0,0,2
+sliding_window_fixed,legacy,0.0,0.0,0.0,0.0,1.0,0,0,2,0,2
+sliding_window_variable,legacy,1.0,0.5,0.6667,0.0,0.5,1,0,1,0,2
+two_pointers_opposite,legacy,1.0,1.0,1.0,0.0,0.0,3,0,0,0,3
+two_pointers_same,legacy,0.0,0.0,0.0,0.0,1.0,0,0,1,0,1
+binary_search_standard,shadow,0.0,0.0,0.0,0.0,1.0,0,0,1,0,1
+hash_map_lookup,shadow,0.0,0.0,0.0,0.0,1.0,0,0,2,0,2
+sliding_window_fixed,shadow,1.0,1.0,1.0,0.0,0.0,2,0,0,0,2
+sliding_window_variable,shadow,0.0,0.0,0.0,0.0,1.0,0,0,2,0,2
+two_pointers_opposite,shadow,1.0,1.0,1.0,0.0,0.0,3,0,0,0,3
+two_pointers_same,shadow,0.0,0.0,0.0,0.0,1.0,0,0,1,0,1

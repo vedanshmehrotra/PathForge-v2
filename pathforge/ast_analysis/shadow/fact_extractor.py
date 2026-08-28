@@ -31,6 +31,13 @@ LINKED_ATTRS = frozenset({"next", "left", "right"})
 # Node constructor name patterns
 NODE_CONSTRUCTOR_PREFIXES = ("node", "listnode", "treenode", "btnode")
 
+# Stack-like variable names — broader set for naming independence
+_STACK_LIKE_NAMES = frozenset({
+    "stack", "st", "stk", "monotonic", "mono_stack", "mono",
+    "inc_stack", "dec_stack", "indices", "idx_stack",
+    "index_stack", "s",
+})
+
 
 def extract_structural_facts(ast_root: ast.AST) -> list[StructuralFact]:
     """Extract all structural facts from a parsed AST.
@@ -270,6 +277,8 @@ class _FactExtractor(ast.NodeVisitor):
         - BoolOp(And, [Compare]): while i < n and total > 0:
         - BoolOp(Or, [Compare]):  while i < n or force:
         - Nested BoolOp:         while (i < n and running > 0) or force:
+        - UnaryOp(Not, Compare): while not left >= right:
+        - len(x) > 0 patterns:  while len(indices) > 0:
 
         Also emits while_loop_truthiness for truthiness-based loops
         (e.g., while queue: while stack:).
@@ -284,6 +293,18 @@ class _FactExtractor(ast.NodeVisitor):
             compares = self._collect_compare_from_boolop(test)
             if compares:
                 self._emit_while_comparison_from_compares(node, compares)
+        elif isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+            # while not left >= right:  equivalent to while left < right
+            # while not done:  truthiness-based
+            operand = test.operand
+            if isinstance(operand, ast.Compare):
+                self._emit_while_comparison_from_compares(node, [operand])
+            elif isinstance(operand, ast.Name):
+                self._facts.append(StructuralFact(
+                    fact_type="while_loop_truthiness",
+                    ast_ref=_ref(node),
+                    attributes={"variable": operand.id},
+                ))
         elif isinstance(test, ast.Name):
             # Truthiness-based while loop: while queue:, while stack:
             self._facts.append(StructuralFact(
@@ -291,6 +312,9 @@ class _FactExtractor(ast.NodeVisitor):
                 ast_ref=_ref(node),
                 attributes={"variable": test.id},
             ))
+        elif isinstance(test, ast.Compare):
+            # Check for len(x) > 0 patterns
+            self._emit_while_comparison_from_compares(node, [test])
 
     def _emit_while_comparison_from_compares(self, node: ast.While, compares: list):
         """Emit while_loop_comparison from a list of Compare nodes.
@@ -1264,6 +1288,7 @@ class _FactExtractor(ast.NodeVisitor):
         """Detect stack creation: stack = [], st = [], etc.
 
         This is a structural observation: a list used as a stack is created.
+        Uses both name heuristic AND structural evidence (append/pop usage).
         """
         for target in node.targets:
             if not isinstance(target, ast.Name):
@@ -1273,8 +1298,8 @@ class _FactExtractor(ast.NodeVisitor):
             if isinstance(node.value, ast.List) and len(node.value.elts) == 0:
                 # Heuristic: variable name looks stack-like
                 stack_like = var_name.lower() in {
-                    "stack", "st", "monotonic", "mono_stack", "mono",
-                    "inc_stack", "dec_stack",
+                    "stack", "st", "stk", "monotonic", "mono_stack", "mono",
+                    "inc_stack", "dec_stack", "indices", "idx_stack",
                 }
                 if stack_like:
                     self._facts.append(StructuralFact(
@@ -1303,8 +1328,8 @@ class _FactExtractor(ast.NodeVisitor):
         var_name = call.func.value.id
         # Heuristic: variable name looks stack-like
         stack_like = var_name.lower() in {
-            "stack", "st", "monotonic", "mono_stack", "mono",
-            "inc_stack", "dec_stack",
+            "stack", "st", "stk", "monotonic", "mono_stack", "mono",
+            "inc_stack", "dec_stack", "indices", "idx_stack",
         }
         if stack_like:
             self._facts.append(StructuralFact(
@@ -1349,7 +1374,7 @@ class _FactExtractor(ast.NodeVisitor):
         # Also check for while loop with stack truthiness and comparison in body
         # This handles cases where the comparison is not in the while condition
         # but the while loop checks stack truthiness
-        if isinstance(test, ast.Name) and test.id.lower() in {"stack", "st", "monotonic", "mono_stack", "mono"}:
+        if isinstance(test, ast.Name) and test.id.lower() in _STACK_LIKE_NAMES:
             # Check if the loop body has a comparison with stack[-1]
             for stmt in node.body:
                 if isinstance(stmt, ast.If):
@@ -1384,7 +1409,7 @@ class _FactExtractor(ast.NodeVisitor):
                 
                 if is_negative_one and isinstance(child.value, ast.Name):
                     var_name = child.value.id.lower()
-                    if var_name in {"stack", "st", "monotonic", "mono_stack", "mono"}:
+                    if var_name in _STACK_LIKE_NAMES:
                         return True
         return False
 
@@ -1398,17 +1423,27 @@ class _FactExtractor(ast.NodeVisitor):
         Patterns detected:
         - while stack: ... stack.pop() ... (pop after truthiness check)
         - while stack and ...: ... stack.pop() ... (pop after comparison)
+        - while len(stack) > 0 and ...: ... stack.pop() ... (pop after len check)
         """
         # Check if the while condition involves stack truthiness
         test = node.test
         has_stack_check = False
-        if isinstance(test, ast.Name) and test.id.lower() in {"stack", "st", "monotonic", "mono_stack", "mono"}:
+        if isinstance(test, ast.Name) and test.id.lower() in _STACK_LIKE_NAMES:
             has_stack_check = True
         elif isinstance(test, ast.BoolOp):
             for value in test.values:
-                if isinstance(value, ast.Name) and value.id.lower() in {"stack", "st", "monotonic", "mono_stack", "mono"}:
+                if isinstance(value, ast.Name) and value.id.lower() in _STACK_LIKE_NAMES:
                     has_stack_check = True
                     break
+                # Also check for len(x) > 0 patterns
+                if isinstance(value, ast.Compare):
+                    if self._is_len_check_with_stack_name(value):
+                        has_stack_check = True
+                        break
+        # Also check for len(x) > 0 as the sole condition
+        elif isinstance(test, ast.Compare):
+            if self._is_len_check_with_stack_name(test):
+                has_stack_check = True
         
         if has_stack_check:
             # The while loop checks stack truthiness, so any pop inside is conditional
@@ -1432,6 +1467,19 @@ class _FactExtractor(ast.NodeVisitor):
                     ))
                     return
 
+    def _is_len_check_with_stack_name(self, comp: ast.Compare) -> bool:
+        """Check if a Compare node is len(x) > 0 or len(x) != 0 where x is stack-like."""
+        if not isinstance(comp.left, ast.Call):
+            return False
+        call = comp.left
+        if not isinstance(call.func, ast.Name) or call.func.id != "len":
+            return False
+        if len(call.args) != 1:
+            return False
+        if not isinstance(call.args[0], ast.Name):
+            return False
+        return call.args[0].id.lower() in _STACK_LIKE_NAMES
+
     def _has_stack_pop(self, body: list) -> bool:
         """Check if a body contains a stack.pop() call."""
         for stmt in body:
@@ -1440,7 +1488,7 @@ class _FactExtractor(ast.NodeVisitor):
                     if child.func.attr == "pop":
                         if isinstance(child.func.value, ast.Name):
                             var_name = child.func.value.id.lower()
-                            if var_name in {"stack", "st", "monotonic", "mono_stack", "mono"}:
+                            if var_name in _STACK_LIKE_NAMES:
                                 return True
         return False
 
@@ -1469,7 +1517,11 @@ class _FactExtractor(ast.NodeVisitor):
         return names
 
     def _collect_body_augmented_directions(self, body: list) -> dict:
-        """Collect variable names and their update directions from augmented assignments."""
+        """Collect variable names and their update directions.
+
+        Handles both AugAssign (x += 1) and Assign forms (x = x + 1).
+        For Assign, the target must appear on the right side (self-referential).
+        """
         result = {}
         for stmt in body:
             for child in ast.walk(stmt):
@@ -1479,6 +1531,19 @@ class _FactExtractor(ast.NodeVisitor):
                         result[name] = "inc"
                     elif isinstance(child.op, ast.Sub):
                         result[name] = "dec"
+                # Also handle Assign form: x = x + 1, x = x - 1
+                elif isinstance(child, ast.Assign) and len(child.targets) == 1:
+                    target = child.targets[0]
+                    if isinstance(target, ast.Name) and isinstance(child.value, ast.BinOp):
+                        target_name = target.id
+                        # Check if target appears on the right side (self-referential)
+                        right_names = {n.id for n in ast.walk(child.value) if isinstance(n, ast.Name)}
+                        if target_name in right_names:
+                            op = child.value.op
+                            if isinstance(op, ast.Add):
+                                result[target_name] = "inc"
+                            elif isinstance(op, ast.Sub):
+                                result[target_name] = "dec"
         return result
 
     def _collect_linked_attrs(self, body: list) -> set:

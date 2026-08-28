@@ -4,6 +4,7 @@ Runs alongside the existing detector system. Does NOT affect production behavior
 If the new path fails, the existing analysis continues normally.
 """
 import ast
+import logging
 import time
 from typing import Optional
 
@@ -77,6 +78,9 @@ def run_shadow_analysis(
 
     except Exception as e:
         # Graceful degradation: shadow failure must not affect production
+        logging.getLogger(__name__).debug(
+            "Shadow analysis failed: %s: %s", type(e).__name__, e
+        )
         return None
 
 
