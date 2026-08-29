@@ -255,11 +255,22 @@ def _evaluate_sliding_window(
     if not has_loop:
         return None
 
-    # Absence constraint: must NOT have opposite_direction_updates
-    # (opposite updates without midpoint = two pointers, not sliding window)
-    has_opposite = "opposite_direction_updates" in fact_types
-    if has_opposite:
-        return None
+    # Absence constraint: must NOT have opposite_direction_updates in a
+    # genuine two-pointer loop (where both compared variables are modified).
+    # In sliding-window shrink loops, the while condition compares a state
+    # expression against a threshold (e.g., while total >= target), so at
+    # least one compared variable (the threshold/constant) is NOT modified.
+    # The pointer update (left += 1) involves a variable NOT in the
+    # comparison — only the accumulator/state is modified.
+    if "opposite_direction_updates" in fact_types:
+        has_genuine_opposite = False
+        for wc in [f for f in facts if f.fact_type == "while_loop_comparison"]:
+            compared = set(wc.attributes.get("compared_variables", []))
+            modified = set(wc.attributes.get("modified_variables", []))
+            if compared and compared <= modified:
+                has_genuine_opposite = True
+        if has_genuine_opposite:
+            return None
 
     # Absence constraint: must NOT have midpoint_calculation
     # (midpoint = binary search, not sliding window)

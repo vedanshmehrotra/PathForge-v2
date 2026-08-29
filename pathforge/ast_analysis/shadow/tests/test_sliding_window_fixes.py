@@ -450,6 +450,300 @@ def levelOrder(root):
 # Known limitations (documented, not regressions)
 # ===========================================================================
 
+# ===========================================================================
+# SLIDING WINDOW 209 FIX: opposite_direction_updates refinement
+# ===========================================================================
+
+class TestOppositeDirectionUpdatesRefinement:
+    """The sliding-window strategy now refines the opposite_direction_updates
+    exclusion: it only blocks sliding_window when a while_loop_comparison has
+    compared_variables ⊆ modified_variables (genuine two-pointer pattern).
+    
+    In sliding-window shrink loops, the while condition compares a state
+    expression against a threshold, so at least one compared variable (the
+    threshold) is NOT modified. Only the accumulator/state is modified.
+    
+    This allows LC 209-style sliding windows (with accumulator shrink) to
+    correctly fire sliding_window, while still blocking genuine two-pointers."""
+
+    def test_209_accumulator_shrink_detected(self):
+        """LC 209: while total >= target: total -= nums[left]; left += 1.
+        
+        total is an accumulator state variable, left is a pointer.
+        The while comparison is total >= target — total IS modified but target is NOT.
+        compared = {total, target}, modified = {total} → compared ⊄ modified.
+        Therefore sliding_window MUST fire."""
+        code = """
+def minSubArrayLen(target, nums):
+    left = 0
+    total = 0
+    min_len = float('inf')
+    for right in range(len(nums)):
+        total += nums[right]
+        while total >= target:
+            min_len = min(min_len, right - left + 1)
+            total -= nums[left]
+            left += 1
+    return min_len if min_len != float('inf') else 0
+"""
+        _, _, strategies = _extract_all(code)
+        ids = _strategy_ids(strategies)
+        assert "sliding_window" in ids, \
+            "LC 209 accumulator shrink must be detected as sliding_window"
+        assert "two_pointers_opposite" not in ids, \
+            "LC 209 must NOT be two_pointers_opposite (total is not a pointer)"
+
+    def test_209_modulo_style_detected(self):
+        """LC 209 modulo-style variant: same logic, different variable names."""
+        code = """
+def minSubArrayLen(s, nums):
+    i = 0
+    total = 0
+    best = float('inf')
+    for j in range(len(nums)):
+        total += nums[j]
+        while total >= s:
+            best = min(best, j - i + 1)
+            total -= nums[i]
+            i += 1
+    return best if best < float('inf') else 0
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" in _strategy_ids(strategies), \
+            "LC 209 modulo-style must be detected as sliding_window"
+
+    def test_209_loop_state_tracking_detected(self):
+        """LC 209 must still detect loop_state_tracking technique."""
+        code = """
+def minSubArrayLen(target, nums):
+    left = 0
+    total = 0
+    for right in range(len(nums)):
+        total += nums[right]
+        while total >= target:
+            total -= nums[left]
+            left += 1
+"""
+        _, techniques, _ = _extract_all(code)
+        assert "loop_state_tracking" in _technique_ids(techniques), \
+            "LC 209 must still detect loop_state_tracking"
+
+    def test_genuine_two_pointers_still_not_sliding_window(self):
+        """Genuine two-pointers (twoSumSorted) must remain two_pointers_opposite
+        and must NOT gain sliding_window."""
+        code = """
+def twoSumSorted(numbers, target):
+    left = 0
+    right = len(numbers) - 1
+    while left < right:
+        total = numbers[left] + numbers[right]
+        if total == target:
+            return [left + 1, right + 1]
+        elif total < target:
+            left += 1
+        else:
+            right -= 1
+    return []
+"""
+        _, _, strategies = _extract_all(code)
+        ids = _strategy_ids(strategies)
+        assert "two_pointers_opposite" in ids, \
+            "Genuine two-pointers must still detect two_pointers_opposite"
+        assert "sliding_window" not in ids, \
+            "Genuine two-pointers must NOT detect sliding_window"
+
+    def test_genuine_two_pointers_max_area_still_not_sliding_window(self):
+        """maxArea two-pointers: must remain two_pointers_opposite only."""
+        code = """
+def maxArea(height):
+    left = 0
+    right = len(height) - 1
+    max_a = 0
+    while left < right:
+        area = min(height[left], height[right]) * (right - left)
+        max_a = max(max_a, area)
+        if height[left] < height[right]:
+            left += 1
+        else:
+            right -= 1
+    return max_a
+"""
+        _, _, strategies = _extract_all(code)
+        ids = _strategy_ids(strategies)
+        assert "two_pointers_opposite" in ids
+        assert "sliding_window" not in ids
+
+    def test_binary_search_not_sliding_window(self):
+        """Binary search must NOT gain sliding_window from the refinement."""
+        code = """
+def search(nums, target):
+    low = 0
+    high = len(nums) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+"""
+        _, _, strategies = _extract_all(code)
+        ids = _strategy_ids(strategies)
+        assert "binary_search" in ids
+        assert "sliding_window" not in ids
+
+    def test_monotonic_stack_not_sliding_window(self):
+        """Monotonic stack must NOT gain sliding_window from the refinement."""
+        code = """
+def next_greater(nums):
+    n = len(nums)
+    result = [-1] * n
+    stack = []
+    for i in range(n):
+        while stack and nums[stack[-1]] < nums[i]:
+            idx = stack.pop()
+            result[idx] = nums[i]
+        stack.append(i)
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        ids = _strategy_ids(strategies)
+        assert "monotonic_stack_strategy" in ids
+        assert "sliding_window" not in ids
+
+    def test_424_counter_shrink_detected(self):
+        """LC 424: counter-based shrink still detected (was already working)."""
+        code = """
+def characterReplacement(s, k):
+    from collections import Counter
+    count = Counter()
+    left = 0
+    max_count = 0
+    for right in range(len(s)):
+        count[s[right]] += 1
+        max_count = max(max_count, count[s[right]])
+        while right - left + 1 - max_count > k:
+            count[s[left]] -= 1
+            left += 1
+    return right - left + 1
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" in _strategy_ids(strategies), \
+            "LC 424 must still detect sliding_window"
+
+    def test_3_set_membership_detected(self):
+        """LC 3: set-membership shrink still detected (was already working)."""
+        code = """
+def lengthOfLongestSubstring(s):
+    char_set = set()
+    left = 0
+    max_len = 0
+    for right in range(len(s)):
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        char_set.add(s[right])
+        max_len = max(max_len, right - left + 1)
+    return max_len
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" in _strategy_ids(strategies)
+
+    def test_2958_dict_freq_detected(self):
+        """LC 2958: dict-freq shrink still detected (was already working)."""
+        code = """
+def maxSubarrayLength(nums, k):
+    freq = {}
+    left = 0
+    max_len = 0
+    for right in range(len(nums)):
+        freq[nums[right]] = freq.get(nums[right], 0) + 1
+        while freq[nums[right]] > k:
+            freq[nums[left]] -= 1
+            left += 1
+        max_len = max(max_len, right - left + 1)
+    return max_len
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" in _strategy_ids(strategies)
+
+    def test_643_fixed_window_detected(self):
+        """LC 643: fixed-window must still be detected."""
+        code = """
+def findMaxAverage(nums, k):
+    total = sum(nums[:k])
+    best = total
+    for i in range(k, len(nums)):
+        total += nums[i] - nums[i - k]
+        if total > best:
+            best = total
+    return best / k
+"""
+        _, _, strategies = _extract_all(code)
+        ids = _strategy_ids(strategies)
+        # Fixed-window may or may not fire depending on detection path
+        # But must NOT be blocked by the refinement
+        assert "two_pointers_opposite" not in ids, \
+            "Fixed-window 643 must NOT be two_pointers_opposite"
+
+    def test_max_freq_counter_shrink_detected(self):
+        """maxFreq: counter-shrink must still be detected."""
+        code = """
+def maxFreq(s, maxLetters, minSize, maxSize):
+    from collections import Counter
+    count = Counter()
+    left = 0
+    res = 0
+    for right in range(len(s)):
+        count[s[right]] += 1
+        while right - left + 1 > minSize:
+            count[s[left]] -= 1
+            if count[s[left]] == 0:
+                del count[s[left]]
+            left += 1
+        if right - left + 1 == minSize and len(count) <= maxLetters:
+            res = max(res, right - left + 1)
+    return res
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" in _strategy_ids(strategies)
+
+    def test_76_min_window_still_works(self):
+        """LC 76: minimum window substring (nested while-in-if structure)."""
+        code = """
+def minWindow(s, t):
+    from collections import Counter
+    need = Counter(t)
+    missing = len(t)
+    left = 0
+    start, end = 0, float('inf')
+    for right in range(len(s)):
+        if need[s[right]] > 0:
+            missing -= 1
+        need[s[right]] -= 1
+        while missing == 0:
+            if right - left < end - start:
+                start, end = left, right
+            need[s[left]] += 1
+            if need[s[left]] > 0:
+                missing += 1
+            left += 1
+    return s[start:end+1] if end < float('inf') else ""
+"""
+        _, techniques, strategies = _extract_all(code)
+        # 76 has a known limitation: variable_use_in_loop_body doesn't fire
+        # due to the deeply nested while-in-if structure.
+        # This test documents the current behavior.
+        strat_ids = _strategy_ids(strategies)
+        # At minimum, must NOT be blocked by the refinement
+        assert "two_pointers_opposite" not in strat_ids, \
+            "LC 76 must NOT be two_pointers_opposite"
+        assert "monotonic_stack_strategy" not in strat_ids, \
+            "LC 76 must NOT be monotonic_stack"
+
+
 class TestKnownLimitations:
     """These tests document known limitations that are NOT regressions
     but are noted for future improvement."""
@@ -490,9 +784,8 @@ def maxReplacement(s, k):
         total does not appear as a subscript index. This means two_pointers_opposite
         is no longer incorrectly detected.
 
-        sliding_window is still not detected because the def-use chain for total
-        (modified in while body, used in while condition) is not yet captured.
-        This remains a known limitation of the def-use chain detector."""
+        sliding_window is NOW detected thanks to the opposite_direction_updates
+        refinement (compared ⊄ modified allows the shrink loop to pass)."""
         code = """
 def minSubArrayLen(target, nums):
     left = 0
@@ -508,9 +801,12 @@ def minSubArrayLen(target, nums):
 """
         _, _, strategies = _extract_all(code)
         ids = _strategy_ids(strategies)
-        # IMPROVEMENT: two_pointers_opposite is no longer detected
+        # FIXED: two_pointers_opposite is no longer detected
         assert "two_pointers_opposite" not in ids, \
             "209 should NOT be classified as two_pointers_opposite (total is not a pointer)"
+        # FIXED: sliding_window IS now detected (opposite_direction refinement)
+        assert "sliding_window" in ids, \
+            "209 must now be detected as sliding_window (accumulator shrink)"
         # loop_state_tracking IS detected (fact extraction works)
         _, techniques, _ = _extract_all(code)
         assert "loop_state_tracking" in _technique_ids(techniques), \
