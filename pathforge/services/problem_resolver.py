@@ -329,13 +329,14 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
 
         # Map legacy patterns to V1 concepts for shadow matcher
         required = _map_legacy_patterns_to_v1(patterns)
+        excluded = _get_v1_excluded_for_patterns(patterns)
         best_conf = max(confidence.values()) if confidence else 1.0
         groups = [
             {
                 "id": "group_0",
                 "required": required,
                 "optional": [],
-                "excluded": [],
+                "excluded": excluded,
                 "patterns": patterns,
                 "evidence": validation_status or "unobserved",
                 "confidence": {p: confidence.get(p, best_conf) for p in patterns},
@@ -361,6 +362,24 @@ def _map_legacy_patterns_to_v1(patterns: list) -> list:
         if mapping and mapping.get("required"):
             required.update(mapping["required"])
     return sorted(required) if required else []
+
+
+def _get_v1_excluded_for_patterns(patterns: list) -> list:
+    """Extract excluded V1 concepts for a list of legacy patterns.
+
+    Uses the same PATTERN_TO_V1_MAPPING from the ground truth builder.
+    Returns the union of all excluded concepts across the given patterns.
+    This allows CSV-derived solution groups to carry the correct exclusion
+    information for the shadow matcher.
+    """
+    from pathforge.services.ground_truth_builder import PATTERN_TO_V1_MAPPING
+
+    excluded = set()
+    for pattern in patterns:
+        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+        if mapping and mapping.get("excluded"):
+            excluded.update(mapping["excluded"])
+    return sorted(excluded) if excluded else []
 
 
 def _parse_json_field(raw):

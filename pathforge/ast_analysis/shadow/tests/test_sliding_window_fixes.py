@@ -1378,3 +1378,188 @@ def maxSubarrayLength(nums, k):
         outcome = evaluate_solution_groups([sw_group], techniques, strategies, [])
         assert outcome.outcome == "CONFIRMED", \
             f"Genuine SW vs SW group must be CONFIRMED, got {outcome.outcome}"
+
+
+# ===========================================================================
+# DFS/BACKTRACKING CONFIDENCE FIX
+# ===========================================================================
+
+class TestDfsBacktrackingConfidence:
+    """DFS/Backtracking strategy fires via a fallback path when the recursive
+    call is inside a for-loop (not in a conditional branch), so the
+    ``recursive_branching`` technique doesn't fire.  The confidence must
+    still be > 0 when the strategy is genuinely detected."""
+
+    def test_lc46_permutations_confidence_nonzero(self):
+        """LC 46 permutations: dfs_backtracking must fire with confidence > 0."""
+        code = """
+def permute(nums):
+    result = []
+    def backtrack(path, remaining):
+        if not remaining:
+            result.append(path[:])
+            return
+        for i in range(len(remaining)):
+            path.append(remaining[i])
+            backtrack(path, remaining[:i] + remaining[i+1:])
+            path.pop()
+    backtrack([], nums)
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        dfs_strats = [s for s in strategies if s.strategy_id == "dfs_backtracking"]
+        assert len(dfs_strats) == 1, \
+            "LC 46 must detect dfs_backtracking"
+        assert dfs_strats[0].confidence > 0.0, \
+            f"LC 46 dfs_backtracking confidence must be > 0, got {dfs_strats[0].confidence}"
+
+    def test_lc78_subsets_confidence_nonzero(self):
+        """LC 78 subsets: dfs_backtracking must fire with confidence > 0."""
+        code = """
+def subsets(nums):
+    result = []
+    def backtrack(start, path):
+        result.append(path[:])
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            backtrack(i + 1, path)
+            path.pop()
+    backtrack(0, [])
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        dfs_strats = [s for s in strategies if s.strategy_id == "dfs_backtracking"]
+        assert len(dfs_strats) == 1, \
+            "LC 78 must detect dfs_backtracking"
+        assert dfs_strats[0].confidence > 0.0, \
+            f"LC 78 dfs_backtracking confidence must be > 0, got {dfs_strats[0].confidence}"
+
+    def test_lc46_not_dp_top_down(self):
+        """LC 46 permutations MUST NOT be classified as dp_top_down."""
+        code = """
+def permute(nums):
+    result = []
+    def backtrack(path, remaining):
+        if not remaining:
+            result.append(path[:])
+            return
+        for i in range(len(remaining)):
+            path.append(remaining[i])
+            backtrack(path, remaining[:i] + remaining[i+1:])
+            path.pop()
+    backtrack([], nums)
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        strat_ids = _strategy_ids(strategies)
+        assert "dp_top_down" not in strat_ids, \
+            "LC 46 must NOT be dp_top_down"
+        assert "dfs_backtracking" in strat_ids, \
+            "LC 46 must be dfs_backtracking"
+
+
+# ===========================================================================
+# NESTED-FUNCTION DP TOP-DOWN FIX
+# ===========================================================================
+
+class TestNestedFunctionDpTopDown:
+    """Memoized top-down DP with a nested ``def dfs()`` helper function must
+    be detected as dp_top_down.  The nested function's self-recursive call
+    and conditional branching are propagated to the outer function."""
+
+    def test_lc322_nested_dfs_detected(self):
+        """LC 322 coinChange with nested dfs: must detect dp_top_down."""
+        code = """
+def coinChange(coins, amount):
+    memo = {}
+    def dfs(remaining):
+        if remaining == 0:
+            return 0
+        if remaining in memo:
+            return memo[remaining]
+        result = float("inf")
+        for coin in coins:
+            if coin <= remaining:
+                result = min(result, 1 + dfs(remaining - coin))
+        memo[remaining] = result
+        return result
+    r = dfs(amount)
+    return r if r != float("inf") else -1
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" in _strategy_ids(strategies), \
+            "LC 322 nested dfs must detect dp_top_down"
+
+    def test_lc70_nested_fib_detected(self):
+        """LC 70 climbStairs with nested dfs: must detect dp_top_down."""
+        code = """
+def climbStairs(n):
+    memo = {}
+    def dfs(i):
+        if i <= 2:
+            return i
+        if i in memo:
+            return memo[i]
+        memo[i] = dfs(i-1) + dfs(i-2)
+        return memo[i]
+    return dfs(n)
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" in _strategy_ids(strategies), \
+            "LC 70 nested fib must detect dp_top_down"
+
+    def test_lc70_nested_fib_not_dfs_backtracking(self):
+        """LC 70 nested fib with memo MUST NOT be dfs_backtracking."""
+        code = """
+def climbStairs(n):
+    memo = {}
+    def dfs(i):
+        if i <= 2:
+            return i
+        if i in memo:
+            return memo[i]
+        memo[i] = dfs(i-1) + dfs(i-2)
+        return memo[i]
+    return dfs(n)
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dfs_backtracking" not in _strategy_ids(strategies), \
+            "LC 70 nested fib must NOT be dfs_backtracking (has cache)"
+
+    def test_nested_helper_not_dp_when_no_cache(self):
+        """A nested helper function without cache MUST NOT become dp_top_down."""
+        code = """
+def process(data):
+    def helper(x):
+        if x <= 1:
+            return x
+        return helper(x - 1) + helper(x - 2)
+    return helper(len(data))
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" not in _strategy_ids(strategies), \
+            "Nested helper without cache must NOT be dp_top_down"
+
+    def test_direct_recursion_still_works(self):
+        """Direct recursive DP (no nested function) must still detect."""
+        code = """
+def fib(n, memo={}):
+    if n <= 1: return n
+    if n in memo: return memo[n]
+    memo[n] = fib(n-1, memo) + fib(n-2, memo)
+    return memo[n]
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" in _strategy_ids(strategies), \
+            "Direct recursive DP must still detect dp_top_down"
+
+    def test_plain_recursion_not_dp(self):
+        """Plain recursion without memo MUST NOT be dp_top_down."""
+        code = """
+def fib(n):
+    if n <= 1: return n
+    return fib(n-1) + fib(n-2)
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" not in _strategy_ids(strategies), \
+            "Plain recursion must NOT be dp_top_down"

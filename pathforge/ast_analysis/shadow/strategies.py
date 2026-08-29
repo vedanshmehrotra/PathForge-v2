@@ -369,7 +369,15 @@ def _evaluate_dfs_backtracking(
         facts,
     )
 
+    # Confidence: source from recursive_branching when detected; otherwise
+    # use a default for the fallback path (self_recursive + early_termination +
+    # state_restoration).  The fallback fires for backtracking patterns where
+    # recursion is inside a for-loop (not in a conditional branch), so
+    # recursive_branching technique doesn't fire — but the structural evidence
+    # (append/pop + recursion + returns) is still strong.
     confidence = _get_technique_confidence("recursive_branching", technique_evidence)
+    if confidence == 0.0:
+        confidence = 0.7
 
     return StrategyEvidence(
         strategy_id="dfs_backtracking",

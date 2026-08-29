@@ -577,6 +577,11 @@ class _FactExtractor(ast.NodeVisitor):
         """Self-recursive call anywhere in the function body (not just in loops).
 
         This is a structural observation: the function calls itself.
+
+        Also detects self-recursive calls in nested helper functions.  When a
+        nested ``def dfs()`` calls itself, we propagate a ``self_recursive_call``
+        fact to the outer function so that ``recursive_branching`` technique
+        detection can fire for the outer function.
         """
         func_name = node.name
         for child in ast.walk(ast.Module(body=node.body, type_ignores=[])):
@@ -588,6 +593,26 @@ class _FactExtractor(ast.NodeVisitor):
                         attributes={"function_name": func_name, "context": "function"},
                     ))
                     return
+
+        # Check for self-recursive calls in nested functions.  When a nested
+        # helper (e.g., ``def dfs(remaining)``) calls itself, propagate the
+        # fact to the outer function so that ``recursive_branching`` technique
+        # detection can fire for the outer function.
+        for child in ast.walk(ast.Module(body=node.body, type_ignores=[])):
+            if isinstance(child, ast.FunctionDef):
+                nested_name = child.name
+                for inner in ast.walk(ast.Module(body=child.body, type_ignores=[])):
+                    if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name):
+                        if inner.func.id == nested_name:
+                            self._facts.append(StructuralFact(
+                                fact_type="self_recursive_call",
+                                ast_ref=_ref(inner),
+                                attributes={
+                                    "function_name": nested_name,
+                                    "context": "nested_function",
+                                },
+                            ))
+                            return
 
     def _detect_for_loop_iteration(self, node: ast.For):
         """For-loop with range() or iterable iteration.
@@ -706,21 +731,24 @@ class _FactExtractor(ast.NodeVisitor):
 
         This is a structural observation: the recursion is guarded by a
         condition, which means the function has branching recursive paths.
+
+        Searches ALL if-statements in the function body (including those
+        nested inside for-loops and while-loops), not just top-level ones.
         """
         func_name = node.name
-        for stmt in node.body:
-            if isinstance(stmt, ast.If):
+        for child in ast.walk(ast.Module(body=node.body, type_ignores=[])):
+            if isinstance(child, ast.If):
                 # Check if body or orelse contains a self-recursive call
-                if self._has_self_recursive_call(stmt.body, func_name):
+                if self._has_self_recursive_call(child.body, func_name):
                     self._facts.append(StructuralFact(
                         fact_type="recursive_call_in_conditional",
-                        ast_ref=_ref(stmt),
+                        ast_ref=_ref(child),
                         attributes={"function_name": func_name, "branch": "if"},
                     ))
-                if stmt.orelse and self._has_self_recursive_call(stmt.orelse, func_name):
+                if child.orelse and self._has_self_recursive_call(child.orelse, func_name):
                     self._facts.append(StructuralFact(
                         fact_type="recursive_call_in_conditional",
-                        ast_ref=_ref(stmt),
+                        ast_ref=_ref(child),
                         attributes={"function_name": func_name, "branch": "else"},
                     ))
 
