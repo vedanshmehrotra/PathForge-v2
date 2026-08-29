@@ -327,24 +327,99 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
         elif csv_patterns:
             patterns = csv_patterns
 
-        # Map legacy patterns to V1 concepts for shadow matcher
-        required = _map_legacy_patterns_to_v1(patterns)
-        excluded = _get_v1_excluded_for_patterns(patterns)
         best_conf = max(confidence.values()) if confidence else 1.0
-        groups = [
-            {
-                "id": "group_0",
-                "required": required,
-                "optional": [],
-                "excluded": excluded,
-                "patterns": patterns,
-                "evidence": validation_status or "unobserved",
-                "confidence": {p: confidence.get(p, best_conf) for p in patterns},
-            }
-        ]
+        evidence = validation_status or "unobserved"
+
+        # Split CSV patterns into per-strategy groups.
+        # CSV patterns like ["bfs_shortest_path", "dp_1d_forward"] represent
+        # ALTERNATIVE approaches, not all-required.  Each pattern maps to a
+        # different V1 strategy, so they must become separate groups.
+        groups = _split_csv_patterns_to_groups(patterns, confidence, best_conf, evidence)
         return groups, confidence
 
     return [], {}
+
+
+def _split_csv_patterns_to_groups(
+    patterns: list, confidence: dict, best_conf: float, evidence: str
+) -> list:
+    """Split CSV patterns into per-strategy solution groups.
+
+    CSV patterns like ["bfs_shortest_path", "dp_1d_forward"] represent
+    ALTERNATIVE approaches (not all required simultaneously).  Each pattern
+    that maps to a different primary strategy becomes its own group.
+    Patterns that map to the same strategy are merged.
+    """
+    from pathforge.services.ground_truth_builder import PATTERN_TO_V1_MAPPING
+    from pathforge.services.ground_truth_builder import VALID_STRATEGIES
+
+    # Group patterns by their primary strategy
+    strategy_to_patterns = {}
+    unmapped_patterns = []
+
+    for pattern in patterns:
+        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+        if mapping and mapping.get("required"):
+            # Find the primary strategy (first strategy in required list)
+            primary = None
+            for concept in mapping["required"]:
+                if concept in VALID_STRATEGIES:
+                    primary = concept
+                    break
+            if primary is None:
+                primary = mapping["required"][0]
+            strategy_to_patterns.setdefault(primary, []).append(pattern)
+        else:
+            unmapped_patterns.append(pattern)
+
+    # If zero or one strategy cluster and no unmapped patterns, single group
+    if len(strategy_to_patterns) <= 1 and not unmapped_patterns:
+        required = _map_legacy_patterns_to_v1(patterns)
+        excluded = _get_v1_excluded_for_patterns(patterns)
+        return [{
+            "id": "group_0",
+            "required": required,
+            "optional": [],
+            "excluded": excluded,
+            "patterns": patterns,
+            "evidence": evidence,
+            "confidence": {p: confidence.get(p, best_conf) for p in patterns},
+        }]
+
+    # All unmapped (no strategy clusters): single group preserving original patterns
+    if not strategy_to_patterns:
+        return [{
+            "id": "group_0",
+            "required": [],
+            "optional": _map_legacy_patterns_to_v1(patterns),
+            "excluded": [],
+            "patterns": patterns,
+            "evidence": evidence,
+            "confidence": {p: confidence.get(p, best_conf) for p in patterns},
+        }]
+
+    # Multiple strategy clusters: create separate groups
+    groups = []
+    for i, (strategy, group_patterns) in enumerate(sorted(strategy_to_patterns.items())):
+        required = _map_legacy_patterns_to_v1(group_patterns)
+        excluded = _get_v1_excluded_for_patterns(group_patterns)
+        groups.append({
+            "id": f"group_{i}",
+            "required": required,
+            "optional": [],
+            "excluded": excluded,
+            "patterns": group_patterns,
+            "evidence": evidence,
+            "confidence": {p: confidence.get(p, best_conf) for p in group_patterns},
+        })
+
+    # Add unmapped patterns to the first group as optional
+    if unmapped_patterns and groups:
+        unmapped_required = _map_legacy_patterns_to_v1(unmapped_patterns)
+        groups[0]["optional"].extend(unmapped_required)
+        groups[0]["optional"] = sorted(set(groups[0]["optional"]))
+
+    return groups
 
 
 def _map_legacy_patterns_to_v1(patterns: list) -> list:

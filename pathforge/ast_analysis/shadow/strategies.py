@@ -244,6 +244,15 @@ def _evaluate_sliding_window(
         cache_vars = {f.attributes.get("cache_variable", "") for f in facts if f.fact_type in ("cache_lookup", "cache_write")}
         if window_structs & cache_vars:
             fixed_window = False
+        # Also exclude when the structure is written with a variable index
+        # (dict-like pattern: count[prefix] = ...).  A genuine fixed window
+        # writes to arr[i+k] with a loop-variable index, not an arbitrary key.
+        dict_written_structs = {
+            f.attributes.get("structure", "") for f in facts
+            if f.fact_type == "indexed_write" and f.attributes.get("index_type") == "Name"
+        }
+        if window_structs & dict_written_structs:
+            fixed_window = False
 
     if not variable_window and not fixed_window:
         return None

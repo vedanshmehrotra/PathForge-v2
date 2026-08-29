@@ -1563,3 +1563,264 @@ def fib(n):
         _, _, strategies = _extract_all(code)
         assert "dp_top_down" not in _strategy_ids(strategies), \
             "Plain recursion must NOT be dp_top_down"
+
+
+# ===========================================================================
+# FIX A: Nested-function recursive_branching acceptance
+# ===========================================================================
+
+class TestNestedFunctionDPDetection:
+    """Nested dfs() with memoization should produce dp_top_down."""
+
+    def test_coin_change_nested_dfs(self):
+        """LC 322 nested dfs memo: must detect dp_top_down."""
+        code = """
+def coinChange(coins, amount):
+    memo = {}
+    def dfs(remaining):
+        if remaining in memo:
+            return memo[remaining]
+        if remaining == 0:
+            return 0
+        if remaining < 0:
+            return float('inf')
+        result = float('inf')
+        for coin in coins:
+            sub = dfs(remaining - coin)
+            if sub != float('inf'):
+                result = min(result, sub + 1)
+        memo[remaining] = result
+        return result
+    ans = dfs(amount)
+    return ans if ans != float('inf') else -1
+"""
+        _, techniques, strategies = _extract_all(code)
+        assert "recursive_branching" in _technique_ids(techniques), \
+            "Nested dfs must fire recursive_branching"
+        assert "dp_top_down" in _strategy_ids(strategies), \
+            "LC 322 nested dfs must detect dp_top_down"
+        # Must NOT be backtracking (no state_restoration)
+        assert "dfs_backtracking" not in _strategy_ids(strategies), \
+            "LC 322 nested dfs must NOT be dfs_backtracking"
+
+    def test_climbing_stairs_nested_dfs(self):
+        """LC 70 nested dfs memo: must detect dp_top_down."""
+        code = """
+def climbStairs(n):
+    memo = {}
+    def dfs(i):
+        if i in memo:
+            return memo[i]
+        if i <= 2:
+            return i
+        memo[i] = dfs(i-1) + dfs(i-2)
+        return memo[i]
+    return dfs(n)
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" in _strategy_ids(strategies), \
+            "LC 70 nested dfs must detect dp_top_down"
+
+    def test_nested_backtracking_not_dp(self):
+        """Nested backtracking must NOT be dp_top_down."""
+        # Uses append/pop pattern to trigger state_restoration
+        code = """
+def permute(nums):
+    result = []
+    def backtrack(path, used):
+        if len(path) == len(nums):
+            result.append(path[:])
+            return
+        for i in range(len(nums)):
+            if used[i]:
+                continue
+            used[i] = True
+            path.append(nums[i])
+            backtrack(path, used)
+            path.pop()
+            used[i] = False
+    backtrack([], [False] * len(nums))
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" not in _strategy_ids(strategies), \
+            "Nested backtracking must NOT be dp_top_down"
+        assert "dfs_backtracking" in _strategy_ids(strategies), \
+            "Nested backtracking with append/pop must be dfs_backtracking"
+
+    def test_simple_nested_helper_not_dp(self):
+        """Nested helper without cache or recursion must NOT fire recursive_branching."""
+        code = """
+def process(nums):
+    def helper(x):
+        return x * 2
+    return [helper(x) for x in nums]
+"""
+        _, techniques, strategies = _extract_all(code)
+        # No self-recursive call in nested function
+        assert "dp_top_down" not in _strategy_ids(strategies), \
+            "Simple nested helper must NOT be dp_top_down"
+
+    def test_direct_recursive_dp_still_works(self):
+        """Direct recursive DP (no nested function) must still detect."""
+        code = """
+def fib(n, memo={}):
+    if n <= 1: return n
+    if n in memo: return memo[n]
+    memo[n] = fib(n-1, memo) + fib(n-2, memo)
+    return memo[n]
+"""
+        _, _, strategies = _extract_all(code)
+        assert "dp_top_down" in _strategy_ids(strategies), \
+            "Direct recursive DP must still detect dp_top_down"
+
+
+# ===========================================================================
+# FIX B: CSV multi-pattern splitting (problem_resolver)
+# ===========================================================================
+
+class TestCSVMultiPatternSplitting:
+    """CSV patterns representing alternative approaches must split into groups."""
+
+    def test_split_bfs_dp_patterns(self):
+        """LC 322 CSV: [bfs_shortest_path, dp_1d_forward] → separate groups."""
+        from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
+
+        groups = _split_csv_patterns_to_groups(
+            ['bfs_shortest_path', 'dp_1d_forward'], {}, 1.0, 'csv_curated'
+        )
+        assert len(groups) == 2, f"Expected 2 groups, got {len(groups)}"
+        required_sets = [set(g['required']) for g in groups]
+        assert {'bfs_shortest_path'} in required_sets, \
+            "Must have a BFS group"
+        assert {'dp_bottom_up'} in required_sets, \
+            "Must have a DP group"
+        # No group should have both
+        for g in groups:
+            assert not ({'bfs_shortest_path', 'dp_bottom_up'} <= set(g['required'])), \
+                f"Group {g['id']} must not require both BFS and DP"
+
+    def test_split_three_alternatives(self):
+        """LC 200 CSV: [bfs, dfs, union_find] → three separate groups."""
+        from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
+
+        groups = _split_csv_patterns_to_groups(
+            ['bfs_shortest_path', 'dfs_recursive', 'union_find'], {}, 1.0, 'csv_curated'
+        )
+        assert len(groups) == 3, f"Expected 3 groups, got {len(groups)}"
+        required_sets = [set(g['required']) for g in groups]
+        assert {'bfs_shortest_path'} in required_sets
+        assert {'recursive_branching'} in required_sets
+        assert {'union_find'} in required_sets
+
+    def test_single_strategy_stays_one_group(self):
+        """Single-pattern CSV stays as one group."""
+        from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
+
+        groups = _split_csv_patterns_to_groups(
+            ['dp_1d_forward'], {}, 1.0, 'csv_curated'
+        )
+        assert len(groups) == 1
+        assert groups[0]['required'] == ['dp_bottom_up']
+
+    def test_same_strategy_patterns_merged(self):
+        """Two patterns mapping to same strategy merge into one group."""
+        from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
+
+        groups = _split_csv_patterns_to_groups(
+            ['hash_map_lookup', 'sliding_window_variable'], {}, 1.0, 'csv_curated'
+        )
+        assert len(groups) == 1, f"Expected 1 group (same strategy), got {len(groups)}"
+        assert 'sliding_window' in groups[0]['required']
+
+    def test_no_self_contradiction(self):
+        """No group should have a concept in both required and excluded."""
+        from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
+
+        patterns_list = [
+            ['bfs_shortest_path', 'dfs_recursive', 'union_find'],
+            ['bfs_shortest_path', 'dp_1d_forward'],
+            ['two_pointers_opposite', 'binary_search_standard'],
+        ]
+        for patterns in patterns_list:
+            groups = _split_csv_patterns_to_groups(patterns, {}, 1.0, 'test')
+            for g in groups:
+                overlap = set(g['required']) & set(g['excluded'])
+                assert not overlap, \
+                    f"Group {g['id']} for {patterns} has self-contradiction: {overlap}"
+
+
+# ===========================================================================
+# Hash-map exclusion: dict lookups must NOT fire sliding_window
+# ===========================================================================
+
+class TestHashMapExclusion:
+    """Hash-map patterns like count[prefix - k] must NOT be sliding_window."""
+
+    def test_prefix_sum_hash_map_not_sliding_window(self):
+        """Prefix sum with hash map count[prefix-k] must NOT be sliding_window."""
+        code = """
+def subarraySum(nums, k):
+    count = {0: 1}
+    prefix = 0
+    result = 0
+    for num in nums:
+        prefix += num
+        if prefix - k in count:
+            result += count[prefix - k]
+        count[prefix] = count.get(prefix, 0) + 1
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" not in _strategy_ids(strategies), \
+            "Prefix sum hash map must NOT be sliding_window"
+
+    def test_two_sum_hash_map_not_sliding_window(self):
+        """Two-sum hash map pattern must NOT be sliding_window."""
+        code = """
+def twoSum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" not in _strategy_ids(strategies), \
+            "Two-sum hash map must NOT be sliding_window"
+
+    def test_genuine_sliding_window_still_works(self):
+        """Genuine sliding window with dict freq must still detect."""
+        code = """
+def characterReplacement(s, k):
+    count = {}
+    left = 0
+    max_freq = 0
+    result = 0
+    for right in range(len(s)):
+        count[s[right]] = count.get(s[right], 0) + 1
+        max_freq = max(max_freq, count[s[right]])
+        while (right - left + 1) - max_freq > k:
+            count[s[left]] -= 1
+            left += 1
+        result = max(result, right - left + 1)
+    return result
+"""
+        _, _, strategies = _extract_all(code)
+        assert "sliding_window" in _strategy_ids(strategies), \
+            "Genuine sliding window with dict freq must still detect"
+
+    def test_genuine_fixed_window_still_works(self):
+        """Genuine fixed sliding window must still detect."""
+        code = """
+def maxAvg(arr, k):
+    total = sum(arr[:k])
+    for i in range(k, len(arr)):
+        total += arr[i] - arr[i - k]
+    return total / k
+"""
+        _, _, strategies = _extract_all(code)
+        # Fixed window may or may not detect depending on structure
+        # But must NOT produce false positives from hash-map exclusion

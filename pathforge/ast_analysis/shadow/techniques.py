@@ -247,11 +247,14 @@ def _detect_recursive_branching(facts: list[StructuralFact]) -> Optional[Techniq
 
     Required facts:
     1. self_recursive_call — function calls itself
-    2. recursive_call_in_conditional OR multiple_recursive_paths —
-       recursion occurs across distinct branches or call paths
+    2. ONE of:
+       a. recursive_call_in_conditional — recursion in if/else branches
+       b. multiple_recursive_paths — multiple distinct call sites
+       c. nested self-recursion (context=nested_function) — inner helper
+          function calls itself, e.g. memoized top-down DP with a nested dfs()
 
     Does NOT fire for:
-    - Linear recursion (one call site, no branching)
+    - Linear recursion (one call site, no branching, not nested)
     - Mutual recursion (A calls B calls A)
     """
     types = _fact_types(facts)
@@ -260,10 +263,17 @@ def _detect_recursive_branching(facts: list[StructuralFact]) -> Optional[Techniq
     has_conditional = "recursive_call_in_conditional" in types
     has_multiple = "multiple_recursive_paths" in types
 
+    # Nested self-recursion: inner function calls itself (e.g. memoized DP)
+    has_nested_self_recursion = False
+    for f in facts:
+        if f.fact_type == "self_recursive_call" and f.attributes.get("context") == "nested_function":
+            has_nested_self_recursion = True
+            break
+
     if not has_recursive:
         return None
 
-    if not has_conditional and not has_multiple:
+    if not has_conditional and not has_multiple and not has_nested_self_recursion:
         return None
 
     supporting = []
@@ -272,9 +282,13 @@ def _detect_recursive_branching(facts: list[StructuralFact]) -> Optional[Techniq
                            "multiple_recursive_paths"):
             supporting.append(f.fact_id)
 
-    # Centrality: higher if multiple paths, lower if just conditional
-    centrality = 0.8 if has_multiple else 0.65
-    confidence = 0.85 if has_multiple else 0.75
+    # Centrality: higher if multiple paths or nested recursion, lower if just conditional
+    if has_multiple or has_nested_self_recursion:
+        centrality = 0.8
+        confidence = 0.85
+    else:
+        centrality = 0.65
+        confidence = 0.75
 
     return TechniqueEvidence(
         technique_id="recursive_branching",
