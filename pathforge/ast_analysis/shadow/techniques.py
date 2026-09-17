@@ -10,6 +10,7 @@ Implements techniques from PATHFORGE_TECHNIQUE_STRATEGY_VOCABULARY_V1.md:
 - T8: linked_list_traversal (Phase 5A)
 - T9: fixed_window_maintenance (Phase 5A)
 - T10: monotonic_stack_maintenance (Phase 5A)
+- T11: forward_pointer_advance (same-direction two pointers)
 
 Each detector:
 1. Looks for required structural facts
@@ -38,6 +39,7 @@ def detect_techniques(facts: list[StructuralFact]) -> list[TechniqueEvidence]:
         _detect_linked_list_traversal,
         _detect_fixed_window_maintenance,
         _detect_monotonic_stack_maintenance,
+        _detect_forward_pointer_advance,
     ]
     results = []
     for detector in detectors:
@@ -60,47 +62,60 @@ def _facts_of_type(facts: list[StructuralFact], fact_type: str) -> list[Structur
 def _detect_sequential_accumulation(facts: list[StructuralFact]) -> Optional[TechniqueEvidence]:
     """T1: Sequential Accumulation
 
-    Required facts:
-    1. loop_shape (while_loop_comparison or loop structure)
-    2. accumulator_update (a variable updated via += or x = x + ...)
-    3. loop_variable_in_update (the loop variable appears in the update expression)
+    Required evidence:
+    1. A loop (``while_loop_comparison`` or ``for_loop_iteration``)
+    2. A self-referential accumulator update (``accumulator_update``)
+    3. The accumulator variable is distinct from the loop variable
 
-    The accumulator must be self-referential: updated from its own prior value.
+    The accumulator must be self-referential: updated from its own prior value
+    (e.g. ``total += x`` or ``x = x + 1``).  ``result.append(x)`` does NOT
+    qualify because ``result`` never appears on the right-hand side.
+
+    For-loop variant: when a ``for_loop_iteration`` fact provides the loop
+    variable, the fact that the ``accumulator_update`` was extracted from the
+    same function body is sufficient evidence that the update is inside the
+    loop, provided the accumulator variable differs from the loop variable.
     """
     types = _fact_types(facts)
-
-    has_loop = "while_loop_comparison" in types
     acc_facts = _facts_of_type(facts, "accumulator_update")
-
-    if not has_loop or not acc_facts:
+    if not acc_facts:
         return None
 
-    # Find accumulator_update facts where the variable is modified in the loop
-    # and the update expression involves the loop variable
-    supporting = []
-    for acc in acc_facts:
-        var = acc.attributes.get("variable", "")
-        # Check if this variable is also in the while_loop_comparison's modified list
-        for wc in _facts_of_type(facts, "while_loop_comparison"):
-            modified = wc.attributes.get("modified_variables", [])
-            if var in modified:
-                supporting.append(wc.fact_id)
+    has_while = "while_loop_comparison" in types
+    has_for = "for_loop_iteration" in types
+    if not has_while and not has_for:
+        return None
+
+    supporting: list = []
+
+    if has_while:
+        # Original path: accumulator variable must appear in the while loop's
+        # modified_variables list, proving it is updated inside the loop body.
+        for acc in acc_facts:
+            var = acc.attributes.get("variable", "")
+            for wc in _facts_of_type(facts, "while_loop_comparison"):
+                if var in (wc.attributes.get("modified_variables") or []):
+                    supporting.append(wc.fact_id)
+                    supporting.append(acc.fact_id)
+                    break
+    elif has_for:
+        # For-loop path: the accumulator must differ from the loop variable.
+        # Both ``total += x`` and ``total += i`` qualify (the accumulator is
+        # self-referential and updated inside the loop body — the fact was
+        # extracted from the loop body, which the extractor only visits when
+        # the assignment is syntactically inside the for-loop).
+        loop_var = ""
+        for fl in _facts_of_type(facts, "for_loop_iteration"):
+            loop_var = fl.attributes.get("loop_variable", "")
+            supporting.append(fl.fact_id)
+            break
+        for acc in acc_facts:
+            var = acc.attributes.get("variable", "")
+            if var and var != loop_var:
                 supporting.append(acc.fact_id)
-                break
 
     if not supporting:
         return None
-
-    # Also check if loop variable appears in the update expression
-    # (heuristic: the accumulator update is inside the loop body)
-    # For now, if we have a loop + accumulator + the accumulator var is modified
-    # in the loop, that's sufficient
-    has_loop_fact = any(f.fact_type == "while_loop_comparison" for f in facts)
-    if has_loop_fact:
-        for f in facts:
-            if f.fact_type == "while_loop_comparison":
-                supporting.append(f.fact_id)
-                break
 
     # Deduplicate
     supporting = list(dict.fromkeys(supporting))
@@ -512,6 +527,117 @@ def _detect_fixed_window_maintenance(facts: list[StructuralFact]) -> Optional[Te
 # ============================================================
 # T10: Monotonic Stack Maintenance (Phase 5A)
 # ============================================================
+
+# ============================================================
+# T11: Forward Pointer Advance (same-direction two pointers)
+# ============================================================
+
+def _has_genuine_opposite_scan(facts: list[StructuralFact]) -> bool:
+    """True when a loop compares two variables that are both modified in it.
+
+    That is the opposite-direction scan shape (left += 1 / right -= 1 under
+    ``while left < right``), which is bidirectional_index_scan's territory.
+    """
+    for wc in _facts_of_type(facts, "while_loop_comparison"):
+        compared = set(wc.attributes.get("compared_variables", []))
+        modified = set(wc.attributes.get("modified_variables", []))
+        if compared and compared <= modified:
+            return True
+    return False
+
+
+def _advanced_variables(facts: list[StructuralFact]) -> set:
+    """Variables advanced/updated inside loops, from augmented and conditional updates."""
+    advanced = set()
+    for f in facts:
+        if f.fact_type == "accumulator_update":
+            var = f.attributes.get("variable", "")
+            if var:
+                advanced.add(var)
+        elif f.fact_type == "conditional_index_update":
+            advanced.update(f.attributes.get("updated_variables", []))
+    return advanced
+
+
+def _detect_forward_pointer_advance(facts: list[StructuralFact]) -> Optional[TechniqueEvidence]:
+    """T11: Forward Pointer Advance (same-direction two pointers)
+
+    Two or more pointers progressing through the SAME sequence in the SAME
+    direction (array indices moving right, or multiple node references
+    walking .next/.left/.right). Built entirely from facts that already
+    exist — no new fact types:
+
+    Path A (linked / pointer structures): ``multiple_pointer_traversal``
+        itself requires two or more distinct receivers accessing
+        .next/.left/.right inside a while-loop body, which is exactly
+        same-direction multi-pointer progression.
+
+    Path B (subscripted sequences): at least two distinct variables are used
+        as subscript indices (``subscript_index_access``) and at least one of
+        them is advanced inside a loop (``accumulator_update`` /
+        ``conditional_index_update``). That is the arr[left]/arr[right] shape
+        with one pointer stepping forward.
+
+    Absence constraint: a genuine opposite-direction scan is excluded. That
+    shape belongs to ``bidirectional_index_scan``, whose behavior is
+    unchanged; this technique exists because same-direction progression had
+    no representation at all.
+
+    Does NOT fire for:
+    - opposite-direction scans (two pointers converging)
+    - single-index iteration loops (only one index variable participates)
+    - scalar accumulation loops (no index participation)
+    """
+    types = _fact_types(facts)
+    has_loop = bool(
+        {"while_loop_comparison", "while_loop_truthiness", "for_loop_iteration"} & types
+    )
+
+    # Path A: existing structural evidence of multi-pointer traversal.
+    # multiple_pointer_traversal is emitted only from while-loop bodies,
+    # so it already implies a loop for linked-structure code.
+    has_multi_pointer = "multiple_pointer_traversal" in types
+
+    # Path B: index participation on a subscripted sequence.
+    # Union-find root chasing (while parent[x] != x: x = parent[x]) also reads
+    # as "an index variable advanced inside a loop", but it is pointer chasing
+    # through a parent array, not two pointers progressing through a sequence.
+    # parent_pointer_chase already identifies that shape, so it excludes path B.
+    index_vars = _collect_subscript_index_vars(facts)
+    advanced_index_vars = index_vars & _advanced_variables(facts)
+    has_index_pair = (
+        has_loop
+        and len(index_vars) >= 2
+        and bool(advanced_index_vars)
+        and "parent_pointer_chase" not in types
+    )
+
+    if not (has_multi_pointer or has_index_pair):
+        return None
+
+    if _has_genuine_opposite_scan(facts):
+        return None
+
+    wanted = {
+        "multiple_pointer_traversal", "subscript_index_access",
+        "accumulator_update", "conditional_index_update",
+        "while_loop_comparison", "while_loop_truthiness", "for_loop_iteration",
+        "linked_structure_traversal", "pointer_rewiring",
+    }
+    supporting = [f.fact_id for f in facts if f.fact_type in wanted]
+
+    # Corroborated by two independent structural paths = higher confidence.
+    confidence = 0.85 if (has_multi_pointer and has_index_pair) else 0.8
+    centrality = 0.75
+
+    return TechniqueEvidence(
+        technique_id="forward_pointer_advance",
+        technique_version="1.0.0",
+        supporting_fact_ids=supporting,
+        presence_confidence=confidence,
+        centrality=centrality,
+    )
+
 
 def _detect_monotonic_stack_maintenance(facts: list[StructuralFact]) -> Optional[TechniqueEvidence]:
     """T10: Monotonic Stack Maintenance

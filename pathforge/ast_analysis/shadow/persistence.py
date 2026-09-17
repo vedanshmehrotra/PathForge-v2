@@ -129,6 +129,7 @@ def serialize_match_outcome(outcome: MatchOutcome) -> dict:
         "technique_count": len(outcome.technique_evidence),
         "strategy_count": len(outcome.strategy_evidence),
         "fact_count": len(outcome.structural_facts),
+        "unmatchable_group_ids": outcome.unmatchable_group_ids,
     }
 
 
@@ -148,6 +149,7 @@ def deserialize_match_outcome(
         structural_facts=structural_facts,
         primary_strategy=data.get("primary_strategy"),
         reasoning=data.get("reasoning", []),
+        unmatchable_group_ids=data.get("unmatchable_group_ids", []),
     )
 
 

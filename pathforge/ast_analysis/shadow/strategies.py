@@ -71,6 +71,41 @@ def _get_technique_confidence(tech_id: str, evidence: list[TechniqueEvidence]) -
     return 0.0
 
 
+def _subscript_index_vars(facts: list[StructuralFact]) -> set:
+    """Variables used as subscript indices (arr[i], s[left], ...)."""
+    index_vars = set()
+    for f in facts:
+        if f.fact_type == "subscript_index_access":
+            index_vars.update(f.attributes.get("index_variables", []))
+    return index_vars
+
+
+def _conditionally_updated_vars(facts: list[StructuralFact]) -> set:
+    """Variables updated under a loop body's condition/iteration."""
+    updated = set()
+    for f in facts:
+        if f.fact_type == "conditional_index_update":
+            updated.update(f.attributes.get("updated_variables", []))
+    return updated
+
+
+def _has_range_driven_index_loop(facts: list[StructuralFact], index_vars: set) -> bool:
+    """True when a range-driven loop's variable indexes the collection.
+
+    ``for right in range(len(s)):`` with ``s[right]`` is the canonical window
+    driver: the loop variable is the leading edge of the window.
+    """
+    for f in facts:
+        if f.fact_type != "for_loop_iteration":
+            continue
+        if not f.attributes.get("is_range"):
+            continue
+        loop_var = f.attributes.get("loop_variable")
+        if loop_var and loop_var in index_vars:
+            return True
+    return False
+
+
 def _collect_supporting_facts(
     fact_types_wanted: set,
     facts: list[StructuralFact],
@@ -213,13 +248,19 @@ def _evaluate_sliding_window(
 
     Required structural constraints:
     - loop (while or for)
-    - for variable window: state variable used in later expression
+    - for variable window: state variable used in later expression AND
+      index participation, meaning either the conditionally updated
+      variable is itself a subscript-index variable, or the collection is
+      traversed by a range-driven index loop (the shrink step must actually
+      move a pointer into the collection)
     - for fixed window: constant window offset
 
     Must NOT classify:
     - two-pointer palindrome (no variable_use, unconditional updates)
     - generic loop with if statement
     - binary search (has midpoint)
+    - state-only loops whose shrink step never indexes a collection
+      (repeated subtraction, exponentiation by squaring, digit loops)
     """
     tech_ids = _technique_ids(technique_evidence)
     fact_types = _fact_types(facts)
@@ -232,8 +273,28 @@ def _evaluate_sliding_window(
     has_fixed_window = "fixed_window_maintenance" in tech_ids
     has_window_constant = "window_size_constant" in fact_types
 
-    # Must have at least one of these paths
-    variable_window = has_loop_state and has_variable_use
+    # Must have at least one of these paths.
+    #
+    # Index participation: a variable window is only a window if the code
+    # actually moves a pointer into the collection. Without this constraint,
+    # ANY loop that carries state and re-reads it (a nested doubling loop such
+    # as repeated subtraction / exponentiation by squaring, digit loops, plain
+    # while-accumulation) satisfies loop_state_tracking +
+    # variable_use_in_loop_body and is wrongly promoted to a window.
+    #
+    # Two structural forms count as participation, both from existing facts:
+    #   (i)  the conditionally updated variable is itself read as a subscript
+    #        index (the shrink pointer reads nums[left] / s[left]); or
+    #   (ii) the loop is range-driven and its variable indexes the collection
+    #        (for right in range(len(s)): ... s[right]), which covers the
+    #        jump-style window where the left boundary is only used in
+    #        window-size arithmetic (right - left + 1) and never as an index.
+    index_vars = _subscript_index_vars(facts)
+    window_index_participation = bool(
+        _conditionally_updated_vars(facts) & index_vars
+    ) or _has_range_driven_index_loop(facts, index_vars)
+
+    variable_window = has_loop_state and has_variable_use and window_index_participation
     fixed_window = has_fixed_window and has_window_constant
 
     # Exclude fixed windows where the structure is also a cache (dict/hash map)

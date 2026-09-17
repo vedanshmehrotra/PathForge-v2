@@ -1,10 +1,15 @@
 """Ground truth builder — generates structured solution groups from LLM output.
 
 Phase 4A: Multi-group generation with V1 vocabulary mapping and validation.
+Batch 2A: vocabulary-aware re-derivation, matchability enforcement and
+consistency checking between the flat pattern label and the structured groups.
 """
 import json
+import logging
 
 from pathforge.ast_engine.patterns import ALL_PATTERNS
+
+logger = logging.getLogger(__name__)
 from pathforge.db.profile_manager import iso_now
 from pathforge.llm.openrouter_client import call_llm
 
@@ -28,6 +33,7 @@ VALID_TECHNIQUES = {
     "linked_list_traversal",       # Phase 5A
     "fixed_window_maintenance",    # Phase 5A
     "monotonic_stack_maintenance", # Phase 5A
+    "forward_pointer_advance",     # Batch 1: same-direction two pointers
 }
 
 # Valid strategy IDs from PATHFORGE_TECHNIQUE_STRATEGY_VOCABULARY_V1.md
@@ -101,10 +107,15 @@ PATTERN_TO_V1_MAPPING = {
         "note": "Maps directly to two_pointers_opposite strategy",
     },
     "two_pointers_same": {
-        "required": ["bidirectional_index_scan"],
+        "required": ["forward_pointer_advance"],
         "optional": [],
         "excluded": ["two_pointers_opposite"],
-        "note": "Same-direction two pointers maps to bidirectional_index_scan technique",
+        "note": (
+            "Same-direction two pointers map to forward_pointer_advance. "
+            "bidirectional_index_scan is reserved for opposite-direction scans "
+            "(it requires opposite_direction_updates) and cannot be produced "
+            "by a same-direction implementation."
+        ),
     },
     # Graphs & Trees
     "dfs_recursive": {
@@ -194,10 +205,13 @@ PATTERN_TO_V1_MAPPING = {
     },
     # Linked Lists & Stack
     "fast_slow_pointers": {
-        "required": ["bidirectional_index_scan"],
+        "required": ["forward_pointer_advance"],
         "optional": [],
         "excluded": [],
-        "note": "Fast/slow pointers map to bidirectional_index_scan technique",
+        "note": (
+            "Fast/slow pointers are same-direction progression and map to "
+            "forward_pointer_advance (multiple_pointer_traversal evidence)."
+        ),
     },
     "linked_list_reversal": {
         "required": ["linked_list_traversal"],
@@ -268,6 +282,242 @@ PATTERN_TO_V1_MAPPING = {
         "note": "Maps to dfs_backtracking strategy",
     },
 }
+
+
+# ============================================================
+# Batch 2A: matchability, vocabulary refresh and consistency
+# ============================================================
+
+# Legacy patterns that the current V1 vocabulary has no concept for. A group
+# derived from one of these alone can never be satisfied, so it must be exposed
+# as unmatchable rather than persisted as if it were a normal requirement.
+MISSING_VOCABULARY_PATTERNS = frozenset(
+    pattern
+    for pattern, mapping in PATTERN_TO_V1_MAPPING.items()
+    if not mapping.get("required")
+)
+
+# Provenance marker applied by _build_single_group. A group carrying it had its
+# required/optional/excluded computed by the V1 vocabulary mapping at the time
+# ground truth was generated, which means the concepts are reproducibly derived
+# from the legacy patterns and may be re-derived when the mapping improves.
+VOCABULARY_DERIVATION_MARKER = "vocabulary_v1"
+
+# Provenance marker appended when a stored group's concepts are re-derived.
+VOCABULARY_REFRESH_MARKER = "vocabulary_refresh"
+
+
+def missing_vocabulary_for_patterns(patterns) -> list:
+    """Return the legacy patterns that have no concept in the current vocabulary."""
+    return sorted({p for p in (patterns or []) if p in MISSING_VOCABULARY_PATTERNS})
+
+
+def _derive_concepts_from_patterns(patterns) -> tuple:
+    """Apply the CURRENT mapping to legacy patterns, returning (required, excluded)."""
+    required = set()
+    excluded = set()
+    for pattern in patterns or []:
+        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+        if not mapping:
+            continue
+        required.update(mapping.get("required", []))
+        excluded.update(mapping.get("excluded", []))
+    required -= excluded
+    return sorted(required), sorted(excluded)
+
+
+def group_matchability(group: dict) -> tuple:
+    """Decide whether a solution group can ever be satisfied.
+
+    A group is matchable only when it carries at least one ``required`` concept.
+    A group whose required list is empty is unsatisfiable by construction and
+    must never be presented as a normal requirement. Returns (matchable, reason);
+    the reason names the missing vocabulary instead of inventing a requirement.
+    """
+    if group.get("required"):
+        return True, ""
+
+    patterns = list(group.get("patterns") or [])
+    if not patterns:
+        return False, (
+            "missing_vocabulary: group has no required concepts and no legacy "
+            "patterns to derive them from"
+        )
+
+    missing = missing_vocabulary_for_patterns(patterns)
+    if missing:
+        return False, (
+            "missing_vocabulary: the V1 vocabulary defines no concept for legacy "
+            "pattern(s) " + ", ".join(missing)
+        )
+
+    return False, (
+        "missing_vocabulary: no required concept could be derived from legacy "
+        "pattern(s) " + ", ".join(sorted(patterns))
+    )
+
+
+def mark_group_matchability(group: dict) -> dict:
+    """Annotate a group with its matchability, in place.
+
+    Unmatchable groups keep their legacy patterns so the missing vocabulary is
+    visible to callers, but are explicitly flagged so they are never persisted
+    or emitted as a satisifiable requirement.
+    """
+    matchable, reason = group_matchability(group)
+    group["matchable"] = matchable
+    if matchable:
+        group.pop("matchability_reason", None)
+    else:
+        group["validation"] = "unmatchable"
+        group["matchability_reason"] = reason
+    return group
+
+
+def refresh_group_vocabulary(group: dict, sibling_requirements: dict) -> bool:
+    """Re-derive a vocabulary-derived group's concepts from its own patterns.
+
+    Stored groups keep the ``required`` list that the mapping produced when they
+    were generated. When the vocabulary improves, those concepts can be stale
+    and permanently unsatisfiable, so they are recomputed here from the group's
+    own legacy patterns using the current mapping.
+
+    Skipped when:
+    - the group was not derived by the vocabulary mapping (curated concepts),
+    - the group has no legacy patterns, or has patterns outside the mapping,
+    - sibling groups share the same patterns but require different concepts:
+      that difference is curated information the mapping cannot reproduce.
+
+    Returns True when the group changed.
+    """
+    provenance = list(group.get("provenance") or [])
+    if VOCABULARY_DERIVATION_MARKER not in provenance:
+        return False
+
+    patterns = list(group.get("patterns") or [])
+    if not patterns:
+        return False
+    if any(pattern not in PATTERN_TO_V1_MAPPING for pattern in patterns):
+        return False
+
+    key = tuple(sorted(patterns))
+    if len(sibling_requirements.get(key, set())) > 1:
+        return False
+
+    required, excluded = _derive_concepts_from_patterns(patterns)
+    if sorted(group.get("required") or []) == required and \
+            sorted(group.get("excluded") or []) == excluded:
+        return False
+
+    group["required"] = required
+    group["excluded"] = excluded
+    group["optional"] = sorted(
+        set(group.get("optional") or []) - set(required) - set(excluded)
+    )
+    if VOCABULARY_REFRESH_MARKER not in provenance:
+        provenance.append(VOCABULARY_REFRESH_MARKER)
+    group["provenance"] = provenance
+    return True
+
+
+def refresh_groups_vocabulary(groups: list) -> list:
+    """Refresh every stale vocabulary-derived group. Returns the changed group ids."""
+    sibling_requirements = {}
+    for group in groups or []:
+        key = tuple(sorted(group.get("patterns") or []))
+        sibling_requirements.setdefault(key, set()).add(
+            tuple(sorted(group.get("required") or []))
+        )
+
+    refreshed = []
+    for group in groups or []:
+        if refresh_group_vocabulary(group, sibling_requirements):
+            refreshed.append(group.get("id", ""))
+    return refreshed
+
+
+def find_ground_truth_disagreements(patterns, groups) -> list:
+    """Detect drift between the flat pattern label and structured solution groups.
+
+    ``problems.pattern`` (and the legacy flat list) is one representation of the
+    accepted approaches; the structured groups are another. They are allowed to
+    describe the same set of approaches, but they must not silently disagree.
+    Returns a list of structured findings, each with a ``kind``:
+
+    - ``pattern_not_in_groups``: a declared pattern no group covers.
+    - ``group_pattern_not_declared``: a group pattern the flat label omits.
+    - ``concept_not_derived_from_patterns``: a group requires a concept the
+      mapping cannot derive from the patterns those concepts came from (e.g.
+      alternative groups that the flat label cannot express).
+
+    The concept check compares against ``derivation_patterns`` when present —
+    reconciliation deliberately lets a curated pattern label override the
+    production patterns, so the label alone cannot judge derivability.
+    - ``unmatchable_group``: the group has no required concept at all.
+    """
+    declared = list(patterns or [])
+    declared_set = set(declared)
+
+    group_patterns = set()
+    for group in groups or []:
+        group_patterns.update(group.get("patterns") or [])
+
+    findings = []
+
+    for pattern in sorted(declared_set - group_patterns):
+        findings.append({
+            "kind": "pattern_not_in_groups",
+            "pattern": pattern,
+            "detail": f"declared pattern '{pattern}' is not covered by any solution group",
+        })
+
+    for pattern in sorted(group_patterns - declared_set):
+        findings.append({
+            "kind": "group_pattern_not_declared",
+            "pattern": pattern,
+            "detail": f"solution group pattern '{pattern}' is not in the declared pattern list",
+        })
+
+    for group in groups or []:
+        group_id = group.get("id", "")
+        required = list(group.get("required") or [])
+
+        if not required:
+            _, reason = group_matchability(group)
+            findings.append({
+                "kind": "unmatchable_group",
+                "group_id": group_id,
+                "patterns": list(group.get("patterns") or []),
+                "detail": reason,
+            })
+            continue
+
+        source_patterns = list(
+            group.get("derivation_patterns") or group.get("patterns") or []
+        )
+        if not source_patterns or any(
+            p not in PATTERN_TO_V1_MAPPING for p in source_patterns
+        ):
+            # Concepts were not derived from a recognised legacy pattern set,
+            # so derivability cannot be judged. Not a drift finding.
+            continue
+
+        derivable, _ = _derive_concepts_from_patterns(source_patterns)
+        derivable_set = set(derivable)
+        for concept in sorted(set(required) - derivable_set):
+            findings.append({
+                "kind": "concept_not_derived_from_patterns",
+                "group_id": group_id,
+                "concept": concept,
+                "derivable_concepts": sorted(derivable_set),
+                "patterns": list(group.get("patterns") or []),
+                "detail": (
+                    f"group '{group_id}' requires '{concept}', which the current "
+                    f"vocabulary cannot derive from its patterns {source_patterns}"
+                ),
+            })
+
+    return findings
 
 
 def build_ground_truth(problem_id: int, problem_description: str, connection) -> list[str]:
@@ -382,6 +632,11 @@ def _build_solution_groups(
             # but mark them clearly
             validated_groups.append(group)
 
+    # Batch 2A: a group with no required concept cannot be satisfied. Expose the
+    # missing vocabulary instead of letting an unsatisfiable group look normal.
+    for group in validated_groups:
+        mark_group_matchability(group)
+
     return validated_groups
 
 
@@ -429,7 +684,7 @@ def _build_single_group(
         "authority_tier": "llm_proposed",
         "provenance": [
             "llm_ground_truth",
-            f"vocabulary_v1",
+            VOCABULARY_DERIVATION_MARKER,
         ],
         "approach_name": approach_name,
         "unmapped_patterns": unmapped_patterns,
@@ -639,7 +894,31 @@ def _store_ground_truth(
 
     # Phase 4A: multi-group structured solution groups with V1 vocabulary
     solution_groups = _build_solution_groups(patterns, confidence, approaches)
-    solution_groups_json = json.dumps(solution_groups)
+
+    # Batch 2A: never persist an unsatisfiable group. Groups whose legacy
+    # patterns have no concept in the current vocabulary are dropped here and
+    # the missing vocabulary is named, so the gap is visible instead of being
+    # stored as a matchable requirement that can never be satisfied.
+    persistable_groups = [g for g in solution_groups if g.get("matchable", True)]
+    unmatchable_groups = [g for g in solution_groups if not g.get("matchable", True)]
+    if unmatchable_groups:
+        missing_vocabulary = sorted({
+            p
+            for g in unmatchable_groups
+            for p in (g.get("patterns") or [])
+            if p in MISSING_VOCABULARY_PATTERNS
+        })
+        logger.warning(
+            "Ground truth for problem %d has no matchable concept for legacy "
+            "pattern(s) %s; %d unsatisfiable group(s) were not persisted. "
+            "Patterns=%s",
+            problem_id,
+            missing_vocabulary or "(undetermined)",
+            len(unmatchable_groups),
+            patterns,
+        )
+
+    solution_groups_json = json.dumps(persistable_groups)
 
     connection.execute(
         """

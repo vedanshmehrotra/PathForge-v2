@@ -115,9 +115,9 @@ class TestVocabularyMapping:
 
     def test_valid_concepts_are_known(self):
         """All valid V1 concepts are registered."""
-        assert len(VALID_TECHNIQUES) == 9  # 6 original + 3 Phase 5A
+        assert len(VALID_TECHNIQUES) == 10  # 6 original + 3 Phase 5A + forward_pointer_advance
         assert len(VALID_STRATEGIES) == 9  # 8 original + 1 Phase 5A
-        assert len(VALID_V1_CONCEPTS) == 18  # 9 + 9
+        assert len(VALID_V1_CONCEPTS) == 19  # 10 + 9
 
     def test_binary_search_maps_correctly(self):
         """binary_search_standard maps to binary_search strategy."""

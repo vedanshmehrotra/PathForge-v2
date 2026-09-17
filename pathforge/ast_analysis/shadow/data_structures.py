@@ -57,6 +57,11 @@ class MatchOutcome:
     """The result of solution-group satisfaction matching.
 
     Three possible outcomes: CONFIRMED, UNRESOLVED, CONTRADICTED.
+
+    unmatchable_group_ids lists groups that carry no satisfiable requirement
+    (empty ``required``). Such a group can never be satisfied by any
+    submission, so it is reported explicitly instead of looking like
+    "insufficient evidence".
     """
     outcome: str = "UNRESOLVED"
     satisfied_group_ids: list = field(default_factory=list)
@@ -66,3 +71,4 @@ class MatchOutcome:
     structural_facts: list = field(default_factory=list)
     primary_strategy: Optional[str] = None
     reasoning: list = field(default_factory=list)
+    unmatchable_group_ids: list = field(default_factory=list)

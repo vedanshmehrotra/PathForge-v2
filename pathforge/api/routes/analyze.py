@@ -56,6 +56,9 @@ class ProblemInfo(BaseModel):
     title: Optional[str] = None
     difficulty: Optional[str] = None
     canonical_patterns: list[CanonicalPattern] = []
+    # Batch 2A: disagreements between the flat pattern label and the
+    # structured solution groups (empty when the two representations agree).
+    ground_truth_consistency: list[dict] = []
 
 
 class EloUpdate(BaseModel):
@@ -149,6 +152,9 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 title=ctx.title,
                 difficulty=ctx.difficulty,
                 canonical_patterns=canonical_patterns,
+                ground_truth_consistency=getattr(
+                    ctx, "ground_truth_consistency", []
+                ) or [],
             )
 
         try:

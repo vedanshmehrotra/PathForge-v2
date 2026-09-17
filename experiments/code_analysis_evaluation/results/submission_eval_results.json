@@ -1,0 +1,751 @@
+{
+  "generated_at": "2026-09-16T13:00:24.050228+00:00",
+  "analysed": 9,
+  "skipped_already_seen": 0,
+  "records": [
+    {
+      "fingerprint": "d709a8fb58376a51773aa5ea3f50828108bef83d3ca6b173f0f4718306d518ab",
+      "external_submission_id": "case1-lc21",
+      "problem_id": 21,
+      "title": "Merge Two Sorted Lists",
+      "expected_patterns": [
+        "two_pointers_same"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "bidirectional_index_scan"
+          ],
+          "optional": [],
+          "excluded": [
+            "two_pointers_opposite"
+          ]
+        }
+      ],
+      "source_code": "class Solution:\n    def mergeTwoLists(self, list1, list2):\n        dummy = ListNode()\n        tail = dummy\n        while list1 and list2:\n            if list1.val <= list2.val:\n                tail.next = list1\n                list1 = list1.next\n            else:\n                tail.next = list2\n                list2 = list2.next\n            tail = tail.next\n        tail.next = list1 if list1 else list2\n        return dummy.next\n",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.3,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_008",
+            "fact_014"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_004",
+            "fact_006",
+            "fact_008",
+            "fact_010",
+            "fact_012",
+            "fact_014"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 18,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal",
+        "node_constructor",
+        "pointer_rewiring"
+      ],
+      "analysed_at": "2026-09-16T13:00:16.805865+00:00",
+      "root_causes": [
+        "required_bidirectional_scan_needs_opposite_updates",
+        "required_concept_not_detected"
+      ]
+    },
+    {
+      "fingerprint": "f3d760f52b9c1090fec7894a32ee051f3adbd6e907c9770100e5d6fcf0b2d449",
+      "external_submission_id": "case2-lc29",
+      "problem_id": 29,
+      "title": "Divide Two Integers",
+      "expected_patterns": [
+        "binary_search_answer"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "binary_search"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ]
+        }
+      ],
+      "source_code": "class Solution:\n    def divide(self, dividend, divisor):\n        dividend, divisor = abs(dividend), abs(divisor)\n        quotient = 0\n        while dividend >= divisor:\n            value = divisor\n            multiple = 1\n            while dividend >= (value << 1):\n                value <<= 1\n                multiple <<= 1\n            dividend -= value\n            quotient += multiple\n        return quotient\n",
+      "error": null,
+      "production_detected_patterns": [
+        "brute_force"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "binary_search_answer"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_004",
+            "fact_005",
+            "fact_000",
+            "fact_007"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_004",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 10,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "opposite_direction_updates",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-16T13:00:17.766679+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "required_concept_not_detected"
+      ]
+    },
+    {
+      "fingerprint": "b1f13e0c5c4e52375e0ec09e40c6d0371639df74b7c1f2b488d228df0c840b69",
+      "external_submission_id": "case3-lc4284",
+      "problem_id": 4284,
+      "title": "Smallest Stable Index I",
+      "expected_patterns": [
+        "two_pointers_same",
+        "prefix_sum"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "bidirectional_index_scan"
+          ],
+          "optional": [],
+          "excluded": [
+            "two_pointers_opposite"
+          ]
+        },
+        {
+          "id": "group_1",
+          "required": [
+            "sequential_accumulation"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": []
+        }
+      ],
+      "source_code": "class Solution:\n    def smallestStableIndex(self, nums):\n        n = len(nums)\n        total = sum(nums)\n        best = -1\n        for i in range(n):\n            if max(nums[i:]) <= total - nums[i]:\n                if best == -1:\n                    best = i\n        return best\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "prefix_sum",
+        "two_pointers_same"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed",
+        "Group group_1: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_count": 4,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-16T13:00:18.730690+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "required_accumulation_needs_while_loop",
+        "required_bidirectional_scan_needs_opposite_updates",
+        "required_concept_not_detected",
+        "no_technique_evidence"
+      ]
+    },
+    {
+      "fingerprint": "02caf086a1f16c1dba3175be5c37d4144e3b6c779bcf1084f7e07125c4dca275",
+      "external_submission_id": "case4-lc4256",
+      "problem_id": 4256,
+      "title": "Construct Uniform Parity Array I",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [],
+          "optional": [
+            "sequential_accumulation"
+          ],
+          "excluded": []
+        }
+      ],
+      "source_code": "class Solution:\n    def constructUniformParityArray(self, nums):\n        candidate = -1\n        for x in nums:\n            if x % 2 == 1:\n                candidate = x\n                break\n        if candidate == -1:\n            return []\n        for i in range(len(nums)):\n            if nums[i] % 2 == 0:\n                nums[i] = candidate\n        return nums\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "greedy_local"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [
+        "group_0"
+      ],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unmatchable, authority=llm_proposed",
+        "Group group_0: required is empty \u2014 group is unmatchable (no concept can satisfy it; expected-approach vocabulary gap)"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_count": 9,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "parent_root_merge",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-16T13:00:19.688157+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "group_unsatisfiable_empty_required",
+        "group_unmatchable_empty_required"
+      ]
+    },
+    {
+      "fingerprint": "8021ca7e1ff52bcd48dad4f13e7c64e40d7c9c00ee8694140758dd487c733b51",
+      "external_submission_id": "case5-lc4258",
+      "problem_id": 4258,
+      "title": "Construct Uniform Parity Array II",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [],
+          "optional": [
+            "sequential_accumulation"
+          ],
+          "excluded": []
+        }
+      ],
+      "source_code": "class Solution:\n    def constructUniformParityArray(self, nums):\n        candidate = -1\n        for x in nums:\n            if x % 2 == 1 and x > candidate:\n                candidate = x\n        for i in range(len(nums)):\n            if nums[i] % 2 == 0:\n                nums[i] = candidate\n        return nums\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "greedy_local"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [
+        "group_0"
+      ],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unmatchable, authority=llm_proposed",
+        "Group group_0: required is empty \u2014 group is unmatchable (no concept can satisfy it; expected-approach vocabulary gap)"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_count": 8,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "parent_root_merge",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-16T13:00:20.644865+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "group_unsatisfiable_empty_required",
+        "group_unmatchable_empty_required"
+      ]
+    },
+    {
+      "fingerprint": "044e6795f1956be355981d1fe72f740e682c3dee702f32448a24dfdd5c6542e7",
+      "external_submission_id": "regression-lc283",
+      "problem_id": 283,
+      "title": "Move Zeroes",
+      "expected_patterns": [
+        "two_pointers_same"
+      ],
+      "group_source": "expected_patterns",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "forward_pointer_advance"
+          ],
+          "optional": [],
+          "excluded": [
+            "two_pointers_opposite"
+          ]
+        }
+      ],
+      "source_code": "class Solution:\n    def moveZeroes(self, nums):\n        left = 0\n        for right in range(len(nums)):\n            if nums[right] != 0:\n                nums[left], nums[right] = nums[right], nums[left]\n                left += 1\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "two_pointers_same"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_006",
+            "fact_001"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_006",
+            "fact_007"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 8,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "for_loop_iteration",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-16T13:00:21.371005+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "ba9010e396daa8102ff4782623ac979819188aad4c84c679d46ff00dc6afaf04",
+      "external_submission_id": "regression-lc167",
+      "problem_id": 167,
+      "title": "Two Sum II",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "expected_patterns",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [],
+          "excluded": [
+            "binary_search"
+          ]
+        }
+      ],
+      "source_code": "class Solution:\n    def twoSum(self, numbers, target):\n        left = 0\n        right = len(numbers) - 1\n        while left < right:\n            cur = numbers[left] + numbers[right]\n            if cur == target:\n                return [left + 1, right + 1]\n            elif cur < target:\n                left += 1\n            else:\n                right -= 1\n        return []\n",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": "two_pointers_opposite",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.900, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_007",
+            "fact_008"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 10,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-16T13:00:22.110610+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "545a40a025194c4a1aeabe557b8646fd777170add044538af4138c5e5ac3b3ec",
+      "external_submission_id": "regression-lc209",
+      "problem_id": 209,
+      "title": "Minimum Size Subarray Sum",
+      "expected_patterns": [
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ]
+        }
+      ],
+      "source_code": "class Solution:\n    def minSubArrayLen(self, target, nums):\n        left = 0\n        total = 0\n        best = float('inf')\n        for right in range(len(nums)):\n            total += nums[right]\n            while total >= target:\n                best = min(best, right - left + 1)\n                total -= nums[left]\n                left += 1\n        return best if best != float('inf') else 0\n",
+      "error": null,
+      "production_detected_patterns": [
+        "sliding_window_variable",
+        "array_traversal",
+        "greedy_local",
+        "brute_force"
+      ],
+      "production_match_result": "PARTIAL_MATCH",
+      "production_confidence_score": 0.265,
+      "production_unmatched_patterns": [
+        "prefix_sum"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002",
+            "fact_005"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_005",
+            "fact_003",
+            "fact_008"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_005",
+            "fact_006",
+            "fact_009",
+            "fact_001"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_007",
+            "fact_008",
+            "fact_009",
+            "fact_010"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 12,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-16T13:00:23.073593+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "e7700a550862e5587abe8b863500c9ef6e77208595e654fa4a9d52d4802e7d53",
+      "external_submission_id": "regression-lc141",
+      "problem_id": 141,
+      "title": "Linked List Cycle",
+      "expected_patterns": [
+        "fast_slow_pointers"
+      ],
+      "group_source": "live_db",
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "bidirectional_index_scan"
+          ],
+          "optional": [],
+          "excluded": []
+        }
+      ],
+      "source_code": "class Solution:\n    def hasCycle(self, head):\n        slow = head\n        fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow == fast:\n                return True\n        return False\n",
+      "error": null,
+      "production_detected_patterns": [
+        "fast_slow_pointers",
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.65,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_005"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 9,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal"
+      ],
+      "analysed_at": "2026-09-16T13:00:24.049474+00:00",
+      "root_causes": [
+        "required_bidirectional_scan_needs_opposite_updates",
+        "required_concept_not_detected"
+      ]
+    }
+  ]
+}

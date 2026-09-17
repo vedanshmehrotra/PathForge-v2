@@ -32,6 +32,7 @@ class ProblemContext:
     description: str
     accepted_solution_groups: list = field(default_factory=list)
     ground_truth_confidence: dict = field(default_factory=dict)
+    ground_truth_consistency: list = field(default_factory=list)
 
 
 def resolve_problem(
@@ -63,6 +64,14 @@ def resolve_problem(
 
     groups, confidence = _load_ground_truth(connection, pid, row)
 
+    from pathforge.services.ground_truth_builder import (
+        find_ground_truth_disagreements,
+    )
+
+    consistency = find_ground_truth_disagreements(
+        _parse_curated_patterns(row.get("pattern")) or [], groups
+    )
+
     topics = _parse_topics(row.get("topics") or "")
     description = row.get("description") or ""
 
@@ -75,6 +84,7 @@ def resolve_problem(
         description=description,
         accepted_solution_groups=groups,
         ground_truth_confidence=confidence,
+        ground_truth_consistency=consistency,
     )
 
 
@@ -193,6 +203,21 @@ def _ensure_ground_truth(connection, row):
     connection.commit()
 
 
+def _parse_curated_patterns(raw):
+    """Parse a curated pattern field (JSON text or JSONB) into a list or None.
+
+    Returns the pattern list only when it is a non-empty list of strings.
+    """
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            return None
+    if raw and isinstance(raw, list):
+        return raw
+    return None
+
+
 def _load_csv_patterns(connection, problem_id):
     """Load CSV-curated patterns from problems.pattern.
 
@@ -204,14 +229,40 @@ def _load_csv_patterns(connection, problem_id):
         ).fetchone()
         if not row:
             return None
-        pattern = row["pattern"]
-        if isinstance(pattern, str):
-            pattern = json.loads(pattern)
-        if pattern and isinstance(pattern, list) and len(pattern) > 0:
-            return pattern
-        return None
+        return _parse_curated_patterns(row["pattern"])
     except Exception:
         return None
+
+
+def _finalize_derived_groups(groups: list) -> list:
+    """Apply the shared matchability rule to freshly derived solution groups.
+
+    Derived groups must carry the same explicit matchability annotation as
+    stored groups, so an unsatisfiable group is never emitted as a normal
+    requirement regardless of which derivation path produced it.
+    """
+    from pathforge.services.ground_truth_builder import mark_group_matchability
+
+    for group in groups:
+        if isinstance(group, dict):
+            mark_group_matchability(group)
+    return groups
+
+
+def _log_ground_truth_disagreements(problem_id, patterns, groups):
+    """Warn when the flat pattern label and the structured groups disagree."""
+    from pathforge.services.ground_truth_builder import (
+        find_ground_truth_disagreements,
+    )
+
+    findings = find_ground_truth_disagreements(patterns, groups)
+    for finding in findings:
+        logger.warning(
+            "Ground truth representation disagreement for problem %d: %s",
+            problem_id,
+            finding,
+        )
+    return findings
 
 
 def _load_ground_truth(connection, problem_id, problem_row=None):
@@ -246,11 +297,28 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
     if solution_groups_raw is not None:
         sg = _parse_json_field(solution_groups_raw)
         if isinstance(sg, list) and sg:
+            # Batch 2A: re-derive concepts from each group's OWN stored legacy
+            # patterns, BEFORE reconciliation replaces them with curated
+            # patterns. This is what lets a stored group pick up the current
+            # vocabulary instead of staying tied to an obsolete concept, without
+            # ever rewriting concepts that came from the curated pattern label.
+            from pathforge.services.ground_truth_builder import (
+                refresh_groups_vocabulary,
+            )
+
+            raw_groups = [g for g in sg if isinstance(g, dict)]
+            refreshed = refresh_groups_vocabulary(raw_groups)
+            if refreshed:
+                logger.info(
+                    "Refreshed stored solution groups for problem %d with the "
+                    "current vocabulary: %s",
+                    problem_id,
+                    refreshed,
+                )
+
             groups = []
             all_confidence = {}
-            for g in sg:
-                if not isinstance(g, dict):
-                    continue
+            for g in raw_groups:
                 # Preserve original legacy patterns for the production matcher.
                 legacy_patterns = g.get("patterns", [])
                 if not legacy_patterns:
@@ -301,11 +369,22 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                     # Legacy fields for backward compatibility
                     # "patterns" is the production matcher input
                     "patterns": production_patterns,
+                    # Batch 2A: keep the patterns the V1 concepts were actually
+                    # derived from. Reconciliation may override "patterns" with
+                    # curated ones, and drift can only be detected if both
+                    # representations stay visible.
+                    "derivation_patterns": list(legacy_patterns),
                     "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                     "confidence": g.get("confidence", {}),
                 })
                 all_confidence.update(g.get("confidence", {}))
             if groups:
+                # Batch 2A: annotate matchability before returning, so an
+                # unsatisfiable group is never presented as a normal one.
+                _finalize_derived_groups(groups)
+                _log_ground_truth_disagreements(
+                    problem_id, csv_patterns or _parse_json_list(patterns_raw), groups
+                )
                 return groups, all_confidence
 
     # Fallback: legacy flat patterns column
@@ -335,6 +414,9 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
         # ALTERNATIVE approaches, not all-required.  Each pattern maps to a
         # different V1 strategy, so they must become separate groups.
         groups = _split_csv_patterns_to_groups(patterns, confidence, best_conf, evidence)
+        _log_ground_truth_disagreements(
+            problem_id, csv_patterns or patterns, groups
+        )
         return groups, confidence
 
     return [], {}
@@ -376,7 +458,7 @@ def _split_csv_patterns_to_groups(
     if len(strategy_to_patterns) <= 1 and not unmapped_patterns:
         required = _map_legacy_patterns_to_v1(patterns)
         excluded = _get_v1_excluded_for_patterns(patterns)
-        return [{
+        return _finalize_derived_groups([{
             "id": "group_0",
             "required": required,
             "optional": [],
@@ -384,11 +466,11 @@ def _split_csv_patterns_to_groups(
             "patterns": patterns,
             "evidence": evidence,
             "confidence": {p: confidence.get(p, best_conf) for p in patterns},
-        }]
+        }])
 
     # All unmapped (no strategy clusters): single group preserving original patterns
     if not strategy_to_patterns:
-        return [{
+        return _finalize_derived_groups([{
             "id": "group_0",
             "required": [],
             "optional": _map_legacy_patterns_to_v1(patterns),
@@ -396,7 +478,7 @@ def _split_csv_patterns_to_groups(
             "patterns": patterns,
             "evidence": evidence,
             "confidence": {p: confidence.get(p, best_conf) for p in patterns},
-        }]
+        }])
 
     # Multiple strategy clusters: create separate groups
     groups = []
@@ -419,7 +501,7 @@ def _split_csv_patterns_to_groups(
         groups[0]["optional"].extend(unmapped_required)
         groups[0]["optional"] = sorted(set(groups[0]["optional"]))
 
-    return groups
+    return _finalize_derived_groups(groups)
 
 
 def _map_legacy_patterns_to_v1(patterns: list) -> list:

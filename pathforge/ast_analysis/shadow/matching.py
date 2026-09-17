@@ -55,6 +55,7 @@ def evaluate_solution_groups(
     best_satisfaction = 0.0
     best_authority = "unknown"
     reasoning = []
+    unmatchable_group_ids = []
 
     for group in solution_groups:
         result = _evaluate_single_group(
@@ -71,7 +72,19 @@ def evaluate_solution_groups(
         )
 
         # Authority-gated outcome for this group
-        if group_outcome == "satisfied":
+        if group_outcome == "unmatchable":
+            # The group declares no requirement at all, so no submission can
+            # ever satisfy it. Report it explicitly: this is a vocabulary hole
+            # in the expected-solution representation, NOT a lack of evidence
+            # in the submission.
+            group_final = "UNRESOLVED"
+            if group_id not in unmatchable_group_ids:
+                unmatchable_group_ids.append(group_id)
+            reasoning.append(
+                f"Group {group_id}: required is empty — group is unmatchable "
+                f"(no concept can satisfy it; expected-approach vocabulary gap)"
+            )
+        elif group_outcome == "satisfied":
             group_final = "CONFIRMED"
         elif group_outcome == "contradicted":
             if group_authority in _AUTHORITATIVE_TIERS:
@@ -108,6 +121,7 @@ def evaluate_solution_groups(
         structural_facts=facts,
         primary_strategy=_get_primary_strategy(strategy_evidence),
         reasoning=reasoning,
+        unmatchable_group_ids=unmatchable_group_ids,
     )
 
 
@@ -119,18 +133,30 @@ def _evaluate_single_group(
     """Evaluate a single solution group against detected evidence.
 
     Returns dict with:
-        - outcome: "satisfied" | "unsatisfied" | "contradicted"
+        - outcome: "satisfied" | "unsatisfied" | "contradicted" | "unmatchable"
         - satisfaction: float [0.0, 1.0]
+
+    A group with no ``required`` concepts is "unmatchable": satisfaction
+    starts at 0.0 and optional evidence alone cannot reach a positive
+    threshold in general, so no submission can satisfy it. Marking this
+    explicitly keeps a representation gap from being reported as if the
+    submission merely lacked evidence.
     """
     required = group.get("required", [])
     optional = group.get("optional", [])
     excluded = group.get("excluded", [])
     threshold = group.get("threshold", 0.5)
 
-    # Check excluded evidence — if present, contradicts
+    # Check excluded evidence — if present, contradicts.
+    # This runs before the empty-required check so that an exclusion-only
+    # group (e.g. dfs_iterative: required=[], excluded=[recursive_branching])
+    # keeps producing its contradiction signal.
     for exc in excluded:
         if exc in detected_techniques or exc in detected_strategies:
             return {"outcome": "contradicted", "satisfaction": 0.0}
+
+    if not required:
+        return {"outcome": "unmatchable", "satisfaction": 0.0}
 
     # Check required evidence — all must be present with sufficient confidence
     required_met = 0

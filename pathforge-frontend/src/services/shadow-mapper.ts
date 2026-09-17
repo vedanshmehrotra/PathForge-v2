@@ -29,6 +29,7 @@ const STRATEGY_NAMES: Record<string, string> = {
 const TECHNIQUE_NAMES: Record<string, string> = {
   sequential_accumulation: 'Running total',
   bidirectional_index_scan: 'Two-way scan',
+  forward_pointer_advance: 'Forward pointer advance',
   recursive_branching: 'Recursive branching',
   carry_propagation: 'Carry propagation',
   loop_state_tracking: 'State tracking in loops',

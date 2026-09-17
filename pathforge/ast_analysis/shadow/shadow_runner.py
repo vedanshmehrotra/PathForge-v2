@@ -129,4 +129,5 @@ def _outcome_to_dict(outcome) -> dict:
         "technique_count": len(outcome.technique_evidence),
         "strategy_count": len(outcome.strategy_evidence),
         "fact_count": len(outcome.structural_facts),
+        "unmatchable_group_ids": outcome.unmatchable_group_ids,
     }

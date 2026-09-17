@@ -201,10 +201,15 @@ class _FactExtractor(ast.NodeVisitor):
         self._detect_indexed_write(node)
         self._detect_cache_write(node)
         self._detect_queue_creation(node)
+        self._detect_queue_dequeue(node)
         self._detect_visited_tracking(node)
         self._detect_parent_root_merge(node)
         self._detect_stack_creation(node)
         self._detect_pointer_rewiring_in_assign(node)
+        self.generic_visit(node)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign):
+        self._detect_queue_dequeue(node)
         self.generic_visit(node)
 
     def visit_AugAssign(self, node: ast.AugAssign):
@@ -927,7 +932,13 @@ class _FactExtractor(ast.NodeVisitor):
                 ))
 
     def _detect_queue_creation(self, node: ast.Assign):
-        """Queue creation: deque() or [] used as queue.
+        """Queue creation: deque() or a list literal used as queue.
+
+        Covers both an empty queue (``queue = []``) and a queue seeded with its
+        first element (``queue = [root]``), which is the canonical form for
+        level-order traversal. The queue-like variable-name restriction still
+        applies to list literals, so ``stack = [s]``, ``dp = [0] * n`` and list
+        comprehensions are unaffected.
 
         This is a structural observation: a queue-like data structure is created.
         """
@@ -949,8 +960,8 @@ class _FactExtractor(ast.NodeVisitor):
                         attributes={"queue_variable": var_name, "operation": "creation"},
                     ))
                     return
-            # Check if the value is an empty list []
-            if isinstance(node.value, ast.List) and len(node.value.elts) == 0:
+            # Check if the value is a list literal (empty or seeded)
+            if isinstance(node.value, ast.List):
                 queue_like = var_name.lower() in {
                     "queue", "q", "bfs_queue", "frontier",
                     "level_queue", "next_level",
@@ -1176,11 +1187,22 @@ class _FactExtractor(ast.NodeVisitor):
                 ))
                 return
 
-    def _detect_queue_dequeue(self, node: ast.Expr):
+    def _detect_queue_dequeue(self, node: ast.AST):
         """Detect queue dequeue operation: queue.popleft(), q.pop(0).
+
+        Accepts any statement carrying a ``value`` expression: a bare expression
+        statement (``queue.popleft()``) and the assignment family — ``ast.Assign``
+        including tuple-unpack targets (``r, c, d = q.popleft()``) and
+        ``ast.AnnAssign`` (``node: Any = queue.popleft()``). All are common ways
+        to consume a queue, and only the statement position differed.
+
+        Only ``popleft()`` and ``pop(0)`` count; ``pop()``, ``pop(n)`` and heap
+        operations are excluded.
 
         This is a structural observation: a dequeue operation is performed.
         """
+        if not isinstance(node, (ast.Expr, ast.Assign, ast.AnnAssign)):
+            return
         if not isinstance(node.value, ast.Call):
             return
         call = node.value

@@ -1,0 +1,85 @@
+{
+  "02caf086a1f16c1dba3175be5c37d4144e3b6c779bcf1084f7e07125c4dca275": {
+    "analysed_at": "2026-09-16T13:00:19.688157+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 4256,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "044e6795f1956be355981d1fe72f740e682c3dee702f32448a24dfdd5c6542e7": {
+    "analysed_at": "2026-09-16T13:00:21.371005+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 283,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "545a40a025194c4a1aeabe557b8646fd777170add044538af4138c5e5ac3b3ec": {
+    "analysed_at": "2026-09-16T13:00:23.073593+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 209,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "8021ca7e1ff52bcd48dad4f13e7c64e40d7c9c00ee8694140758dd487c733b51": {
+    "analysed_at": "2026-09-16T13:00:20.644865+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 4258,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "b1f13e0c5c4e52375e0ec09e40c6d0371639df74b7c1f2b488d228df0c840b69": {
+    "analysed_at": "2026-09-16T13:00:18.730690+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 4284,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_accumulation_needs_while_loop",
+      "required_bidirectional_scan_needs_opposite_updates",
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "ba9010e396daa8102ff4782623ac979819188aad4c84c679d46ff00dc6afaf04": {
+    "analysed_at": "2026-09-16T13:00:22.110610+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 167,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "d709a8fb58376a51773aa5ea3f50828108bef83d3ca6b173f0f4718306d518ab": {
+    "analysed_at": "2026-09-16T13:00:16.805865+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 21,
+    "root_causes": [
+      "required_bidirectional_scan_needs_opposite_updates",
+      "required_concept_not_detected"
+    ]
+  },
+  "e7700a550862e5587abe8b863500c9ef6e77208595e654fa4a9d52d4802e7d53": {
+    "analysed_at": "2026-09-16T13:00:24.049474+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 141,
+    "root_causes": [
+      "required_bidirectional_scan_needs_opposite_updates",
+      "required_concept_not_detected"
+    ]
+  },
+  "f3d760f52b9c1090fec7894a32ee051f3adbd6e907c9770100e5d6fcf0b2d449": {
+    "analysed_at": "2026-09-16T13:00:17.766679+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 29,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_concept_not_detected"
+    ]
+  }
+}
