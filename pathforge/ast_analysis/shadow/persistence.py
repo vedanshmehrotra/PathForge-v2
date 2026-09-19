@@ -293,6 +293,7 @@ def load_shadow_outcome(conn, submission_id: int) -> Optional[dict]:
 def rerun_derivation(
     facts: list[StructuralFact],
     solution_groups: Optional[list] = None,
+    relations=None,
 ) -> dict:
     """Re-derive technique/strategy evidence from stored structural facts.
 
@@ -303,12 +304,16 @@ def rerun_derivation(
     Args:
         facts: Structural facts loaded from the database
         solution_groups: Optional solution groups for matching
+        relations: Optional shared relational-evidence bundle (M2). When
+            omitted, migrated detectors fall back to their original
+            fact-attribute joins, so persisted-fact re-derivation keeps
+            producing identical results.
 
     Returns:
         Dict with technique_evidence, strategy_evidence, match_outcome.
     """
     # Re-run technique detection from facts
-    technique_evidence = detect_techniques(facts)
+    technique_evidence = detect_techniques(facts, relations=relations)
 
     # Re-run strategy evaluation from techniques + facts
     strategy_evidence = evaluate_strategies(technique_evidence, facts)

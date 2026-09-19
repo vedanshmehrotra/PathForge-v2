@@ -1,0 +1,5087 @@
+{
+  "generated_at": "2026-09-19T05:24:27.159964+00:00",
+  "analysed": 46,
+  "skipped_already_seen": 0,
+  "records": [
+    {
+      "fingerprint": "6fc48782b6f5e4c9569291f1d33b5035430041dd599cff5f5c109599bad3bf6e",
+      "external_submission_id": "db-11",
+      "problem_id": 1,
+      "title": "Two Sum",
+      "expected_patterns": [
+        "hash_map_lookup"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "hash_lookup"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_lookup"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "\nclass Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, num in enumerate(nums):\n            complement = target - num\n            if complement in seen:\n                return [seen[complement], i]\n            seen[num] = i\n        return []\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "hash_map_lookup"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.8,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "hash_lookup",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_002"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.65
+        }
+      ],
+      "shadow_fact_count": 11,
+      "shadow_fact_types": [
+        "cache_lookup",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "membership_test",
+        "parent_root_merge",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:23:40.754941+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "38407905af1073eced862a8ce2054129546d793e580001472c89335474e1c581",
+      "external_submission_id": "db-18",
+      "problem_id": 628,
+      "title": "Maximum Product of Three Numbers",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "candidate_selection"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "candidate_selection"
+          ],
+          "optional": [],
+          "excluded": [
+            "sliding_window"
+          ],
+          "patterns": [
+            "greedy_local"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maximumProduct(self, nums: List[int]) -> int:\n        nums.sort()\n        res1=nums[0]*nums[1]*nums[len(nums)-1]\n        res2=nums[len(nums)-1]*nums[len(nums)-2]*nums[len(nums)-3]\n        return max(res1,res2)",
+      "error": null,
+      "production_detected_patterns": [
+        "sorting",
+        "greedy_local"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.35,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_008"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 9,
+      "shadow_fact_types": [
+        "early_termination",
+        "extremum_access",
+        "sorting_operation",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:23:41.766992+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "1e56bd619a6ac82dce28fdb40ec1139dcfa6a907f6944403334f19a49679bd6d",
+      "external_submission_id": "db-20",
+      "problem_id": 15,
+      "title": "3Sum",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "two_pointers_opposite"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "binary_search"
+          ],
+          "patterns": [
+            "two_pointers_opposite"
+          ],
+          "derivation_patterns": [
+            "two_pointers_opposite"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        nums.sort()\n        lst=[]\n        for k in range(len(nums)):\n            if k>0 and nums[k]==nums[k-1]:\n                    continue\n            i,j=k+1,len(nums)-1\n\n            while i<j:\n                summ=0\n                \n                summ=nums[i]+nums[j]+nums[k]\n                if summ==0:            \n                    lst.append([nums[i],nums[j],nums[k]])\n                    i+=1\n                    j-=1\n                    while i<j and nums[i]==nums[i-1]:\n                        i+=1\n                    while i<j and nums[j]==nums[j+1]:\n                        j-=1\n                elif summ<0:\n                    i+=1\n                else:\n                    j-=1\n        return lst",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_opposite",
+        "array_traversal",
+        "brute_force",
+        "sorting"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "two_pointers_opposite",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=1.000, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_010",
+            "fact_011",
+            "fact_012",
+            "fact_024",
+            "fact_031"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_020"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_011",
+            "fact_003"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_004",
+            "fact_010",
+            "fact_011",
+            "fact_013",
+            "fact_014",
+            "fact_015",
+            "fact_017",
+            "fact_018",
+            "fact_024",
+            "fact_025",
+            "fact_027",
+            "fact_031",
+            "fact_032",
+            "fact_034",
+            "fact_003",
+            "fact_012"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_002",
+            "fact_038"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 40,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "index_lookback",
+        "opposite_direction_updates",
+        "sorting_operation",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:42.812244+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "b00751c158e1a5b6c11c48a765a24a3b6d3f4d92d43402f5d159a0431356dcc8",
+      "external_submission_id": "db-33",
+      "problem_id": 13,
+      "title": "Roman to Integer",
+      "expected_patterns": [
+        "hash_map_lookup"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "hash_lookup"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_lookup"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        s.split()\n        s=s[::-1]\n        hashm={'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000}\n        val=0\n        for i in range(len(s)):\n            if val==0:\n                val+=hashm[s[i]]\n            elif s[i]==s[i-1] or hashm[s[i]]>hashm[s[i-1]]:\n                val+=hashm[s[i]]\n            else:\n                val-=hashm[s[i]]\n        return(val)",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_lookup"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_004"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "hash_lookup",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_008"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.65
+        }
+      ],
+      "shadow_fact_count": 23,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "index_lookback",
+        "mapping_construction",
+        "subscript_index_access",
+        "subscript_read"
+      ],
+      "analysed_at": "2026-09-19T05:23:43.837578+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "70892ffe851ee070d6708d400a1ab316eed900c2b0660aadf437baa12ff33907",
+      "external_submission_id": "db-35",
+      "problem_id": 3,
+      "title": "Longest Substring Without Repeating Characters",
+      "expected_patterns": [
+        "hash_map_lookup",
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "hash_map_lookup",
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        if len(s)==0:\n            return 0\n        count=0\n        \n        for i in range(len(s)):\n            lst=[]\n            j=i\n            counter=0\n            while j<len(s) and s[j] not in lst :\n                lst.append(s[j])\n                j+=1\n                counter+=1\n            i=j-1\n            if (counter)>count:\n                count=counter\n        return count\n            ",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "brute_force",
+        "sliding_window_variable"
+      ],
+      "production_match_result": "PARTIAL_MATCH",
+      "production_confidence_score": 0.15,
+      "production_unmatched_patterns": [
+        "hash_map_lookup"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_004",
+            "fact_006"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_006",
+            "fact_010"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_004",
+            "fact_006",
+            "fact_008",
+            "fact_009",
+            "fact_002",
+            "fact_003"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_001",
+            "fact_000",
+            "fact_012"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 13,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "membership_test",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:44.854789+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "688f965f177fc4c3dd5d7aa4b007ca4f47ac54b5f508eb0d453bea7c633c870f",
+      "external_submission_id": "db-36",
+      "problem_id": 1574,
+      "title": "Maximum Product of Two Elements in an Array",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "candidate_selection"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "candidate_selection"
+          ],
+          "optional": [],
+          "excluded": [
+            "sliding_window"
+          ],
+          "patterns": [
+            "greedy_local"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maxProduct(self, nums: List[int]) -> int:\n        nums.sort()\n        return (nums[len(nums)-1]-1)*(nums[len(nums)-2]-1)",
+      "error": null,
+      "production_detected_patterns": [
+        "sorting"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "greedy_local"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003",
+            "fact_002"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 5,
+      "shadow_fact_types": [
+        "early_termination",
+        "extremum_access",
+        "sorting_operation",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:23:45.864373+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "2a26e03d345fbc43b30ebcee4f98ff26f9e7941dfb294b0c4af38089fb97a94c",
+      "external_submission_id": "db-37",
+      "problem_id": 1574,
+      "title": "Maximum Product of Two Elements in an Array",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "candidate_selection"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "candidate_selection"
+          ],
+          "optional": [],
+          "excluded": [
+            "sliding_window"
+          ],
+          "patterns": [
+            "greedy_local"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maxProduct(self, nums: List[int]) -> int:\n        i=0\n        j=0\n        for k in range(len(nums)):\n            if i<=nums[k]:\n                j=i\n                i=nums[k]\n            elif j<=nums[k]:\n                j=nums[k]\n        return (i-1)*(j-1)",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "sliding_window_variable"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "greedy_local"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_001",
+            "fact_009"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 10,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "subscript_index_access",
+        "subscript_read"
+      ],
+      "analysed_at": "2026-09-19T05:23:46.874070+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "32dc01fe7a5cf8c7e25c559c9e4b5d30d59d5cbfd674e607b5855b0c33656a60",
+      "external_submission_id": "db-39",
+      "problem_id": 1,
+      "title": "Two Sum",
+      "expected_patterns": [
+        "hash_map_lookup"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "hash_lookup"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_lookup"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        num_map={}\n        for i in range(len(nums)):\n            oth_num=target-nums[i]\n            if oth_num in num_map:\n                return [num_map[oth_num],i]\n            num_map[nums[i]]=i\n        return []\n                ",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "hash_map_lookup"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.8,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "hash_lookup",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_004"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.65
+        }
+      ],
+      "shadow_fact_count": 12,
+      "shadow_fact_types": [
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "membership_test",
+        "parent_root_merge",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:23:47.879995+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "15313c250834a7d3a48552b644e022ef52d8b7093e80a6a44a4c16beabd7d4e3",
+      "external_submission_id": "db-41",
+      "problem_id": 3812,
+      "title": "Smallest Palindromic Rearrangement I",
+      "expected_patterns": [
+        "hash_map_frequency"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "frequency_counting"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "frequency_counting"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_frequency"
+          ],
+          "derivation_patterns": null,
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def smallestPalindrome(self, s: str) -> str:\n        freq=Counter(s)\n        hal=\"\"\n        mid=\"\"\n        for i in sorted(freq):\n            hal+=i*(freq[i]//2)\n            if freq[i]%2!=0:\n                mid+=i\n        return hal+mid+hal[::-1]\n                \n        ",
+      "error": null,
+      "production_detected_patterns": [
+        "sorting",
+        "prefix_sum"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_frequency"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "bootstrap",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=bootstrap"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "frequency_counting",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_005"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 9,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "mapping_construction",
+        "subscript_index_access",
+        "subscript_read"
+      ],
+      "analysed_at": "2026-09-19T05:23:48.889060+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "37194757c9397bea46c429a650b5bf0daa9d1d44d48ff315e9f17fe6880564a9",
+      "external_submission_id": "db-48",
+      "problem_id": 2,
+      "title": "Add Two Numbers",
+      "expected_patterns": [
+        "two_pointers_same"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "forward_pointer_advance"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "linked_list_traversal"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "two_pointers_same"
+          ],
+          "derivation_patterns": [
+            "linked_list_reversal"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": " # Definition for singly-linked list.\n\n#class ListNode:\n#    def __init__(self, val=0, next=None):\n#        self.val = val\n#        self.next = next\nclass Solution:\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy=ListNode()\n        curr=dummy\n        carry=0\n        while l1 and l2:\n            total=l1.val+l2.val+carry\n            carry=total//10\n            curr.next=ListNode(total%10)\n            curr=curr.next\n            l1=l1.next\n            l2=l2.next\n        if l1:\n            while l1:\n                total=l1.val+carry\n                carry=total//10\n                curr.next=ListNode(total%10)\n                curr=curr.next\n                l1=l1.next\n        else:\n            while l2:\n                total=l2.val+carry\n                carry=total//10\n                curr.next=ListNode(total%10)\n                curr=curr.next\n                l2=l2.next\n        if carry:\n            curr.next=ListNode(carry)\n  ",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.850, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_015",
+            "fact_016",
+            "fact_017",
+            "fact_025",
+            "fact_026",
+            "fact_027",
+            "fact_034"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_008",
+            "fact_010",
+            "fact_012",
+            "fact_014",
+            "fact_015",
+            "fact_016",
+            "fact_017",
+            "fact_020",
+            "fact_022",
+            "fact_024",
+            "fact_025",
+            "fact_026",
+            "fact_027",
+            "fact_030",
+            "fact_032",
+            "fact_034",
+            "fact_037"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 38,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal",
+        "node_constructor",
+        "pointer_rewiring",
+        "subscript_index_access",
+        "while_loop_truthiness"
+      ],
+      "analysed_at": "2026-09-19T05:23:49.919824+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "b26eadf89ed4ac428829d7c87cb44c2e9adbb7f75382455a8f512951c9b3d78e",
+      "external_submission_id": "db-49",
+      "problem_id": 3236,
+      "title": "Smallest Missing Integer Greater Than Sequential Prefix Sum",
+      "expected_patterns": [
+        "hash_map_lookup",
+        "prefix_sum"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "groups": [
+        {
+          "id": "group_0_alt0",
+          "required": [
+            "hash_lookup"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_lookup"
+          ],
+          "derivation_patterns": [
+            "hash_map_lookup"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_0_alt1",
+          "required": [
+            "sequential_accumulation"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "prefix_sum"
+          ],
+          "derivation_patterns": [
+            "prefix_sum"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def missingInteger(self, nums: List[int]) -> int:\n        j=1\n        summ=nums[0]\n        while j<=len(nums)-1 and nums[j]==nums[j-1]+1:\n            summ+=nums[j]\n            j+=1\n        while summ in nums:\n            summ+=1\n        return summ",
+      "error": null,
+      "production_detected_patterns": [],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_lookup",
+        "prefix_sum"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0_alt1"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0_alt0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed",
+        "Group group_0_alt1: satisfaction=0.850, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_011",
+            "fact_008"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_004",
+            "fact_005",
+            "fact_007",
+            "fact_008",
+            "fact_009",
+            "fact_010",
+            "fact_011",
+            "fact_013"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "extremum_access",
+        "index_lookback",
+        "membership_test",
+        "subscript_index_access",
+        "subscript_read",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:50.928943+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "febb0ad9073f65692532a4e92e2147fc113a6ce8e91974ffb7877ff431efe717",
+      "external_submission_id": "db-50",
+      "problem_id": 2,
+      "title": "Add Two Numbers",
+      "expected_patterns": [
+        "two_pointers_same"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "forward_pointer_advance"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "linked_list_traversal"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "two_pointers_same"
+          ],
+          "derivation_patterns": [
+            "linked_list_reversal"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "def addTwoNumbers(l1, l2):\n    dummy = ListNode()\n    curr = dummy\n    carry = 0\n\n    while l1 or l2 or carry:\n        val = (\n            (l1.val if l1 else 0)\n            + (l2.val if l2 else 0)\n            + carry\n        )\n\n        carry, digit = divmod(val, 10)\n\n        curr.next = ListNode(digit)\n        curr = curr.next\n\n        l1 = l1.next if l1 else None\n        l2 = l2.next if l2 else None\n\n    return dummy.next",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.3,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "carry_propagation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_000"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003",
+            "fact_004"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_007",
+            "fact_009",
+            "fact_011"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "carry_propagation",
+        "early_termination",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal",
+        "node_constructor",
+        "pointer_rewiring"
+      ],
+      "analysed_at": "2026-09-19T05:23:52.010788+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "2335c1c88e76ce0644e5706c4d9528f86f4eb91d87a385eb22a38e6033d084d2",
+      "external_submission_id": "db-51",
+      "problem_id": 3236,
+      "title": "Smallest Missing Integer Greater Than Sequential Prefix Sum",
+      "expected_patterns": [
+        "hash_map_lookup",
+        "prefix_sum"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "groups": [
+        {
+          "id": "group_0_alt0",
+          "required": [
+            "hash_lookup"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_lookup"
+          ],
+          "derivation_patterns": [
+            "hash_map_lookup"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_0_alt1",
+          "required": [
+            "sequential_accumulation"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "prefix_sum"
+          ],
+          "derivation_patterns": [
+            "prefix_sum"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "def missingInteger(nums):\n    i = 1\n    summ = nums[0]\n\n    while i <= len(nums) - 1 and nums[i] == nums[i - 1] + 1:\n        summ += nums[i]\n        i += 1\n\n    while summ in nums:\n        summ += 1\n\n    return summ",
+      "error": null,
+      "production_detected_patterns": [],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_lookup",
+        "prefix_sum"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0_alt1"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0_alt0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed",
+        "Group group_0_alt1: satisfaction=0.850, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_007"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        }
+      ],
+      "shadow_fact_count": 14,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "extremum_access",
+        "index_lookback",
+        "membership_test",
+        "subscript_index_access",
+        "subscript_read",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:53.014370+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "1300f5ec67309dbdca41282d58ef2cab0f4c98dfae01c9f4f0cb080bf19a5197",
+      "external_submission_id": "db-64",
+      "problem_id": 4080,
+      "title": "Smallest Missing Multiple of K",
+      "expected_patterns": [
+        "hash_map_frequency"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "frequency_counting"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "frequency_counting"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_frequency"
+          ],
+          "derivation_patterns": [
+            "hash_map_frequency"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def missingMultiple(self, nums: List[int], k: int) -> int:\n        sett=set(nums)\n        i=1\n        while True:\n            if k*i not in sett:   \n                return k*i\n            i+=1\n                \n",
+      "error": null,
+      "production_detected_patterns": [
+        "hash_map_lookup"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_frequency"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_count": 4,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "membership_test",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:23:54.020750+00:00",
+      "root_causes": [
+        "required_concept_not_detected",
+        "no_technique_evidence"
+      ]
+    },
+    {
+      "fingerprint": "f49c8a50a25e0272b35f2b3f63290e45d39eea37692638705bc6851970a2c3c2",
+      "external_submission_id": "db-135",
+      "problem_id": 2,
+      "title": "Add Two Numbers",
+      "expected_patterns": [
+        "two_pointers_same"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "forward_pointer_advance"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "linked_list_traversal"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "two_pointers_same"
+          ],
+          "derivation_patterns": [
+            "linked_list_reversal"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": " # Definition for singly-linked list.\n\n#class ListNode:\n#    def __init__(self, val=0, next=None):\n#        self.val = val\n#        self.next = next\nclass Solution:\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy=ListNode()\n        curr=dummy\n        carry=0\n        while l1 and l2:\n            total=l1.val+l2.val+carry\n            carry=total//10\n            curr.next=ListNode(total%10)\n            curr=curr.next\n            l1=l1.next\n            l2=l2.next\n        if l1:\n            while l1:\n                total=l1.val+carry\n                carry=total//10\n                curr.next=ListNode(total%10)\n                curr=curr.next\n                l1=l1.next\n        else:\n            while l2:\n                total=l2.val+carry\n                carry=total//10\n                curr.next=ListNode(total%10)\n                curr=curr.next\n                l2=l2.next\n        if carry:\n            curr.next=ListNode(carry)\n        return dummy.next",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.850, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_015",
+            "fact_016",
+            "fact_017",
+            "fact_025",
+            "fact_026",
+            "fact_027",
+            "fact_034"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_008",
+            "fact_010",
+            "fact_012",
+            "fact_014",
+            "fact_015",
+            "fact_016",
+            "fact_017",
+            "fact_020",
+            "fact_022",
+            "fact_024",
+            "fact_025",
+            "fact_026",
+            "fact_027",
+            "fact_030",
+            "fact_032",
+            "fact_034",
+            "fact_039"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 40,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal",
+        "node_constructor",
+        "pointer_rewiring",
+        "subscript_index_access",
+        "while_loop_truthiness"
+      ],
+      "analysed_at": "2026-09-19T05:23:55.064599+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "5e2d002d1e792ffd868c299f4241086588336d7bbdd8ebdd9e457b5ec84355ee",
+      "external_submission_id": "db-137",
+      "problem_id": 11,
+      "title": "Container With Most Water",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "two_pointers_opposite"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "binary_search"
+          ],
+          "patterns": [
+            "two_pointers_opposite"
+          ],
+          "derivation_patterns": [
+            "two_pointers_opposite"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maxArea(self, height: List[int]) -> int:\n        max_ar=0\n        i,j=0,len(height)-1\n        while i<j:\n            area=(abs(i-j)*min(height[i],height[j]))\n            if max_ar<area:\n                    max_ar=area\n            if height[i]<height[j]: i+=1\n            else: j-=1\n        return max_ar",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_opposite",
+        "greedy_local"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "two_pointers_opposite",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=1.000, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_004"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_012"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_005",
+            "fact_006",
+            "fact_007",
+            "fact_010",
+            "fact_011",
+            "fact_003",
+            "fact_004"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_001",
+            "fact_014"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:56.078727+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "b01d927a6555b4e0df08d998a0af22aa8e6deb1bfffc5d0609013a3372b49c1a",
+      "external_submission_id": "db-138",
+      "problem_id": 3225,
+      "title": "Length of Longest Subarray With at Most K Frequency",
+      "expected_patterns": [
+        "hash_map_frequency",
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [
+        {
+          "kind": "pattern_not_in_groups",
+          "pattern": "hash_map_frequency",
+          "detail": "declared pattern 'hash_map_frequency' is not covered by any solution group"
+        }
+      ],
+      "expected_allowed_concepts": [
+        "frequency_counting",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maxSubarrayLength(self, nums: List[int], k: int) -> int:\n        n=Counter()\n        res=0\n        left=0\n        for i in range(len(nums)):\n            n[nums[i]]+=1\n            while n[nums[i]]>k:\n                n[nums[left]]-=1\n                left+=1\n            res=max(res,i-left+1)\n        return res\n            ",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "greedy_local",
+        "brute_force",
+        "sliding_window_variable"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.55,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_003",
+            "fact_004",
+            "fact_009"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_009",
+            "fact_013"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_004",
+            "fact_009",
+            "fact_012",
+            "fact_003"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_002",
+            "fact_003",
+            "fact_006",
+            "fact_009",
+            "fact_010",
+            "fact_012",
+            "fact_013",
+            "fact_014"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        },
+        {
+          "technique_id": "frequency_counting",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_005"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 16,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:57.098840+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "patterns_vs_groups_drift"
+      ]
+    },
+    {
+      "fingerprint": "7d8f3a4785a7ae8922a6d856ce8c40a80f31f2ec950a10e22216b3b92912c150",
+      "external_submission_id": "db-139",
+      "problem_id": 141,
+      "title": "Linked List Cycle",
+      "expected_patterns": [
+        "fast_slow_pointers",
+        "two_pointers_same"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "forward_pointer_advance"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "forward_pointer_advance"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "fast_slow_pointers",
+            "two_pointers_same"
+          ],
+          "derivation_patterns": [
+            "fast_slow_pointers"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "# Definition for singly-linked list.\n# class ListNode:\n#     def __init__(self, x):\n#         self.val = x\n#         self.next = None\n\nclass Solution:\n    def hasCycle(self, head: Optional[ListNode]) -> bool:\n        fast=head\n        slow=head\n        while fast and fast.next:\n            fast=fast.next.next\n            slow=slow.next\n            if fast==slow:\n                return True\n        return False\n",
+      "error": null,
+      "production_detected_patterns": [
+        "fast_slow_pointers",
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.65,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002",
+            "fact_004",
+            "fact_006"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 10,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:23:58.107159+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "5456a57929156dbea1260168bd3b3d6e980c4526e2e3d26a72f74e316d7274da",
+      "external_submission_id": "db-189",
+      "problem_id": 3349,
+      "title": "Maximum Length Substring With Two Occurrences",
+      "expected_patterns": [
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maximumLengthSubstring(self, s: str) -> int:\n        left=0\n        res=0\n        n=Counter()\n        for i in range(len(s)):\n            n[s[i]]+=1\n            while n[s[i]]>2:\n                n[s[left]]-=1\n                left+=1\n            res=max(res,i-left+1)\n        return res\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "sliding_window_variable",
+        "greedy_local",
+        "brute_force"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.6,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_008"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_008",
+            "fact_012"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_008",
+            "fact_011",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_005",
+            "fact_008",
+            "fact_009",
+            "fact_011",
+            "fact_012",
+            "fact_013"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        },
+        {
+          "technique_id": "frequency_counting",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_004"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:23:59.125274+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "ec6b6a90ae0bb6746e956983b86212f6d2f345802ab4a3eac137fa2710ca6d3c",
+      "external_submission_id": "db-190",
+      "problem_id": 209,
+      "title": "Minimum Size Subarray Sum",
+      "expected_patterns": [
+        "prefix_sum",
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "prefix_sum",
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def minSubArrayLen(self, target: int, nums: List[int]) -> int:\n        left = 0\n        summ = 0\n        ans = len(nums) + 1\n\n        for right in range(len(nums)):\n            summ += nums[right]\n\n            while summ >= target:\n                ans = min(ans, right - left + 1)\n                summ -= nums[left]\n                left += 1\n\n        if ans == len(nums) + 1:\n            return 0\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "sliding_window_variable",
+        "array_traversal",
+        "greedy_local",
+        "brute_force"
+      ],
+      "production_match_result": "PARTIAL_MATCH",
+      "production_confidence_score": 0.265,
+      "production_unmatched_patterns": [
+        "prefix_sum"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_006"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_006",
+            "fact_004"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_006",
+            "fact_007",
+            "fact_010",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002",
+            "fact_004",
+            "fact_005",
+            "fact_006",
+            "fact_008",
+            "fact_009",
+            "fact_010",
+            "fact_011"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 14,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:00.139236+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "6b05482b3e3c933e75e6b853e19ce250e11392571133aa1bbbf1479126645572",
+      "external_submission_id": "db-191",
+      "problem_id": 424,
+      "title": "Longest Repeating Character Replacement",
+      "expected_patterns": [
+        "hash_map_frequency",
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "frequency_counting",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "hash_map_frequency",
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def characterReplacement(self, s: str, k: int) -> int:\n        freq = {}\n        left = 0\n        ans = 0\n        mx = 0\n\n        for right in range(len(s)):\n            freq[s[right]] = freq.get(s[right], 0) + 1\n            mx = max(mx, freq[s[right]])\n\n            if right - left + 1 - mx > k:\n                freq[s[left]] -= 1\n                left += 1\n\n            ans = max(ans, right - left + 1)\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "hash_map_frequency",
+        "dp_state_machine",
+        "greedy_local"
+      ],
+      "production_match_result": "PARTIAL_MATCH",
+      "production_confidence_score": 0.16,
+      "production_unmatched_patterns": [
+        "sliding_window_variable"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_007"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_010",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_005",
+            "fact_006",
+            "fact_007",
+            "fact_008",
+            "fact_010",
+            "fact_011",
+            "fact_012"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        },
+        {
+          "technique_id": "frequency_counting",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_009"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 14,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "subscript_index_access",
+        "variable_use_in_loop_body"
+      ],
+      "analysed_at": "2026-09-19T05:24:01.159337+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "a0b510c738b5d1b5f3d380fb878336b5e13c702f8e8e37b4c953b09aaeb47b07",
+      "external_submission_id": "db-192",
+      "problem_id": 438,
+      "title": "Find All Anagrams in a String",
+      "expected_patterns": [
+        "hash_map_frequency",
+        "sliding_window_fixed"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "frequency_counting",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "frequency_counting"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_frequency",
+            "sliding_window_fixed"
+          ],
+          "derivation_patterns": [
+            "hash_map_frequency"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def findAnagrams(self, s: str, p: str) -> List[int]:\n        ans = []\n\n        if len(p) > len(s):\n            return ans\n\n        cnt1 = [0] * 26\n        cnt2 = [0] * 26\n\n        for i in range(len(p)):\n            cnt1[ord(p[i]) - ord('a')] += 1\n            cnt2[ord(s[i]) - ord('a')] += 1\n\n        if cnt1 == cnt2:\n            ans.append(0)\n\n        for i in range(len(p), len(s)):\n            cnt2[ord(s[i]) - ord('a')] += 1\n            cnt2[ord(s[i - len(p)]) - ord('a')] -= 1\n\n            if cnt1 == cnt2:\n                ans.append(i - len(p) + 1)\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_frequency",
+        "sliding_window_fixed"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "frequency_counting",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_004"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "list_construction",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:02.411841+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "0be5e5ae23da949c01824454d425e8b3f63d7a0f7bbaf7e9332711a69a3bb31c",
+      "external_submission_id": "db-193",
+      "problem_id": 496,
+      "title": "Next Greater Element I",
+      "expected_patterns": [
+        "hash_map_lookup",
+        "monotonic_stack"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup",
+        "monotonic_stack_maintenance"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "monotonic_stack_maintenance"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "hash_map_lookup",
+            "monotonic_stack"
+          ],
+          "derivation_patterns": [
+            "monotonic_stack"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:\n        stack = []\n        mp = {}\n\n        for x in nums2:\n            while stack and stack[-1] < x:\n                mp[stack.pop()] = x\n\n            stack.append(x)\n\n        ans = []\n\n        for x in nums1:\n            ans.append(mp.get(x, -1))\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "brute_force"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_lookup",
+        "monotonic_stack"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "monotonic_stack_strategy",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.850, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "monotonic_stack_strategy",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "monotonic_stack_maintenance"
+          ],
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_006",
+            "fact_007",
+            "fact_011"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "monotonic_stack_maintenance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_006",
+            "fact_007",
+            "fact_011"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "conditional_pop",
+        "early_termination",
+        "extremum_access",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "monotonic_comparison",
+        "parent_root_merge",
+        "stack_operation",
+        "subscript_index_access",
+        "subscript_read"
+      ],
+      "analysed_at": "2026-09-19T05:24:03.674896+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "extra_strategy_inferred"
+      ]
+    },
+    {
+      "fingerprint": "2f28974476a2d0b1a2e55c0a1ab0175c0150c5160e9383b851290dc2b6b55ccf",
+      "external_submission_id": "db-194",
+      "problem_id": 3236,
+      "title": "Smallest Missing Integer Greater Than Sequential Prefix Sum",
+      "expected_patterns": [
+        "hash_map_lookup",
+        "prefix_sum"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "groups": [
+        {
+          "id": "group_0_alt0",
+          "required": [
+            "hash_lookup"
+          ],
+          "optional": [],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "hash_map_lookup"
+          ],
+          "derivation_patterns": [
+            "hash_map_lookup"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_0_alt1",
+          "required": [
+            "sequential_accumulation"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "prefix_sum"
+          ],
+          "derivation_patterns": [
+            "prefix_sum"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def missingInteger(self, nums: List[int]) -> int:\n        i = 1\n        summ = nums[0]\n\n        while i < len(nums) and nums[i] == nums[i - 1] + 1:\n            summ += nums[i]\n            i += 1\n\n        while summ in nums:\n            summ += 1\n\n        return summ",
+      "error": null,
+      "production_detected_patterns": [],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "hash_map_lookup",
+        "prefix_sum"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0_alt1"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0_alt0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed",
+        "Group group_0_alt1: satisfaction=0.850, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_011",
+            "fact_008"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_004",
+            "fact_005",
+            "fact_007",
+            "fact_008",
+            "fact_009",
+            "fact_010",
+            "fact_011",
+            "fact_013"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "early_termination",
+        "extremum_access",
+        "index_lookback",
+        "membership_test",
+        "subscript_index_access",
+        "subscript_read",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:04.682467+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "d1414cdbdb5cabddfca8608a6833186c8c6826f47ddce48f063c0a4af6de83ea",
+      "external_submission_id": "db-230",
+      "problem_id": 3,
+      "title": "Longest Substring Without Repeating Characters",
+      "expected_patterns": [
+        "hash_map_lookup",
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "hash_lookup",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "hash_map_lookup",
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        seen = set()\n        left = 0\n        ans = 0\n\n        for right in range(len(s)):\n            while s[right] in seen:\n                seen.remove(s[left])\n                left += 1\n\n            seen.add(s[right])\n            ans = max(ans, right - left + 1)\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "hash_map_lookup",
+        "sliding_window_variable",
+        "array_traversal",
+        "greedy_local",
+        "brute_force"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.95,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_005"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_005",
+            "fact_009"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_005",
+            "fact_008",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_005",
+            "fact_007",
+            "fact_008",
+            "fact_009",
+            "fact_010",
+            "fact_011"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 13,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "membership_test",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "visited_tracking",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:05.693175+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "0d202422a57c9b360603df5b137308583030d3cc12e3897fa8dee2274dc30b92",
+      "external_submission_id": "db-231",
+      "problem_id": 209,
+      "title": "Minimum Size Subarray Sum",
+      "expected_patterns": [
+        "prefix_sum",
+        "sliding_window_variable"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "sliding_window"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "prefix_sum",
+            "sliding_window_variable"
+          ],
+          "derivation_patterns": [
+            "sliding_window_variable"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def minSubArrayLen(self, target: int, nums: List[int]) -> int:\n        left = 0\n        summ = 0\n        ans = len(nums) + 1\n\n        for right in range(len(nums)):\n            summ += nums[right]\n\n            while summ >= target:\n                ans = min(ans, right - left + 1)\n                summ -= nums[left]\n                left += 1\n\n        return 0 if ans == len(nums) + 1 else ans",
+      "error": null,
+      "production_detected_patterns": [
+        "sliding_window_variable",
+        "array_traversal",
+        "greedy_local",
+        "brute_force"
+      ],
+      "production_match_result": "PARTIAL_MATCH",
+      "production_confidence_score": 0.265,
+      "production_unmatched_patterns": [
+        "prefix_sum"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "sliding_window",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.863, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "sliding_window",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "loop_state_tracking"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_006"
+          ],
+          "confidence": 0.75,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_006",
+            "fact_004"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_006",
+            "fact_007",
+            "fact_010",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002",
+            "fact_004",
+            "fact_005",
+            "fact_006",
+            "fact_008",
+            "fact_009",
+            "fact_010",
+            "fact_011"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 13,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:06.706035+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "7f893cd0d1cbcfbbc8515cb87139804de7d665ad16fe094bff20a03b4ca0bd57",
+      "external_submission_id": "db-232",
+      "problem_id": 11,
+      "title": "Container With Most Water",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "two_pointers_opposite"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "binary_search"
+          ],
+          "patterns": [
+            "two_pointers_opposite"
+          ],
+          "derivation_patterns": [
+            "two_pointers_opposite"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def maxArea(self, height: List[int]) -> int:\n        left = 0\n        right = len(height) - 1\n        ans = 0\n\n        while left < right:\n            area = min(height[left], height[right]) * (right - left)\n            ans = max(ans, area)\n\n            if height[left] < height[right]:\n                left += 1\n            else:\n                right -= 1\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_opposite",
+        "greedy_local"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "two_pointers_opposite",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=1.000, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_012"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_003"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_004",
+            "fact_005",
+            "fact_006",
+            "fact_010",
+            "fact_011",
+            "fact_003"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 15,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:07.717154+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "cfe77884ff46f3c73aa8218543ec646aea81babc224f80300843c683a68d6f1a",
+      "external_submission_id": "db-233",
+      "problem_id": 125,
+      "title": "Valid Palindrome",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "two_pointers_opposite"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "binary_search"
+          ],
+          "patterns": [
+            "two_pointers_opposite"
+          ],
+          "derivation_patterns": [
+            "two_pointers_opposite"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def isPalindrome(self, s: str) -> bool:\n        left = 0\n        right = len(s) - 1\n\n        while left < right:\n            while left < right and not s[left].isalnum():\n                left += 1\n\n            while left < right and not s[right].isalnum():\n                right -= 1\n\n            if s[left].lower() != s[right].lower():\n                return False\n\n            left += 1\n            right -= 1\n\n        return True",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_opposite",
+        "brute_force"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "two_pointers_opposite",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=1.000, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002",
+            "fact_003",
+            "fact_006",
+            "fact_010"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_008"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_002"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_004",
+            "fact_006",
+            "fact_007",
+            "fact_010",
+            "fact_011",
+            "fact_015",
+            "fact_016",
+            "fact_002",
+            "fact_003"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 21,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "opposite_direction_updates",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:08.734228+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "5710e0ae4bf74f17e5823c171cd02fe50eace04de7924400d6486b305772f80e",
+      "external_submission_id": "db-234",
+      "problem_id": 15,
+      "title": "3Sum",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "two_pointers_opposite"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "binary_search"
+          ],
+          "patterns": [
+            "two_pointers_opposite"
+          ],
+          "derivation_patterns": [
+            "two_pointers_opposite"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def threeSum(self, nums: List[int]) -> List[List[int]]:\n        nums.sort()\n        ans = []\n\n        for i in range(len(nums)):\n            if i > 0 and nums[i] == nums[i - 1]:\n                continue\n\n            left = i + 1\n            right = len(nums) - 1\n\n            while left < right:\n                total = nums[i] + nums[left] + nums[right]\n\n                if total == 0:\n                    ans.append([nums[i], nums[left], nums[right]])\n                    left += 1\n                    right -= 1\n\n                    while left < right and nums[left] == nums[left - 1]:\n                        left += 1\n\n                    while left < right and nums[right] == nums[right + 1]:\n                        right -= 1\n\n                elif total < 0:\n                    left += 1\n                else:\n                    right -= 1\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_opposite",
+        "array_traversal",
+        "brute_force",
+        "sorting"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "two_pointers_opposite",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=1.000, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "two_pointers_opposite",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "bidirectional_index_scan"
+          ],
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_010",
+            "fact_011",
+            "fact_012",
+            "fact_024",
+            "fact_031"
+          ],
+          "confidence": 0.9,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_020"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "bidirectional_index_scan",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_011",
+            "fact_003"
+          ],
+          "presence_confidence": 0.9,
+          "centrality": 0.85
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_004",
+            "fact_010",
+            "fact_011",
+            "fact_013",
+            "fact_015",
+            "fact_016",
+            "fact_018",
+            "fact_019",
+            "fact_024",
+            "fact_025",
+            "fact_027",
+            "fact_031",
+            "fact_032",
+            "fact_034",
+            "fact_003",
+            "fact_012"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_002",
+            "fact_038"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 40,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "index_lookback",
+        "opposite_direction_updates",
+        "sorting_operation",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:09.770818+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "c2265ffb2ef183b43bc046ea429e8d27518b21f30ae8bd8adf7f3c75fb83d11c",
+      "external_submission_id": "db-235",
+      "problem_id": 704,
+      "title": "Binary Search",
+      "expected_patterns": [
+        "binary_search_standard"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "binary_search"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "binary_search"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "binary_search_standard"
+          ],
+          "derivation_patterns": [
+            "binary_search_standard"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def search(self, nums: List[int], target: int) -> int:\n        left = 0\n        right = len(nums) - 1\n\n        while left <= right:\n            mid = (left + right) // 2\n\n            if nums[mid] == target:\n                return mid\n\n            if nums[mid] < target:\n                left = mid + 1\n            else:\n                right = mid - 1\n\n        return -1",
+      "error": null,
+      "production_detected_patterns": [
+        "binary_search_standard"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 1.0,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "binary_search",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.850, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "binary_search",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_004"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_001",
+            "fact_007",
+            "fact_010"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 11,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "midpoint_calculation",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:10.782629+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "fc5b9f132e21ab02df193221599ea9074a23f130a9304451327101d1c3f27a33",
+      "external_submission_id": "db-236",
+      "problem_id": 35,
+      "title": "Search Insert Position",
+      "expected_patterns": [
+        "binary_search_standard"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "binary_search"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "binary_search"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "binary_search_standard"
+          ],
+          "derivation_patterns": [
+            "binary_search_standard"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def searchInsert(self, nums: List[int], target: int) -> int:\n        left = 0\n        right = len(nums) - 1\n\n        while left <= right:\n            mid = (left + right) // 2\n\n            if nums[mid] == target:\n                return mid\n\n            if nums[mid] < target:\n                left = mid + 1\n            else:\n                right = mid - 1\n\n        return left",
+      "error": null,
+      "production_detected_patterns": [
+        "binary_search_standard"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 1.0,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "binary_search",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.850, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "binary_search",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [],
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_002",
+            "fact_004"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_003",
+            "fact_002"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        },
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_001",
+            "fact_007",
+            "fact_010"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 11,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "midpoint_calculation",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:11.793534+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "108a6edad7f72728961a6921e868fcda785f858ec263e8d11e1c135b607b8c18",
+      "external_submission_id": "db-237",
+      "problem_id": 70,
+      "title": "Climbing Stairs",
+      "expected_patterns": [
+        "dp_1d_forward"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [
+        {
+          "kind": "concept_not_derived_from_patterns",
+          "group_id": "group_1",
+          "concept": "dp_top_down",
+          "derivable_concepts": [
+            "dp_bottom_up"
+          ],
+          "patterns": [
+            "dp_1d_forward"
+          ],
+          "detail": "group 'group_1' requires 'dp_top_down', which the current vocabulary cannot derive from its patterns ['dp_1d_forward']"
+        }
+      ],
+      "expected_allowed_concepts": [
+        "dp_bottom_up"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dp_bottom_up"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_1",
+          "required": [
+            "dp_top_down"
+          ],
+          "optional": [
+            "recursive_branching"
+          ],
+          "excluded": [
+            "dfs_backtracking"
+          ],
+          "patterns": [
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        if n <= 2:\n            return n\n\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        dp[2] = 2\n\n        for i in range(3, n + 1):\n            dp[i] = dp[i - 1] + dp[i - 2]\n\n        return dp[n]",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "dp_1d_forward"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 1.0,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dp_bottom_up",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.920, raw_outcome=satisfied, authority=human_curated",
+        "Group group_1: satisfaction=0.000, raw_outcome=unsatisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dp_bottom_up",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "iterative_table_filling"
+          ],
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_005",
+            "fact_008",
+            "fact_009",
+            "fact_013",
+            "fact_016"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "iterative_table_filling",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_005",
+            "fact_009",
+            "fact_013",
+            "fact_016"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 22,
+      "shadow_fact_types": [
+        "cache_lookup",
+        "cache_write",
+        "early_termination",
+        "for_loop_iteration",
+        "index_lookback",
+        "indexed_write",
+        "list_construction",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:12.803803+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "concept_not_derived_from_patterns"
+      ]
+    },
+    {
+      "fingerprint": "a6e62bcf0c5c10c1fa40a5f506488cd6da338361c7e46424fa69f3356b134d2b",
+      "external_submission_id": "db-238",
+      "problem_id": 70,
+      "title": "Climbing Stairs",
+      "expected_patterns": [
+        "dp_1d_forward"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [
+        {
+          "kind": "concept_not_derived_from_patterns",
+          "group_id": "group_1",
+          "concept": "dp_top_down",
+          "derivable_concepts": [
+            "dp_bottom_up"
+          ],
+          "patterns": [
+            "dp_1d_forward"
+          ],
+          "detail": "group 'group_1' requires 'dp_top_down', which the current vocabulary cannot derive from its patterns ['dp_1d_forward']"
+        }
+      ],
+      "expected_allowed_concepts": [
+        "dp_bottom_up"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dp_bottom_up"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_1",
+          "required": [
+            "dp_top_down"
+          ],
+          "optional": [
+            "recursive_branching"
+          ],
+          "excluded": [
+            "dfs_backtracking"
+          ],
+          "patterns": [
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        memo = {}\n\n        def dfs(x):\n            if x <= 2:\n                return x\n\n            if x in memo:\n                return memo[x]\n\n            memo[x] = dfs(x - 1) + dfs(x - 2)\n            return memo[x]\n\n        return dfs(n)",
+      "error": null,
+      "production_detected_patterns": [
+        "brute_force"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "dp_1d_forward"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dp_top_down",
+      "shadow_satisfied_group_ids": [
+        "group_1"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=contradicted, authority=human_curated",
+        "Group group_0: CONTRADICTED downgraded to UNRESOLVED (authority=human_curated is not authoritative)",
+        "Group group_1: satisfaction=0.978, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dp_top_down",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "recursive_branching"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_002",
+            "fact_006",
+            "fact_009",
+            "fact_010",
+            "fact_013"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "recursive_branching",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_002"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        }
+      ],
+      "shadow_fact_count": 16,
+      "shadow_fact_types": [
+        "cache_lookup",
+        "cache_write",
+        "early_termination",
+        "indexed_write",
+        "mapping_construction",
+        "membership_test",
+        "multiple_recursive_paths",
+        "self_recursive_call",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:13.822884+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "concept_not_derived_from_patterns",
+        "false_confirmation_label_mismatch",
+        "confirmed_on_unexpected_strategy"
+      ]
+    },
+    {
+      "fingerprint": "14ee52845dd9cc25356ea8959612b64fee18ea9fd62ca80eb05d161699b4baa6",
+      "external_submission_id": "db-239",
+      "problem_id": 322,
+      "title": "Coin Change",
+      "expected_patterns": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [
+        {
+          "kind": "concept_not_derived_from_patterns",
+          "group_id": "group_1",
+          "concept": "dp_top_down",
+          "derivable_concepts": [
+            "dp_bottom_up"
+          ],
+          "patterns": [
+            "bfs_shortest_path",
+            "dp_1d_forward"
+          ],
+          "detail": "group 'group_1' requires 'dp_top_down', which the current vocabulary cannot derive from its patterns ['dp_1d_forward']"
+        }
+      ],
+      "expected_allowed_concepts": [
+        "bfs_shortest_path",
+        "dp_bottom_up"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dp_bottom_up"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "bfs_shortest_path",
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_1",
+          "required": [
+            "dp_top_down"
+          ],
+          "optional": [
+            "recursive_branching"
+          ],
+          "excluded": [
+            "dfs_backtracking"
+          ],
+          "patterns": [
+            "bfs_shortest_path",
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def coinChange(self, coins: List[int], amount: int) -> int:\n        dp = [amount + 1] * (amount + 1)\n        dp[0] = 0\n\n        for i in range(1, amount + 1):\n            for coin in coins:\n                if coin <= i:\n                    dp[i] = min(dp[i], dp[i - coin] + 1)\n\n        return -1 if dp[amount] == amount + 1 else dp[amount]",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "brute_force",
+        "greedy_local"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dp_bottom_up",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.920, raw_outcome=satisfied, authority=human_curated",
+        "Group group_1: satisfaction=0.000, raw_outcome=unsatisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dp_bottom_up",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "iterative_table_filling"
+          ],
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_005",
+            "fact_006",
+            "fact_007",
+            "fact_014"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "iterative_table_filling",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_007",
+            "fact_014"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 22,
+      "shadow_fact_types": [
+        "cache_lookup",
+        "cache_write",
+        "early_termination",
+        "for_loop_iteration",
+        "index_lookback",
+        "indexed_write",
+        "list_construction",
+        "parent_root_merge",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:14.841849+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "concept_not_derived_from_patterns"
+      ]
+    },
+    {
+      "fingerprint": "8e793f5c8c4f3b2674386811fd9d7ab926617c9261726d5ad4ed8c1bdd1df802",
+      "external_submission_id": "db-240",
+      "problem_id": 322,
+      "title": "Coin Change",
+      "expected_patterns": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [
+        {
+          "kind": "concept_not_derived_from_patterns",
+          "group_id": "group_1",
+          "concept": "dp_top_down",
+          "derivable_concepts": [
+            "dp_bottom_up"
+          ],
+          "patterns": [
+            "bfs_shortest_path",
+            "dp_1d_forward"
+          ],
+          "detail": "group 'group_1' requires 'dp_top_down', which the current vocabulary cannot derive from its patterns ['dp_1d_forward']"
+        }
+      ],
+      "expected_allowed_concepts": [
+        "bfs_shortest_path",
+        "dp_bottom_up"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dp_bottom_up"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "bfs_shortest_path",
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_1",
+          "required": [
+            "dp_top_down"
+          ],
+          "optional": [
+            "recursive_branching"
+          ],
+          "excluded": [
+            "dfs_backtracking"
+          ],
+          "patterns": [
+            "bfs_shortest_path",
+            "dp_1d_forward"
+          ],
+          "derivation_patterns": [
+            "dp_1d_forward"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def coinChange(self, coins: List[int], amount: int) -> int:\n        memo = {}\n\n        def dfs(x):\n            if x == 0:\n                return 0\n\n            if x < 0:\n                return float(\"inf\")\n\n            if x in memo:\n                return memo[x]\n\n            best = float(\"inf\")\n\n            for coin in coins:\n                best = min(best, dfs(x - coin) + 1)\n\n            memo[x] = best\n            return best\n\n        ans = dfs(amount)\n\n        return -1 if ans == float(\"inf\") else ans",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "hash_map_lookup",
+        "greedy_local",
+        "brute_force"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dp_top_down",
+      "shadow_satisfied_group_ids": [
+        "group_1"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=contradicted, authority=human_curated",
+        "Group group_0: CONTRADICTED downgraded to UNRESOLVED (authority=human_curated is not authoritative)",
+        "Group group_1: satisfaction=0.978, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dp_top_down",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "recursive_branching"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_007",
+            "fact_012",
+            "fact_014"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_009",
+            "fact_010"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "recursive_branching",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        }
+      ],
+      "shadow_fact_count": 18,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "cache_lookup",
+        "cache_write",
+        "early_termination",
+        "for_loop_iteration",
+        "indexed_write",
+        "mapping_construction",
+        "membership_test",
+        "parent_root_merge",
+        "self_recursive_call",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:15.865767+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "concept_not_derived_from_patterns",
+        "false_confirmation_label_mismatch",
+        "confirmed_on_unexpected_strategy"
+      ]
+    },
+    {
+      "fingerprint": "a17ebb69bf9b08baa5230d3d12a5e30ebca8a4d68ff1c47c89da5a0ba72efccc",
+      "external_submission_id": "db-241",
+      "problem_id": 62,
+      "title": "Unique Paths",
+      "expected_patterns": [
+        "dp_2d_grid"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "dp_bottom_up"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dp_bottom_up"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "dp_2d_grid"
+          ],
+          "derivation_patterns": [
+            "dp_2d_grid"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        dp = [[0] * n for _ in range(m)]\n\n        for i in range(m):\n            dp[i][0] = 1\n\n        for j in range(n):\n            dp[0][j] = 1\n\n        for i in range(1, m):\n            for j in range(1, n):\n                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]\n\n        return dp[m - 1][n - 1]",
+      "error": null,
+      "production_detected_patterns": [
+        "brute_force",
+        "array_traversal",
+        "dp_interval",
+        "dp_2d_grid"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.95,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dp_bottom_up",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.920, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dp_bottom_up",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "iterative_table_filling"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_004",
+            "fact_005",
+            "fact_009",
+            "fact_010",
+            "fact_011",
+            "fact_015",
+            "fact_017",
+            "fact_021"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "iterative_table_filling",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_001",
+            "fact_005",
+            "fact_011",
+            "fact_015",
+            "fact_017",
+            "fact_021"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 24,
+      "shadow_fact_types": [
+        "cache_lookup",
+        "early_termination",
+        "extremum_access",
+        "for_loop_iteration",
+        "index_lookback",
+        "indexed_write",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:16.884912+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "39190fb8fbe45ee74daf69dcf4c3b461354b49ab10835d41377d99c2cc3e1521",
+      "external_submission_id": "db-242",
+      "problem_id": 46,
+      "title": "Permutations",
+      "expected_patterns": [
+        "backtracking_permutation"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "dfs_backtracking"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dfs_backtracking"
+          ],
+          "optional": [
+            "recursive_branching"
+          ],
+          "excluded": [
+            "dp_top_down"
+          ],
+          "patterns": [
+            "backtracking_permutation"
+          ],
+          "derivation_patterns": [
+            "backtracking_permutation"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def permute(self, nums: List[int]) -> List[List[int]]:\n        ans = []\n\n        def backtrack(path, remaining):\n            if not remaining:\n                ans.append(path[:])\n                return\n\n            for i in range(len(remaining)):\n                path.append(remaining[i])\n\n                new_remaining = remaining[:i] + remaining[i + 1:]\n                backtrack(path, new_remaining)\n\n                path.pop()\n\n        backtrack([], nums)\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "dfs_recursive",
+        "backtracking_subset",
+        "array_traversal",
+        "brute_force"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "backtracking_permutation"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dfs_backtracking",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.978, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dfs_backtracking",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "recursive_branching"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_002"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "recursive_branching",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        }
+      ],
+      "shadow_fact_count": 8,
+      "shadow_fact_types": [
+        "early_termination",
+        "for_loop_iteration",
+        "self_recursive_call",
+        "state_restoration",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:17.915004+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "c7122a128f99be95869d89c010e4b082b8f213a117f3ac059d9b82efa38d32d3",
+      "external_submission_id": "db-243",
+      "problem_id": 78,
+      "title": "Subsets",
+      "expected_patterns": [
+        "backtracking_subset"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "dfs_backtracking"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "dfs_backtracking"
+          ],
+          "optional": [
+            "recursive_branching"
+          ],
+          "excluded": [
+            "dp_top_down"
+          ],
+          "patterns": [
+            "backtracking_subset"
+          ],
+          "derivation_patterns": [
+            "backtracking_subset"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def subsets(self, nums: List[int]) -> List[List[int]]:\n        ans = []\n\n        def backtrack(i, path):\n            ans.append(path[:])\n\n            for j in range(i, len(nums)):\n                path.append(nums[j])\n                backtrack(j + 1, path)\n                path.pop()\n\n        backtrack(0, [])\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "backtracking_subset",
+        "array_traversal",
+        "dfs_recursive",
+        "brute_force"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.8,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "dfs_backtracking",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.978, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dfs_backtracking",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "recursive_branching"
+          ],
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_002"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "recursive_branching",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        }
+      ],
+      "shadow_fact_count": 7,
+      "shadow_fact_types": [
+        "early_termination",
+        "for_loop_iteration",
+        "self_recursive_call",
+        "state_restoration",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:18.934521+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "05cca89710e6663ede3194cf43176624a1dcd7c9826f574f586b75de9a1f3c0f",
+      "external_submission_id": "db-244",
+      "problem_id": 102,
+      "title": "Binary Tree Level Order Traversal",
+      "expected_patterns": [
+        "bfs_level_order"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "bfs_shortest_path"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "bfs_shortest_path"
+          ],
+          "optional": [
+            "loop_state_tracking"
+          ],
+          "excluded": [
+            "recursive_branching"
+          ],
+          "patterns": [
+            "bfs_level_order"
+          ],
+          "derivation_patterns": [
+            "bfs_level_order"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:\n        if not root:\n            return []\n\n        queue = [root]\n        ans = []\n\n        while queue:\n            level = []\n\n            for _ in range(len(queue)):\n                node = queue.pop(0)\n                level.append(node.val)\n\n                if node.left:\n                    queue.append(node.left)\n\n                if node.right:\n                    queue.append(node.right)\n\n            ans.append(level)\n\n        return ans",
+      "error": null,
+      "production_detected_patterns": [
+        "bfs_level_order",
+        "array_traversal",
+        "brute_force"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.9,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "bfs_shortest_path",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "bfs_shortest_path",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [],
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_006",
+            "fact_007"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [],
+      "shadow_fact_count": 14,
+      "shadow_fact_types": [
+        "early_termination",
+        "for_loop_iteration",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "queue_dequeue",
+        "subscript_index_access",
+        "while_loop_truthiness"
+      ],
+      "analysed_at": "2026-09-19T05:24:19.950768+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "d08ae2cd80f4659f08fdb951ac085d9c425b1ca584e0a51e05432928ad93af02",
+      "external_submission_id": "db-246",
+      "problem_id": 200,
+      "title": "Number of Islands",
+      "expected_patterns": [
+        "bfs_shortest_path",
+        "dfs_recursive",
+        "union_find"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "bfs_shortest_path",
+        "recursive_branching",
+        "union_find"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "union_find"
+          ],
+          "optional": [],
+          "excluded": [],
+          "patterns": [
+            "bfs_shortest_path",
+            "dfs_recursive",
+            "union_find"
+          ],
+          "derivation_patterns": [
+            "union_find"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def numIslands(self, grid: List[List[str]]) -> int:\n        rows = len(grid)\n        cols = len(grid[0])\n\n        parent = list(range(rows * cols))\n        size = [1] * (rows * cols)\n        count = 0\n\n        for i in range(rows):\n            for j in range(cols):\n                if grid[i][j] == \"1\":\n                    count += 1\n\n        def find(x):\n            while parent[x] != x:\n                parent[x] = parent[parent[x]]\n                x = parent[x]\n            return x\n\n        def union(a, b):\n            nonlocal count\n\n            ra = find(a)\n            rb = find(b)\n\n            if ra == rb:\n                return\n\n            if size[ra] < size[rb]:\n                ra, rb = rb, ra\n\n            parent[rb] = ra\n            size[ra] += size[rb]\n            count -= 1\n\n        for i in range(rows):\n            for j in range(cols):\n                if grid[i][j] != \"1\":\n                    continue\n\n                idx = i * cols + j\n\n                if i + 1 < rows and grid[i + 1][j] == \"1\":\n                    union(idx, (i + 1) * cols + j)\n\n                if j + 1 < cols and grid[i][j + 1] == \"1\":\n                    union(idx, i * cols + j + 1)\n\n        return count",
+      "error": null,
+      "production_detected_patterns": [
+        "brute_force",
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "bfs_shortest_path",
+        "dfs_recursive",
+        "union_find"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": "union_find",
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.850, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [
+        {
+          "strategy_id": "dp_bottom_up",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [
+            "iterative_table_filling"
+          ],
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_004",
+            "fact_008",
+            "fact_010",
+            "fact_013",
+            "fact_017",
+            "fact_025",
+            "fact_028",
+            "fact_031",
+            "fact_033"
+          ],
+          "confidence": 0.8,
+          "problem_context_signals": {}
+        },
+        {
+          "strategy_id": "union_find",
+          "strategy_version": "1.0.0",
+          "supporting_technique_ids": [],
+          "supporting_fact_ids": [
+            "fact_011",
+            "fact_014",
+            "fact_026"
+          ],
+          "confidence": 0.85,
+          "problem_context_signals": {}
+        }
+      ],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_017"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "iterative_table_filling",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_010",
+            "fact_013",
+            "fact_025",
+            "fact_028",
+            "fact_039",
+            "fact_041",
+            "fact_008"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 44,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "extremum_access",
+        "for_loop_iteration",
+        "index_lookback",
+        "indexed_write",
+        "list_construction",
+        "parent_pointer_chase",
+        "parent_root_merge",
+        "self_recursive_call",
+        "subscript_index_access",
+        "subscript_read",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:21.027611+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "extra_strategy_inferred"
+      ]
+    },
+    {
+      "fingerprint": "ccaac0a1ba6bddea29819574f2425f6733c732252497dd8f0cadd6346dc3924e",
+      "external_submission_id": "db-251",
+      "problem_id": 2212,
+      "title": "Removing Minimum and Maximum From Array",
+      "expected_patterns": [
+        "two_pointers_opposite"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "two_pointers_opposite"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "two_pointers_opposite"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "binary_search"
+          ],
+          "patterns": [
+            "two_pointers_opposite"
+          ],
+          "derivation_patterns": [
+            "two_pointers_opposite"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def minimumDeletions(self, nums: List[int]) -> int:\n        n = len(nums)\n\n        maxx_ind = nums.index(max(nums))\n        minn_ind = nums.index(min(nums))\n\n        left = max(maxx_ind, minn_ind) + 1\n        right = n - min(maxx_ind, minn_ind)\n\n        max_left_min_right = maxx_ind + 1 + (n - minn_ind)\n        min_left_max_right = minn_ind + 1 + (n - maxx_ind)\n\n        return min(left, right, max_left_min_right, min_left_max_right)",
+      "error": null,
+      "production_detected_patterns": [
+        "greedy_local"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "two_pointers_opposite"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [],
+      "shadow_fact_count": 2,
+      "shadow_fact_types": [
+        "early_termination",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:22.043488+00:00",
+      "root_causes": [
+        "required_concept_not_detected",
+        "no_technique_evidence"
+      ]
+    },
+    {
+      "fingerprint": "1e5d34f5cb4d60bf41113d21426963d873e6e084a668facc8c2297024338e533",
+      "external_submission_id": "db-252",
+      "problem_id": 21,
+      "title": "Merge Two Sorted Lists",
+      "expected_patterns": [
+        "two_pointers_same"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "forward_pointer_advance"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "forward_pointer_advance"
+          ],
+          "optional": [],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "two_pointers_same"
+          ],
+          "derivation_patterns": [
+            "two_pointers_same"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "# Definition for singly-linked list.\n# class ListNode:\n#     def __init__(self, val=0, next=None):\n#         self.val = val\n#         self.next = next\nclass Solution:\n    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy=ListNode(None)\n        tail=dummy\n        print(list1.val)\n        while list1 and list2:\n            if list1.val<=list2.val:\n                tail.next=list1\n                list1=list1.next\n            else:\n                tail.next=list2\n                list2=list2.next\n            tail=tail.next\n        if list1:\n            tail.next=list1\n        else:\n            tail.next=list2\n        return dummy.next\n                ",
+      "error": null,
+      "production_detected_patterns": [
+        "two_pointers_same"
+      ],
+      "production_match_result": "FULL_MATCH",
+      "production_confidence_score": 0.3,
+      "production_unmatched_patterns": [],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "human_curated",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=human_curated"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "linked_list_traversal",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_005",
+            "fact_006",
+            "fact_010",
+            "fact_016",
+            "fact_018"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.8
+        },
+        {
+          "technique_id": "forward_pointer_advance",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_000",
+            "fact_001",
+            "fact_003",
+            "fact_004",
+            "fact_005",
+            "fact_006",
+            "fact_008",
+            "fact_010",
+            "fact_012",
+            "fact_014",
+            "fact_016",
+            "fact_018",
+            "fact_022"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.75
+        }
+      ],
+      "shadow_fact_count": 23,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "multiple_pointer_traversal",
+        "node_constructor",
+        "pointer_rewiring",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:23.077798+00:00",
+      "root_causes": [
+        "ok_confirmed"
+      ]
+    },
+    {
+      "fingerprint": "6826590f694a2d575fe448f8db170b782c588b0a24c098950f7f1c6afd59b2cc",
+      "external_submission_id": "db-253",
+      "problem_id": 29,
+      "title": "Divide Two Integers",
+      "expected_patterns": [
+        "binary_search_answer"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "binary_search"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "binary_search"
+          ],
+          "optional": [
+            "bidirectional_index_scan"
+          ],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "binary_search_answer"
+          ],
+          "derivation_patterns": [
+            "binary_search_answer"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def divide(self, dividend: int, divisor: int) -> int:\n\n        if dividend == -2147483648 and divisor == -1:\n            return 2147483647\n\n        negative = (dividend < 0) != (divisor < 0)\n\n        dividend = abs(dividend)\n        divisor = abs(divisor)\n\n        quotient = 0\n\n        while dividend >= divisor:\n\n            value = divisor\n            count = 1\n\n            while value + value <= dividend:\n                value += value\n                count += count\n\n            dividend -= value\n            quotient += count\n\n        if negative:\n            return -quotient\n\n        return quotient",
+      "error": null,
+      "production_detected_patterns": [
+        "brute_force"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "binary_search_answer"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "sequential_accumulation",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_003",
+            "fact_001"
+          ],
+          "presence_confidence": 0.85,
+          "centrality": 0.6
+        },
+        {
+          "technique_id": "loop_state_tracking",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_004",
+            "fact_006",
+            "fact_007",
+            "fact_005"
+          ],
+          "presence_confidence": 0.75,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 14,
+      "shadow_fact_types": [
+        "accumulator_update",
+        "conditional_index_update",
+        "early_termination",
+        "opposite_direction_updates",
+        "variable_use_in_loop_body",
+        "while_loop_comparison"
+      ],
+      "analysed_at": "2026-09-19T05:24:24.093016+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "required_concept_not_detected"
+      ]
+    },
+    {
+      "fingerprint": "0708fbdb8a53c25c44cbf9d14ed6cb64759c0e1c5f4279485685e8f79da0d5d9",
+      "external_submission_id": "db-254",
+      "problem_id": 4284,
+      "title": "Smallest Stable Index I",
+      "expected_patterns": [
+        "two_pointers_same",
+        "prefix_sum"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "forward_pointer_advance"
+          ],
+          "optional": [],
+          "excluded": [
+            "two_pointers_opposite"
+          ],
+          "patterns": [
+            "two_pointers_same"
+          ],
+          "derivation_patterns": [
+            "two_pointers_same"
+          ],
+          "matchable": true
+        },
+        {
+          "id": "group_1",
+          "required": [
+            "sequential_accumulation"
+          ],
+          "optional": [
+            "iterative_table_filling"
+          ],
+          "excluded": [],
+          "patterns": [
+            "prefix_sum"
+          ],
+          "derivation_patterns": [
+            "prefix_sum"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def firstStableIndex(self, nums: list[int], k: int) -> int:\n        ind=None\n        if len(nums)==1 and nums[0]<=k:\n            return 0\n        for i in range(len(nums)):\n            if max(nums[0:i+1])-min(nums[i:len(nums)])<=k:\n                if ind==None or i<ind:\n                    ind=i\n        if ind==None:\n            return -1\n        return ind\n",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "prefix_sum",
+        "two_pointers_same"
+      ],
+      "shadow_outcome": "UNRESOLVED",
+      "shadow_authority_tier": "unknown",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed",
+        "Group group_1: satisfaction=0.000, raw_outcome=unsatisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_005",
+            "fact_004",
+            "fact_003",
+            "fact_008",
+            "fact_009"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 10,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "extremum_access",
+        "for_loop_iteration",
+        "subscript_index_access",
+        "subscript_read"
+      ],
+      "analysed_at": "2026-09-19T05:24:25.109418+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch",
+        "required_accumulation_needs_acc_update",
+        "required_concept_not_detected"
+      ]
+    },
+    {
+      "fingerprint": "8f05fbb9b09e458d42ed0c69cd0c3e1e7ad0bc429a0becd91eba263b846bb433",
+      "external_submission_id": "db-255",
+      "problem_id": 4256,
+      "title": "Construct Uniform Parity Array I",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "candidate_selection"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "candidate_selection"
+          ],
+          "optional": [
+            "sequential_accumulation"
+          ],
+          "excluded": [
+            "sliding_window"
+          ],
+          "patterns": [
+            "greedy_local"
+          ],
+          "derivation_patterns": [
+            "greedy_local"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def uniformArray(self, nums1: list[int]) -> bool:\n        odd = None\n\n        for x in nums1:\n            if x % 2 != 0:\n                odd = x\n                break\n\n        if odd is None:\n            return True\n\n        nums2 = []\n\n        for x in nums1:\n            if x % 2 == 0:\n                nums2.append(x - odd)\n            else:\n                nums2.append(x)\n\n        return True",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "greedy_local"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_001",
+            "fact_003",
+            "fact_005"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 6,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:26.145251+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    },
+    {
+      "fingerprint": "24f5e7a9982c60906dabec4b896e3fa206d7da0f1112ee6d579ba525ad949a6a",
+      "external_submission_id": "db-256",
+      "problem_id": 4258,
+      "title": "Construct Uniform Parity Array II",
+      "expected_patterns": [
+        "greedy_local"
+      ],
+      "group_source": "live_db",
+      "gt_findings": [],
+      "expected_allowed_concepts": [
+        "candidate_selection"
+      ],
+      "groups": [
+        {
+          "id": "group_0",
+          "required": [
+            "candidate_selection"
+          ],
+          "optional": [
+            "sequential_accumulation"
+          ],
+          "excluded": [
+            "sliding_window"
+          ],
+          "patterns": [
+            "greedy_local"
+          ],
+          "derivation_patterns": [
+            "greedy_local"
+          ],
+          "matchable": true
+        }
+      ],
+      "source_code": "class Solution:\n    def uniformArray(self, nums1: list[int]) -> bool:\n        odd = None\n\n        for x in nums1:\n            if x % 2 != 0:\n                if odd is None or x < odd:\n                    odd = x\n\n        if odd is None:\n            return True\n\n        for x in nums1:\n            if x % 2 == 0 and x < odd:\n                return False\n\n        return True",
+      "error": null,
+      "production_detected_patterns": [
+        "array_traversal"
+      ],
+      "production_match_result": "NO_MATCH",
+      "production_confidence_score": 0.0,
+      "production_unmatched_patterns": [
+        "greedy_local"
+      ],
+      "shadow_outcome": "CONFIRMED",
+      "shadow_authority_tier": "llm_proposed",
+      "shadow_primary_strategy": null,
+      "shadow_satisfied_group_ids": [
+        "group_0"
+      ],
+      "shadow_unmatchable_group_ids": [],
+      "shadow_reasoning": [
+        "Group group_0: satisfaction=0.800, raw_outcome=satisfied, authority=llm_proposed"
+      ],
+      "shadow_strategies": [],
+      "shadow_techniques": [
+        {
+          "technique_id": "candidate_selection",
+          "technique_version": "1.0.0",
+          "supporting_fact_ids": [
+            "fact_002",
+            "fact_001",
+            "fact_003",
+            "fact_005",
+            "fact_006"
+          ],
+          "presence_confidence": 0.8,
+          "centrality": 0.7
+        }
+      ],
+      "shadow_fact_count": 7,
+      "shadow_fact_types": [
+        "conditional_index_update",
+        "early_termination",
+        "for_loop_iteration",
+        "subscript_index_access"
+      ],
+      "analysed_at": "2026-09-19T05:24:27.158917+00:00",
+      "root_causes": [
+        "legacy_ast_vocabulary_mismatch"
+      ]
+    }
+  ]
+}

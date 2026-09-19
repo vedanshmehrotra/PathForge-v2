@@ -11,6 +11,9 @@ Implements techniques from PATHFORGE_TECHNIQUE_STRATEGY_VOCABULARY_V1.md:
 - T9: fixed_window_maintenance (Phase 5A)
 - T10: monotonic_stack_maintenance (Phase 5A)
 - T11: forward_pointer_advance (same-direction two pointers)
+- T12: candidate_selection (Vocabulary Layer 2)
+- T13: hash_lookup (Vocabulary Layer 2)
+- T14: frequency_counting (Vocabulary Layer 2)
 
 Each detector:
 1. Looks for required structural facts
@@ -24,8 +27,15 @@ from pathforge.ast_analysis.shadow.data_structures import (
 )
 
 
-def detect_techniques(facts: list[StructuralFact]) -> list[TechniqueEvidence]:
+def detect_techniques(facts: list[StructuralFact], relations=None) -> list[TechniqueEvidence]:
     """Run all technique detectors on the given structural facts.
+
+    Args:
+        facts: Structural facts from extraction.
+        relations: Optional shared relational-evidence bundle (M2). When
+            provided, migrated detectors may consume it as their
+            loop-membership oracle instead of re-deriving joins from fact
+            attributes. Detectors without relations support ignore it.
 
     Returns a list of TechniqueEvidence for techniques that were detected.
     """
@@ -40,10 +50,16 @@ def detect_techniques(facts: list[StructuralFact]) -> list[TechniqueEvidence]:
         _detect_fixed_window_maintenance,
         _detect_monotonic_stack_maintenance,
         _detect_forward_pointer_advance,
+        _detect_candidate_selection,
+        _detect_hash_lookup,
+        _detect_frequency_counting,
     ]
     results = []
     for detector in detectors:
-        result = detector(facts)
+        if detector in (_detect_sequential_accumulation, _detect_candidate_selection):
+            result = detector(facts, relations)
+        else:
+            result = detector(facts)
         if result is not None:
             results.append(result)
     return results
@@ -59,7 +75,9 @@ def _facts_of_type(facts: list[StructuralFact], fact_type: str) -> list[Structur
     return [f for f in facts if f.fact_type == fact_type]
 
 
-def _detect_sequential_accumulation(facts: list[StructuralFact]) -> Optional[TechniqueEvidence]:
+def _detect_sequential_accumulation(
+    facts: list[StructuralFact], relations=None
+) -> Optional[TechniqueEvidence]:
     """T1: Sequential Accumulation
 
     Required evidence:
@@ -75,17 +93,94 @@ def _detect_sequential_accumulation(facts: list[StructuralFact]) -> Optional[Tec
     variable, the fact that the ``accumulator_update`` was extracted from the
     same function body is sufficient evidence that the update is inside the
     loop, provided the accumulator variable differs from the loop variable.
+
+    M2 migration: when a relations bundle is supplied, loop membership of the
+    accumulator update is decided by the shared relation layer
+    (``updated_in_loop``) instead of being inferred from fact attributes.
+    Two compatibility rules keep behavior identical for all previously
+    supported inputs:
+
+    - The original fact-join path still gates detection. The relations oracle
+      can only *disambiguate which accumulator variable to join on* — it can
+      never make a detection fire that the fact joins would not have allowed.
+    - If the relations layer yields no admissible accumulator (or relations
+      were not supplied), the original unmodified fact-join path runs as the
+      fallback. Inputs the extractor supports but relations do not (e.g.
+      ``ast_ref``-less hand-built facts in tests) keep their exact previous
+      outputs.
     """
     types = _fact_types(facts)
     acc_facts = _facts_of_type(facts, "accumulator_update")
-    if not acc_facts:
-        return None
 
     has_while = "while_loop_comparison" in types
     has_for = "for_loop_iteration" in types
     if not has_while and not has_for:
         return None
 
+    # Container path first when no scalar accumulator exists: assign-form
+    # counting and append-form accumulation have no accumulator_update fact
+    # at all, and the original early-return would make them unreachable.
+    if not acc_facts:
+        if relations is None:
+            return None
+        return _seq_accum_container_evidence(facts, has_while, has_for, relations)
+
+    if relations is not None:
+        evidence = _seq_accum_evidence_via_relations(
+            facts, acc_facts, has_while, has_for, relations
+        )
+        if evidence is not None:
+            return evidence
+        # Relations yielded nothing admissible — fall through to the
+        # container path and then the original path so previously
+        # supported inputs keep their outputs.
+        evidence = _seq_accum_container_evidence(
+            facts, has_while, has_for, relations
+        )
+        if evidence is not None:
+            return evidence
+    return _seq_accum_evidence_fact_join(facts, acc_facts, has_while, has_for)
+
+
+def _seq_accum_supporting_facts(
+    facts: list[StructuralFact],
+    acc: StructuralFact,
+    acc_var: str,
+    has_while: bool,
+    has_for: bool,
+) -> Optional[list]:
+    """Build the supporting-fact list for one accumulator variable.
+
+    This is the original fact-join gate, unchanged: the while path requires
+    the accumulator variable in a while_loop_comparison's
+    ``modified_variables``; the for path requires a ``for_loop_iteration``
+    fact and a loop variable distinct from the accumulator.
+    """
+    supporting: list = []
+    if has_while:
+        for wc in _facts_of_type(facts, "while_loop_comparison"):
+            if acc_var in (wc.attributes.get("modified_variables") or []):
+                supporting.append(wc.fact_id)
+                supporting.append(acc.fact_id)
+                break
+    elif has_for:
+        loop_var = ""
+        for fl in _facts_of_type(facts, "for_loop_iteration"):
+            loop_var = fl.attributes.get("loop_variable", "")
+            supporting.append(fl.fact_id)
+            break
+        if acc_var and acc_var != loop_var:
+            supporting.append(acc.fact_id)
+    return supporting or None
+
+
+def _seq_accum_evidence_fact_join(
+    facts: list[StructuralFact],
+    acc_facts: list[StructuralFact],
+    has_while: bool,
+    has_for: bool,
+) -> Optional[TechniqueEvidence]:
+    """Original fact-attribute join, preserved byte-for-byte as the fallback."""
     supporting: list = []
 
     if has_while:
@@ -127,6 +222,166 @@ def _detect_sequential_accumulation(facts: list[StructuralFact]) -> Optional[Tec
         presence_confidence=0.85,
         centrality=0.6,
     )
+
+
+def _seq_accum_evidence_via_relations(
+    facts: list[StructuralFact],
+    acc_facts: list[StructuralFact],
+    has_while: bool,
+    has_for: bool,
+    relations,
+) -> Optional[TechniqueEvidence]:
+    """M2 proof-of-architecture path: loop membership from the relation layer.
+
+    For each accumulator-update fact, check the shared ``updated_in_loop``
+    relation instead of inferring loop membership from fact attributes.
+    The fact-join gate (``_seq_accum_supporting_facts``) still decides
+    whether the join evidence is admissible, so this path can never fire on
+    inputs the original detector rejected — it only changes *which*
+    accumulator variable is joined when several are present, using the
+    same relation for every migrated detector going forward.
+    """
+    updated_in_loop = getattr(relations, "updated_in_loop", None)
+    if not updated_in_loop:
+        return None
+
+    for acc in acc_facts:
+        var = acc.attributes.get("variable", "")
+        if not var:
+            continue
+        kinds = updated_in_loop.get(var) or set()
+        if has_while and "while" in kinds:
+            supporting = _seq_accum_supporting_facts(
+                facts, acc, var, has_while, has_for
+            )
+            if supporting:
+                supporting = list(dict.fromkeys(supporting))
+                return TechniqueEvidence(
+                    technique_id="sequential_accumulation",
+                    technique_version="1.0.0",
+                    supporting_fact_ids=supporting,
+                    presence_confidence=0.85,
+                    centrality=0.6,
+                )
+        if has_for and "for" in kinds:
+            supporting = _seq_accum_supporting_facts(
+                facts, acc, var, has_while, has_for
+            )
+            if supporting:
+                supporting = list(dict.fromkeys(supporting))
+                return TechniqueEvidence(
+                    technique_id="sequential_accumulation",
+                    technique_version="1.0.0",
+                    supporting_fact_ids=supporting,
+                    presence_confidence=0.85,
+                    centrality=0.6,
+                )
+    return None
+
+
+def _seq_accum_container_evidence(
+    facts: list[StructuralFact],
+    has_while: bool,
+    has_for: bool,
+    relations,
+) -> Optional[TechniqueEvidence]:
+    """Container-accumulation path: self-referential loop-carried updates.
+
+    Covers two structural forms the scalar ``accumulator_update`` fact
+    cannot represent (its target is a plain Name by definition):
+
+    - **assign-form counting**: ``freq[x] = freq.get(x, 0) + 1`` — an
+      indexed write (Assign/AnnAssign) whose value combines exactly one
+      read of the same structure with an external value;
+    - **append-form accumulation**: ``prefix.append(prefix[-1] + x)`` — an
+      append whose argument combines exactly one read of the same structure.
+
+    The join is entirely through the M2 relation layer:
+
+    - ``self_referential_updates`` (loop-scoped by construction) provides
+      the same-structure cumulative-update evidence, including the loop
+      membership that gates it — a one-shot self-referential assignment
+      outside a loop is never recorded, so this path cannot fire on it;
+    - ``updated_in_loop`` must independently confirm loop membership of
+      the structure (the append-receiver extension makes this meaningful
+      for appends), keeping the loop evidence and the self-reference
+      evidence from a single relation;
+    - a loop fact must be present exactly as in the scalar paths, and the
+      primary strategy exclusion (``distinct from the loop variable``)
+      is applied by structure name.
+
+    Supporting facts mirror the scalar paths (one loop fact + one
+    container fact); identity comes from the relations, so no new fact
+    type is required. No variable-name evidence is used.
+    """
+    if not (has_while or has_for):
+        return None
+    sru = getattr(relations, "self_referential_updates", None)
+    if not sru:
+        return None
+    updated_in_loop = getattr(relations, "updated_in_loop", None)
+    if not updated_in_loop:
+        return None
+
+    loop_fact_id = None
+    for fl in facts:
+        if fl.fact_type in ("for_loop_iteration", "while_loop_comparison"):
+            loop_fact_id = fl.fact_id
+            break
+    if loop_fact_id is None:
+        return None
+    loop_var = ""
+    for fl in _facts_of_type(facts, "for_loop_iteration"):
+        loop_var = fl.attributes.get("loop_variable", "")
+        break
+
+    for structure, ops in sru.items():
+        if not ops:
+            continue
+        kinds = updated_in_loop.get(structure) or set()
+        if not (kinds & {"for", "while"}):
+            continue
+        if has_while and "while" in kinds:
+            pass
+        elif has_for and "for" in kinds:
+            if structure and structure == loop_var:
+                continue
+        else:
+            continue
+        # Corroborate the relation with a structural fact: the assign form
+        # must have a real indexed write on the structure; the append form
+        # must have a recorded append operation. This keeps the relation
+        # from fabricating evidence no fact supports.
+        if "indexed_write" in ops:
+            if not _has_fact(facts, "indexed_write", structure):
+                continue
+        elif "append" in ops:
+            if not _has_append_op(relations, structure):
+                continue
+        else:
+            continue
+        return TechniqueEvidence(
+            technique_id="sequential_accumulation",
+            technique_version="1.0.0",
+            supporting_fact_ids=[loop_fact_id],
+            presence_confidence=0.85,
+            centrality=0.6,
+        )
+    return None
+
+
+def _has_fact(facts: list[StructuralFact], fact_type: str, structure: str) -> bool:
+    """True when a fact of ``fact_type`` records ``structure``."""
+    return any(
+        f.fact_type == fact_type and f.attributes.get("structure") == structure
+        for f in facts
+    )
+
+
+def _has_append_op(relations, structure: str) -> bool:
+    """True when the relation layer recorded an ``append`` op on ``structure``."""
+    ops = getattr(relations, "collection_ops", {}).get(structure) or set()
+    return "append" in ops
 
 
 def _collect_subscript_index_vars(facts: list[StructuralFact]) -> set:
@@ -557,6 +812,393 @@ def _advanced_variables(facts: list[StructuralFact]) -> set:
         elif f.fact_type == "conditional_index_update":
             advanced.update(f.attributes.get("updated_variables", []))
     return advanced
+
+
+def _candidate_vars(facts: list[StructuralFact], index_vars: set) -> Optional[tuple]:
+    """Find a candidate variable for conditional selection.
+
+    A candidate variable appears in the ``updated_variables`` of a
+    ``conditional_index_update`` fact (i.e. it is assigned inside a
+    conditional branch inside a loop) and is NOT ordinary arithmetic
+    accumulation: it must have no ``accumulator_update`` fact, which is
+    emitted for every augmented assignment (``c += 1``) and every
+    self-referential equal-sign assignment (``result = result + [x]``).
+    This is the fence that separates scalar candidate replacement from
+    running totals/counts/list building regardless of variable name.
+    """
+    accumulator_vars = {
+        f.attributes.get("variable", "")
+        for f in facts
+        if f.fact_type == "accumulator_update"
+    }
+    for f in _facts_of_type(facts, "conditional_index_update"):
+        updated = f.attributes.get("updated_variables") or []
+        candidates = [
+            v for v in updated
+            if v and v not in index_vars and v not in accumulator_vars
+        ]
+        if candidates:
+            return f, candidates
+    return None
+
+
+def _detect_candidate_selection(
+    facts: list[StructuralFact], relations=None
+) -> Optional[TechniqueEvidence]:
+    """T12: Candidate Selection (Vocabulary Layer 2)
+
+    Two structural forms feed the same reusable technique:
+
+    - **Loop form** — a loop plus a conditional rebinding of a scalar candidate
+      (running max/min, first-match selection, cascading top-k).
+    - **Sort form** — a sorting operation plus a bounded (extremum) read of the
+      *same* sequence (``nums.sort()`` then ``nums[0]`` / ``nums[-1]`` /
+      ``nums[len(nums) - 1]``), i.e. selecting an endpoint candidate from an
+      ordered sequence.
+
+    The loop form is evaluated first and is unchanged; the sort form is a
+    fallback, so every previously supported input keeps its exact output.
+
+    No variable-name evidence is used: names like best/min/max carry no weight,
+    and the non-name requirement is enforced by tests with deliberately
+    non-obvious identifiers.
+    """
+    evidence = _candidate_selection_loop_form(facts, relations)
+    if evidence is not None:
+        return evidence
+    return _candidate_selection_sort_form(facts)
+
+
+def _candidate_selection_loop_form(
+    facts: list[StructuralFact], relations=None
+) -> Optional[TechniqueEvidence]:
+    """Loop form of T12 (behavior unchanged).
+
+    Reusable pattern: loop + conditional branch + replacement of a scalar
+    candidate inside that branch (running max/min, first-match selection,
+    cascading top-k). Built entirely from facts that already exist —
+    no new fact types:
+
+    1. Loop evidence: ``for_loop_iteration`` or ``while_loop_comparison``
+       (the same loop evidence every other technique requires).
+    2. A ``conditional_index_update`` fact whose ``updated_variables``
+       include the candidate — the fact is only emitted for variables
+       assigned inside a conditional branch inside a loop body.
+    3. The candidate is a scalar selection target, not:
+       - a subscript index (sliding-window/pointer state) — excluded via
+         the M2 ``used_as_subscript_index`` relation (fact fallback:
+         ``_collect_subscript_index_vars``), the same index-participation
+         fence F4 introduced;
+       - an arithmetic accumulator (``total += x``, ``count += 1``,
+         ``result = result + [...]``) — excluded via absence of an
+         ``accumulator_update`` fact for that variable.
+
+    Does NOT fire for:
+    - unconditional loop-carried assignment (no conditional branch);
+    - ``if`` inside a loop that does not rebind a scalar candidate;
+    - conditional accumulation (accumulator fence);
+    - window shrink/pointer state (index-participation fence).
+
+    No variable-name evidence is used: names like best/min/max carry no
+    weight, and the non-name requirement is enforced by tests with
+    deliberately non-obvious identifiers.
+    """
+    types = _fact_types(facts)
+    has_loop = bool(
+        {"for_loop_iteration", "while_loop_comparison", "while_loop_truthiness"} & types
+    )
+    if not has_loop:
+        return None
+
+    # Index participation: prefer the shared M2 relation when provided,
+    # fall back to the equivalent fact-based collection otherwise.
+    relation_index_vars = getattr(relations, "used_as_subscript_index", None)
+    index_vars = (
+        set(relation_index_vars)
+        if relation_index_vars
+        else _collect_subscript_index_vars(facts)
+    )
+
+    found = _candidate_vars(facts, index_vars)
+    if not found:
+        return None
+    cond_fact, _candidates = found
+
+    supporting = [cond_fact.fact_id]
+    for fl in facts:
+        if fl.fact_type in {"for_loop_iteration", "while_loop_comparison"}:
+            supporting.append(fl.fact_id)
+            break
+    # Early termination corroborates selection (first-match/break-after-choose)
+    # over plain state maintenance; included only when actually present.
+    supporting.extend(
+        f.fact_id for f in facts if f.fact_type == "early_termination"
+    )
+    supporting = list(dict.fromkeys(supporting))
+
+    return TechniqueEvidence(
+        technique_id="candidate_selection",
+        technique_version="1.0.0",
+        supporting_fact_ids=supporting,
+        presence_confidence=0.8,
+        centrality=0.7,
+    )
+
+
+def _candidate_selection_sort_form(
+    facts: list[StructuralFact], relations=None
+) -> Optional[TechniqueEvidence]:
+    """Sort form of T12: sorting operation + bounded read of the same sequence.
+
+    Required evidence, both name-free:
+
+    1. ``sorting_operation`` — ``x.sort(...)`` (the sorted variable is ``x``) or
+       ``y = sorted(x, ...)`` (the sorted variable is ``y``).
+    2. ``extremum_access`` on that *same* variable — a load subscript at a
+       bounded index (``arr[0]``, ``arr[-1]``, ``arr[len(arr) - 1]``).
+
+    A bounded read is what expresses "select an endpoint candidate". A sorted
+    sequence that is only returned, iterated, or read at a **variable** index
+    (``arr[i]`` — two-pointer / binary-search movement) produces no
+    ``extremum_access`` fact and therefore no detection.
+    """
+    sort_facts = [
+        f for f in _facts_of_type(facts, "sorting_operation")
+        if f.attributes.get("structure")
+    ]
+    if not sort_facts:
+        return None
+
+    reads: dict = {}
+    for f in _facts_of_type(facts, "extremum_access"):
+        structure = f.attributes.get("structure", "")
+        if structure:
+            reads.setdefault(structure, f)
+
+    for sort_fact in sort_facts:
+        read = reads.get(sort_fact.attributes["structure"])
+        if read is None:
+            continue
+        supporting = [sort_fact.fact_id, read.fact_id]
+        # Early termination corroborates selection (select-then-return).
+        supporting.extend(
+            f.fact_id for f in facts if f.fact_type == "early_termination"
+        )
+        supporting = list(dict.fromkeys(supporting))
+        return TechniqueEvidence(
+            technique_id="candidate_selection",
+            technique_version="1.0.0",
+            supporting_fact_ids=supporting,
+            presence_confidence=0.8,
+            centrality=0.7,
+        )
+    return None
+
+
+# ============================================================
+# T13: Hash Lookup (Vocabulary Layer 2)
+# ============================================================
+
+#: Mapping kinds that establish a key->value lookup identity. ``Counter`` is
+#: deliberately absent: it is the counting identity (frequency semantics), and
+#: must not automatically produce generic lookup evidence.
+_LOOKUP_MAPPING_KINDS = frozenset(
+    {"dict_empty", "dict_literal", "dict", "defaultdict"}
+)
+
+
+def _detect_hash_lookup(
+    facts: list[StructuralFact], relations=None
+) -> Optional[TechniqueEvidence]:
+    """T13: Hash Lookup (Vocabulary Layer 2)
+
+    Reusable pattern: a key->value mapping is constructed and the program
+    *reads* it by key, or tests key existence on it. Both facts are name-free:
+
+    1. ``mapping_construction`` whose ``kind`` is a dict family member
+       (``dict_empty`` / ``dict_literal`` / ``dict`` / ``defaultdict``).
+       ``Counter`` is excluded (it is the counting identity), and sets/
+       lists never produce the fact at all, so set/list membership can never
+       reach this technique.
+    2. Lookup evidence *on that same variable*, either:
+       - ``membership_test`` — ``key in m`` / ``key not in m`` (key-existence
+         check), or
+       - ``subscript_read`` — a keyed read whose result gates control flow
+         (``if m[k] > x``). An ungated read used only for arithmetic or
+         aggregation (e.g. a frequency counter being incremented) does not
+         qualify, which keeps counting maps out of the lookup vocabulary.
+
+    Does NOT fire for:
+    - set / list / input-array membership (no mapping identity exists);
+    - a mapping that is constructed but never read by key (db-193 shape:
+      write-only + ``.get`` outside a decision);
+    - ``Counter`` construction alone;
+    - recursive memoization — a dict used as a recursion memo has the same
+      construction + membership shape as a lookup map, so ``recursive_branching``
+      evidence is an explicit exclusion (the same concept the GT mapping names).
+
+    No variable-name evidence is used: names like ``dict``/``map``/``seen``/
+    ``cache`` carry no weight.
+    """
+    types = _fact_types(facts)
+
+    # Memoization fence: recursion means the mapping is a memo table, which
+    # is the recursive_branching concept's territory, not lookup's.
+    if _detect_recursive_branching(facts) is not None:
+        return None
+
+    lookup_maps: dict = {}
+    for f in _facts_of_type(facts, "mapping_construction"):
+        var = f.attributes.get("variable", "")
+        kind = f.attributes.get("kind", "")
+        if var and kind in _LOOKUP_MAPPING_KINDS:
+            lookup_maps.setdefault(var, f)
+    if not lookup_maps:
+        return None
+
+    membership: dict = {}
+    for f in _facts_of_type(facts, "membership_test"):
+        var = f.attributes.get("variable", "")
+        if var:
+            membership.setdefault(var, f)
+
+    reads: dict = {}
+    for f in _facts_of_type(facts, "subscript_read"):
+        structure = f.attributes.get("structure", "")
+        if structure:
+            reads.setdefault(structure, f)
+
+    for var, map_fact in lookup_maps.items():
+        trigger = membership.get(var) or reads.get(var)
+        if trigger is None:
+            continue
+        supporting = [map_fact.fact_id, trigger.fact_id]
+        # Include any other construction fact for the same mapping so the
+        # citation is complete when a variable is constructed more than once.
+        for f in _facts_of_type(facts, "mapping_construction"):
+            if f.attributes.get("variable") == var:
+                supporting.append(f.fact_id)
+        supporting = list(dict.fromkeys(supporting))
+        return TechniqueEvidence(
+            technique_id="hash_lookup",
+            technique_version="1.0.0",
+            supporting_fact_ids=supporting,
+            presence_confidence=0.8,
+            centrality=0.65,
+        )
+    return None
+
+
+# ============================================================
+# T14: Frequency Counting (Vocabulary Layer 2)
+# ============================================================
+
+#: Mapping kinds that can carry occurrence tallies. Every kind still needs a
+#: counted update (Branch A); ``Counter`` additionally establishes counting
+#: identity by construction, so a single counted read is enough for it.
+_FREQUENCY_MAP_KINDS = frozenset(
+    {"Counter", "defaultdict", "dict_empty", "dict_literal", "dict"}
+)
+
+#: Augmented-assignment operators that tally occurrences.
+_COUNT_OPERATORS = frozenset({"Add", "Sub"})
+
+#: Index shapes that are merely positional, not keys. A pre-sized count array
+#: must be written with a *keyed* index (`cnt[ord(c) - ord('a')]`); this fence
+#: also keeps an exotic `dp[i] += dp[i - 2]` table out of frequency counting.
+_TRIVIAL_INDEX_TYPES = frozenset({"Name", "Constant"})
+
+
+def _detect_frequency_counting(
+    facts: list[StructuralFact], relations=None
+) -> Optional[TechniqueEvidence]:
+    """T14: Frequency Counting (Vocabulary Layer 2)
+
+    Reusable pattern: a tally of occurrences by key/value. Two structural
+    branches, both name-free and both built from existing facts plus the write
+    form/operator carried by ``indexed_write``:
+
+    **Branch A — counting map** (``Counter``/``defaultdict``/``{}``/literal/``dict()``)
+    needs a **counted write**: an encoded update on that mapping variable in
+    **augmented form with an Add/Sub operator** (``cnt[x] += 1``,
+    ``cnt[x] -= 1``). ``Counter(data)`` establishes counting identity by its
+    construction, so it needs one counted write *or* one counted read
+    (``freq[i]`` in a condition) instead.
+
+    **Branch B — pre-sized count array** needs a ``list_construction`` of kind
+    ``list_mult`` (``cnt = [0] * 26``) **plus** a counted write on that variable
+    with a **keyed** index (``cnt[ord(s[i]) - ord('a')] += 1``). A positional
+    write (``cnt[i] += 1``) is not a frequency update.
+
+    Does NOT fire for:
+    - sets and set membership (no mapping identity, no pre-sized list);
+    - ordinary scalar accumulation (``total += x`` — target is not subscripted);
+    - ordinary map building (``groups[k] = v`` — assignment, not a counted
+      update);
+    - plain ``[0] * n`` tables without a keyed counted write (DP arrays assign,
+      they do not tally);
+    - memoization (``recursive_branching`` evidence is excluded).
+
+    No variable-name evidence is used: names like ``cnt``/``freq``/``count``
+    carry no weight.
+    """
+    # Memoization fence: recursion means a dict is a memo table, not a tally.
+    if _detect_recursive_branching(facts) is not None:
+        return None
+
+    counted_writes: dict = {}
+    for f in _facts_of_type(facts, "indexed_write"):
+        if f.attributes.get("syntax_form") != "augmented":
+            continue
+        if f.attributes.get("operator") not in _COUNT_OPERATORS:
+            continue
+        structure = f.attributes.get("structure", "")
+        if structure:
+            counted_writes.setdefault(structure, f)
+
+    reads: dict = {}
+    for f in _facts_of_type(facts, "subscript_read"):
+        structure = f.attributes.get("structure", "")
+        if structure:
+            reads.setdefault(structure, f)
+
+    def _evidence(*fact_ids: str) -> TechniqueEvidence:
+        return TechniqueEvidence(
+            technique_id="frequency_counting",
+            technique_version="1.0.0",
+            supporting_fact_ids=list(dict.fromkeys(fact_ids)),
+            presence_confidence=0.8,
+            centrality=0.7,
+        )
+
+    # Branch A: counting map
+    for f in _facts_of_type(facts, "mapping_construction"):
+        var = f.attributes.get("variable", "")
+        kind = f.attributes.get("kind", "")
+        if not var or kind not in _FREQUENCY_MAP_KINDS:
+            continue
+        write = counted_writes.get(var)
+        if write is not None:
+            return _evidence(f.fact_id, write.fact_id)
+        if kind == "Counter" and var in reads:
+            # Counter(data) already tallied; a counted read shows it is used.
+            return _evidence(f.fact_id, reads[var].fact_id)
+
+    # Branch B: pre-sized count array
+    for f in _facts_of_type(facts, "list_construction"):
+        if f.attributes.get("kind") != "list_mult":
+            continue
+        var = f.attributes.get("variable", "")
+        if not var:
+            continue
+        write = counted_writes.get(var)
+        if write is None:
+            continue
+        if write.attributes.get("index_type") in _TRIVIAL_INDEX_TYPES:
+            continue
+        return _evidence(f.fact_id, write.fact_id)
+
+    return None
 
 
 def _detect_forward_pointer_advance(facts: list[StructuralFact]) -> Optional[TechniqueEvidence]:

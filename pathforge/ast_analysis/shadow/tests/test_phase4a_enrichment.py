@@ -115,9 +115,9 @@ class TestVocabularyMapping:
 
     def test_valid_concepts_are_known(self):
         """All valid V1 concepts are registered."""
-        assert len(VALID_TECHNIQUES) == 10  # 6 original + 3 Phase 5A + forward_pointer_advance
+        assert len(VALID_TECHNIQUES) == 13  # 6 original + 3 Phase 5A + forward_pointer_advance + candidate_selection + hash_lookup + frequency_counting
         assert len(VALID_STRATEGIES) == 9  # 8 original + 1 Phase 5A
-        assert len(VALID_V1_CONCEPTS) == 19  # 10 + 9
+        assert len(VALID_V1_CONCEPTS) == 22  # 13 + 9
 
     def test_binary_search_maps_correctly(self):
         """binary_search_standard maps to binary_search strategy."""
@@ -163,10 +163,18 @@ class TestVocabularyMapping:
         mapping = PATTERN_TO_V1_MAPPING["linked_list_reversal"]
         assert "linked_list_traversal" in mapping["required"]
 
-    def test_hash_map_unmapped(self):
-        """hash_map_lookup has no direct V1 technique."""
+    def test_hash_map_lookup_maps_to_hash_lookup(self):
+        """hash_map_lookup now maps to the hash_lookup technique (Vocab Layer 2)."""
         mapping = PATTERN_TO_V1_MAPPING["hash_map_lookup"]
-        assert len(mapping["required"]) == 0
+        assert mapping["required"] == ["hash_lookup"]
+        assert mapping["excluded"] == ["recursive_branching"]
+
+    def test_hash_map_frequency_maps_to_frequency_counting(self):
+        """hash_map_frequency now maps to frequency_counting (Vocab Layer 2 step 3)."""
+        mapping = PATTERN_TO_V1_MAPPING["hash_map_frequency"]
+        assert mapping["required"] == ["frequency_counting"]
+        assert mapping["optional"] == ["hash_lookup"]
+        assert mapping["excluded"] == ["recursive_branching"]
 
 
 # ============================================================

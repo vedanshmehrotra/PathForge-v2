@@ -39,6 +39,38 @@ _STACK_LIKE_NAMES = frozenset({
 })
 
 
+# --- M1: normalized statement-operation dispatch -------------------------
+
+#: The assignment-family statement forms. Detectors registered at this
+#: operation run once per statement of any of these forms, so behavior can
+#: never silently diverge between ``x = f()``, ``x: T = f()``, and
+#: ``a, b = f()`` (the ast.Expr / ast.Assign / ast.AnnAssign gap class).
+_ASSIGNMENT_STATEMENTS = (ast.Assign, ast.AnnAssign, ast.AugAssign)
+
+#: All statement forms that carry an operation expression (``stmt.value``).
+_OPERATION_STATEMENTS = (ast.Expr,) + _ASSIGNMENT_STATEMENTS
+
+#: Constructor names that establish a key->value mapping.
+_MAPPING_CONSTRUCTORS = frozenset({"dict", "defaultdict", "Counter"})
+
+
+def _iter_targets(node) -> list:
+    """Normalize assignment targets across the statement family.
+
+    ``ast.Assign`` carries a target list, ``ast.AnnAssign`` and
+    ``ast.AugAssign`` a single target. Returns a flat list of targets so
+    callers can iterate uniformly. Tuple-unpack targets (``a, b = f()``)
+    are returned as the single ``ast.Tuple`` node — callers that need the
+    individual elements walk the tuple themselves (preserves the
+    existing per-call-site behavior).
+    """
+    if isinstance(node, ast.Assign):
+        return list(node.targets)
+    if isinstance(node, (ast.AnnAssign, ast.AugAssign)):
+        return [node.target]
+    return []
+
+
 def extract_structural_facts(ast_root: ast.AST) -> list[StructuralFact]:
     """Extract all structural facts from a parsed AST.
 
@@ -62,6 +94,53 @@ def _ref(node: ast.AST) -> str:
 def _is_carry_name(name: str) -> bool:
     """Check if a variable name is carry-like (heuristic, not naming-dependent)."""
     return name.lower() in CARRY_LIKE_NAMES
+
+
+def _constant_index_value(node) -> Optional[int]:
+    """Return the integer value of a constant subscript index, else None.
+
+    Handles negative literals: ``arr[-1]`` is ``UnaryOp(USub, Constant(1))``,
+    not a bare ``Constant``.
+    """
+    if isinstance(node, ast.Constant) and isinstance(node.value, int) \
+            and not isinstance(node.value, bool):
+        return node.value
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+        inner = node.operand
+        if isinstance(inner, ast.Constant) and isinstance(inner.value, int) \
+                and not isinstance(inner.value, bool):
+            return -inner.value
+    return None
+
+
+def _is_length_offset_index(node, structure: str) -> bool:
+    """True for a length-relative index on ``structure``: ``len(s) - k`` etc.
+
+    Requires the ``len(...)`` argument to be the same structure being read, so
+    the relationship is structural (the index is an endpoint of *this*
+    sequence) rather than a name match.
+    """
+    if not isinstance(node, ast.BinOp) or not isinstance(node.op, (ast.Add, ast.Sub)):
+        return False
+    for side in (node.left, node.right):
+        if (
+            isinstance(side, ast.Call)
+            and isinstance(side.func, ast.Name)
+            and side.func.id == "len"
+            and side.args
+            and isinstance(side.args[0], ast.Name)
+            and side.args[0].id == structure
+        ):
+            return True
+    return False
+
+
+def _is_reverse_sort(call: ast.Call) -> bool:
+    """True when a sort call passes ``reverse=True`` (structural, not textual)."""
+    for keyword in call.keywords:
+        if keyword.arg == "reverse" and isinstance(keyword.value, ast.Constant):
+            return bool(keyword.value.value)
+    return False
 
 
 def _is_node_constructor_name(name: str) -> bool:
@@ -155,6 +234,15 @@ class _FactExtractor(ast.NodeVisitor):
         self._facts: list[StructuralFact] = []
         self._function_defs: dict[str, ast.FunctionDef] = {}
         self._current_func_params: set[str] = set()
+        # M1: operation-level detectors, run for every statement form that
+        # carries an operation expression (Expr, Assign, AnnAssign, AugAssign,
+        # including tuple-unpack assignment targets). Order is irrelevant to
+        # output because facts are deduplicated by (fact_type, ast_ref).
+        self._statement_operation_detectors = [
+            self._detect_queue_dequeue,
+            self._detect_stack_operation,
+            self._detect_sorting_operation,
+        ]
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         self._function_defs[node.name] = node
@@ -174,7 +262,16 @@ class _FactExtractor(ast.NodeVisitor):
         self._detect_multiple_recursive_paths(node)
         self.generic_visit(node)
 
+    def visit_If(self, node: ast.If):
+        self._detect_gated_subscript_reads(node.test)
+        self.generic_visit(node)
+
+    def visit_Compare(self, node: ast.Compare):
+        self._detect_membership_test(node)
+        self.generic_visit(node)
+
     def visit_While(self, node: ast.While):
+        self._detect_gated_subscript_reads(node.test)
         self._detect_while_comparison(node)
         self._detect_opposite_updates_in_loop(node)
         self._detect_linked_traversal_in_loop(node)
@@ -196,12 +293,39 @@ class _FactExtractor(ast.NodeVisitor):
         self._detect_variable_use_in_loop_body_for(node)
         self.generic_visit(node)
 
+    # ----------------------------------------------------------------
+    # M1: normalized statement-operation dispatch
+    #
+    # Detectors that care about *what operation* a statement performs are
+    # registered on ``self._statement_operation_detectors`` and run once per
+    # statement of any of the forms in ``_OPERATION_STATEMENTS``. This makes
+    # it structurally impossible to re-introduce the class of bug where a
+    # detector handles ast.Expr but silently misses the same operation
+    # inside ast.Assign / ast.AnnAssign / tuple-unpack assignment.
+    # ----------------------------------------------------------------
+
+    def _run_statement_operation_detectors(self, node) -> None:
+        """Run all operation-level detectors for a statement, form-independently.
+
+        ``node.value`` is the operation expression: the call in a bare
+        expression statement, the RHS of an assignment, or the RHS/added
+        value of an augmented assignment.
+        """
+        for detector in self._statement_operation_detectors:
+            detector(node)
+
+    def visit_Expr(self, node: ast.Expr):
+        self._run_statement_operation_detectors(node)
+        self.generic_visit(node)
+
     def visit_Assign(self, node: ast.Assign):
+        self._run_statement_operation_detectors(node)
+        self._detect_mapping_construction(node)
+        self._detect_list_construction(node)
         self._detect_equal_assignment(node)
         self._detect_indexed_write(node)
         self._detect_cache_write(node)
         self._detect_queue_creation(node)
-        self._detect_queue_dequeue(node)
         self._detect_visited_tracking(node)
         self._detect_parent_root_merge(node)
         self._detect_stack_creation(node)
@@ -209,10 +333,41 @@ class _FactExtractor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_AnnAssign(self, node: ast.AnnAssign):
-        self._detect_queue_dequeue(node)
+        self._run_statement_operation_detectors(node)
+        self._detect_mapping_construction(node)
+        self._detect_list_construction(node)
+        self._detect_indexed_write(node)
+        # AnnAssign self-referential accumulation: ``total: int = total + 1``.
+        # The classic accumulator detector above is ast.Assign-specific;
+        # annotated assignments were silently invisible to it. Emitted from
+        # here keeps that detector untouched while closing the form gap —
+        # the for/while loop gating happens in the technique layer, exactly
+        # as for every other accumulator_update fact.
+        target = node.target
+        if (
+            isinstance(target, ast.Name)
+            and node.value is not None
+            and any(
+                isinstance(child, ast.Name) and child.id == target.id
+                for child in ast.walk(node.value)
+            )
+        ):
+            op = "unknown"
+            if isinstance(node.value, ast.BinOp):
+                op = type(node.value.op).__name__
+            self._facts.append(StructuralFact(
+                fact_type="accumulator_update",
+                ast_ref=_ref(node),
+                attributes={
+                    "variable": target.id,
+                    "operator": op,
+                    "syntax_form": "annotated_equal_sign",
+                },
+            ))
         self.generic_visit(node)
 
     def visit_AugAssign(self, node: ast.AugAssign):
+        self._run_statement_operation_detectors(node)
         self._detect_augmented_assignment(node)
         if isinstance(node.target, ast.Subscript):
             self._detect_indexed_write_aug(node)
@@ -232,15 +387,11 @@ class _FactExtractor(ast.NodeVisitor):
         self._detect_neighbor_traversal(node)
         self._detect_window_size_constant(node)
         self._detect_subscript_index_access(node)
+        self._detect_extremum_access(node)
         self.generic_visit(node)
 
     def visit_BinOp(self, node: ast.BinOp):
         self._detect_midpoint_calculation(node)
-        self.generic_visit(node)
-
-    def visit_Expr(self, node: ast.Expr):
-        self._detect_queue_dequeue(node)
-        self._detect_stack_operation(node)
         self.generic_visit(node)
 
     def visit_Return(self, node: ast.Return):
@@ -503,7 +654,13 @@ class _FactExtractor(ast.NodeVisitor):
                     ))
 
     def _detect_augmented_assignment(self, node: ast.AugAssign):
-        """Augmented assignment (+=, -=, etc.) as a structural fact."""
+        """Augmented assignment (+=, -=, etc.) as a structural fact.
+
+        Emits ``accumulator_update`` when the target is a plain Name.
+        (Subscript targets are handled separately as indexed writes; the
+        augmented RHS itself is dispatched through the normalized
+        statement-operation layer for operation detectors.)
+        """
         if isinstance(node.target, ast.Name):
             op_name = type(node.op).__name__
             self._facts.append(StructuralFact(
@@ -518,30 +675,28 @@ class _FactExtractor(ast.NodeVisitor):
 
     def _detect_equal_assignment(self, node: ast.Assign):
         """Equal-sign assignment (x = x + expr) as accumulator_update."""
-        if len(node.targets) != 1:
-            return
-        target = node.targets[0]
-        if not isinstance(target, ast.Name):
-            return
-        target_name = target.id
-        # Check if target appears on the right side (x = x + ...)
-        right_names = set()
-        for child in ast.walk(node.value):
-            if isinstance(child, ast.Name):
-                right_names.add(child.id)
-        if target_name in right_names:
-            op = "unknown"
-            if isinstance(node.value, ast.BinOp):
-                op = type(node.value.op).__name__
-            self._facts.append(StructuralFact(
-                fact_type="accumulator_update",
-                ast_ref=_ref(node),
-                attributes={
-                    "variable": target_name,
-                    "operator": op,
-                    "syntax_form": "equal_sign",
-                },
-            ))
+        for target in _iter_targets(node):
+            if not isinstance(target, ast.Name):
+                continue
+            target_name = target.id
+            # Check if target appears on the right side (x = x + ...)
+            right_names = set()
+            for child in ast.walk(node.value):
+                if isinstance(child, ast.Name):
+                    right_names.add(child.id)
+            if target_name in right_names:
+                op = "unknown"
+                if isinstance(node.value, ast.BinOp):
+                    op = type(node.value.op).__name__
+                self._facts.append(StructuralFact(
+                    fact_type="accumulator_update",
+                    ast_ref=_ref(node),
+                    attributes={
+                        "variable": target_name,
+                        "operator": op,
+                        "syntax_form": "equal_sign",
+                    },
+                ))
 
     def _detect_linked_attribute_access(self, node: ast.Attribute):
         """Linked structure attribute access (.next, .left, .right)."""
@@ -786,18 +941,27 @@ class _FactExtractor(ast.NodeVisitor):
                     },
                 ))
 
-    def _detect_indexed_write(self, node: ast.Assign):
+    def _detect_indexed_write(self, node: ast.Assign | ast.AnnAssign):
         """Subscript assignment: arr[i] = value.
 
         This is a structural observation: a value is written into an
-        indexed data structure.
+        indexed data structure. Handles the full M1 assignment family:
+        ``ast.Assign`` and ``ast.AnnAssign`` (annotated) — augmented
+        subscript writes are handled by ``_detect_indexed_write_aug``.
         """
-        for target in node.targets:
+        for target in _iter_targets(node):
             if isinstance(target, ast.Subscript):
-                # Get the structure name
+                # Get the structure name: a plain Name records its id; an
+                # attribute-backed container (``self.nums[k] = v``) records
+                # the attribute name, matching the relation layer's keying.
+                # Attribute targets previously recorded "" and matched no
+                # structure-keyed consumer, so naming the attribute is
+                # behavior-preserving for all previously matched inputs.
                 struct_name = ""
                 if isinstance(target.value, ast.Name):
                     struct_name = target.value.id
+                elif isinstance(target.value, ast.Attribute):
+                    struct_name = target.value.attr
                 # Get the index expression
                 index_desc = type(target.slice).__name__
                 self._facts.append(StructuralFact(
@@ -806,6 +970,12 @@ class _FactExtractor(ast.NodeVisitor):
                     attributes={
                         "structure": struct_name,
                         "index_type": index_desc,
+                        # Backward-compatible additions: the write form and, for
+                        # augmented writes, the operator. Plain assignment is
+                        # NOT a count update; only ``arr[k] += v`` / ``-= v``
+                        # (augmented Add/Sub) participates in frequency counting.
+                        "syntax_form": "assignment",
+                        "operator": "",
                     },
                 ))
 
@@ -822,8 +992,119 @@ class _FactExtractor(ast.NodeVisitor):
                 attributes={
                     "structure": struct_name,
                     "index_type": index_desc,
+                    "syntax_form": "augmented",
+                    "operator": type(node.op).__name__,
                 },
             ))
+
+    def _detect_list_construction(self, node):
+        """List construction: ``x = [0] * n`` (pre-sized list / list repetition).
+
+        Records only the ``list_mult`` form — a list literal multiplied by an
+        expression, either operand order (``[0] * n`` / ``n * [0]``). Plain list
+        literals and comprehensions are deliberately NOT recorded: this fact
+        exists so that a pre-sized count array can be recognized structurally,
+        not so that any list can be labelled. It never produces a
+        ``mapping_construction`` fact, so a list can never satisfy a map-typed
+        requirement.
+        """
+        value = node.value
+        if value is None:
+            return
+        list_side = None
+        if isinstance(value, ast.BinOp) and isinstance(value.op, ast.Mult):
+            if isinstance(value.left, ast.List):
+                list_side = value.left
+            elif isinstance(value.right, ast.List):
+                list_side = value.right
+        if list_side is None:
+            return
+        for target in _iter_targets(node):
+            if isinstance(target, ast.Name):
+                self._facts.append(StructuralFact(
+                    fact_type="list_construction",
+                    ast_ref=_ref(node),
+                    attributes={"variable": target.id, "kind": "list_mult"},
+                ))
+
+    def _detect_sorting_operation(self, node):
+        """Sorting operation: ``x.sort(...)`` (in place) or ``y = sorted(x, ...)``.
+
+        Dispatched from the normalized statement-operation layer, so the same
+        operation is recognized regardless of statement form.
+
+        Records the variable that holds the **sorted sequence**: the receiver
+        for an in-place ``.sort()``, and the assignment target for a functional
+        ``sorted(...)`` (which produces a new sequence). A bare ``sorted(x)``
+        expression statement records nothing, because there is no variable
+        naming the result. Name-free: this is about the operation, never about
+        the identifier, and no particular sort argument is required (``reverse``
+        is recorded but not required).
+        """
+        if not isinstance(node, _OPERATION_STATEMENTS):
+            return
+        value = node.value
+        if not isinstance(value, ast.Call):
+            return
+        func = value.func
+        # In place: <name>.sort(...)
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "sort"
+            and isinstance(func.value, ast.Name)
+        ):
+            self._facts.append(StructuralFact(
+                fact_type="sorting_operation",
+                ast_ref=_ref(node),
+                attributes={
+                    "structure": func.value.id,
+                    "method": "sort",
+                    "reverse": _is_reverse_sort(value),
+                },
+            ))
+            return
+        # Functional: y = sorted(x, ...) — the target holds the sorted sequence.
+        if isinstance(func, ast.Name) and func.id == "sorted" \
+                and isinstance(node, (ast.Assign, ast.AnnAssign)):
+            for target in _iter_targets(node):
+                if isinstance(target, ast.Name):
+                    self._facts.append(StructuralFact(
+                        fact_type="sorting_operation",
+                        ast_ref=_ref(node),
+                        attributes={
+                            "structure": target.id,
+                            "method": "sorted",
+                            "reverse": _is_reverse_sort(value),
+                        },
+                    ))
+
+    def _detect_extremum_access(self, node: ast.Subscript):
+        """Bounded/endpoint read of a sequence: ``arr[0]``, ``arr[-1]``,
+        ``arr[len(arr) - 1]``.
+
+        Records the read structure and the index form (``constant`` or
+        ``length_offset``). A **variable** index (``arr[i]``) is deliberately
+        NOT recorded: that is traversal / pointer access, not endpoint
+        selection, and is what separates extremum reads from two-pointer and
+        binary-search index movement. Writes and annotations are not reads and
+        are never recorded.
+        """
+        if not isinstance(node.ctx, ast.Load):
+            return
+        if not isinstance(node.value, ast.Name):
+            return
+        structure = node.value.id
+        if _constant_index_value(node.slice) is not None:
+            form = "constant"
+        elif _is_length_offset_index(node.slice, structure):
+            form = "length_offset"
+        else:
+            return
+        self._facts.append(StructuralFact(
+            fact_type="extremum_access",
+            ast_ref=_ref(node),
+            attributes={"structure": structure, "index_form": form},
+        ))
 
     def _detect_index_lookback(self, node: ast.Subscript):
         """Subscript access with lookback: arr[i-1], arr[i+1], arr[i-coin], etc.
@@ -929,6 +1210,96 @@ class _FactExtractor(ast.NodeVisitor):
                     fact_type="cache_write",
                     ast_ref=_ref(node),
                     attributes={"cache_variable": var_name},
+                ))
+
+    def _detect_mapping_construction(self, node):
+        """Mapping construction: a variable is bound to a key->value mapping.
+
+        Recognized map kinds (recorded in the ``kind`` attribute):
+
+        - ``dict_empty``   — ``x = {}``
+        - ``dict_literal`` — ``x = {'a': 1}``
+        - ``dict``         — ``x = dict(...)``
+        - ``defaultdict``  — ``x = defaultdict(...)``
+        - ``Counter``      — ``x = Counter(...)`` / ``collections.Counter(...)``
+
+        Deliberately NOT mapping constructions (no fact is emitted at all):
+        sets, set literals, lists, ``[0] * n`` multiplication, comprehensions,
+        and any other call. A set therefore can never satisfy a map-typed
+        requirement, because it never produces map-typed evidence — absence,
+        not a weaker kind. This is what keeps set membership out of the
+        hash-lookup and frequency vocabularies.
+        """
+        value = node.value
+        if value is None:
+            return
+        for target in _iter_targets(node):
+            if not isinstance(target, ast.Name):
+                continue
+            kind = None
+            if isinstance(value, ast.Dict):
+                kind = "dict_literal" if value.keys else "dict_empty"
+            elif isinstance(value, ast.Call):
+                func = value.func
+                if isinstance(func, ast.Name):
+                    name = func.id
+                elif isinstance(func, ast.Attribute):
+                    name = func.attr
+                else:
+                    name = ""
+                if name in _MAPPING_CONSTRUCTORS:
+                    kind = name
+            if kind:
+                self._facts.append(StructuralFact(
+                    fact_type="mapping_construction",
+                    ast_ref=_ref(node),
+                    attributes={"variable": target.id, "kind": kind},
+                ))
+
+    def _detect_membership_test(self, node: ast.Compare):
+        """Membership test: ``key in container`` / ``key not in container``.
+
+        Records the container operand (a plain variable) and whether the test
+        is negated. Form-agnostic about the container: it is emitted for a
+        mapping, set, list, array or string indifferently, because this fact
+        only observes that a membership test exists. The technique layer is
+        responsible for joining it to a mapping identity (a set or a list
+        never produces ``mapping_construction``, so it can never satisfy a
+        map-typed requirement).
+        """
+        for op, comparator in zip(node.ops, node.comparators):
+            if not isinstance(op, (ast.In, ast.NotIn)):
+                continue
+            if isinstance(comparator, ast.Name):
+                self._facts.append(StructuralFact(
+                    fact_type="membership_test",
+                    ast_ref=_ref(node),
+                    attributes={
+                        "variable": comparator.id,
+                        "negated": isinstance(op, ast.NotIn),
+                    },
+                ))
+
+    def _detect_gated_subscript_reads(self, test_node):
+        """Subscript reads that participate in a control-flow test.
+
+        A read whose result *gates* control flow (``if m[key] > x``,
+        ``while arr[i] < v``) is a lookup the program branches on, as opposed
+        to a read used only for arithmetic or aggregation. That distinction is
+        structural and name-free. Emitted from ``visit_If`` / ``visit_While``
+        for each subscript read inside the test subtree; duplicate visits of
+        the same node collapse in ``_deduplicate``.
+        """
+        for sub in ast.walk(test_node):
+            if (
+                isinstance(sub, ast.Subscript)
+                and isinstance(sub.ctx, ast.Load)
+                and isinstance(sub.value, ast.Name)
+            ):
+                self._facts.append(StructuralFact(
+                    fact_type="subscript_read",
+                    ast_ref=_ref(sub),
+                    attributes={"structure": sub.value.id, "gated": True},
                 ))
 
     def _detect_queue_creation(self, node: ast.Assign):
@@ -1190,18 +1561,20 @@ class _FactExtractor(ast.NodeVisitor):
     def _detect_queue_dequeue(self, node: ast.AST):
         """Detect queue dequeue operation: queue.popleft(), q.pop(0).
 
-        Accepts any statement carrying a ``value`` expression: a bare expression
-        statement (``queue.popleft()``) and the assignment family — ``ast.Assign``
-        including tuple-unpack targets (``r, c, d = q.popleft()``) and
-        ``ast.AnnAssign`` (``node: Any = queue.popleft()``). All are common ways
-        to consume a queue, and only the statement position differed.
+        Dispatched from the normalized statement-operation layer, so the same
+        operation is recognized regardless of statement form: a bare expression
+        statement (``queue.popleft()``), the assignment family — ``ast.Assign``
+        including tuple-unpack targets (``r, c, d = q.popleft()``),
+        ``ast.AnnAssign`` (``node: Any = queue.popleft()``) — or carried in an
+        augmented assignment (``total += queue.pop(0)``). Only the statement
+        position used to differ; now all forms share one detection path.
 
         Only ``popleft()`` and ``pop(0)`` count; ``pop()``, ``pop(n)`` and heap
         operations are excluded.
 
         This is a structural observation: a dequeue operation is performed.
         """
-        if not isinstance(node, (ast.Expr, ast.Assign, ast.AnnAssign)):
+        if not isinstance(node, _OPERATION_STATEMENTS):
             return
         if not isinstance(node.value, ast.Call):
             return
@@ -1480,12 +1853,21 @@ class _FactExtractor(ast.NodeVisitor):
                     ))
                     return
 
-    def _detect_stack_operation(self, node: ast.Expr):
+    def _detect_stack_operation(self, node: ast.AST):
         """Detect stack operations: stack.append(x), stack.pop(), etc.
+
+        Dispatched from the normalized statement-operation layer, so a stack
+        operation is recognized regardless of statement form: a bare
+        expression statement, an assignment (``node = stack.pop()``), an
+        annotated assignment, or an augmented assignment (``total +=
+        stack.pop()``). Previously only the bare expression statement was
+        handled — the same form-enumeration gap class as queue dequeue.
 
         This is a structural observation: a stack-like data structure is
         being modified.
         """
+        if not isinstance(node, _OPERATION_STATEMENTS):
+            return
         if not isinstance(node.value, ast.Call):
             return
         call = node.value

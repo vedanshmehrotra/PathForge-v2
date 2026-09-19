@@ -47,8 +47,8 @@ MAPPED_PATTERN = "prefix_sum"                  # -> sequential_accumulation
 SAME_DIRECTION_PATTERN = "two_pointers_same"   # -> forward_pointer_advance
 FAST_SLOW_PATTERN = "fast_slow_pointers"       # -> forward_pointer_advance
 ALTERNATING_PATTERN = "dp_1d_forward"          # -> dp_bottom_up
-UNMAPPED_PATTERN = "hash_map_lookup"           # -> no V1 concept
-UNMAPPED_PATTERN_2 = "greedy_local"            # -> no V1 concept
+UNMAPPED_PATTERN = "topological_sort"          # -> no V1 concept
+UNMAPPED_PATTERN_2 = "heap_top_k"              # -> no V1 concept
 
 
 def _group(id="group_0", patterns=None, required=None, optional=None,

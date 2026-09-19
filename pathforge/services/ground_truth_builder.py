@@ -34,6 +34,9 @@ VALID_TECHNIQUES = {
     "fixed_window_maintenance",    # Phase 5A
     "monotonic_stack_maintenance", # Phase 5A
     "forward_pointer_advance",     # Batch 1: same-direction two pointers
+    "candidate_selection",         # Vocabulary Layer 2: greedy scalar candidate selection (loop form)
+    "hash_lookup",                 # Vocabulary Layer 2: key->value mapping lookup
+    "frequency_counting",          # Vocabulary Layer 2: occurrence tallies
 }
 
 # Valid strategy IDs from PATHFORGE_TECHNIQUE_STRATEGY_VOCABULARY_V1.md
@@ -71,16 +74,25 @@ VALID_AUTHORITY_TIERS = {
 PATTERN_TO_V1_MAPPING = {
     # Arrays & Hashing
     "hash_map_lookup": {
-        "required": [],
+        "required": ["hash_lookup"],
         "optional": [],
-        "excluded": [],
-        "note": "Generic data-structure behavior, not a V1 technique",
+        "excluded": ["recursive_branching"],
+        "note": (
+            "Key->value mapping lookup maps to hash_lookup. recursion is "
+            "excluded: a dict used as a recursion memo has the same "
+            "construction + membership shape but belongs to "
+            "recursive_branching, not lookup."
+        ),
     },
     "hash_map_frequency": {
-        "required": [],
-        "optional": [],
-        "excluded": [],
-        "note": "Generic data-structure behavior, not a V1 technique",
+        "required": ["frequency_counting"],
+        "optional": ["hash_lookup"],
+        "excluded": ["recursive_branching"],
+        "note": (
+            "Occurrence tallying maps to frequency_counting, with a mapping "
+            "lookup as optional support. recursion is excluded: a dict used as "
+            "a memo has the same construction shape but is not a tally."
+        ),
     },
     "prefix_sum": {
         "required": ["sequential_accumulation"],
@@ -215,19 +227,19 @@ PATTERN_TO_V1_MAPPING = {
     },
     "linked_list_reversal": {
         "required": ["linked_list_traversal"],
-        "optional": ["pointer_rewiring", "multiple_pointer_traversal"],
+        "optional": [],
         "excluded": ["two_pointers_opposite"],
         "note": "Linked-list reversal maps to linked_list_traversal technique (requires pointer manipulation)",
     },
     "monotonic_stack": {
         "required": ["monotonic_stack_maintenance"],
-        "optional": ["stack_operation", "monotonic_comparison"],
+        "optional": [],
         "excluded": [],
         "note": "Monotonic stack maps to monotonic_stack_maintenance technique",
     },
     "monotonic_deque": {
         "required": ["monotonic_stack_maintenance"],
-        "optional": ["stack_operation", "monotonic_comparison"],
+        "optional": [],
         "excluded": [],
         "note": "Monotonic deque maps to monotonic_stack_maintenance technique (deque = stack variant)",
     },
@@ -258,10 +270,18 @@ PATTERN_TO_V1_MAPPING = {
         "note": "No direct V1 technique for heap operations",
     },
     "greedy_local": {
-        "required": [],
+        "required": ["candidate_selection"],
         "optional": ["sequential_accumulation"],
-        "excluded": [],
-        "note": "No direct V1 technique for greedy; may use accumulation",
+        "excluded": ["sliding_window"],
+        "note": (
+            "Vocabulary Layer 2: greedy local decisions map to the "
+            "candidate_selection technique, which has two structural forms: "
+            "(1) loop + conditional branch + scalar candidate replacement, "
+            "non-index participating; (2) sorting_operation + bounded read "
+            "of the same sequence (extremum_access). sliding_window is "
+            "excluded: conditionally-updated window state participates as a "
+            "subscript index and is not candidate selection."
+        ),
     },
     "greedy_interval": {
         "required": [],
@@ -324,6 +344,40 @@ def _derive_concepts_from_patterns(patterns) -> tuple:
         excluded.update(mapping.get("excluded", []))
     required -= excluded
     return sorted(required), sorted(excluded)
+
+
+def pattern_family(pattern: str):
+    """The solution family a legacy pattern belongs to, or None if unmapped.
+
+    This is the single definition of "these two patterns are the same approach
+    vs. different approaches" used by both the flat-pattern derivation
+    (``_split_csv_patterns_to_groups``) and the stored-group vocabulary refresh.
+
+    The family is the pattern's primary concept: the first strategy it maps to,
+    or its first required concept when no strategy applies. Patterns sharing a
+    family are merged into one solution group; patterns in different families
+    are ALTERNATIVE approaches, never one conjunctive requirement.
+    """
+    mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+    if not mapping or not mapping.get("required"):
+        return None
+    for concept in mapping["required"]:
+        if concept in VALID_STRATEGIES:
+            return concept
+    return mapping["required"][0]
+
+
+def patterns_span_multiple_families(patterns) -> bool:
+    """True when a pattern list contains more than one solution family.
+
+    Such a list describes alternative approaches (approach A OR approach B).
+    Collapsing it into a single group's ``required`` list makes a conjunction
+    that no single implementation can satisfy, so callers must keep them as
+    separate alternative groups.
+    """
+    families = {pattern_family(p) for p in (patterns or [])}
+    families.discard(None)
+    return len(families) > 1
 
 
 def group_matchability(group: dict) -> tuple:
@@ -398,6 +452,12 @@ def refresh_group_vocabulary(group: dict, sibling_requirements: dict) -> bool:
     if not patterns:
         return False
     if any(pattern not in PATTERN_TO_V1_MAPPING for pattern in patterns):
+        return False
+
+    # Alternative approaches must never be collapsed into one conjunctive
+    # requirement by the refresh. Multi-family groups are expanded into
+    # separate alternative groups by the loader instead.
+    if patterns_span_multiple_families(patterns):
         return False
 
     key = tuple(sorted(patterns))
@@ -707,25 +767,15 @@ def _split_patterns_into_groups(
     if not patterns:
         return []
 
-    # Group patterns by their primary strategy
+    # Group patterns by solution family (their primary concept), using the same
+    # shared definition every other derivation path uses.
     strategy_groups = {}
     unmapped = []
 
     for pattern in patterns:
-        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
-        if mapping and mapping["required"]:
-            # Find the primary strategy (first strategy in required list)
-            primary = None
-            for concept in mapping["required"]:
-                if concept in VALID_STRATEGIES:
-                    primary = concept
-                    break
-            if primary is None:
-                primary = mapping["required"][0]
-
-            if primary not in strategy_groups:
-                strategy_groups[primary] = []
-            strategy_groups[primary].append(pattern)
+        family = pattern_family(pattern)
+        if family is not None:
+            strategy_groups.setdefault(family, []).append(pattern)
         else:
             unmapped.append(pattern)
 

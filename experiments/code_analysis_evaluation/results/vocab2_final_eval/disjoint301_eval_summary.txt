@@ -1,0 +1,11 @@
+301-case disjoint corpus — frozen shadow pipeline
+============================================================
+
+pattern                         n  pos  neg   TP   FP   FN   TN   prec    rec     f1
+hash_map_lookup                89   58   31   22    1   36   30  0.957  0.379  0.543
+prefix_sum                     82   53   29   47   13    6   16  0.783  0.887  0.832
+two_pointers_opposite          69   38   31   27    0   11   31  1.000  0.711  0.831
+array_traversal                59   29   30    0    0    0    0      -      -      -
+binary_search_standard          2    2    0    2    0    0    0  1.000  1.000  1.000
+
+TOTAL  TP=98  FP=14  FN=53  TN=77  UNMAPPED_LABEL=59

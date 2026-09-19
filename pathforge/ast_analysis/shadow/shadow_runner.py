@@ -12,6 +12,7 @@ from pathforge.ast_analysis.shadow.data_structures import (
     MatchOutcome, EXTRACTOR_VERSION,
 )
 from pathforge.ast_analysis.shadow.fact_extractor import extract_structural_facts
+from pathforge.ast_analysis.shadow.relations import build_relations, RELATIONS_VERSION
 from pathforge.ast_analysis.shadow.techniques import detect_techniques
 from pathforge.ast_analysis.shadow.strategies import evaluate_strategies
 from pathforge.ast_analysis.shadow.matching import evaluate_solution_groups
@@ -40,11 +41,16 @@ def run_shadow_analysis(
         # Step 1: Parse code into AST
         tree = ast.parse(code)
 
+        # Step 1b (M2): compute shared relational evidence once per submission.
+        # Additive: consumed only by migrated technique detectors; the raw
+        # relations are also exported for diagnosis without re-parsing.
+        relations = build_relations(tree)
+
         # Step 2: Extract structural facts
         facts = extract_structural_facts(tree)
 
-        # Step 3: Detect techniques
-        technique_evidence = detect_techniques(facts)
+        # Step 3: Detect techniques (relations supplied to migrated detectors)
+        technique_evidence = detect_techniques(facts, relations=relations)
 
         # Step 4: Evaluate strategies
         strategy_evidence = evaluate_strategies(technique_evidence, facts)
@@ -73,6 +79,7 @@ def run_shadow_analysis(
             "strategy_evidence": [_strat_to_dict(s) for s in strategy_evidence],
             "match_outcome": _outcome_to_dict(match_outcome),
             "extractor_version": EXTRACTOR_VERSION,
+            "relations_version": RELATIONS_VERSION,
             "elapsed_ms": round(elapsed_ms, 2),
         }
 

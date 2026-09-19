@@ -1728,7 +1728,7 @@ class TestCSVMultiPatternSplitting:
         from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
 
         groups = _split_csv_patterns_to_groups(
-            ['hash_map_lookup', 'sliding_window_variable'], {}, 1.0, 'csv_curated'
+            ['sliding_window_fixed', 'sliding_window_variable'], {}, 1.0, 'csv_curated'
         )
         assert len(groups) == 1, f"Expected 1 group (same strategy), got {len(groups)}"
         assert 'sliding_window' in groups[0]['required']

@@ -70,11 +70,17 @@ class TestV1Mapping:
         result = _map_legacy_patterns_to_v1(["binary_search_standard"])
         assert "binary_search" in result
 
-    def test_hash_map_lookup_returns_empty(self):
+    def test_hash_map_lookup_maps_to_hash_lookup(self):
         from pathforge.services.problem_resolver import _map_legacy_patterns_to_v1
         result = _map_legacy_patterns_to_v1(["hash_map_lookup"])
-        # hash_map_lookup has no V1 mapping (generic data-structure behavior)
-        assert result == []
+        # Vocabulary Layer 2: hash_map_lookup now maps to the hash_lookup technique
+        assert result == ["hash_lookup"]
+
+    def test_hash_map_frequency_maps_to_frequency_counting(self):
+        from pathforge.services.problem_resolver import _map_legacy_patterns_to_v1
+        result = _map_legacy_patterns_to_v1(["hash_map_frequency"])
+        # Vocabulary Layer 2 step 3: frequency tallying now has a concept
+        assert result == ["frequency_counting"]
 
     def test_empty_patterns_returns_empty(self):
         from pathforge.services.problem_resolver import _map_legacy_patterns_to_v1

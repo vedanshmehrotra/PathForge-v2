@@ -325,13 +325,49 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                     legacy_patterns = g.get("required", [])
 
                 # Determine required concepts for the shadow matcher.
-                # If the group has a "required" field with V1 concepts, use it.
-                # If it only has legacy "patterns", apply V1 vocabulary mapping.
+                #
+                # If the group carries explicit V1 concepts they are
+                # authoritative and preserved exactly. Otherwise the concepts
+                # must be re-derived from the group's own legacy patterns --
+                # and re-derivation must NOT silently turn ALTERNATIVE
+                # approaches into ONE conjunctive requirement. A stored group
+                # whose flat patterns span more than one solution family
+                # (e.g. ["hash_map_lookup", "prefix_sum"] = approach A OR
+                # approach B) has lost the alternative structure, so it is
+                # expanded into the same alternative groups the flat-pattern
+                # fallback already derives. A single-family group keeps the
+                # existing construction unchanged.
                 has_v1_required = "required" in g and g["required"]
                 if has_v1_required:
-                    required = g["required"]
+                    variants = [{
+                        "required": list(g["required"]),
+                        "optional": list(g.get("optional", [])),
+                        "excluded": list(g.get("excluded", [])),
+                        "patterns": None,
+                    }]
                 else:
-                    required = _map_legacy_patterns_to_v1(legacy_patterns)
+                    confidence = g.get("confidence") or {}
+                    best_conf = max(confidence.values()) if confidence else 1.0
+                    split = _split_csv_patterns_to_groups(
+                        legacy_patterns,
+                        confidence,
+                        best_conf,
+                        g.get("evidence", g.get("authority_tier", "unobserved")),
+                    )
+                    if len(split) > 1:
+                        variants = [{
+                            "required": list(sg.get("required") or []),
+                            "optional": list(sg.get("optional") or []),
+                            "excluded": list(sg.get("excluded") or []),
+                            "patterns": list(sg.get("patterns") or []),
+                        } for sg in split]
+                    else:
+                        variants = [{
+                            "required": _map_legacy_patterns_to_v1(legacy_patterns),
+                            "optional": list(g.get("optional", [])),
+                            "excluded": list(g.get("excluded", [])),
+                            "patterns": None,
+                        }]
 
                 # --- RECONCILIATION ---
                 # If CSV-curated patterns exist and differ from LLM patterns,
@@ -357,26 +393,40 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                         authority = "human_curated"
                         provenance.append("csv_curated")
 
-                groups.append({
-                    "id": g.get("id", f"group_{len(groups)}"),
-                    "version": g.get("version", 1),
-                    "required": required,
-                    "optional": g.get("optional", []),
-                    "excluded": g.get("excluded", []),
-                    "threshold": g.get("threshold", 0.5),
-                    "authority_tier": authority,
-                    "provenance": provenance,
-                    # Legacy fields for backward compatibility
-                    # "patterns" is the production matcher input
-                    "patterns": production_patterns,
-                    # Batch 2A: keep the patterns the V1 concepts were actually
-                    # derived from. Reconciliation may override "patterns" with
-                    # curated ones, and drift can only be detected if both
-                    # representations stay visible.
-                    "derivation_patterns": list(legacy_patterns),
-                    "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
-                    "confidence": g.get("confidence", {}),
-                })
+                base_id = g.get("id", f"group_{len(groups)}")
+                for index, variant in enumerate(variants):
+                    # Alternative groups carry their own family's patterns so the
+                    # stored and flat representations converge; single-family
+                    # groups keep the reconciled production patterns.
+                    group_patterns = (
+                        variant["patterns"]
+                        if variant["patterns"] is not None
+                        else production_patterns
+                    )
+                    groups.append({
+                        "id": base_id if len(variants) == 1 else f"{base_id}_alt{index}",
+                        "version": g.get("version", 1),
+                        "required": variant["required"],
+                        "optional": variant["optional"],
+                        "excluded": variant["excluded"],
+                        "threshold": g.get("threshold", 0.5),
+                        "authority_tier": authority,
+                        "provenance": provenance,
+                        # Legacy fields for backward compatibility
+                        # "patterns" is the production matcher input
+                        "patterns": group_patterns,
+                        # Batch 2A: keep the patterns the V1 concepts were
+                        # actually derived from. Reconciliation may override
+                        # "patterns" with curated ones, and drift can only be
+                        # detected if both representations stay visible.
+                        "derivation_patterns": (
+                            list(variant["patterns"])
+                            if variant["patterns"] is not None
+                            else list(legacy_patterns)
+                        ),
+                        "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
+                        "confidence": g.get("confidence", {}),
+                    })
                 all_confidence.update(g.get("confidence", {}))
             if groups:
                 # Batch 2A: annotate matchability before returning, so an
@@ -432,25 +482,16 @@ def _split_csv_patterns_to_groups(
     that maps to a different primary strategy becomes its own group.
     Patterns that map to the same strategy are merged.
     """
-    from pathforge.services.ground_truth_builder import PATTERN_TO_V1_MAPPING
-    from pathforge.services.ground_truth_builder import VALID_STRATEGIES
+    from pathforge.services.ground_truth_builder import pattern_family
 
-    # Group patterns by their primary strategy
+    # Group patterns by solution family (their primary concept)
     strategy_to_patterns = {}
     unmapped_patterns = []
 
     for pattern in patterns:
-        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
-        if mapping and mapping.get("required"):
-            # Find the primary strategy (first strategy in required list)
-            primary = None
-            for concept in mapping["required"]:
-                if concept in VALID_STRATEGIES:
-                    primary = concept
-                    break
-            if primary is None:
-                primary = mapping["required"][0]
-            strategy_to_patterns.setdefault(primary, []).append(pattern)
+        family = pattern_family(pattern)
+        if family is not None:
+            strategy_to_patterns.setdefault(family, []).append(pattern)
         else:
             unmapped_patterns.append(pattern)
 
