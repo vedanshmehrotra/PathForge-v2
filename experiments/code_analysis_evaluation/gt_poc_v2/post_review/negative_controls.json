@@ -1,0 +1,301 @@
+{
+  "phase": "5a_negative_controls",
+  "rule": {
+    "eligibility": [
+      "different problem",
+      "disjoint curated problem patterns",
+      "structurally disjoint PEC set",
+      "not ZERO_EVIDENCE"
+    ],
+    "exclusions_counted": true,
+    "sampling": "exhaustive (no random draw)",
+    "n_min": 5,
+    "n_min_status": "PROVISIONAL (OPEN-5)"
+  },
+  "excluded_by_rule": {
+    "same_problem": 112,
+    "same_curated_patterns": 40,
+    "pec_overlap": 13,
+    "zero_evidence": 145
+  },
+  "same_family_reuse_count": 13,
+  "insufficient_controls_groups": [],
+  "totals": {
+    "eligible_pairs": 1034,
+    "failing_pairs": 0,
+    "discrimination_FP": 0.0,
+    "eligible_pairs_without_rule3": 1047,
+    "failing_pairs_without_rule3": 13,
+    "discrimination_FP_without_rule3": 0.0124
+  },
+  "per_group": [
+    {
+      "group_id": "lc1_fam1_g0",
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "required": [
+        "hash_lookup"
+      ],
+      "pec_set_of_group": [
+        "hash_lookup"
+      ],
+      "eligible_controls": 75,
+      "tested_controls": 75,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 3,
+      "without_rule3_eligible": 78,
+      "without_rule3_failures": 3,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc1_fam4_g0",
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "required": [
+        "two_pointers_opposite"
+      ],
+      "pec_set_of_group": [
+        "two_pointers_opposite"
+      ],
+      "eligible_controls": 75,
+      "tested_controls": 75,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 3,
+      "without_rule3_eligible": 78,
+      "without_rule3_failures": 3,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc46_fam2_g0",
+      "problem_id": 46,
+      "family_key": "lc46_fam2",
+      "required": [
+        "dfs_backtracking"
+      ],
+      "pec_set_of_group": [
+        "dfs_backtracking"
+      ],
+      "eligible_controls": 79,
+      "tested_controls": 79,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 79,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc46_fam3_g0",
+      "problem_id": 46,
+      "family_key": "lc46_fam3",
+      "required": [
+        "dfs_backtracking"
+      ],
+      "pec_set_of_group": [
+        "dfs_backtracking"
+      ],
+      "eligible_controls": 79,
+      "tested_controls": 79,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 79,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc70_fam1_g0",
+      "problem_id": 70,
+      "family_key": "lc70_fam1",
+      "required": [
+        "dp_bottom_up"
+      ],
+      "pec_set_of_group": [
+        "dp_bottom_up"
+      ],
+      "eligible_controls": 76,
+      "tested_controls": 76,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 2,
+      "without_rule3_eligible": 78,
+      "without_rule3_failures": 2,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc70_fam2_g0",
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "required": [
+        "dp_top_down"
+      ],
+      "pec_set_of_group": [
+        "dp_top_down"
+      ],
+      "eligible_controls": 78,
+      "tested_controls": 78,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 78,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc102_fam1_g0",
+      "problem_id": 102,
+      "family_key": "lc102_fam1",
+      "required": [
+        "bfs_shortest_path"
+      ],
+      "pec_set_of_group": [
+        "bfs_shortest_path"
+      ],
+      "eligible_controls": 76,
+      "tested_controls": 76,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 76,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc125_fam1_g0",
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "required": [
+        "two_pointers_opposite"
+      ],
+      "pec_set_of_group": [
+        "two_pointers_opposite"
+      ],
+      "eligible_controls": 76,
+      "tested_controls": 76,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 2,
+      "without_rule3_eligible": 78,
+      "without_rule3_failures": 2,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc209_fam1_g0",
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "pec_set_of_group": [
+        "sliding_window"
+      ],
+      "eligible_controls": 65,
+      "tested_controls": 65,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 3,
+      "without_rule3_eligible": 68,
+      "without_rule3_failures": 3,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc242_fam1_g0",
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "required": [
+        "frequency_counting"
+      ],
+      "pec_set_of_group": [
+        "frequency_counting"
+      ],
+      "eligible_controls": 70,
+      "tested_controls": 70,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 70,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc242_fam3_g0",
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "required": [
+        "frequency_counting"
+      ],
+      "pec_set_of_group": [
+        "frequency_counting"
+      ],
+      "eligible_controls": 70,
+      "tested_controls": 70,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 70,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc547_fam3_g0",
+      "problem_id": 547,
+      "family_key": "lc547_fam3",
+      "required": [
+        "union_find"
+      ],
+      "pec_set_of_group": [
+        "union_find"
+      ],
+      "eligible_controls": 76,
+      "tested_controls": 76,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 76,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc560_fam2_g0",
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "pec_set_of_group": [
+        "frequency_counting"
+      ],
+      "eligible_controls": 62,
+      "tested_controls": 62,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 62,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    },
+    {
+      "group_id": "lc704_fam1_g0",
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "required": [
+        "binary_search"
+      ],
+      "pec_set_of_group": [
+        "binary_search"
+      ],
+      "eligible_controls": 77,
+      "tested_controls": 77,
+      "failures": 0,
+      "failure_detail": [],
+      "same_family_reuse_count": 0,
+      "without_rule3_eligible": 77,
+      "without_rule3_failures": 0,
+      "insufficient_controls": false
+    }
+  ]
+}

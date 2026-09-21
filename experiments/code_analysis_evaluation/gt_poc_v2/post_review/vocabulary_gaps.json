@@ -1,0 +1,378 @@
+{
+  "bfs_shortest_path": {
+    "term": "bfs_shortest_path",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 2,
+    "families": [
+      "lc102_fam1",
+      "lc547_fam1"
+    ],
+    "observed_in_families": [
+      "lc102_fam1"
+    ],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)",
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK",
+      "LABEL_UNEXPRESSIBLE"
+    ]
+  },
+  "binary_search": {
+    "term": "binary_search",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 3,
+    "families": [
+      "lc704_fam1",
+      "lc704_fam2",
+      "lc704_fam3"
+    ],
+    "observed_in_families": [
+      "lc704_fam1"
+    ],
+    "activation_outcomes": [
+      "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)",
+      "divergence state is not LABEL_OK (refusal, not narrowing)",
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK",
+      "LABEL_UNEXPRESSIBLE",
+      "ZERO_EVIDENCE"
+    ]
+  },
+  "brute_force": {
+    "term": "brute_force",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 4,
+    "families": [
+      "lc1_fam2",
+      "lc1_fam3",
+      "lc209_fam2",
+      "lc560_fam1"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)",
+      "divergence state is not LABEL_OK (refusal, not narrowing)"
+    ],
+    "post_review_states": [
+      "LABEL_UNEXPRESSIBLE",
+      "ZERO_EVIDENCE"
+    ]
+  },
+  "clean_and_compare_reverse": {
+    "term": "clean_and_compare_reverse",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 1,
+    "families": [
+      "lc125_fam2"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    ],
+    "post_review_states": [
+      "ZERO_EVIDENCE"
+    ]
+  },
+  "dfs_backtracking": {
+    "term": "dfs_backtracking",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 2,
+    "families": [
+      "lc46_fam2",
+      "lc46_fam3"
+    ],
+    "observed_in_families": [
+      "lc46_fam2",
+      "lc46_fam3"
+    ],
+    "activation_outcomes": [
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK"
+    ]
+  },
+  "dp_bottom_up": {
+    "term": "dp_bottom_up",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 2,
+    "families": [
+      "lc70_fam1",
+      "lc70_fam3"
+    ],
+    "observed_in_families": [
+      "lc70_fam1"
+    ],
+    "activation_outcomes": [
+      "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)",
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK",
+      "ZERO_EVIDENCE"
+    ]
+  },
+  "dp_top_down": {
+    "term": "dp_top_down",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 1,
+    "families": [
+      "lc70_fam2"
+    ],
+    "observed_in_families": [
+      "lc70_fam2"
+    ],
+    "activation_outcomes": [
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK"
+    ]
+  },
+  "forward_pointer_advance": {
+    "term": "forward_pointer_advance",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "SUPPORT",
+    "occurrences": 2,
+    "families": [
+      "lc21_fam1",
+      "lc21_fam3"
+    ],
+    "observed_in_families": [
+      "lc21_fam1",
+      "lc21_fam3"
+    ],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)"
+    ],
+    "post_review_states": [
+      "LABEL_GENERIC"
+    ]
+  },
+  "frequency_counting": {
+    "term": "frequency_counting",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 4,
+    "families": [
+      "lc242_fam1",
+      "lc242_fam3",
+      "lc560_fam2",
+      "lc560_fam3"
+    ],
+    "observed_in_families": [
+      "lc242_fam1",
+      "lc242_fam3",
+      "lc560_fam2"
+    ],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)",
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK",
+      "LABEL_PARTIAL"
+    ]
+  },
+  "hash_lookup": {
+    "term": "hash_lookup",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 1,
+    "families": [
+      "lc1_fam1"
+    ],
+    "observed_in_families": [
+      "lc1_fam1"
+    ],
+    "activation_outcomes": [
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK"
+    ]
+  },
+  "iterative_insertion": {
+    "term": "iterative_insertion",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 1,
+    "families": [
+      "lc46_fam1"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    ],
+    "post_review_states": [
+      "ZERO_EVIDENCE"
+    ]
+  },
+  "recursive_dfs_by_depth": {
+    "term": "recursive_dfs_by_depth",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 1,
+    "families": [
+      "lc102_fam2"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)"
+    ],
+    "post_review_states": [
+      "LABEL_UNEXPRESSIBLE"
+    ]
+  },
+  "recursive_dfs_traversal": {
+    "term": "recursive_dfs_traversal",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 1,
+    "families": [
+      "lc547_fam2"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)"
+    ],
+    "post_review_states": [
+      "LABEL_UNEXPRESSIBLE"
+    ]
+  },
+  "recursive_merge": {
+    "term": "recursive_merge",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 1,
+    "families": [
+      "lc21_fam4"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)"
+    ],
+    "post_review_states": [
+      "LABEL_UNEXPRESSIBLE"
+    ]
+  },
+  "sequential_accumulation": {
+    "term": "sequential_accumulation",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "SUPPORT",
+    "occurrences": 7,
+    "families": [
+      "lc209_fam1",
+      "lc209_fam3",
+      "lc560_fam2",
+      "lc560_fam3",
+      "lc560_fam4",
+      "lc3236_fam1",
+      "lc3236_fam2"
+    ],
+    "observed_in_families": [
+      "lc209_fam1",
+      "lc209_fam3",
+      "lc560_fam2",
+      "lc560_fam3",
+      "lc560_fam4",
+      "lc3236_fam1",
+      "lc3236_fam2"
+    ],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)",
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_GENERIC",
+      "LABEL_OK",
+      "LABEL_PARTIAL"
+    ]
+  },
+  "sliding_window": {
+    "term": "sliding_window",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 1,
+    "families": [
+      "lc209_fam1"
+    ],
+    "observed_in_families": [
+      "lc209_fam1"
+    ],
+    "activation_outcomes": [
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK"
+    ]
+  },
+  "sort_and_rebuild": {
+    "term": "sort_and_rebuild",
+    "registered_in_frozen_taxonomy": false,
+    "tier": null,
+    "occurrences": 1,
+    "families": [
+      "lc21_fam2"
+    ],
+    "observed_in_families": [],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)"
+    ],
+    "post_review_states": [
+      "LABEL_UNEXPRESSIBLE"
+    ]
+  },
+  "two_pointers_opposite": {
+    "term": "two_pointers_opposite",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 3,
+    "families": [
+      "lc1_fam4",
+      "lc125_fam1",
+      "lc125_fam3"
+    ],
+    "observed_in_families": [
+      "lc1_fam4",
+      "lc125_fam1"
+    ],
+    "activation_outcomes": [
+      "divergence state is not LABEL_OK (refusal, not narrowing)",
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK",
+      "LABEL_UNEXPRESSIBLE"
+    ]
+  },
+  "union_find": {
+    "term": "union_find",
+    "registered_in_frozen_taxonomy": true,
+    "tier": "PEC",
+    "occurrences": 1,
+    "families": [
+      "lc547_fam3"
+    ],
+    "observed_in_families": [
+      "lc547_fam3"
+    ],
+    "activation_outcomes": [
+      "required = L (label-faithful); specificity floor passed"
+    ],
+    "post_review_states": [
+      "LABEL_OK"
+    ]
+  }
+}

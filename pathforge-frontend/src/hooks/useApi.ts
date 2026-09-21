@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { analyzeCode, prepareProblem, fetchGaps, fetchElo, fetchRecommendations } from '@/services/api/endpoints'
+import { fetchAuthProfile } from '@/services/api/auth'
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -9,6 +10,7 @@ import type {
   GapResponse,
   EloResponse,
   RecommendResponse,
+  AuthProfile,
 } from '@/types/api'
 
 function useApiData<T>(
@@ -63,6 +65,12 @@ export function useRecommendations(userId: number) {
     [userId],
     !userId || userId <= 0,
   )
+}
+
+// Topic profiles (attempts, pass counts, accuracy, last attempt) from the
+// existing GET /auth/profile endpoint. Used to show real practice history.
+export function useAuthProfile() {
+  return useApiData<AuthProfile>(() => fetchAuthProfile(), [], false)
 }
 
 export function useAnalyzeCode() {

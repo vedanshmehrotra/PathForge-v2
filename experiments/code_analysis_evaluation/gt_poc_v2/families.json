@@ -1,0 +1,1371 @@
+{
+  "phase": "3_grouping_v2",
+  "grouping_algorithm": {
+    "S1_concept_tiers": "every technique/strategy id is PEC (may partition) or SUPPORT (never partitions); ids in neither set default to SUPPORT",
+    "S2_primary_partition": "bucket by (frozenset(PEC concepts), zero_evidence flag)",
+    "S3_profile_refinement": "within a PEC bucket, split by the coarse 5-tuple (recursion, loop_shape, container, map_kind, iterates_collection)",
+    "S4_agglomeration": "PEC_SUBSET_MERGE: identical profile + non-empty subset PEC relation => merge; deterministic tie-break by smallest sorted PEC tuple",
+    "skeleton_role": "representative selection + skeleton_spread diagnostic ONLY; never a family split trigger (V2 \u00a72)",
+    "ordering": "members sorted by solution_id; families numbered by smallest member id"
+  },
+  "totals": {
+    "family_count": 37,
+    "singleton_families": 4,
+    "family_size_histogram": {
+      "1": 4,
+      "2": 15,
+      "3": 13,
+      "4": 4,
+      "7": 1
+    },
+    "families_by_problem": {
+      "1": [
+        "lc1_fam1",
+        "lc1_fam2",
+        "lc1_fam3",
+        "lc1_fam4"
+      ],
+      "21": [
+        "lc21_fam1",
+        "lc21_fam2",
+        "lc21_fam3",
+        "lc21_fam4"
+      ],
+      "46": [
+        "lc46_fam1",
+        "lc46_fam2",
+        "lc46_fam3"
+      ],
+      "70": [
+        "lc70_fam1",
+        "lc70_fam2",
+        "lc70_fam3"
+      ],
+      "102": [
+        "lc102_fam1",
+        "lc102_fam2"
+      ],
+      "125": [
+        "lc125_fam1",
+        "lc125_fam2",
+        "lc125_fam3"
+      ],
+      "209": [
+        "lc209_fam1",
+        "lc209_fam2",
+        "lc209_fam3"
+      ],
+      "242": [
+        "lc242_fam1",
+        "lc242_fam2",
+        "lc242_fam3"
+      ],
+      "547": [
+        "lc547_fam1",
+        "lc547_fam2",
+        "lc547_fam3"
+      ],
+      "560": [
+        "lc560_fam1",
+        "lc560_fam2",
+        "lc560_fam3",
+        "lc560_fam4"
+      ],
+      "704": [
+        "lc704_fam1",
+        "lc704_fam2",
+        "lc704_fam3"
+      ],
+      "3236": [
+        "lc3236_fam1",
+        "lc3236_fam2"
+      ]
+    }
+  },
+  "families": [
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "members": [
+        "S0001",
+        "S0002",
+        "S0006"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0001",
+      "pec_set": [
+        "hash_lookup"
+      ],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.043,
+        "max": 0.1373,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam2",
+      "members": [
+        "S0003",
+        "S0004"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0003",
+      "pec_set": [],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": true,
+      "merged_because": [],
+      "grouping_reason": "zero-evidence: no PEC or SUPPORT concept observed",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam3",
+      "members": [
+        "S0005"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0005",
+      "pec_set": [
+        "sliding_window"
+      ],
+      "support_set": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "singleton: no other solution shares this PEC set and profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 0
+      },
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "members": [
+        "S0007",
+        "S0008"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0007",
+      "pec_set": [
+        "bidirectional_index_scan",
+        "two_pointers_opposite"
+      ],
+      "support_set": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam1",
+      "members": [
+        "S0009"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0009",
+      "pec_set": [
+        "linked_list_traversal"
+      ],
+      "support_set": [
+        "forward_pointer_advance"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "singleton: no other solution shares this PEC set and profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 0
+      },
+      "is_singleton": true,
+      "sources": [
+        "pathforge_db"
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam2",
+      "members": [
+        "S0010",
+        "S0011"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0010",
+      "pec_set": [
+        "linked_list_traversal"
+      ],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam3",
+      "members": [
+        "S0012",
+        "S0013"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0012",
+      "pec_set": [
+        "linked_list_traversal"
+      ],
+      "support_set": [
+        "forward_pointer_advance"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam4",
+      "members": [
+        "S0014",
+        "S0015",
+        "S0016"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0014",
+      "pec_set": [],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0945,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 46,
+      "family_key": "lc46_fam1",
+      "members": [
+        "S0017",
+        "S0018",
+        "S0019"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0017",
+      "pec_set": [],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "both"
+      },
+      "zero_evidence": true,
+      "merged_because": [],
+      "grouping_reason": "zero-evidence: no PEC or SUPPORT concept observed",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 46,
+      "family_key": "lc46_fam2",
+      "members": [
+        "S0020",
+        "S0021"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0020",
+      "pec_set": [
+        "dfs_backtracking"
+      ],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "single",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0134,
+        "max": 0.0134,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 46,
+      "family_key": "lc46_fam3",
+      "members": [
+        "S0022",
+        "S0023",
+        "S0024"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0022",
+      "pec_set": [
+        "dfs_backtracking"
+      ],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "single",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "array_presized",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 70,
+      "family_key": "lc70_fam1",
+      "members": [
+        "S0025",
+        "S0026",
+        "S0027"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0025",
+      "pec_set": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "array_presized",
+        "iterates_collection": "range"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "members": [
+        "S0028",
+        "S0029",
+        "S0030"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0028",
+      "pec_set": [
+        "dp_top_down"
+      ],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0234,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 70,
+      "family_key": "lc70_fam3",
+      "members": [
+        "S0031",
+        "S0032"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0031",
+      "pec_set": [],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "range"
+      },
+      "zero_evidence": true,
+      "merged_because": [],
+      "grouping_reason": "zero-evidence: no PEC or SUPPORT concept observed",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 102,
+      "family_key": "lc102_fam1",
+      "members": [
+        "S0033",
+        "S0034",
+        "S0039",
+        "S0040"
+      ],
+      "member_count": 4,
+      "canonical_solution_id": "S0033",
+      "pec_set": [
+        "bfs_shortest_path"
+      ],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0552,
+        "pairs": 6
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 102,
+      "family_key": "lc102_fam2",
+      "members": [
+        "S0035",
+        "S0036",
+        "S0037",
+        "S0038"
+      ],
+      "member_count": 4,
+      "canonical_solution_id": "S0035",
+      "pec_set": [],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0581,
+        "pairs": 6
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "members": [
+        "S0041",
+        "S0047",
+        "S0048"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0047",
+      "pec_set": [
+        "bidirectional_index_scan",
+        "two_pointers_opposite"
+      ],
+      "support_set": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0248,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam2",
+      "members": [
+        "S0042",
+        "S0043"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0042",
+      "pec_set": [],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "none",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": true,
+      "merged_because": [],
+      "grouping_reason": "zero-evidence: no PEC or SUPPORT concept observed",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam3",
+      "members": [
+        "S0044",
+        "S0045",
+        "S0046"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0044",
+      "pec_set": [],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "single",
+        "loop_shape": "none",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0159,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "members": [
+        "S0049",
+        "S0050",
+        "S0055",
+        "S0056"
+      ],
+      "member_count": 4,
+      "canonical_solution_id": "S0055",
+      "pec_set": [
+        "sliding_window"
+      ],
+      "support_set": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.1195,
+        "pairs": 6
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam2",
+      "members": [
+        "S0051",
+        "S0052"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0051",
+      "pec_set": [],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam3",
+      "members": [
+        "S0053",
+        "S0054"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0053",
+      "pec_set": [],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "both"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "members": [
+        "S0057",
+        "S0058",
+        "S0059"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0057",
+      "pec_set": [
+        "frequency_counting"
+      ],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "array_presized",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam2",
+      "members": [
+        "S0060",
+        "S0064"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0060",
+      "pec_set": [],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "none",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": true,
+      "merged_because": [],
+      "grouping_reason": "zero-evidence: no PEC or SUPPORT concept observed",
+      "skeleton_spread": {
+        "min": 0.1143,
+        "max": 0.1143,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "members": [
+        "S0061",
+        "S0062",
+        "S0063"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0061",
+      "pec_set": [
+        "frequency_counting",
+        "hash_lookup"
+      ],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.3268,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 547,
+      "family_key": "lc547_fam1",
+      "members": [
+        "S0065",
+        "S0066"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0065",
+      "pec_set": [
+        "sliding_window"
+      ],
+      "support_set": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "array_presized",
+        "iterates_collection": "range"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 547,
+      "family_key": "lc547_fam2",
+      "members": [
+        "S0067",
+        "S0068",
+        "S0069"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0067",
+      "pec_set": [],
+      "support_set": [
+        "recursive_branching",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "single",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "array_presized",
+        "iterates_collection": "range"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0128,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 547,
+      "family_key": "lc547_fam3",
+      "members": [
+        "S0070",
+        "S0071",
+        "S0072"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0070",
+      "pec_set": [
+        "union_find"
+      ],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "single",
+        "loop_shape": "nested",
+        "container": "index_write",
+        "map_kind": "none",
+        "iterates_collection": "range"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam1",
+      "members": [
+        "S0073",
+        "S0074"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0073",
+      "pec_set": [],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "members": [
+        "S0075",
+        "S0076"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0075",
+      "pec_set": [
+        "dp_bottom_up",
+        "fixed_window_maintenance",
+        "frequency_counting",
+        "iterative_table_filling"
+      ],
+      "support_set": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam3",
+      "members": [
+        "S0077",
+        "S0078"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0077",
+      "pec_set": [],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam4",
+      "members": [
+        "S0079",
+        "S0080"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0079",
+      "pec_set": [],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "both"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 1
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "members": [
+        "S0081",
+        "S0083",
+        "S0084",
+        "S0085"
+      ],
+      "member_count": 4,
+      "canonical_solution_id": "S0083",
+      "pec_set": [
+        "binary_search"
+      ],
+      "support_set": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.1745,
+        "pairs": 6
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam2",
+      "members": [
+        "S0082"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0082",
+      "pec_set": [],
+      "support_set": [],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "none",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": true,
+      "merged_because": [],
+      "grouping_reason": "zero-evidence: no PEC or SUPPORT concept observed",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 0
+      },
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam3",
+      "members": [
+        "S0086",
+        "S0087",
+        "S0088"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0086",
+      "pec_set": [],
+      "support_set": [
+        "recursive_branching"
+      ],
+      "structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0186,
+        "pairs": 3
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "members": [
+        "S0089",
+        "S0090",
+        "S0091",
+        "S0093",
+        "S0094",
+        "S0095",
+        "S0096"
+      ],
+      "member_count": 7,
+      "canonical_solution_id": "S0089",
+      "pec_set": [],
+      "support_set": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "shared PEC set and identical structural profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.336,
+        "pairs": 21
+      },
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam2",
+      "members": [
+        "S0092"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0092",
+      "pec_set": [],
+      "support_set": [
+        "sequential_accumulation"
+      ],
+      "structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "zero_evidence": false,
+      "merged_because": [],
+      "grouping_reason": "singleton: no other solution shares this PEC set and profile",
+      "skeleton_spread": {
+        "min": 0.0,
+        "max": 0.0,
+        "pairs": 0
+      },
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ]
+    }
+  ]
+}

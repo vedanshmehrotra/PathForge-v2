@@ -3,14 +3,19 @@
 import { Award, Flame, Target } from 'lucide-react'
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '@/components/ui/panel'
 import { Badge } from '@/components/ui/badge'
+import { Meter } from '@/components/charts'
 import { StatTile } from '@/components/ui/stat'
 import { useAuth } from '@/auth/AuthProvider'
-import { useEloData } from '@/hooks/useApi'
+import { useAuthProfile, useEloData } from '@/hooks/useApi'
 import { getInitials } from '@/lib/utils'
+import { ELO_METER_MAX } from '@/services/skill'
 
 export function ProfileView() {
   const { profile: authProfile, user, signOut } = useAuth()
   const { data: eloData } = useEloData(authProfile?.user_id ?? 0)
+  const { data: topicData } = useAuthProfile()
+
+  const topicMap = new Map((topicData?.profiles ?? []).map((p) => [p.topic, p]))
 
   const displayName =
     authProfile?.display_name || user?.user_metadata?.full_name || 'User'
@@ -103,26 +108,37 @@ export function ProfileView() {
         <Panel>
           <PanelHeader>
             <PanelTitle>Pattern Profiles</PanelTitle>
+            <span className="font-mono text-[10px] text-muted-foreground">
+              {patternsTracked} tracked
+            </span>
           </PanelHeader>
           <div className="divide-y divide-border">
             {!patternsTracked && (
               <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                No pattern profiles yet. Submit code to initialize.
+                No pattern profiles yet. Analyze a solution to initialize.
               </div>
             )}
-            {eloData?.pattern_elo && Object.entries(eloData.pattern_elo)
+            {Object.entries(eloData?.pattern_elo ?? {})
               .sort(([, a], [, b]) => b - a)
-              .map(([topic, elo]) => (
-                <div
-                  key={topic}
-                  className="flex items-center justify-between px-4 py-2.5"
-                >
-                  <span className="text-sm">{topic.replace(/_/g, ' ')}</span>
-                  <span className="font-mono text-sm tabular-nums">
-                    {Math.round(elo)}
-                  </span>
-                </div>
-              ))}
+              .map(([topic, elo]) => {
+                const profile = topicMap.get(topic)
+                return (
+                  <div key={topic} className="flex items-center gap-3 px-4 py-2.5">
+                    <div className="w-36 shrink-0">
+                      <p className="truncate text-sm">{topic.replace(/_/g, ' ')}</p>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <Meter value={elo} max={ELO_METER_MAX} />
+                    </div>
+                    <span className="w-10 text-right font-mono text-[10px] tabular-nums text-muted-foreground">
+                      {profile ? `${profile.attempt_count}x` : ''}
+                    </span>
+                    <span className="w-12 text-right font-mono text-sm tabular-nums">
+                      {Math.round(elo)}
+                    </span>
+                  </div>
+                )
+              })}
           </div>
         </Panel>
       </div>

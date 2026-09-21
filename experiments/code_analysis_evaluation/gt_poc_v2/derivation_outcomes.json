@@ -1,0 +1,1083 @@
+{
+  "phase": "4b_derivation",
+  "label_mode": "provisional_unreviewed",
+  "provisional_assumption": "PA1: the POC runs with label_mode='provisional_unreviewed' because this environment cannot supply a human reviewer. A family label that passes the spec V2 \u00a73.4 consistency screen is treated as provisionally activatable. No label is marked APPROVED; the '>=6 APPROVED labels' acceptance criterion is reported NOT MET. See \u00a710 OPEN-3 / OPEN-4.",
+  "activatable_approval_states": [
+    "APPROVED",
+    "PENDING_REVIEW"
+  ],
+  "rules": {
+    "never_narrow": "required = L when L subset of O; never a subset of L",
+    "partial_is_refusal": "L not subset of O and L intersect O non-empty -> no group",
+    "disjoint_is_refusal": "L intersect O empty -> NO_GROUP / UNEXPRESSIBLE",
+    "specificity_floor": "required made only of SUPPORT concepts -> LABEL_GENERIC, no group"
+  },
+  "divergence_state_counts": {
+    "LABEL_OK": 12,
+    "LABEL_GENERIC": 4,
+    "LABEL_PARTIAL": 0,
+    "LABEL_UNEXPRESSIBLE": 0,
+    "LABEL_MULTI_OVERLAP": 0,
+    "NO_INDEPENDENT_LABEL": 10,
+    "ZERO_EVIDENCE": 6,
+    "REVIEW_REQUIRED_SCREEN_FAILED": 5
+  },
+  "totals": {
+    "families": 37,
+    "activated_groups": 12,
+    "labelable_families": 16,
+    "activation_rate": 0.75,
+    "narrowing_violations": 0
+  },
+  "outcomes": [
+    {
+      "family_key": "lc1_fam1",
+      "problem_id": 1,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "hash_lookup"
+      ],
+      "observed_intersection": [
+        "hash_lookup"
+      ],
+      "observed_union": [
+        "hash_lookup"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "hash_lookup"
+      ],
+      "optional": [],
+      "excluded": [
+        "recursive_branching"
+      ],
+      "group_id": "lc1_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc1_fam2",
+      "problem_id": 1,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "ZERO_EVIDENCE",
+      "label_required": [],
+      "observed_intersection": [],
+      "observed_union": [],
+      "required_expected": [],
+      "activated": false,
+      "reason": "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    },
+    {
+      "family_key": "lc1_fam3",
+      "problem_id": 1,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc1_fam4",
+      "problem_id": 1,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "observed_union": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc21_fam1",
+      "problem_id": 21,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_GENERIC",
+      "label_required": [
+        "forward_pointer_advance"
+      ],
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc21_fam2",
+      "problem_id": 21,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc21_fam3",
+      "problem_id": 21,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_GENERIC",
+      "label_required": [
+        "forward_pointer_advance"
+      ],
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc21_fam4",
+      "problem_id": 21,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc46_fam1",
+      "problem_id": 46,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "ZERO_EVIDENCE",
+      "label_required": [],
+      "observed_intersection": [],
+      "observed_union": [],
+      "required_expected": [],
+      "activated": false,
+      "reason": "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    },
+    {
+      "family_key": "lc46_fam2",
+      "problem_id": 46,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "dfs_backtracking"
+      ],
+      "observed_intersection": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "dfs_backtracking"
+      ],
+      "optional": [
+        "recursive_branching"
+      ],
+      "excluded": [
+        "dp_top_down"
+      ],
+      "group_id": "lc46_fam2_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc46_fam3",
+      "problem_id": 46,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "dfs_backtracking"
+      ],
+      "observed_intersection": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "dfs_backtracking"
+      ],
+      "optional": [
+        "recursive_branching"
+      ],
+      "excluded": [
+        "dp_top_down"
+      ],
+      "group_id": "lc46_fam3_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc70_fam1",
+      "problem_id": 70,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "dp_bottom_up"
+      ],
+      "observed_intersection": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "observed_union": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "dp_bottom_up"
+      ],
+      "optional": [
+        "iterative_table_filling"
+      ],
+      "excluded": [
+        "recursive_branching"
+      ],
+      "group_id": "lc70_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc70_fam2",
+      "problem_id": 70,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "dp_top_down",
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "dp_top_down",
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc70_fam3",
+      "problem_id": 70,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "ZERO_EVIDENCE",
+      "label_required": [],
+      "observed_intersection": [],
+      "observed_union": [],
+      "required_expected": [],
+      "activated": false,
+      "reason": "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    },
+    {
+      "family_key": "lc102_fam1",
+      "problem_id": 102,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "bfs_shortest_path"
+      ],
+      "observed_intersection": [
+        "bfs_shortest_path"
+      ],
+      "observed_union": [
+        "bfs_shortest_path"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "bfs_shortest_path"
+      ],
+      "optional": [],
+      "excluded": [
+        "recursive_branching"
+      ],
+      "group_id": "lc102_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc102_fam2",
+      "problem_id": 102,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc125_fam1",
+      "problem_id": 125,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "two_pointers_opposite"
+      ],
+      "observed_intersection": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "observed_union": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "two_pointers_opposite"
+      ],
+      "optional": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "excluded": [
+        "binary_search"
+      ],
+      "group_id": "lc125_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc125_fam2",
+      "problem_id": 125,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "ZERO_EVIDENCE",
+      "label_required": [],
+      "observed_intersection": [],
+      "observed_union": [],
+      "required_expected": [],
+      "activated": false,
+      "reason": "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    },
+    {
+      "family_key": "lc125_fam3",
+      "problem_id": 125,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc209_fam1",
+      "problem_id": 209,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "optional": [
+        "forward_pointer_advance",
+        "loop_state_tracking"
+      ],
+      "excluded": [
+        "two_pointers_opposite"
+      ],
+      "group_id": "lc209_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc209_fam2",
+      "problem_id": 209,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "label_required": [],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc209_fam3",
+      "problem_id": 209,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "label_required": [],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc242_fam1",
+      "problem_id": 242,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "frequency_counting"
+      ],
+      "observed_intersection": [
+        "frequency_counting"
+      ],
+      "observed_union": [
+        "frequency_counting"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "frequency_counting"
+      ],
+      "optional": [],
+      "excluded": [
+        "recursive_branching"
+      ],
+      "group_id": "lc242_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc242_fam2",
+      "problem_id": 242,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "ZERO_EVIDENCE",
+      "label_required": [],
+      "observed_intersection": [],
+      "observed_union": [],
+      "required_expected": [],
+      "activated": false,
+      "reason": "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    },
+    {
+      "family_key": "lc242_fam3",
+      "problem_id": 242,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "frequency_counting"
+      ],
+      "observed_intersection": [
+        "frequency_counting",
+        "hash_lookup"
+      ],
+      "observed_union": [
+        "frequency_counting",
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "frequency_counting"
+      ],
+      "optional": [
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "excluded": [
+        "recursive_branching"
+      ],
+      "group_id": "lc242_fam3_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc547_fam1",
+      "problem_id": 547,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_union": [
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc547_fam2",
+      "problem_id": 547,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "recursive_branching",
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "recursive_branching",
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc547_fam3",
+      "problem_id": 547,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "union_find"
+      ],
+      "observed_intersection": [
+        "sequential_accumulation",
+        "union_find"
+      ],
+      "observed_union": [
+        "sequential_accumulation",
+        "union_find"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "union_find"
+      ],
+      "optional": [
+        "sequential_accumulation"
+      ],
+      "excluded": [],
+      "group_id": "lc547_fam3_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc560_fam1",
+      "problem_id": 560,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "label_required": [],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc560_fam2",
+      "problem_id": 560,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "observed_intersection": [
+        "dp_bottom_up",
+        "fixed_window_maintenance",
+        "forward_pointer_advance",
+        "frequency_counting",
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "dp_bottom_up",
+        "fixed_window_maintenance",
+        "forward_pointer_advance",
+        "frequency_counting",
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "optional": [
+        "forward_pointer_advance",
+        "iterative_table_filling"
+      ],
+      "excluded": [
+        "recursive_branching"
+      ],
+      "group_id": "lc560_fam2_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc560_fam3",
+      "problem_id": 560,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "label_required": [],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc560_fam4",
+      "problem_id": 560,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "label_required": [],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc704_fam1",
+      "problem_id": 704,
+      "label_source": "curated_problems_pattern",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_OK",
+      "label_required": [
+        "binary_search"
+      ],
+      "observed_intersection": [
+        "binary_search",
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "observed_union": [
+        "binary_search",
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "required_expected": [],
+      "activated": true,
+      "reason": "required = L (label-faithful); specificity floor passed",
+      "required": [
+        "binary_search"
+      ],
+      "optional": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "excluded": [
+        "two_pointers_opposite"
+      ],
+      "group_id": "lc704_fam1_g0",
+      "narrowing": false
+    },
+    {
+      "family_key": "lc704_fam2",
+      "problem_id": 704,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "ZERO_EVIDENCE",
+      "label_required": [],
+      "observed_intersection": [],
+      "observed_union": [],
+      "required_expected": [],
+      "activated": false,
+      "reason": "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)"
+    },
+    {
+      "family_key": "lc704_fam3",
+      "problem_id": 704,
+      "label_source": null,
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "label_required": [],
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc3236_fam1",
+      "problem_id": 3236,
+      "label_source": "authored_family_proposal",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_GENERIC",
+      "label_required": [
+        "sequential_accumulation"
+      ],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    },
+    {
+      "family_key": "lc3236_fam2",
+      "problem_id": 3236,
+      "label_source": "authored_family_proposal",
+      "approval_state": "PENDING_REVIEW",
+      "divergence_state": "LABEL_GENERIC",
+      "label_required": [
+        "sequential_accumulation"
+      ],
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "required_expected": [],
+      "activated": false,
+      "reason": "divergence state is not LABEL_OK (refusal, not narrowing)"
+    }
+  ],
+  "groups_by_problem": {
+    "1": [
+      {
+        "id": "lc1_fam1_g0",
+        "problem_id": 1,
+        "family_key": "lc1_fam1",
+        "required": [
+          "hash_lookup"
+        ],
+        "optional": [],
+        "excluded": [
+          "recursive_branching"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "46": [
+      {
+        "id": "lc46_fam2_g0",
+        "problem_id": 46,
+        "family_key": "lc46_fam2",
+        "required": [
+          "dfs_backtracking"
+        ],
+        "optional": [
+          "recursive_branching"
+        ],
+        "excluded": [
+          "dp_top_down"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      },
+      {
+        "id": "lc46_fam3_g0",
+        "problem_id": 46,
+        "family_key": "lc46_fam3",
+        "required": [
+          "dfs_backtracking"
+        ],
+        "optional": [
+          "recursive_branching"
+        ],
+        "excluded": [
+          "dp_top_down"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "70": [
+      {
+        "id": "lc70_fam1_g0",
+        "problem_id": 70,
+        "family_key": "lc70_fam1",
+        "required": [
+          "dp_bottom_up"
+        ],
+        "optional": [
+          "iterative_table_filling"
+        ],
+        "excluded": [
+          "recursive_branching"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "102": [
+      {
+        "id": "lc102_fam1_g0",
+        "problem_id": 102,
+        "family_key": "lc102_fam1",
+        "required": [
+          "bfs_shortest_path"
+        ],
+        "optional": [],
+        "excluded": [
+          "recursive_branching"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "125": [
+      {
+        "id": "lc125_fam1_g0",
+        "problem_id": 125,
+        "family_key": "lc125_fam1",
+        "required": [
+          "two_pointers_opposite"
+        ],
+        "optional": [
+          "bidirectional_index_scan",
+          "loop_state_tracking",
+          "sequential_accumulation"
+        ],
+        "excluded": [
+          "binary_search"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "209": [
+      {
+        "id": "lc209_fam1_g0",
+        "problem_id": 209,
+        "family_key": "lc209_fam1",
+        "required": [
+          "sequential_accumulation",
+          "sliding_window"
+        ],
+        "optional": [
+          "forward_pointer_advance",
+          "loop_state_tracking"
+        ],
+        "excluded": [
+          "two_pointers_opposite"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "242": [
+      {
+        "id": "lc242_fam1_g0",
+        "problem_id": 242,
+        "family_key": "lc242_fam1",
+        "required": [
+          "frequency_counting"
+        ],
+        "optional": [],
+        "excluded": [
+          "recursive_branching"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      },
+      {
+        "id": "lc242_fam3_g0",
+        "problem_id": 242,
+        "family_key": "lc242_fam3",
+        "required": [
+          "frequency_counting"
+        ],
+        "optional": [
+          "hash_lookup",
+          "sequential_accumulation"
+        ],
+        "excluded": [
+          "recursive_branching"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "547": [
+      {
+        "id": "lc547_fam3_g0",
+        "problem_id": 547,
+        "family_key": "lc547_fam3",
+        "required": [
+          "union_find"
+        ],
+        "optional": [
+          "sequential_accumulation"
+        ],
+        "excluded": [],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "560": [
+      {
+        "id": "lc560_fam2_g0",
+        "problem_id": 560,
+        "family_key": "lc560_fam2",
+        "required": [
+          "frequency_counting",
+          "sequential_accumulation"
+        ],
+        "optional": [
+          "forward_pointer_advance",
+          "iterative_table_filling"
+        ],
+        "excluded": [
+          "recursive_branching"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ],
+    "704": [
+      {
+        "id": "lc704_fam1_g0",
+        "problem_id": 704,
+        "family_key": "lc704_fam1",
+        "required": [
+          "binary_search"
+        ],
+        "optional": [
+          "candidate_selection",
+          "loop_state_tracking"
+        ],
+        "excluded": [
+          "two_pointers_opposite"
+        ],
+        "threshold": 0.5,
+        "authority_tier": "editorial"
+      }
+    ]
+  }
+}

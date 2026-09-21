@@ -1,0 +1,370 @@
+{
+  "phase": "5c_before_after",
+  "pre_review": {
+    "label_mode": "provisional_unreviewed",
+    "provisional_assumption": "PA1: the POC runs with label_mode='provisional_unreviewed' because this environment cannot supply a human reviewer. A family label that passes the spec V2 \u00a73.4 consistency screen is treated as provisionally activatable. No label is marked APPROVED; the '>=6 APPROVED labels' acceptance criterion is reported NOT MET. See \u00a710 OPEN-3 / OPEN-4.",
+    "active_groups": 12,
+    "activation_rate": 0.75,
+    "strict_groups": 0,
+    "divergence_state_counts": {
+      "LABEL_OK": 12,
+      "LABEL_GENERIC": 4,
+      "LABEL_PARTIAL": 0,
+      "LABEL_UNEXPRESSIBLE": 0,
+      "LABEL_MULTI_OVERLAP": 0,
+      "NO_INDEPENDENT_LABEL": 10,
+      "ZERO_EVIDENCE": 6,
+      "REVIEW_REQUIRED_SCREEN_FAILED": 5
+    },
+    "metrics": {
+      "singleton_families": 4,
+      "family_count": 37,
+      "singleton_rate": 0.1081,
+      "families_per_problem": {
+        "1": 4,
+        "21": 4,
+        "46": 3,
+        "70": 3,
+        "102": 2,
+        "125": 3,
+        "209": 3,
+        "242": 3,
+        "547": 3,
+        "560": 4,
+        "704": 3,
+        "3236": 2
+      },
+      "max_families_per_problem": 4,
+      "held_out_population": 52,
+      "held_out_population_gate": 36,
+      "held_out_population_gate_met": true,
+      "derivation_population": 44,
+      "limited_families": 4,
+      "confirmed": 22,
+      "unresolved": 26,
+      "contradicted": 4,
+      "positive_confirm_rate": 0.4231,
+      "unresolved_rate": 0.5,
+      "family_coverage": 1.0,
+      "family_coverage_scope": "22 confirmed of 22 non-zero-evidence held-out solutions in families that activated a group",
+      "group_satisfiability": 1.0,
+      "group_satisfiability_detail": "12/12 active groups confirmed by all derivation members",
+      "activation_rate": 0.75,
+      "activated_groups": 12,
+      "narrowing_violations": 0,
+      "discrimination_FP": 0.0,
+      "discrimination_FP_detail": "0/881 eligible control pairs",
+      "D1_classification": {
+        "correct": 7,
+        "total": 7
+      },
+      "D2_classification": {
+        "correct": 32,
+        "total": 32
+      },
+      "zero_evidence_solutions": 12,
+      "zero_evidence_held_out": 6,
+      "zero_evidence_confirmed": 0,
+      "zero_evidence_labeled": 0,
+      "zero_evidence_controls": 0,
+      "divergence_distribution": {
+        "LABEL_OK": 12,
+        "LABEL_GENERIC": 4,
+        "LABEL_PARTIAL": 0,
+        "LABEL_UNEXPRESSIBLE": 0,
+        "LABEL_MULTI_OVERLAP": 0,
+        "NO_INDEPENDENT_LABEL": 10,
+        "ZERO_EVIDENCE": 6,
+        "REVIEW_REQUIRED_SCREEN_FAILED": 5
+      },
+      "approved_family_labels": 0
+    },
+    "overall_state": "VALIDATION_FAILED",
+    "failed_criteria": [
+      "approved_family_labels"
+    ]
+  },
+  "post_review": {
+    "label_mode": "strict_human",
+    "provisional_assumption": null,
+    "active_groups": 14,
+    "activation_rate": 0.3889,
+    "provisional_mode_groups": 14,
+    "divergence_state_counts": {
+      "LABEL_OK": 14,
+      "LABEL_GENERIC": 6,
+      "LABEL_PARTIAL": 1,
+      "LABEL_UNEXPRESSIBLE": 10,
+      "LABEL_MULTI_OVERLAP": 0,
+      "NO_INDEPENDENT_LABEL": 0,
+      "ZERO_EVIDENCE": 6,
+      "REVIEW_REQUIRED_SCREEN_FAILED": 0
+    },
+    "metrics": {
+      "singleton_families": 4,
+      "family_count": 37,
+      "singleton_rate": 0.1081,
+      "families_per_problem": {
+        "1": 4,
+        "21": 4,
+        "46": 3,
+        "70": 3,
+        "102": 2,
+        "125": 3,
+        "209": 3,
+        "242": 3,
+        "547": 3,
+        "560": 4,
+        "704": 3,
+        "3236": 2
+      },
+      "max_families_per_problem": 4,
+      "held_out_population": 52,
+      "held_out_population_gate": 36,
+      "held_out_population_gate_met": true,
+      "derivation_population": 44,
+      "limited_families": 4,
+      "confirmed": 25,
+      "unresolved": 27,
+      "contradicted": 0,
+      "positive_confirm_rate": 0.4808,
+      "unresolved_rate": 0.5192,
+      "family_coverage": 1.0,
+      "family_coverage_scope": "25 confirmed of 25 non-zero-evidence held-out solutions in families that activated a group",
+      "group_satisfiability": 1.0,
+      "group_satisfiability_detail": "14/14 active groups confirmed by all derivation members",
+      "activation_rate": 0.3889,
+      "activated_groups": 14,
+      "narrowing_violations": 0,
+      "discrimination_FP": 0.0,
+      "discrimination_FP_detail": "0/1034 eligible control pairs",
+      "D1_classification": {
+        "correct": 7,
+        "total": 7
+      },
+      "D2_classification": {
+        "correct": 32,
+        "total": 32
+      },
+      "zero_evidence_solutions": 12,
+      "zero_evidence_held_out": 6,
+      "zero_evidence_confirmed": 0,
+      "zero_evidence_labeled": 0,
+      "zero_evidence_controls": 0,
+      "divergence_distribution": {
+        "LABEL_OK": 14,
+        "LABEL_GENERIC": 6,
+        "LABEL_PARTIAL": 1,
+        "LABEL_UNEXPRESSIBLE": 10,
+        "LABEL_MULTI_OVERLAP": 0,
+        "NO_INDEPENDENT_LABEL": 0,
+        "ZERO_EVIDENCE": 6,
+        "REVIEW_REQUIRED_SCREEN_FAILED": 0
+      },
+      "approved_family_labels": 36
+    },
+    "overall_state": "VALIDATED",
+    "failed_criteria": []
+  },
+  "changed_verdicts": [
+    {
+      "solution_id": "S0008",
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "before": "UNRESOLVED",
+      "after": "CONFIRMED"
+    },
+    {
+      "solution_id": "S0028",
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "before": "CONTRADICTED",
+      "after": "CONFIRMED"
+    },
+    {
+      "solution_id": "S0029",
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "before": "CONTRADICTED",
+      "after": "CONFIRMED"
+    },
+    {
+      "solution_id": "S0035",
+      "problem_id": 102,
+      "family_key": "lc102_fam2",
+      "before": "CONTRADICTED",
+      "after": "UNRESOLVED"
+    },
+    {
+      "solution_id": "S0036",
+      "problem_id": 102,
+      "family_key": "lc102_fam2",
+      "before": "CONTRADICTED",
+      "after": "UNRESOLVED"
+    }
+  ],
+  "unchanged_verdicts": [
+    "S0001",
+    "S0002",
+    "S0004",
+    "S0011",
+    "S0013",
+    "S0014",
+    "S0015",
+    "S0017",
+    "S0018",
+    "S0021",
+    "S0022",
+    "S0023",
+    "S0025",
+    "S0026",
+    "S0032",
+    "S0033",
+    "S0034",
+    "S0041",
+    "S0043",
+    "S0044",
+    "S0045",
+    "S0047",
+    "S0049",
+    "S0050",
+    "S0052",
+    "S0054",
+    "S0057",
+    "S0058",
+    "S0061",
+    "S0062",
+    "S0064",
+    "S0066",
+    "S0067",
+    "S0068",
+    "S0070",
+    "S0071",
+    "S0074",
+    "S0076",
+    "S0078",
+    "S0080",
+    "S0081",
+    "S0083",
+    "S0086",
+    "S0087",
+    "S0089",
+    "S0090",
+    "S0091"
+  ],
+  "changed_families": [
+    {
+      "family_key": "lc1_fam4",
+      "before": {
+        "activated": false,
+        "reason": "divergence state is not LABEL_OK (refusal, not narrowing)",
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW",
+        "label_required": [],
+        "required": null,
+        "observed_intersection": [
+          "bidirectional_index_scan",
+          "loop_state_tracking",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ],
+        "label_source": null
+      },
+      "after": {
+        "activated": true,
+        "reason": "required = L (label-faithful); specificity floor passed",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "APPROVED",
+        "label_required": [
+          "two_pointers_opposite"
+        ],
+        "required": [
+          "two_pointers_opposite"
+        ],
+        "observed_intersection": [
+          "bidirectional_index_scan",
+          "loop_state_tracking",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ],
+        "label_source": "human_review"
+      }
+    },
+    {
+      "family_key": "lc70_fam2",
+      "before": {
+        "activated": false,
+        "reason": "divergence state is not LABEL_OK (refusal, not narrowing)",
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW",
+        "label_required": [],
+        "required": null,
+        "observed_intersection": [
+          "dp_top_down",
+          "recursive_branching"
+        ],
+        "label_source": null
+      },
+      "after": {
+        "activated": true,
+        "reason": "required = L (label-faithful); specificity floor passed",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "APPROVED",
+        "label_required": [
+          "dp_top_down"
+        ],
+        "required": [
+          "dp_top_down"
+        ],
+        "observed_intersection": [
+          "dp_top_down",
+          "recursive_branching"
+        ],
+        "label_source": "human_review"
+      }
+    }
+  ],
+  "unchanged_families": [
+    "lc102_fam1",
+    "lc102_fam2",
+    "lc125_fam1",
+    "lc125_fam2",
+    "lc125_fam3",
+    "lc1_fam1",
+    "lc1_fam2",
+    "lc1_fam3",
+    "lc209_fam1",
+    "lc209_fam2",
+    "lc209_fam3",
+    "lc21_fam1",
+    "lc21_fam2",
+    "lc21_fam3",
+    "lc21_fam4",
+    "lc242_fam1",
+    "lc242_fam2",
+    "lc242_fam3",
+    "lc3236_fam1",
+    "lc3236_fam2",
+    "lc46_fam1",
+    "lc46_fam2",
+    "lc46_fam3",
+    "lc547_fam1",
+    "lc547_fam2",
+    "lc547_fam3",
+    "lc560_fam1",
+    "lc560_fam2",
+    "lc560_fam3",
+    "lc560_fam4",
+    "lc704_fam1",
+    "lc704_fam2",
+    "lc704_fam3",
+    "lc70_fam1",
+    "lc70_fam3"
+  ],
+  "activation_reason_counts": {
+    "required = L (label-faithful); specificity floor passed": 14,
+    "divergence state is not LABEL_OK (refusal, not narrowing)": 17,
+    "ZERO_EVIDENCE family can never activate a group (V2 \u00a79)": 5,
+    "family label is not in an activatable approval state for this run": 1
+  }
+}

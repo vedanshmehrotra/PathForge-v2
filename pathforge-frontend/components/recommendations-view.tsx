@@ -60,8 +60,20 @@ export function RecommendationsView() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatTile label="Queued" value={items.length} icon={Target} accent />
-        <StatTile label="Potential Gain" value={`+${Math.round(totalGain)}`} icon={TrendingUp} sub={<span className="text-success">est. total</span>} />
-        <StatTile label="Avg Match" value={items.length > 0 ? `${Math.round(items.reduce((s, r) => s + (r.score ?? 0), 0) / items.length)}%` : '-'} />
+        <StatTile
+          label="Est. Total Gain"
+          value={`+${Math.round(totalGain)}`}
+          icon={TrendingUp}
+          sub={<span className="text-success">sum of expected gain</span>}
+        />
+        <StatTile
+          label="Avg Gain"
+          value={
+            items.length > 0
+              ? `+${Math.round(items.reduce((s, r) => s + (r.score ?? 0), 0) / items.length)}`
+              : '\u2014'
+          }
+        />
         <StatTile label="Hard Targets" value={items.filter((r) => r.difficulty === 'Hard').length} />
       </div>
 
@@ -102,21 +114,13 @@ export function RecommendationsView() {
 
               <div className="flex items-center gap-5 md:gap-6">
                 {r.score != null && (
-                  <>
-                    <div className="w-28">
-                      <div className="mb-1 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
-                        <span>match</span>
-                        <span>{Math.round(r.score)}%</span>
-                      </div>
-                      <Meter value={Math.round(r.score)} />
+                  <div className="w-36">
+                    <div className="mb-1 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
+                      <span>expected gain</span>
+                      <span className="text-success">+{Math.round(r.score)}</span>
                     </div>
-                    <div className="text-right">
-                      <p className="font-mono text-lg font-semibold tabular-nums text-success">
-                        +{Math.round(r.score)}
-                      </p>
-                      <p className="font-mono text-[10px] uppercase text-muted-foreground">score</p>
-                    </div>
-                  </>
+                    <Meter value={Math.round(r.score)} />
+                  </div>
                 )}
                 <button className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
                   Solve

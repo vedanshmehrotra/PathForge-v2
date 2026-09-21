@@ -1,0 +1,24 @@
+{
+  "poc_version": "2.0.0",
+  "taxonomy_version": "v1",
+  "pipeline_version": {
+    "extractor": "1.0.0",
+    "relations": "1.1.0",
+    "strategy": "1.0.0"
+  },
+  "provisional_representative_tau": 0.35,
+  "label_mode": "provisional_unreviewed",
+  "provisional_assumption": "PA1: the POC runs with label_mode='provisional_unreviewed' because this environment cannot supply a human reviewer. A family label that passes the spec V2 \u00a73.4 consistency screen is treated as provisionally activatable. No label is marked APPROVED; the '>=6 APPROVED labels' acceptance criterion is reported NOT MET. See \u00a710 OPEN-3 / OPEN-4.",
+  "artifacts": {
+    "derivation_outcomes.json": "4f415f34bcd2497c0fb1fed96a9479e23d3656e3d1108634060c011c3ea3d33d",
+    "families.json": "48e477c178b232a01e6105f6e077f7a3a2fe67c2bba2d8eaae616a1d463b22cd",
+    "family_labels.json": "fe93ca58bddb5f072770617d36b0fe376e78cc3618894d72bb078f41ef47c5fc",
+    "label_comparison.json": "6bf8827509778a67c15ab298ff593077e70305c9167e83a9f1ac9e18e30896de",
+    "negative_controls.json": "6b63e0aa41659279eb77659618c03001fe622babbe5dc642c83ea0d272d57c96",
+    "normalized_solutions.json": "853bc911c068e48eb834d78ef913b7fa4d2596a3ec9c7574d928ff6c85ca7eab",
+    "reference_solutions.json": "630309294b744136d89357f3acbe00fc0e861a41572cb558404361c9e51aeded",
+    "review_sheet.json": "fe93ca58bddb5f072770617d36b0fe376e78cc3618894d72bb078f41ef47c5fc",
+    "review_sheet.md": "22911dd1e4a476d9e7325bcce9608c289b4dac81441659d12fe9b8dcf3ca8659",
+    "validation.json": "1e8fbbd960bdd82f85022cdc8b8e96e9741f04e025ab63ebcac74f00319418ce"
+  }
+}

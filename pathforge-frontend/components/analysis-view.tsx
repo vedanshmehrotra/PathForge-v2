@@ -1,7 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Cpu, GitCompare, Play, ScanLine, TriangleAlert, X, Zap } from 'lucide-react'
+import {
+  Check,
+  ChevronRight,
+  Cpu,
+  GitCompare,
+  Play,
+  ScanLine,
+  TriangleAlert,
+  X,
+  Zap,
+} from 'lucide-react'
 import { Panel, PanelBody, PanelHeader, PanelTitle } from '@/components/ui/panel'
 import { Badge } from '@/components/ui/badge'
 import { Meter } from '@/components/charts'
@@ -205,7 +215,8 @@ export function AnalysisView() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 spellCheck={false}
-                className="min-h-[360px] flex-1 resize-none bg-transparent px-3 py-3 font-mono text-xs leading-[1.6] text-foreground outline-none"
+                placeholder={'Paste your Python solution here\u2026'}
+                className="min-h-[360px] flex-1 resize-none bg-transparent px-3 py-3 font-mono text-xs leading-[1.6] text-foreground outline-none placeholder:text-muted-foreground/50"
               />
             </div>
           </Panel>
@@ -299,13 +310,22 @@ export function AnalysisView() {
                     {matchResult.match_result === 'NO_MATCH' && '❌ No expected patterns detected'}
                     {matchResult.match_result === 'NO_GROUND_TRUTH' && 'ℹ️ No verified ground truth available'}
                   </p>
-                  {Array.isArray(matchResult.reasoning_signals) && (
-                    <ul className="mt-1.5 list-inside list-disc space-y-0.5">
-                      {matchResult.reasoning_signals.slice(0, 6).map((s: string, i: number) => (
-                        <li key={i} className="text-[11px] text-muted-foreground">{s}</li>
-                      ))}
-                    </ul>
-                  )}
+                  {Array.isArray(matchResult.reasoning_signals) &&
+                    matchResult.reasoning_signals.length > 0 && (
+                      <details className="group mt-2">
+                        <summary className="flex cursor-pointer items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                          Detection reasoning
+                          <ChevronRight className="size-3 transition-transform group-open:rotate-90" />
+                        </summary>
+                        <ul className="mt-1.5 list-inside list-disc space-y-0.5">
+                          {matchResult.reasoning_signals.slice(0, 6).map((s: string, i: number) => (
+                            <li key={i} className="text-[11px] text-muted-foreground">
+                              {s}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
                 </div>
               )}
             </PanelBody>

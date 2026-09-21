@@ -1,0 +1,1636 @@
+{
+  "phase": "4_label_comparison",
+  "note": "Diagnostic artifact only; produced AFTER the blind review sheet. Never shown to the reviewer.",
+  "entries": [
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "proposed_required": [
+        "hash_lookup"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "hash_lookup"
+      ],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0001",
+          "techniques": [
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0002",
+          "techniques": [
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0006",
+          "techniques": [
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam2",
+      "proposed_required": [],
+      "divergence_state": "ZERO_EVIDENCE",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0003",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0004",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam3",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [
+        "sliding_window"
+      ],
+      "analyzer_support_set": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0005",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [
+        "bidirectional_index_scan",
+        "two_pointers_opposite"
+      ],
+      "analyzer_support_set": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0007",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0008",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam1",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "divergence_state": "LABEL_GENERIC",
+      "analyzer_pec_set": [
+        "linked_list_traversal"
+      ],
+      "analyzer_support_set": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0009",
+          "techniques": [
+            "forward_pointer_advance",
+            "linked_list_traversal"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam2",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [
+        "linked_list_traversal"
+      ],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0010",
+          "techniques": [
+            "linked_list_traversal",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0011",
+          "techniques": [
+            "linked_list_traversal",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam3",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "divergence_state": "LABEL_GENERIC",
+      "analyzer_pec_set": [
+        "linked_list_traversal"
+      ],
+      "analyzer_support_set": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0012",
+          "techniques": [
+            "forward_pointer_advance",
+            "linked_list_traversal"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0013",
+          "techniques": [
+            "forward_pointer_advance",
+            "linked_list_traversal"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam4",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0014",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0015",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0016",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 46,
+      "family_key": "lc46_fam1",
+      "proposed_required": [],
+      "divergence_state": "ZERO_EVIDENCE",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "both"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0017",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0018",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0019",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 46,
+      "family_key": "lc46_fam2",
+      "proposed_required": [
+        "dfs_backtracking"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "dfs_backtracking"
+      ],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "single",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0020",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dfs_backtracking"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0021",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dfs_backtracking"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 46,
+      "family_key": "lc46_fam3",
+      "proposed_required": [
+        "dfs_backtracking"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "dfs_backtracking"
+      ],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "single",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "array_presized",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0022",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dfs_backtracking"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0023",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dfs_backtracking"
+          ],
+          "dedup_level": "D1"
+        },
+        {
+          "solution_id": "S0024",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dfs_backtracking"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 70,
+      "family_key": "lc70_fam1",
+      "proposed_required": [
+        "dp_bottom_up"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "array_presized",
+        "iterates_collection": "range"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0025",
+          "techniques": [
+            "iterative_table_filling"
+          ],
+          "strategies": [
+            "dp_bottom_up"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0026",
+          "techniques": [
+            "iterative_table_filling"
+          ],
+          "strategies": [
+            "dp_bottom_up"
+          ],
+          "dedup_level": "D1"
+        },
+        {
+          "solution_id": "S0027",
+          "techniques": [
+            "iterative_table_filling"
+          ],
+          "strategies": [
+            "dp_bottom_up"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [
+        "dp_top_down"
+      ],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0028",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dp_top_down"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0029",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dp_top_down"
+          ],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0030",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [
+            "dp_top_down"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 70,
+      "family_key": "lc70_fam3",
+      "proposed_required": [],
+      "divergence_state": "ZERO_EVIDENCE",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "range"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0031",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0032",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 102,
+      "family_key": "lc102_fam1",
+      "proposed_required": [
+        "bfs_shortest_path"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "bfs_shortest_path"
+      ],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0033",
+          "techniques": [],
+          "strategies": [
+            "bfs_shortest_path"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0034",
+          "techniques": [],
+          "strategies": [
+            "bfs_shortest_path"
+          ],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0039",
+          "techniques": [],
+          "strategies": [
+            "bfs_shortest_path"
+          ],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0040",
+          "techniques": [],
+          "strategies": [
+            "bfs_shortest_path"
+          ],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 102,
+      "family_key": "lc102_fam2",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0035",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0036",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0037",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D1"
+        },
+        {
+          "solution_id": "S0038",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "proposed_required": [
+        "two_pointers_opposite"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "bidirectional_index_scan",
+        "two_pointers_opposite"
+      ],
+      "analyzer_support_set": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0041",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0047",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0048",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam2",
+      "proposed_required": [],
+      "divergence_state": "ZERO_EVIDENCE",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "none",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0042",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0043",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam3",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "single",
+        "loop_shape": "none",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0044",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0045",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0046",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "proposed_required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "sliding_window"
+      ],
+      "analyzer_support_set": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0049",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0050",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0055",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0056",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam2",
+      "proposed_required": [],
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0051",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0052",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D1"
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam3",
+      "proposed_required": [],
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "both"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0053",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0054",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D1"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "proposed_required": [
+        "frequency_counting"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "frequency_counting"
+      ],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "array_presized",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0057",
+          "techniques": [
+            "frequency_counting"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0058",
+          "techniques": [
+            "frequency_counting"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0059",
+          "techniques": [
+            "frequency_counting"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam2",
+      "proposed_required": [],
+      "divergence_state": "ZERO_EVIDENCE",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "none",
+        "container": "none",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0060",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0064",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "proposed_required": [
+        "frequency_counting"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "frequency_counting",
+        "hash_lookup"
+      ],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0061",
+          "techniques": [
+            "frequency_counting",
+            "hash_lookup",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0062",
+          "techniques": [
+            "frequency_counting",
+            "hash_lookup",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0063",
+          "techniques": [
+            "frequency_counting",
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 547,
+      "family_key": "lc547_fam1",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [
+        "sliding_window"
+      ],
+      "analyzer_support_set": [
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "array_presized",
+        "iterates_collection": "range"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0065",
+          "techniques": [
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0066",
+          "techniques": [
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 547,
+      "family_key": "lc547_fam2",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "recursive_branching",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "single",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "array_presized",
+        "iterates_collection": "range"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0067",
+          "techniques": [
+            "recursive_branching",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0068",
+          "techniques": [
+            "recursive_branching",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0069",
+          "techniques": [
+            "recursive_branching",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 547,
+      "family_key": "lc547_fam3",
+      "proposed_required": [
+        "union_find"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "union_find"
+      ],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "single",
+        "loop_shape": "nested",
+        "container": "index_write",
+        "map_kind": "none",
+        "iterates_collection": "range"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0070",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "union_find"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0071",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "union_find"
+          ],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0072",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "union_find"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam1",
+      "proposed_required": [],
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0073",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0074",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D1"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "proposed_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "dp_bottom_up",
+        "fixed_window_maintenance",
+        "frequency_counting",
+        "iterative_table_filling"
+      ],
+      "analyzer_support_set": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0075",
+          "techniques": [
+            "fixed_window_maintenance",
+            "forward_pointer_advance",
+            "frequency_counting",
+            "iterative_table_filling",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "dp_bottom_up"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0076",
+          "techniques": [
+            "fixed_window_maintenance",
+            "forward_pointer_advance",
+            "frequency_counting",
+            "iterative_table_filling",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "dp_bottom_up"
+          ],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam3",
+      "proposed_required": [],
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_write",
+        "map_kind": "dict",
+        "iterates_collection": "container"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0077",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0078",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam4",
+      "proposed_required": [],
+      "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "nested",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "both"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0079",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0080",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D1"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "proposed_required": [
+        "binary_search"
+      ],
+      "divergence_state": "LABEL_OK",
+      "analyzer_pec_set": [
+        "binary_search"
+      ],
+      "analyzer_support_set": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0081",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0083",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0084",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0085",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam2",
+      "proposed_required": [],
+      "divergence_state": "ZERO_EVIDENCE",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "none",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0082",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam3",
+      "proposed_required": [],
+      "divergence_state": "NO_INDEPENDENT_LABEL",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "recursive_branching"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "multi",
+        "loop_shape": "none",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0086",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0087",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        },
+        {
+          "solution_id": "S0088",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D2"
+        }
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "proposed_required": [
+        "sequential_accumulation"
+      ],
+      "divergence_state": "LABEL_GENERIC",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "index_read",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0089",
+          "techniques": [
+            "forward_pointer_advance",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0090",
+          "techniques": [
+            "forward_pointer_advance",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0091",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0093",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0094",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0095",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0096",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam2",
+      "proposed_required": [
+        "sequential_accumulation"
+      ],
+      "divergence_state": "LABEL_GENERIC",
+      "analyzer_pec_set": [],
+      "analyzer_support_set": [
+        "sequential_accumulation"
+      ],
+      "analyzer_structural_profile": {
+        "recursion": "none",
+        "loop_shape": "flat",
+        "container": "append",
+        "map_kind": "none",
+        "iterates_collection": "none"
+      },
+      "per_member": [
+        {
+          "solution_id": "S0092",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    }
+  ]
+}
