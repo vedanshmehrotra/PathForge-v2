@@ -16,6 +16,10 @@ from pathforge.ast_analysis.shadow.relations import build_relations, RELATIONS_V
 from pathforge.ast_analysis.shadow.techniques import detect_techniques
 from pathforge.ast_analysis.shadow.strategies import evaluate_strategies
 from pathforge.ast_analysis.shadow.matching import evaluate_solution_groups
+from pathforge.ast_analysis.shadow.evidence_state import build_evidence_snapshot
+from pathforge.ast_analysis.shadow.family_coverage import build_family_coverage
+from pathforge.ast_analysis.shadow.primary_strategy import select_submission_primary
+from pathforge.ast_analysis.shadow.authority_gating import evaluate_authority
 
 
 def run_shadow_analysis(
@@ -71,6 +75,73 @@ def run_shadow_analysis(
                 reasoning=["No solution groups provided for matching"],
             )
 
+        # Step 6 (B2): tri-state per-concept evidence. PURELY ADDITIVE
+        # instrumentation — it is attached alongside the existing result and is
+        # read by nothing. It is built in its own guard so that a snapshot
+        # failure can never suppress the existing shadow result (which would
+        # itself be a behaviour change).
+        try:
+            evidence_snapshot = build_evidence_snapshot(
+                facts, technique_evidence, strategy_evidence
+            )
+            evidence_state = evidence_snapshot.to_dict()
+        except Exception as e:  # pragma: no cover - defensive
+            logging.getLogger(__name__).debug(
+                "Tri-state evidence snapshot failed: %s: %s", type(e).__name__, e
+            )
+            evidence_snapshot = None
+            evidence_state = None
+
+        # Step 7 (B3): per-family coverage + PROVISIONAL state. PURELY ADDITIVE
+        # instrumentation, built on top of the B2 snapshot above. It is built in
+        # its own guard so a coverage failure can never suppress the existing
+        # shadow result. The existing `match_outcome` (old matcher) is untouched
+        # and remains present for cross-checking.
+        try:
+            coverage_report = build_family_coverage(
+                solution_groups, evidence_snapshot
+            )
+            coverage = coverage_report.to_dict()
+        except Exception as e:  # pragma: no cover - defensive
+            logging.getLogger(__name__).debug(
+                "Family coverage failed: %s: %s", type(e).__name__, e
+            )
+            coverage_report = None
+            coverage = None
+
+        # Step 8 (B4): specificity + primary-strategy selection. PURELY ADDITIVE
+        # presentation-layer instrumentation. It selects among the B2-evidenced,
+        # conclusion-eligible concepts relevant to the evaluated families. It
+        # does NOT change family coverage, and the old matcher's `match_outcome`
+        # (including its own `primary_strategy`) is NOT overwritten.
+        try:
+            strategy_selection_report = select_submission_primary(
+                solution_groups, evidence_snapshot, coverage_report
+            )
+            strategy_selection = strategy_selection_report.to_dict()
+        except Exception as e:  # pragma: no cover - defensive
+            logging.getLogger(__name__).debug(
+                "Primary-strategy selection failed: %s: %s", type(e).__name__, e
+            )
+            strategy_selection_report = None
+            strategy_selection = None
+
+        # Step 9 (B5): authority gating. PURELY ADDITIVE evaluation stacked on
+        # top of B3 coverage + B4 selection. It reads the existing Ground-Truth
+        # groups' declared authority tier and reports whether the result is an
+        # authoritative conclusion. It does NOT rewrite coverage, does NOT
+        # reorder the B4 candidates, and does NOT overwrite `match_outcome`.
+        try:
+            authority_report = evaluate_authority(
+                solution_groups, coverage_report, strategy_selection_report
+            )
+            authority = authority_report.to_dict() if authority_report is not None else None
+        except Exception as e:  # pragma: no cover - defensive
+            logging.getLogger(__name__).debug(
+                "Authority evaluation failed: %s: %s", type(e).__name__, e
+            )
+            authority = None
+
         elapsed_ms = (time.perf_counter() - t0) * 1000
 
         return {
@@ -80,6 +151,17 @@ def run_shadow_analysis(
             "match_outcome": _outcome_to_dict(match_outcome),
             "extractor_version": EXTRACTOR_VERSION,
             "relations_version": RELATIONS_VERSION,
+            # B2 additive key. Consumers of the keys above are unaffected.
+            "evidence_state": evidence_state,
+            # B3 additive key (family coverage). Consumers of the keys above are
+            # unaffected; the old matcher's `match_outcome` is NOT overwritten.
+            "coverage": coverage,
+            # B4 additive key (primary strategy selection). Independently additive;
+            # the old matcher's nested `match_outcome.primary_strategy` is kept.
+            "strategy_selection": strategy_selection,
+            # B5 additive key (authority gating). Consumes B3 coverage + B4
+            # selection read-only; nothing above is rewritten.
+            "authority": authority,
             "elapsed_ms": round(elapsed_ms, 2),
         }
 

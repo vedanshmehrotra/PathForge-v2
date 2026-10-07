@@ -16,15 +16,14 @@ from datetime import datetime, timezone
 from typing import Optional
 
 
-# Valid authority tiers (matching ground_truth_builder.py)
-VALID_AUTHORITY_TIERS = {
-    "bootstrap",
-    "llm_proposed",
-    "structurally_observed",
-    "externally_listed",
-    "editorial",
-    "reviewed",
-}
+# Valid authority tiers — the canonical stored-value vocabulary (B5.5).
+# Previously this module kept its own list (bootstrap/llm_proposed/
+# structurally_observed/externally_listed/editorial/reviewed), which diverged
+# from both `ground_truth_builder.VALID_AUTHORITY_TIERS` and the B5 model. There
+# is now exactly one vocabulary: `pathforge.ast_analysis.authority_vocabulary`.
+from pathforge.ast_analysis import authority_vocabulary as _vocab
+
+VALID_AUTHORITY_TIERS = set(_vocab.KNOWN_SOURCE_TIERS)
 
 # Valid tier transitions (from → to)
 # Only these transitions are allowed

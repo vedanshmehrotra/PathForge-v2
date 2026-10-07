@@ -1,0 +1,1661 @@
+{
+  "registry_stats": {
+    "total": 96,
+    "by_class": {
+      "OBSERVATION": 43,
+      "STRATEGY": 25,
+      "TECHNIQUE": 28
+    },
+    "by_tier": {
+      "PEC": 38,
+      "SUPPORT": 58
+    },
+    "by_specificity_rank": {
+      "0": 43,
+      "1": 15,
+      "2": 13,
+      "3": 25
+    },
+    "by_family_role": {
+      "ABSENT-NOT-ALLOWED": 43,
+      "COMPONENT": 22,
+      "IDENTIFYING": 31
+    },
+    "by_source": {
+      "legacy_detector": 36,
+      "curated_taxonomy": 33,
+      "structural_fact": 40,
+      "v1_technique": 13,
+      "v1_strategy": 9,
+      "v2_pec_strategy": 9,
+      "v2_pec_technique": 8,
+      "v2_support_technique": 5,
+      "documented_only": 2
+    },
+    "conclusion_eligible": 25,
+    "with_falsifier": 32,
+    "with_v1_image": 29,
+    "multi_source_concepts": {
+      "sliding_window_fixed": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "sliding_window_variable": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "bfs_level_order": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "binary_search_tree": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_1d_forward": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_1d_sequence": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_2d_grid": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_2d_string": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_knapsack": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_interval": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dp_state_machine": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "binary_search_standard": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "binary_search_rotated": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "binary_search_answer": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "backtracking_permutation": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "backtracking_subset": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "hash_map_lookup": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "hash_map_frequency": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "linked_list_reversal": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "monotonic_stack": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "monotonic_deque": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "prefix_sum": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "two_pointers_same": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dfs_recursive": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "fast_slow_pointers": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "greedy_local": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "dfs_iterative": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "topological_sort": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "heap_top_k": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "greedy_interval": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "two_pointers_opposite": [
+        "legacy_detector",
+        "curated_taxonomy",
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "bfs_shortest_path": [
+        "legacy_detector",
+        "curated_taxonomy",
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "union_find": [
+        "legacy_detector",
+        "curated_taxonomy",
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "sequential_accumulation": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "bidirectional_index_scan": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "carry_propagation": [
+        "structural_fact",
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "recursive_branching": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "loop_state_tracking": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "iterative_table_filling": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "linked_list_traversal": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "fixed_window_maintenance": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "monotonic_stack_maintenance": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "forward_pointer_advance": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "candidate_selection": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "hash_lookup": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "frequency_counting": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "binary_search": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "sliding_window": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "dfs_backtracking": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "dp_top_down": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "dp_bottom_up": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "monotonic_stack_strategy": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ]
+    }
+  },
+  "concepts": [
+    {
+      "concept_id": "sliding_window_fixed",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "sliding_window",
+      "rationale": ""
+    },
+    {
+      "concept_id": "sliding_window_variable",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "sliding_window",
+      "rationale": ""
+    },
+    {
+      "concept_id": "bfs_level_order",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "bfs_shortest_path",
+      "rationale": ""
+    },
+    {
+      "concept_id": "binary_search_tree",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "binary_search",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_1d_forward",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_1d_sequence",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_2d_grid",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_2d_string",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_knapsack",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_interval",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_state_machine",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dp_bottom_up",
+      "rationale": ""
+    },
+    {
+      "concept_id": "binary_search_standard",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "binary_search",
+      "rationale": ""
+    },
+    {
+      "concept_id": "binary_search_rotated",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "binary_search",
+      "rationale": ""
+    },
+    {
+      "concept_id": "binary_search_answer",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "binary_search",
+      "rationale": ""
+    },
+    {
+      "concept_id": "backtracking_permutation",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): dp_top_down",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dfs_backtracking",
+      "rationale": ""
+    },
+    {
+      "concept_id": "backtracking_subset",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): dp_top_down",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "dfs_backtracking",
+      "rationale": ""
+    },
+    {
+      "concept_id": "hash_map_lookup",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "hash_lookup",
+      "rationale": "V1 image hash_lookup activated a V2 group as its complete required set (lc1_fam1), so it may identify a family."
+    },
+    {
+      "concept_id": "hash_map_frequency",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): recursive_branching",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "frequency_counting",
+      "rationale": "V1 image frequency_counting activated V2 groups as its complete required set (lc242_fam1, lc242_fam3)."
+    },
+    {
+      "concept_id": "linked_list_reversal",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "linked_list_traversal",
+      "rationale": ""
+    },
+    {
+      "concept_id": "monotonic_stack",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "monotonic_stack_maintenance",
+      "rationale": ""
+    },
+    {
+      "concept_id": "monotonic_deque",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "monotonic_stack_maintenance",
+      "rationale": ""
+    },
+    {
+      "concept_id": "prefix_sum",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "sequential_accumulation",
+      "rationale": "V1 image is a SUPPORT technique, which cannot identify a family (V2 refused all six SUPPORT-only labels). Flagged: prefix_sum is a first-class curated pattern yet cannot be a final conclusion under the declared class model."
+    },
+    {
+      "concept_id": "two_pointers_same",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): two_pointers_opposite",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "forward_pointer_advance",
+      "rationale": ""
+    },
+    {
+      "concept_id": "dfs_recursive",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): bfs_shortest_path",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "recursive_branching",
+      "rationale": "Maps to the broad recursion evidence concept recursive_branching; the specific recursive strategies are not modelled yet (proposal \u00a714)."
+    },
+    {
+      "concept_id": "fast_slow_pointers",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "forward_pointer_advance",
+      "rationale": ""
+    },
+    {
+      "concept_id": "greedy_local",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): sliding_window",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": "candidate_selection",
+      "rationale": "Identifying but NOT conclusion-eligible. It is the sole required concept of the greedy legacy family (candidate_selection), so it may identify that family, but a technique must never be reported as the final algorithmic conclusion. This is the architectural cause of the observed greedy_local / array_traversal mismatch (proposal \u00a76.1)."
+    },
+    {
+      "concept_id": "dfs_iterative",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": null,
+      "rationale": "MISSING_VOCABULARY_PATTERNS: mapping note is 'Iterative DFS has no direct V1 technique equivalent'. Ambiguous (approach-like name, technique-like V1 description) \u2014 flagged for review."
+    },
+    {
+      "concept_id": "topological_sort",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": null,
+      "rationale": "MISSING_VOCABULARY_PATTERNS: mapping note is 'No direct V1 technique; uses BFS-like traversal'. Ambiguous \u2014 flagged."
+    },
+    {
+      "concept_id": "heap_top_k",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": null,
+      "rationale": "MISSING_VOCABULARY_PATTERNS: mapping note is 'No direct V1 technique for heap operations'; the detector matches heapq container operations, not an algorithmic strategy. Flagged."
+    },
+    {
+      "concept_id": "greedy_interval",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy"
+      ],
+      "v1_image": null,
+      "rationale": "MISSING_VOCABULARY_PATTERNS: mapping note is 'No direct V1 technique for interval greedy'. Consistent with greedy_local, whose V1 image is also technique-class. Flagged."
+    },
+    {
+      "concept_id": "two_pointers_opposite",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "declared exclusion (PATTERN_TO_V1_MAPPING): binary_search",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy",
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": "two_pointers_opposite",
+      "rationale": ""
+    },
+    {
+      "concept_id": "bfs_shortest_path",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "recursive_branching evidence present (evaluator absence constraint)",
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy",
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": "bfs_shortest_path",
+      "rationale": ""
+    },
+    {
+      "concept_id": "union_find",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector",
+        "curated_taxonomy",
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": "union_find",
+      "rationale": ""
+    },
+    {
+      "concept_id": "array_traversal",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector"
+      ],
+      "v1_image": null,
+      "rationale": "Structural observation, not an approach. Not in ALL_PATTERNS, so it can never be an expected pattern, yet it can currently become the primary detected pattern. Measured precision 0.24-0.30 with 106-183 false positives and a 62% fire rate in reports and docs/SEMANTIC_EXPERIMENT_2A/2B/3A/3B/3C. Proposal \u00a76.2 recommends demotion; B1 only classifies."
+    },
+    {
+      "concept_id": "brute_force",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector"
+      ],
+      "v1_image": null,
+      "rationale": "Exists as a runtime detector (src/ast_detection/detectors/brute_force.py) but is not a taxonomy pattern and not V2 vocabulary. 'nested loops' has a measured 66.7% false-positive exposure on the V2 corpus (8 of 12 nested-loop families are legitimate specific approaches). Not a conclusion; not a Ground-Truth activation concept. Detector is NOT modified."
+    },
+    {
+      "concept_id": "sorting",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "legacy_detector"
+      ],
+      "v1_image": null,
+      "rationale": "Structurally 'a sort happens', present inside many distinct approaches (proposal \u00a78.1). Not in ALL_PATTERNS. Treated as structural evidence; no taxonomy evidence found to the contrary."
+    },
+    {
+      "concept_id": "sequential_accumulation",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "v1_image": null,
+      "rationale": "V2 SUPPORT tier: refused a family on its own (all six SUPPORT-only labels were refused by the specificity floor)."
+    },
+    {
+      "concept_id": "bidirectional_index_scan",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": "PEC technique; never appeared as a family's own required set."
+    },
+    {
+      "concept_id": "carry_propagation",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "structural_fact",
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": "DUAL ROLE / IDENTIFIER COLLISION: the same string is (a) a structural fact emitted by fact_extractor and (b) the T5 technique id. Registered once as the technique because that is the stronger role; the fact role is recorded via SRC_STRUCTURAL_FACT. Flagged for review \u2014 see CONCEPT_REGISTRY_AUDIT.md."
+    },
+    {
+      "concept_id": "recursive_branching",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "v1_image": null,
+      "rationale": "Broad recursion EVIDENCE, not a strategy. It currently absorbs five structurally distinguishable recursive strategies (merge, DFS by depth, recursive two-pointer, DFS traversal, recursive binary search) across five problems in the V2 corpus. Remains supporting evidence; no recursive-strategy refinement is implemented in B1 (proposal \u00a714)."
+    },
+    {
+      "concept_id": "loop_state_tracking",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "iterative_table_filling",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "linked_list_traversal",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "fixed_window_maintenance",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": "Provisionally ratified PEC (V2 OPEN-2). Tier itself is not ratified by a human."
+    },
+    {
+      "concept_id": "monotonic_stack_maintenance",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": "Provisionally ratified PEC (V2 OPEN-2)."
+    },
+    {
+      "concept_id": "forward_pointer_advance",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": "genuine opposite-direction scan (compared variables are a subset of modified variables), or parent_pointer_chase present",
+      "sources": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "candidate_selection",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "IDENTIFYING",
+      "falsifier": null,
+      "sources": [
+        "v1_technique",
+        "v2_support_technique"
+      ],
+      "v1_image": null,
+      "rationale": "IDENTIFYING but NOT conclusion-eligible. It is the V1 image of the greedy-local family, so it may identify that family, but it must not be promoted to a strategy merely because it identifies one."
+    },
+    {
+      "concept_id": "hash_lookup",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "IDENTIFYING",
+      "falsifier": "recursive_branching evidence present (mapping is a recursion memo)",
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": "Activated a V2 group as its complete required set (lc1_fam1), so it may identify a family. Provisionally ratified PEC (V2 OPEN-2)."
+    },
+    {
+      "concept_id": "frequency_counting",
+      "class": "TECHNIQUE",
+      "tier": "PEC",
+      "specificity_rank": 2,
+      "conclusion_eligible": false,
+      "family_role": "IDENTIFYING",
+      "falsifier": "recursive_branching evidence present (mapping is a recursion memo)",
+      "sources": [
+        "v1_technique",
+        "v2_pec_technique"
+      ],
+      "v1_image": null,
+      "rationale": "Activated V2 groups as its complete required set (lc242_fam1, lc242_fam3). Provisionally ratified PEC (V2 OPEN-2)."
+    },
+    {
+      "concept_id": "binary_search",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "opposite_direction_updates present (evaluator absence constraint)",
+      "sources": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "sliding_window",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "midpoint_calculation present, or a genuine opposite-direction scan, or the monotonic-stack fact triad (stack_operation + monotonic_comparison + conditional_pop) present",
+      "sources": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "dfs_backtracking",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "cache_lookup or cache_write present (evaluator absence constraint)",
+      "sources": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_top_down",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "state_restoration present (evaluator absence constraint)",
+      "sources": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "dp_bottom_up",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": "recursive_branching evidence present (evaluator absence constraint)",
+      "sources": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "monotonic_stack_strategy",
+      "class": "STRATEGY",
+      "tier": "PEC",
+      "specificity_rank": 3,
+      "conclusion_eligible": true,
+      "family_role": "IDENTIFYING",
+      "falsifier": null,
+      "sources": [
+        "v1_strategy",
+        "v2_pec_strategy"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "boundary_narrowing",
+      "class": "TECHNIQUE",
+      "tier": "SUPPORT",
+      "specificity_rank": 1,
+      "conclusion_eligible": false,
+      "family_role": "COMPONENT",
+      "falsifier": null,
+      "sources": [
+        "documented_only"
+      ],
+      "v1_image": null,
+      "rationale": "Documented as technique T2 in PATHFORGE_TECHNIQUE_STRATEGY_VOCABULARY_V1.md but NOT implemented: techniques.py has no detector for it, and _evaluate_binary_search substitutes raw structural facts ('boundary_narrowing is not a technique yet (Phase 1 limitation)'). Registered so the documentation/implementation gap is explicit. It is absent from VALID_TECHNIQUES, so it is not a live concept."
+    },
+    {
+      "concept_id": "loop_shape",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "documented_only"
+      ],
+      "v1_image": null,
+      "rationale": "Documented as a structural fact in the vocabulary (\u00a72.1) but never emitted as a fact_type. The implemented equivalents are for_loop_iteration / while_loop_comparison / while_loop_truthiness. The same name is also one of the five V2 grouping-profile dimensions (gt_poc_v2/core.py), which is a different concept \u2014 do not conflate."
+    },
+    {
+      "concept_id": "accumulator_update",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "cache_lookup",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "cache_write",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "conditional_index_update",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "conditional_pop",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "early_termination",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "extremum_access",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "for_loop_iteration",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "index_lookback",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "indexed_write",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "linked_attribute_access",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "linked_structure_traversal",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "list_construction",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "mapping_construction",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "membership_test",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "midpoint_calculation",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "monotonic_comparison",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "multiple_pointer_traversal",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "multiple_recursive_paths",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "neighbor_traversal",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "node_constructor",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "opposite_direction_updates",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "parent_pointer_chase",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "parent_root_merge",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "pointer_rewiring",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "queue_dequeue",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "recursive_call_in_conditional",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "recursive_depth_tracking",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "self_recursive_call",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "sorting_operation",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "stack_operation",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "state_restoration",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "subscript_index_access",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "subscript_read",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "variable_use_in_loop_body",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "visited_tracking",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "while_loop_comparison",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "while_loop_truthiness",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    },
+    {
+      "concept_id": "window_size_constant",
+      "class": "OBSERVATION",
+      "tier": "SUPPORT",
+      "specificity_rank": 0,
+      "conclusion_eligible": false,
+      "family_role": "ABSENT-NOT-ALLOWED",
+      "falsifier": null,
+      "sources": [
+        "structural_fact"
+      ],
+      "v1_image": null,
+      "rationale": ""
+    }
+  ]
+}

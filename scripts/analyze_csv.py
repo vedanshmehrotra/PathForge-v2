@@ -1,7 +1,9 @@
 import csv, json
 from collections import Counter, defaultdict
+from pathlib import Path
 
-with open('pathforge/data/pathforge_problems_fixed.csv', encoding='utf-8') as f:
+csv_path = Path(__file__).resolve().parent.parent / 'pathforge' / 'data' / 'pathforge_problems_fixed.csv'
+with open(csv_path, encoding='utf-8') as f:
     rows = list(csv.DictReader(f))
 
 print(f'Total problems: {len(rows)}')

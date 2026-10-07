@@ -1,4 +1,4 @@
-﻿"""
+"""
 QA Simulation: Three User Journeys through PathForge's Recommendation Loop.
 
 Simulates 20-submission sequences for Users A (high performer), B (struggling), C (mixed).
@@ -14,13 +14,17 @@ from collections import defaultdict, Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from pathforge.db.db import init_db
 from pathforge.db.profile_manager import seed_initial_topic_profiles, update_topic_profile
 from pathforge.recommender import get_recommendation, _select_problem, _difficulty_for_user
 
 sys.setrecursionlimit(10000)
 
-DATA_DIR = Path(__file__).resolve().parent / "pathforge" / "data"
+DATA_DIR = REPO_ROOT / "pathforge" / "data"
 CSV_PATH = DATA_DIR / "pathforge_problems_fixed.csv"
 DIFFICULTY_ORDER = ["Easy", "Medium", "Hard"]
 

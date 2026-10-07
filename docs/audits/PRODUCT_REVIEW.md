@@ -27,7 +27,7 @@ Three simulated personas with 6,000+ data points each:
 
 Each run: init user → pick initial problem → loop 20 steps (submit, update profile/get recommendation). Dead-end recovery allows fallback to any unsolved problem when rotation produces a non-actionable recommendation.
 
-Full simulation code: `qa_simulator.py`
+Full simulation code: `scripts/qa_simulator.py`
 
 ---
 

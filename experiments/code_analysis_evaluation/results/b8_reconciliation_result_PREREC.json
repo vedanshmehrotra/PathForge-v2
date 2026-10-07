@@ -1,0 +1,336 @@
+{
+  "batch": "B8",
+  "summary": {
+    "total_conflicts": 32,
+    "by_status": {
+      "RECONCILE_STRUCTURALLY_OBSERVED": 25,
+      "NEEDS_HUMAN_REVIEW": 3,
+      "RECONCILE_INFERRED": 4
+    },
+    "conflicted_problems": [
+      2,
+      3,
+      11,
+      15,
+      21,
+      35,
+      46,
+      62,
+      70,
+      78,
+      102,
+      125,
+      141,
+      200,
+      209,
+      322,
+      424,
+      438,
+      496,
+      704
+    ]
+  },
+  "gt_changes_applied": [
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 3,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 3,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 11,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 11,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 15,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 15,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "llm_proposed",
+      "canonical_tier": "INFERRED",
+      "reconciled_from_tier": "llm_proposed",
+      "version": 2,
+      "problem_id": 21,
+      "reconciliation_status": "RECONCILE_INFERRED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 35,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 46,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 62,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 70,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 70,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_1",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 70,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_1",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 70,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 78,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 102,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 125,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "llm_proposed",
+      "canonical_tier": "INFERRED",
+      "reconciled_from_tier": "llm_proposed",
+      "version": 2,
+      "problem_id": 141,
+      "reconciliation_status": "RECONCILE_INFERRED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 200,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 209,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 209,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 322,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 322,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_1",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 322,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_1",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 322,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "llm_proposed",
+      "canonical_tier": "INFERRED",
+      "reconciled_from_tier": "llm_proposed",
+      "version": 2,
+      "problem_id": 424,
+      "reconciliation_status": "RECONCILE_INFERRED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "llm_proposed",
+      "canonical_tier": "INFERRED",
+      "reconciled_from_tier": "llm_proposed",
+      "version": 2,
+      "problem_id": 438,
+      "reconciliation_status": "RECONCILE_INFERRED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 496,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    },
+    {
+      "group_id": "group_0",
+      "resolved_stored_tier": "structurally_observed",
+      "canonical_tier": "STRUCTURALLY_OBSERVED",
+      "reconciled_from_tier": "structurally_observed",
+      "version": 2,
+      "problem_id": 704,
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED"
+    }
+  ],
+  "native_conflict_count_before": 32,
+  "native_conflict_count_after": 32,
+  "b7_before_after": {
+    "b7_native_parity_before": {
+      "P1_EXACT_PARITY": 15,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 0,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 0,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 3,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 28,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 0,
+      "P10_ERROR": 0
+    },
+    "b7_native_parity_after": {
+      "P1_EXACT_PARITY": 15,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 0,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 0,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 3,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 28,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 0,
+      "P10_ERROR": 0
+    },
+    "b7_native_b6_eligible_before": 0,
+    "b7_native_b6_eligible_after": 0
+  },
+  "b6_eligibility": {
+    "before (B7 native)": 0,
+    "after": 0,
+    "blocked_after": 46,
+    "measurement_only": true,
+    "flag": "<unset>"
+  },
+  "human_approved_corpus": {
+    "note": "computed from the regenerated native corpus"
+  }
+}

@@ -4,10 +4,12 @@ Phase 4A: Multi-group generation with V1 vocabulary mapping and validation.
 Batch 2A: vocabulary-aware re-derivation, matchability enforcement and
 consistency checking between the flat pattern label and the structured groups.
 """
+import hashlib
 import json
 import logging
 
 from pathforge.ast_engine.patterns import ALL_PATTERNS
+from pathforge.ast_analysis import authority_vocabulary as authority
 
 logger = logging.getLogger(__name__)
 from pathforge.db.profile_manager import iso_now
@@ -55,14 +57,13 @@ VALID_STRATEGIES = {
 # All valid V1 concept IDs (techniques + strategies)
 VALID_V1_CONCEPTS = VALID_TECHNIQUES | VALID_STRATEGIES
 
-# Valid authority tiers
-VALID_AUTHORITY_TIERS = {
-    "bootstrap",
-    "llm_proposed",
-    "structurally_observed",
-    "externally_listed",
-    "editorial",
-}
+# Valid authority tiers — derived from the canonical vocabulary (B5.5).
+#
+# Previously this literal omitted `human_curated` (written by CSV reconciliation
+# in `problem_resolver._load_ground_truth`) and `reviewed` (accepted by
+# `shadow/authority.py`), so the most human-trusted label was not a valid tier.
+# The single source of truth is now `pathforge.ast_analysis.authority_vocabulary`.
+VALID_AUTHORITY_TIERS = set(authority.VALID_GT_TIERS)
 
 # ============================================================
 # Old pattern → V1 vocabulary mapping
@@ -578,6 +579,123 @@ def find_ground_truth_disagreements(patterns, groups) -> list:
             })
 
     return findings
+
+
+# ============================================================
+# Canonical group serialization (B5.5)
+# ============================================================
+
+#: Every field a persisted Ground-Truth solution group is expected to carry.
+#: Serialization preserves *all* keys (not just these); the tuple documents the
+#: contract the round-trip tests assert, including ``authority_tier`` and the
+#: B5.5 relation metadata.
+GROUP_FIELDS = (
+    "id", "version", "required", "optional", "excluded", "threshold",
+    "authority_tier", "provenance", "patterns", "derivation_patterns",
+    "evidence", "confidence", "matchable", "validation",
+    authority.RELATION_FIELD, authority.ALTERNATIVE_GROUP_FIELD,
+)
+
+
+def serialize_solution_group(group: dict) -> dict:
+    """Return a JSON-safe copy of one solution group, preserving every key.
+
+    The B5 defect was a serialization path that whitelisted fields and dropped
+    ``authority_tier``. This helper serializes the complete group instead, so the
+    authority (and relation) metadata survives storage → load → B3 → B5.
+    """
+    if not isinstance(group, dict):
+        raise TypeError(f"solution group must be a dict, got {type(group).__name__}")
+    return json.loads(json.dumps(group))
+
+
+def serialize_solution_groups(groups) -> list:
+    """Serialize a list of solution groups, preserving every field."""
+    return [serialize_solution_group(g) for g in (groups or []) if isinstance(g, dict)]
+
+
+def deserialize_solution_groups(raw) -> list:
+    """Parse stored solution groups from TEXT/JSONB, preserving every field."""
+    if raw is None:
+        return []
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            return []
+    if not isinstance(raw, list):
+        return []
+    return serialize_solution_groups(raw)
+
+
+# ============================================================
+# Alternative (ONE_OF) family relations (B5.5)
+# ============================================================
+
+ONE_OF = authority.FAMILY_RELATION_ONE_OF
+
+
+def _relation_key(group: dict) -> tuple:
+    """The pattern set that decides sibling family identity, if any."""
+    return tuple(sorted(
+        group.get("derivation_patterns") or group.get("patterns") or []
+    ))
+
+
+def _required_signature(group: dict) -> tuple:
+    return tuple(sorted(group.get("required") or []))
+
+
+def alternative_group_id_for(key: tuple) -> str:
+    """A stable, collision-resistant id for one alternative set."""
+    digest = hashlib.sha1("|".join(key).encode("utf-8")).hexdigest()[:12]
+    return f"one_of_{digest}"
+
+
+def mark_family_relations(groups) -> list:
+    """Mark explicitly-declared alternative (``ONE_OF``) families.
+
+    Only two situations are marked, both established by the existing code
+    rather than guessed:
+
+    1. **Curated alternatives** — sibling groups sharing an identical non-empty
+       pattern set but requiring *different* concepts. This is the structure
+       ``refresh_group_vocabulary`` already protects (it refuses to collapse
+       such siblings because "that difference is curated information"), and the
+       case its test calls "curated alternatives sharing patterns".
+    2. A group that already carries an explicit ``family_relation`` is left
+       untouched (an explicit declaration always wins).
+
+    A problem whose groups have *different* patterns is left independent: two
+    different approaches are not assumed to be alternatives.
+
+    Returns the ids of groups that were newly marked.
+    """
+    groups = [g for g in (groups or []) if isinstance(g, dict)]
+    changed = []
+
+    buckets = {}
+    for group in groups:
+        if group.get(authority.RELATION_FIELD):
+            continue  # explicit declaration already present
+        key = _relation_key(group)
+        if key:
+            buckets.setdefault(key, []).append(group)
+
+    for key, siblings in buckets.items():
+        if len(siblings) < 2:
+            continue
+        signatures = {_required_signature(g) for g in siblings}
+        if len(signatures) < 2:
+            # Same patterns AND same requirement -> duplicates, not alternatives.
+            continue
+        group_id = alternative_group_id_for(key)
+        for group in siblings:
+            group[authority.RELATION_FIELD] = ONE_OF
+            group[authority.ALTERNATIVE_GROUP_FIELD] = group_id
+            changed.append(group.get("id", ""))
+
+    return changed
 
 
 def build_ground_truth(problem_id: int, problem_description: str, connection) -> list[str]:

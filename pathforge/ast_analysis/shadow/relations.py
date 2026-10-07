@@ -18,16 +18,17 @@ Design constraints (from the architecture survey):
 """
 import ast
 from dataclasses import dataclass, field
+from types import MappingProxyType
 
 
-RELATIONS_VERSION = "1.1.0"
+RELATIONS_VERSION = "1.2.0"
 
 
 @dataclass
 class SubmissionRelations:
     """Reusable structural relationships computed once per submission."""
 
-    #: variable -> loop kinds it is updated in ({"for", "while"})
+    #: variable -> loop kinds it is updated in ({'for', 'while'})
     updated_in_loop: dict = field(default_factory=dict)
 
     #: variables that appear as a subscript index (arr[i], arr[i - 1], ...)
@@ -43,13 +44,13 @@ class SubmissionRelations:
     def_use_pairs: dict = field(default_factory=dict)
 
     #: variable -> set of collection operations performed on it
-    #: {"append", "pop", "popleft", "pop(0)", "heappush", "heappop", "popleft_tuple", "pop(0)_tuple"}
+    #: {'append', 'pop', 'popleft', 'pop(0)', 'heappush', 'heappop', 'popleft_tuple', 'pop(0)_tuple'}
     collection_ops: dict = field(default_factory=dict)
 
     #: variables that a for-loop directly iterates over (for x in X)
     iterated_in_for: set = field(default_factory=set)
 
-    #: structure name -> {"indexed_write", "append"}
+    #: structure name -> {'indexed_write', 'append'}
     #:
     #: Records container structures that receive a **self-referential
     #: cumulative update inside a loop body**: an indexed write whose value
@@ -61,6 +62,11 @@ class SubmissionRelations:
     #: deliberately not recorded, so this relation cannot turn one-shot
     #: initialization into accumulation evidence.
     self_referential_updates: dict = field(default_factory=dict)
+
+    #: mapping -> the provenance of the keys used to READ or TEST that mapping
+    #: (``m[k]``, ``k in m``). Read/test side only: write-key provenance is out of
+    #: scope (it describes what a map stores, not how it is probed).
+    lookup_key_origins: dict[str, set[str]] = field(default_factory=dict, repr=False)
 
 
 def build_relations(ast_root: ast.AST) -> SubmissionRelations:
@@ -77,12 +83,14 @@ def build_relations(ast_root: ast.AST) -> SubmissionRelations:
     _collect_collection_ops(ast_root, rel)
     _collect_loop_updates(ast_root, rel)
     _collect_for_iteration(ast_root, rel)
+    _collect_lookup_key_origins(ast_root, rel)
     return rel
 
 
 # ----------------------------------------------------------------
 # Name usage: defs, uses, subscript-index participation, def-use pairs
 # ----------------------------------------------------------------
+
 
 def _walk_name_contexts(node: ast.AST):
     """Yield (name, is_load, used_by) for every Name in the subtree.
@@ -172,6 +180,7 @@ def _assign_targets(node) -> list:
 # Collection operations per variable
 # ----------------------------------------------------------------
 
+
 def _record_op(rel: SubmissionRelations, var: str, op: str) -> None:
     rel.collection_ops.setdefault(var, set()).add(op)
 
@@ -224,6 +233,7 @@ def _collect_collection_ops(node: ast.AST, rel: SubmissionRelations) -> None:
 # ----------------------------------------------------------------
 # Loop-scoped updates
 # ----------------------------------------------------------------
+
 
 def _collect_loop_updates(ast_root: ast.AST, rel: SubmissionRelations) -> None:
     """Record which variables are updated inside for/while loop bodies.
@@ -279,6 +289,7 @@ def _updated_names(n: ast.AST) -> set:
 # ----------------------------------------------------------------
 # Same-structure self-referential container updates (loop-scoped)
 # ----------------------------------------------------------------
+
 
 def container_base(node: ast.AST) -> "str | None":
     """Base name of a container expression: ``freq`` / ``self.freq`` -> "freq".
@@ -382,8 +393,101 @@ def _record_self_referential_update(n: ast.AST, rel: SubmissionRelations) -> Non
 # For-loop iteration
 # ----------------------------------------------------------------
 
+
 def _collect_for_iteration(ast_root: ast.AST, rel: SubmissionRelations) -> None:
     """Record collections directly iterated by for-loops (for x in X)."""
     for loop in ast.walk(ast_root):
         if isinstance(loop, ast.For) and isinstance(loop.iter, ast.Name):
             rel.iterated_in_for.add(loop.iter.id)
+
+
+# ----------------------------------------------------------------
+# Read/test key provenance (read/test side only)
+# ----------------------------------------------------------------
+
+#: Key provenance vocabulary: the structural origin of a lookup key.
+#: ``derived`` is highest precedence by construction — a key that is computed,
+#: or a name whose local assignments include a computed/element right-hand side,
+#: is not provably drawn from a reference table or function state.
+_KEY_ORIGIN_VOCAB = MappingProxyType(
+    {
+        "derived": "computed key (or name assigned only from a computed/element key)",
+        "element": "element read: a subscript of another structure, or a name assigned only from such a subscript",
+        "parameter": "function parameter not otherwise assigned a stronger provenance",
+        "iteration": "loop target variable",
+        "literal": "literal / constant key",
+        "unknown": "none of the above (unresolved name, etc.)",
+    }
+)
+
+
+def _classify_key_origin(key_node: ast.AST, assigns: dict[str, list[ast.AST]],
+                          params: set[str], loop_targets: set[str]) -> str:
+    """One local-hop classification of a lookup key node.
+
+    Returns provenance class for a single key occurrence, with the rule
+    that a Name is resolved against in-file assignments when those
+    assignments exist. The classifier does NOT model full
+    reaching-definitions analysis: names are resolved only against
+    ``assigns`` (ever-assigned in file scope), ``params`` and ``loop_targets``.
+    """
+    if isinstance(key_node, (ast.Constant, ast.List, ast.Dict, ast.Set, ast.Tuple)):
+        return "literal"
+    if isinstance(key_node, (ast.BinOp, ast.Call, ast.UnaryOp, ast.BoolOp,
+                             ast.Compare, ast.IfExp, ast.JoinedStr, ast.Attribute)):
+        return "derived"
+    if isinstance(key_node, ast.Subscript):
+        return "element"
+    if not isinstance(key_node, ast.Name):
+        return "unknown"
+
+    name = key_node.id
+    assignments = assigns.get(name)
+    if assignments is not None:
+        for r in assignments:
+            if r is not None:
+                origin = _classify_key_origin(r, assigns, params, loop_targets)
+                if origin in ("derived", "element"):
+                    return origin
+        return "unknown"
+
+    if name in loop_targets:
+        return "iteration"
+    if name in params:
+        return "parameter"
+    return "unknown"
+
+
+def _collect_lookup_key_origins(ast_root: ast.AST, rel: SubmissionRelations) -> None:
+    """Collect read/test key provenance for every mapping variable.
+
+    One walk over the AST for each lookup site keyed on a mapping variable:
+    membership tests (``k in m``) and subscript reads (``m[k]``). Write sites
+    (``m[k] = v``) are deliberately excluded.
+    """
+    assigns: dict[str, list[ast.AST]] = {}
+    params: set[str] = set()
+    loop_targets: set[str] = set()
+
+    for node in ast.walk(ast_root):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            params |= {a.arg for a in node.args.args}
+        elif isinstance(node, ast.For):
+            for c in ast.walk(node.target):
+                if isinstance(c, ast.Name):
+                    loop_targets.add(c.id)
+        elif isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and node.value is not None:
+            tgts = list(node.targets) if isinstance(node, ast.Assign) else [node.target]
+            for t in tgts:
+                if isinstance(t, ast.Name):
+                    assigns.setdefault(t.id, []).append(node.value)
+
+    for node in ast.walk(ast_root):
+        if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
+            key_class = _classify_key_origin(node.slice, assigns, params, loop_targets)
+            rel.lookup_key_origins.setdefault(node.value.id, set()).add(key_class)
+        elif isinstance(node, ast.Compare):
+            for op, comp in zip(node.ops, node.comparators):
+                if isinstance(op, (ast.In, ast.NotIn)) and isinstance(comp, ast.Name):
+                        key_class = _classify_key_origin(node.left, assigns, params, loop_targets)
+                        rel.lookup_key_origins.setdefault(comp.id, set()).add(key_class)

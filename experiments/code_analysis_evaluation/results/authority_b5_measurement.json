@@ -1,0 +1,190 @@
+{
+  "batch": "B5",
+  "layer": "authority gating (shadow evaluation only)",
+  "pre_b5_reconstruction": {
+    "source": "pathforge\\ast_analysis\\shadow\\shadow_runner.py",
+    "removed_line_count": 19,
+    "removed_lines": [
+      "from pathforge.ast_analysis.shadow.authority_gating import evaluate_authority",
+      "        # Step 9 (B5): authority gating. PURELY ADDITIVE evaluation stacked on",
+      "        # top of B3 coverage + B4 selection. It reads the existing Ground-Truth",
+      "        # groups' declared authority tier and reports whether the result is an",
+      "        # authoritative conclusion. It does NOT rewrite coverage, does NOT",
+      "        # reorder the B4 candidates, and does NOT overwrite `match_outcome`.",
+      "        try:",
+      "            authority_report = evaluate_authority(",
+      "                solution_groups, coverage_report, strategy_selection_report",
+      "            )",
+      "            authority = authority_report.to_dict() if authority_report is not None else None",
+      "        except Exception as e:  # pragma: no cover - defensive",
+      "            logging.getLogger(__name__).debug(",
+      "                \"Authority evaluation failed: %s: %s\", type(e).__name__, e",
+      "            )",
+      "            authority = None",
+      "",
+      "            # B5 additive key (authority gating). Consumes B3 coverage + B4",
+      "            \"authority\": authority,"
+    ]
+  },
+  "corpus_notes": {
+    "corpus_a": "46 real submissions; groups had authority_tier stripped at serialization, so the record-level shadow_authority_tier is re-attached (exact for single-family records)",
+    "corpus_b": "301 disjoint cases; no authority metadata, synthetic groups labelled llm_proposed"
+  },
+  "declared_tier_data_quality": {
+    "unrecognized": {},
+    "not_builder_accepted": {
+      "human_curated": 30,
+      "unknown": 16
+    }
+  },
+  "corpus_a_46_real_submissions": {
+    "before_coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "after_coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "coverage_identical": true,
+    "before_old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "after_old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "old_outcome_identical": true,
+    "before_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "after_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "selected_identical": true,
+    "deterministic_field_mismatches": [],
+    "mismatch_count": 0,
+    "aggregation_distribution": {
+      "ALL_FAMILIES_AUTHORITATIVE": 16,
+      "MIXED_AUTHORITY": 4,
+      "NO_AUTHORITATIVE_FAMILY": 26
+    },
+    "declared_authority_tiers": {
+      "human_curated": 30,
+      "llm_proposed": 5,
+      "unknown": 16
+    },
+    "mapped_authority_tiers": {
+      "HUMAN_APPROVED": 30,
+      "INFERRED": 21
+    },
+    "family_coverage_states": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 16
+    },
+    "family_authority_reasons": {
+      "authoritative_human_approved": 20,
+      "coverage_not_confirmed": 28,
+      "inferred_authority": 3
+    },
+    "authoritative_families": 20,
+    "non_authoritative_families": 31,
+    "unrecognized_authority_tiers": {},
+    "structurally_observed_with_strategy_cases": [],
+    "structurally_observed_with_strategy_count": 0,
+    "safe_for_product_scoring_submissions": 16,
+    "mixed_authority_submissions": 4,
+    "no_ground_truth_submissions": 0,
+    "no_authoritative_family_submissions": 26,
+    "all_families_authoritative_submissions": 16
+  },
+  "corpus_b_301_disjoint_cases": {
+    "before_coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "after_coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "coverage_identical": true,
+    "before_old_outcome_distribution": {
+      "CONFIRMED": 112,
+      "UNRESOLVED": 189
+    },
+    "after_old_outcome_distribution": {
+      "CONFIRMED": 112,
+      "UNRESOLVED": 189
+    },
+    "old_outcome_identical": true,
+    "before_selected_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27,
+      "None": 272
+    },
+    "after_selected_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27,
+      "None": 272
+    },
+    "selected_identical": true,
+    "deterministic_field_mismatches": [],
+    "mismatch_count": 0,
+    "aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 301
+    },
+    "declared_authority_tiers": {
+      "llm_proposed": 301
+    },
+    "mapped_authority_tiers": {
+      "INFERRED": 301
+    },
+    "family_coverage_states": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "family_authority_reasons": {
+      "coverage_not_confirmed": 272,
+      "inferred_authority": 29
+    },
+    "authoritative_families": 0,
+    "non_authoritative_families": 301,
+    "unrecognized_authority_tiers": {},
+    "structurally_observed_with_strategy_cases": [],
+    "structurally_observed_with_strategy_count": 0,
+    "safe_for_product_scoring_submissions": 0,
+    "mixed_authority_submissions": 0,
+    "no_ground_truth_submissions": 0,
+    "no_authoritative_family_submissions": 301,
+    "all_families_authoritative_submissions": 0
+  }
+}

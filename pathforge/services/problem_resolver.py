@@ -278,6 +278,12 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
       unverified.
     - Conflicts between curated and LLM patterns are logged.
     """
+    from pathforge.services.ground_truth_builder import mark_family_relations
+    from pathforge.ast_analysis import authority_vocabulary as authority_vocab
+    from pathforge.services.authority_reconciliation import (
+        RECONCILIATION_MARKER as rec_marker,
+    )
+
     gt_row = connection.execute(
         "SELECT patterns, confidence, solution_groups, validation_status FROM problem_ground_truth WHERE problem_id = %s",
         (problem_id,),
@@ -360,6 +366,11 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                             "optional": list(sg.get("optional") or []),
                             "excluded": list(sg.get("excluded") or []),
                             "patterns": list(sg.get("patterns") or []),
+                            # B5.5: preserve the explicit ONE_OF relation the
+                            # alternative split assigned, so it survives into the
+                            # returned groups.
+                            "family_relation": sg.get("family_relation"),
+                            "alternative_group_id": sg.get("alternative_group_id"),
                         } for sg in split]
                     else:
                         variants = [{
@@ -377,6 +388,16 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                 provenance = list(g.get("provenance", []))
                 authority = g.get("authority_tier", g.get("evidence", validation_status or "unobserved"))
 
+                # B8: an explicitly reconciled authority (b8_authority_
+                # reconciliation marker in the stored provenance) is the
+                # product of a documented GT decision — the CSV-pattern path
+                # must NOT overwrite it with "human_curated" again (that
+                # overwrite is exactly what created the B7 conflicts). The
+                # production patterns still come from the curated CSV: this
+                # guards authority only, and leaves the legacy fields
+                # (patterns, evidence) untouched.
+                b8_reconciled = rec_marker in set(provenance)
+
                 if csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
                     logger.warning(
                         "Ground truth conflict for problem %d: "
@@ -384,12 +405,13 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                         problem_id, csv_patterns, legacy_patterns,
                     )
                     production_patterns = csv_patterns
-                    provenance.append("csv_curated_override")
-                    authority = "human_curated"
+                    if not b8_reconciled:
+                        provenance.append("csv_curated_override")
+                        authority = "human_curated"
                 elif csv_patterns:
                     # Patterns agree — CSV is authoritative but no conflict
                     production_patterns = csv_patterns
-                    if authority != "human_curated":
+                    if authority != "human_curated" and not b8_reconciled:
                         authority = "human_curated"
                         provenance.append("csv_curated")
 
@@ -427,8 +449,25 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                         "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                         "confidence": g.get("confidence", {}),
                     })
+                    if variant.get("family_relation"):
+                        groups[-1]["family_relation"] = variant["family_relation"]
+                        groups[-1]["alternative_group_id"] = variant.get(
+                            "alternative_group_id"
+                        )
                 all_confidence.update(g.get("confidence", {}))
             if groups:
+                # B5.5: mark explicitly-declared alternative (ONE_OF) families
+                # before returning. Ordinary problems are untouched.
+                mark_family_relations(groups)
+                # B6.5: attach the explicit authority-normalization diagnostic
+                # to every group (additive; never overwrites a stored field).
+                # Conflicts are reported here and later fail closed in the
+                # canonical authority path — they are NOT silently resolved.
+                for group in groups:
+                    if isinstance(group, dict):
+                        group["authority_normalization"] = (
+                            authority_vocab.normalize_group_authority(group)
+                        )
                 # Batch 2A: annotate matchability before returning, so an
                 # unsatisfiable group is never presented as a normal one.
                 _finalize_derived_groups(groups)
@@ -464,6 +503,16 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
         # ALTERNATIVE approaches, not all-required.  Each pattern maps to a
         # different V1 strategy, so they must become separate groups.
         groups = _split_csv_patterns_to_groups(patterns, confidence, best_conf, evidence)
+        # B5.5: mark shared-pattern curated alternatives too (the split already
+        # marked its own multi-family alternatives).
+        mark_family_relations(groups)
+        # B6.5: attach the same authority-normalization diagnostic the stored-
+        # groups path attaches, so the fallback corpus is normalized as well.
+        for group in groups:
+            if isinstance(group, dict):
+                group["authority_normalization"] = (
+                    authority_vocab.normalize_group_authority(group)
+                )
         _log_ground_truth_disagreements(
             problem_id, csv_patterns or patterns, groups
         )
@@ -482,7 +531,9 @@ def _split_csv_patterns_to_groups(
     that maps to a different primary strategy becomes its own group.
     Patterns that map to the same strategy are merged.
     """
-    from pathforge.services.ground_truth_builder import pattern_family
+    from pathforge.services.ground_truth_builder import (
+        alternative_group_id_for, pattern_family,
+    )
 
     # Group patterns by solution family (their primary concept)
     strategy_to_patterns = {}
@@ -535,6 +586,15 @@ def _split_csv_patterns_to_groups(
             "evidence": evidence,
             "confidence": {p: confidence.get(p, best_conf) for p in group_patterns},
         })
+
+    # B5.5: patterns from more than one solution family are ALTERNATIVE
+    # approaches (approach A OR approach B), so the split groups are one
+    # explicitly declared ONE_OF set.
+    if len(groups) > 1:
+        group_id = alternative_group_id_for(tuple(sorted(patterns)))
+        for group in groups:
+            group["family_relation"] = "ONE_OF"
+            group["alternative_group_id"] = group_id
 
     # Add unmapped patterns to the first group as optional
     if unmapped_patterns and groups:

@@ -1,0 +1,54 @@
+{
+  "batch": "B8",
+  "summary": {
+    "total_conflicts": 3,
+    "by_status": {
+      "NEEDS_HUMAN_REVIEW": 3
+    },
+    "conflicted_problems": [
+      2
+    ]
+  },
+  "gt_changes_applied": [],
+  "native_conflict_count_before": 3,
+  "native_conflict_count_after": 3,
+  "b7_before_after": {
+    "b7_native_parity_before": {
+      "P1_EXACT_PARITY": 15,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 0,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 0,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 3,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 28,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 0,
+      "P10_ERROR": 0
+    },
+    "b7_native_parity_after": {
+      "P1_EXACT_PARITY": 17,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 21,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 0,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 5,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 3,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 0,
+      "P10_ERROR": 0
+    },
+    "b7_native_b6_eligible_before": 0,
+    "b7_native_b6_eligible_after": 0,
+    "provenance_note": "before = B7 native measurement on the pre-reconciliation corpus (b8_authority_reconciliation_candidates_PREREC.json + b8_reconciliation_result_PREREC.json); after = B7 re-run on the reconciled native corpus"
+  },
+  "b6_eligibility": {
+    "before (B7 native)": 0,
+    "after": 0,
+    "blocked_after": 46,
+    "measurement_only": true,
+    "flag": "<unset>"
+  },
+  "human_approved_corpus": {
+    "note": "computed from the regenerated native corpus"
+  }
+}

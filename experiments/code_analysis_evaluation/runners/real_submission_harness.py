@@ -60,6 +60,7 @@ from pathforge.ast_analysis.shadow.data_structures import StructuralFact
 from pathforge.ast_analysis.shadow.fact_extractor import extract_structural_facts
 from pathforge.services.ground_truth_builder import (
     PATTERN_TO_V1_MAPPING, find_ground_truth_disagreements,
+    serialize_solution_group,
 )
 from pathforge.services.problem_resolver import _split_csv_patterns_to_groups
 from pathforge.ast_engine.patterns import ALL_PATTERNS
@@ -410,14 +411,10 @@ def main() -> int:
             "group_source": group_source,
             "gt_findings": gt_findings,
             "expected_allowed_concepts": sorted(allowed_concepts_for(sub.get("expected_patterns") or [])),
-            "groups": [
-                {"id": g["id"], "required": g.get("required"),
-                 "optional": g.get("optional"), "excluded": g.get("excluded"),
-                 "patterns": g.get("patterns"),
-                 "derivation_patterns": g.get("derivation_patterns"),
-                 "matchable": g.get("matchable")}
-                for g in groups
-            ],
+            # B5.5: serialize the COMPLETE group. The previous field
+            # whitelist dropped `authority_tier` (and provenance/evidence),
+            # which is why the B5 measurement had to re-attach authority.
+            "groups": [serialize_solution_group(g) for g in groups],
             "source_code": code,
             "error": result.get("error"),
             # production path

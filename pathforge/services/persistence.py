@@ -135,6 +135,59 @@ def run_persistence(
     # The submission is stored (for future clustering) but does not affect user skill models.
     is_authoritative = verdict_type == "authoritative"
 
+    # --- B6: controlled canonical-authority gating (flag OFF by default) ---
+    #
+    # Flag OFF (default): b6_enabled is False and EVERYTHING below behaves
+    # exactly as before B6 — the legacy evidence-based gate above remains the
+    # only decision, and no shadow analysis runs here.
+    #
+    # Flag ON: the canonical B5/B5.5 authority model decides whether product
+    # consequences (ELO / gaps / recommendations) may run. The decision is
+    # fail-closed: a missing/failed shadow evaluation never enables scoring.
+    # The legacy verdict_type computed above is preserved unchanged either way,
+    # and the B6 decision is attached to the result separately (never
+    # overwriting legacy fields).
+    from pathforge.services import product_eligibility as b6
+
+    b6_enabled = b6.flag_enabled() or bool(
+        getattr(__import__("config"), "SHADOW_AUTHORITY_PRODUCT_GATING", False)
+    )
+    b6_decision = None
+    if b6_enabled:
+        try:
+            shadow_evaluation = b6.evaluate_submission(code, groups)
+            b6_decision = b6.gating_decision(
+                conn, user_id, code, groups, match_result,
+                shadow_evaluation=shadow_evaluation,
+            )
+        except Exception as exc:  # fail-closed: gating failure must not score
+            import logging
+            logging.getLogger(__name__).warning(
+                "B6 gating evaluation failed (fail-closed): %s: %s",
+                type(exc).__name__, exc,
+            )
+            b6_decision = {
+                "allow_legacy": True,
+                "allow_shadow": False,
+                "source": "b6_gate",
+                "verdict_type": "analysis_only",
+                "comparison": None,
+                "eligibility": None,
+                "error": f"{type(exc).__name__}: {exc}",
+            }
+        if not b6_decision["allow_shadow"]:
+            # Canonical authority says NO: no product consequence.
+            is_authoritative = False
+    else:
+        b6_decision = {
+            "allow_legacy": True,
+            "allow_shadow": False,
+            "source": "legacy",
+            "verdict_type": verdict_type,
+            "comparison": None,
+            "eligibility": None,
+        }
+
     profile_update = None
     gap_output = {"gap_signals": [], "summary": {"strong_gaps": [], "moderate_gaps": [], "weak_gaps": []}}
     elo_output = {"user_id": str(user_id), "pattern_elo_updates": [], "global_summary": {}}
@@ -222,4 +275,7 @@ def run_persistence(
         "elo_updates_count": len(elo_output.get("pattern_elo_updates", [])),
         "elo_output": elo_output,
         "recommendation_id": recommendation_id,
+        # B6 additive key: the controlled gating decision (never overwrites a
+        # legacy field). "source" is "legacy" when the flag is OFF.
+        "b6_gate": b6_decision,
     }

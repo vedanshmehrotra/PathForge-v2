@@ -1,0 +1,329 @@
+{
+  "batch": "B7",
+  "layer": "legacy-vs-shadow verdict parity / migration readiness (observational)",
+  "feature_flag": {
+    "env_var": "SHADOW_AUTHORITY_PRODUCT_GATING",
+    "enabled": false,
+    "state": "<unset>"
+  },
+  "methodology": {
+    "primary_dataset": "native 46 (live GT provenance)",
+    "secondary_dataset": "enriched 46 (NON-NATIVE, measurement-time)",
+    "safety_dataset": "301 benchmark (llm_proposed GT; not used for authoritative migration estimates)",
+    "consequences": "simulated booleans only; never executed"
+  },
+  "native_46": {
+    "label": "native_46",
+    "provenance": "NATIVE",
+    "total_submissions": 46,
+    "legacy_authoritative": 21,
+    "legacy_blocked": 25,
+    "legacy_matched": 26,
+    "shadow_coverage": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "PROVISIONAL": 10,
+      "UNRESOLVED": 12
+    },
+    "canonical_authority": {
+      "HUMAN_APPROVED": 3,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 21,
+      "INFERRED": 22
+    },
+    "b6_eligible": 0,
+    "b6_blocked": 46,
+    "parity_categories": {
+      "P1_EXACT_PARITY": 17,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 21,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 0,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 5,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 3,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 0,
+      "P10_ERROR": 0
+    },
+    "p2_sub_reasons": {
+      "authority_conflict": 0,
+      "non_authoritative": 17,
+      "coverage_not_confirmed": 0,
+      "no_primary_strategy": 0,
+      "no_authority_report": 0,
+      "one_of_unsatisfied": 0,
+      "other": 4
+    },
+    "migration_statuses": {
+      "READY_FOR_SHADOW": 17,
+      "BLOCKED_BY_AUTHORITY": 3,
+      "BLOCKED_BY_GT": 0,
+      "BLOCKED_BY_SHADOW_COVERAGE": 26,
+      "BLOCKED_BY_PARITY": 0,
+      "REPRESENTATION_ONLY": 0,
+      "ERROR": 0
+    },
+    "authority_conflict_cases": [
+      {
+        "case": "db-48",
+        "authority_tier": "HUMAN_APPROVED",
+        "b6_reason": [
+          "AUTHORITY_CONFLICT"
+        ]
+      },
+      {
+        "case": "db-50",
+        "authority_tier": "HUMAN_APPROVED",
+        "b6_reason": [
+          "AUTHORITY_CONFLICT"
+        ]
+      },
+      {
+        "case": "db-135",
+        "authority_tier": "HUMAN_APPROVED",
+        "b6_reason": [
+          "AUTHORITY_CONFLICT"
+        ]
+      }
+    ],
+    "authority_conflict_count": 3,
+    "technique_only_one_of_cases": [
+      "db-49",
+      "db-51",
+      "db-194"
+    ],
+    "migration_consequence_comparison": {
+      "legacy_allows_elo": 21,
+      "shadow_allows_elo": 0,
+      "legacy_allows_gap": 21,
+      "shadow_allows_gap": 0,
+      "legacy_allows_recommendation": 21,
+      "shadow_allows_recommendation": 0,
+      "simulated_only": true
+    },
+    "divergence_examples": {
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED:non_authoritative": [
+        "db-20",
+        "db-35",
+        "db-137",
+        "db-190",
+        "db-193",
+        "db-230",
+        "db-231",
+        "db-232"
+      ],
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED:other": [
+        "db-237",
+        "db-238",
+        "db-239",
+        "db-240"
+      ],
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED:shadow_not_confirmed": [
+        "db-11",
+        "db-18",
+        "db-39",
+        "db-139",
+        "db-252"
+      ],
+      "P7_AUTHORITY_CONFLICT:AUTHORITY_CONFLICT": [
+        "db-48",
+        "db-50",
+        "db-135"
+      ]
+    },
+    "percentages": {
+      "exact_parity_pct": 37.0,
+      "authority_conflict_pct": 6.5,
+      "b6_eligible_pct": 0.0
+    }
+  },
+  "enriched_46_NON_NATIVE": {
+    "label": "enriched_46",
+    "provenance": "NON-NATIVE / MEASUREMENT-TIME ENRICHED",
+    "total_submissions": 46,
+    "legacy_authoritative": 0,
+    "legacy_blocked": 46,
+    "legacy_matched": 26,
+    "shadow_coverage": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "canonical_authority": {
+      "HUMAN_APPROVED": 26,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 20
+    },
+    "b6_eligible": 20,
+    "b6_blocked": 26,
+    "parity_categories": {
+      "P1_EXACT_PARITY": 10,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 0,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 20,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 5,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 0,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 11,
+      "P10_ERROR": 0
+    },
+    "p2_sub_reasons": {
+      "authority_conflict": 0,
+      "non_authoritative": 0,
+      "coverage_not_confirmed": 0,
+      "no_primary_strategy": 0,
+      "no_authority_report": 0,
+      "one_of_unsatisfied": 0,
+      "other": 0
+    },
+    "migration_statuses": {
+      "READY_FOR_SHADOW": 30,
+      "BLOCKED_BY_AUTHORITY": 0,
+      "BLOCKED_BY_GT": 11,
+      "BLOCKED_BY_SHADOW_COVERAGE": 5,
+      "BLOCKED_BY_PARITY": 0,
+      "REPRESENTATION_ONLY": 0,
+      "ERROR": 0
+    },
+    "authority_conflict_cases": [],
+    "authority_conflict_count": 0,
+    "technique_only_one_of_cases": [],
+    "migration_consequence_comparison": {
+      "legacy_allows_elo": 0,
+      "shadow_allows_elo": 20,
+      "legacy_allows_gap": 0,
+      "shadow_allows_gap": 20,
+      "legacy_allows_recommendation": 0,
+      "shadow_allows_recommendation": 20,
+      "simulated_only": true
+    },
+    "divergence_examples": {
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE:legacy_evidence_not_authoritative": [
+        "db-20",
+        "db-35",
+        "db-137",
+        "db-190",
+        "db-191",
+        "db-230",
+        "db-231",
+        "db-232"
+      ],
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED:shadow_not_confirmed": [
+        "db-48",
+        "db-50",
+        "db-135",
+        "db-139",
+        "db-252"
+      ],
+      "P9_NO_COMPARABLE_GT:no_comparable_gt": [
+        "db-11",
+        "db-18",
+        "db-33",
+        "db-36",
+        "db-37",
+        "db-39",
+        "db-41",
+        "db-64"
+      ]
+    },
+    "percentages": {
+      "exact_parity_pct": 21.7,
+      "authority_conflict_pct": 0.0,
+      "b6_eligible_pct": 43.5
+    }
+  },
+  "benchmark_301_safety": {
+    "label": "benchmark_301_safety",
+    "provenance": "NATIVE (llm_proposed GT)",
+    "total_submissions": 301,
+    "legacy_authoritative": 0,
+    "legacy_blocked": 301,
+    "legacy_matched": 126,
+    "shadow_coverage": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "canonical_authority": {
+      "HUMAN_APPROVED": 0,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 301
+    },
+    "b6_eligible": 0,
+    "b6_blocked": 301,
+    "parity_categories": {
+      "P1_EXACT_PARITY": 189,
+      "P2_LEGACY_AUTHORITATIVE_SHADOW_BLOCKED": 0,
+      "P3_LEGACY_BLOCKED_SHADOW_ELIGIBLE": 0,
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED": 53,
+      "P5_LEGACY_NO_MATCH_SHADOW_CONFIRMED": 0,
+      "P6_LEGACY_MATCH_SHADOW_CONTRADICTED": 0,
+      "P7_AUTHORITY_CONFLICT": 0,
+      "P8_REPRESENTATION_DIFFERENCE": 0,
+      "P9_NO_COMPARABLE_GT": 59,
+      "P10_ERROR": 0
+    },
+    "p2_sub_reasons": {
+      "authority_conflict": 0,
+      "non_authoritative": 0,
+      "coverage_not_confirmed": 0,
+      "no_primary_strategy": 0,
+      "no_authority_report": 0,
+      "one_of_unsatisfied": 0,
+      "other": 0
+    },
+    "migration_statuses": {
+      "READY_FOR_SHADOW": 189,
+      "BLOCKED_BY_AUTHORITY": 0,
+      "BLOCKED_BY_GT": 59,
+      "BLOCKED_BY_SHADOW_COVERAGE": 53,
+      "BLOCKED_BY_PARITY": 0,
+      "REPRESENTATION_ONLY": 0,
+      "ERROR": 0
+    },
+    "authority_conflict_cases": [],
+    "authority_conflict_count": 0,
+    "technique_only_one_of_cases": [],
+    "migration_consequence_comparison": {
+      "legacy_allows_elo": 0,
+      "shadow_allows_elo": 0,
+      "legacy_allows_gap": 0,
+      "shadow_allows_gap": 0,
+      "legacy_allows_recommendation": 0,
+      "shadow_allows_recommendation": 0,
+      "simulated_only": true
+    },
+    "divergence_examples": {
+      "P4_LEGACY_MATCH_SHADOW_UNRESOLVED:shadow_not_confirmed": [
+        "ps_subarray_equals_k",
+        "ps_range_sum_query",
+        "ps_contiguous_subarray_sum",
+        "ps_find_pivot_index",
+        "ps_min_subarray_len",
+        "hm_two_sum_map",
+        "hm_isomorphic_strings",
+        "hm_group_anagrams"
+      ],
+      "P9_NO_COMPARABLE_GT:no_comparable_gt": [
+        "at_merge_sorted",
+        "at_find_max",
+        "at_rotate_array",
+        "at_remove_duplicates",
+        "at_prefix_sum_array",
+        "sort_insertion",
+        "sort_selection",
+        "sort_merge"
+      ]
+    },
+    "percentages": {
+      "exact_parity_pct": 62.8,
+      "authority_conflict_pct": 0.0,
+      "b6_eligible_pct": 0.0
+    }
+  }
+}

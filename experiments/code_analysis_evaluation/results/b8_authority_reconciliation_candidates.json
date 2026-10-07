@@ -1,0 +1,183 @@
+{
+  "batch": "B8",
+  "generated_at": "2026-09-27T11:41:01.975896+00:00",
+  "field_semantics": {
+    "authority_tier": {
+      "field": "authority_tier",
+      "semantics": "ground_truth_authority",
+      "meaning": "who/what established the expected solution family",
+      "stored_row_writers": [
+        "pathforge/scripts/seed_ground_truth.py (structurally_observed + provenance manual_verification)",
+        "pathforge/services/ground_truth_builder.py::_build_single_group (llm_proposed + provenance llm_ground_truth)"
+      ],
+      "load_time_writer": "problem_resolver._load_ground_truth CSV reconciliation overwrites the EMITTED authority_tier with 'human_curated' when a curated CSV pattern exists \u2014 the stored row is not modified",
+      "readers": [
+        "pathforge/ast_analysis/shadow/authority_gating.py (B5/B5.5)",
+        "pathforge/ast_analysis/shadow/family_coverage.py (B3 passthrough)"
+      ]
+    },
+    "evidence": {
+      "field": "evidence",
+      "semantics": "legacy_validation_state (overloaded)",
+      "meaning": "the validation state the GT row was written with; the legacy Elo reader additionally treats it as implementation-evidence strength",
+      "stored_row_writers": [
+        "pathforge/scripts/seed_ground_truth.py (equals authority_tier)",
+        "pathforge/services/ground_truth_builder.py (equals authority_tier)"
+      ],
+      "readers": [
+        "pathforge/services/persistence.py (legacy verdict_type gate: evidence in {structurally_observed, externally_listed})",
+        "pathforge/elo_engine.py (EVIDENCE_K_CEILINGS \u2014 implementation-evidence strength semantics)",
+        "problem_resolver._load_ground_truth (fallback when authority_tier is absent)"
+      ],
+      "overloading_note": "the 32 B7 conflicts are field-semantic collisions: CSV reconciliation rewrites the emitted authority_tier (GT-authority semantics) to human_curated while evidence keeps its legacy-validation value \u2014 the two fields never disagreed in the STORED rows"
+    }
+  },
+  "summary": {
+    "total_conflicts": 3,
+    "by_status": {
+      "NEEDS_HUMAN_REVIEW": 3
+    },
+    "conflicted_problems": [
+      2
+    ]
+  },
+  "conflicts": [
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "concepts": [
+        "linked_list_traversal"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": null,
+      "stored_provenance": [],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "NEEDS_HUMAN_REVIEW",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "concepts": [
+        "linked_list_traversal"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": null,
+      "stored_provenance": [],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "NEEDS_HUMAN_REVIEW",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "concepts": [
+        "linked_list_traversal"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": null,
+      "stored_provenance": [],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "NEEDS_HUMAN_REVIEW",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']"
+    }
+  ],
+  "human_review_records": [
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "current_authority_tier": "human_curated",
+      "current_evidence": "llm_proposed",
+      "candidate_resolution": "HUMAN_APPROVED",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']",
+      "required_reviewer": "human",
+      "status": "NEEDS_HUMAN_REVIEW"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "current_authority_tier": "human_curated",
+      "current_evidence": "llm_proposed",
+      "candidate_resolution": "HUMAN_APPROVED",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']",
+      "required_reviewer": "human",
+      "status": "NEEDS_HUMAN_REVIEW"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "current_authority_tier": "human_curated",
+      "current_evidence": "llm_proposed",
+      "candidate_resolution": "HUMAN_APPROVED",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']",
+      "required_reviewer": "human",
+      "status": "NEEDS_HUMAN_REVIEW"
+    }
+  ]
+}
