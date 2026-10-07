@@ -463,7 +463,9 @@ def _collect_lookup_key_origins(ast_root: ast.AST, rel: SubmissionRelations) -> 
 
     One walk over the AST for each lookup site keyed on a mapping variable:
     membership tests (``k in m``) and subscript reads (``m[k]``). Write sites
-    (``m[k] = v``) are deliberately excluded.
+    (``m[k] = v``) are deliberately excluded: a store subscript carries
+    ``Store`` context and reads **nothing** from the mapping, so it must not
+    create read/test provenance for ``m``.
     """
     assigns: dict[str, list[ast.AST]] = {}
     params: set[str] = set()
@@ -483,11 +485,17 @@ def _collect_lookup_key_origins(ast_root: ast.AST, rel: SubmissionRelations) -> 
                     assigns.setdefault(t.id, []).append(node.value)
 
     for node in ast.walk(ast_root):
-        if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
+        if (
+            isinstance(node, ast.Subscript)
+            and isinstance(node.ctx, ast.Load)
+            and isinstance(node.value, ast.Name)
+        ):
             key_class = _classify_key_origin(node.slice, assigns, params, loop_targets)
             rel.lookup_key_origins.setdefault(node.value.id, set()).add(key_class)
         elif isinstance(node, ast.Compare):
             for op, comp in zip(node.ops, node.comparators):
                 if isinstance(op, (ast.In, ast.NotIn)) and isinstance(comp, ast.Name):
-                        key_class = _classify_key_origin(node.left, assigns, params, loop_targets)
-                        rel.lookup_key_origins.setdefault(comp.id, set()).add(key_class)
+                    key_class = _classify_key_origin(
+                        node.left, assigns, params, loop_targets
+                    )
+                    rel.lookup_key_origins.setdefault(comp.id, set()).add(key_class)

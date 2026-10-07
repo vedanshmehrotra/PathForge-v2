@@ -32,7 +32,7 @@ import ast
 import dataclasses
 import textwrap
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Tuple
+from typing import Any, Dict, List, Mapping, Set, Tuple
 
 import pytest
 
@@ -53,6 +53,53 @@ from pathforge.ast_analysis.shadow.relations import (
 
 NATIVE_TOTAL = 96
 NATIVE_ELIGIBLE = 25
+
+#: Frozen pre-B11 structural fact-type vocabulary emitted by ``fact_extractor``.
+#: B11 is a relation-layer change: it must add zero fact types.
+FACT_TYPE_VOCABULARY = frozenset(
+    {
+        "accumulator_update",
+        "cache_lookup",
+        "cache_write",
+        "carry_propagation",
+        "conditional_index_update",
+        "conditional_pop",
+        "early_termination",
+        "extremum_access",
+        "for_loop_iteration",
+        "index_lookback",
+        "indexed_write",
+        "linked_attribute_access",
+        "linked_structure_traversal",
+        "list_construction",
+        "mapping_construction",
+        "membership_test",
+        "midpoint_calculation",
+        "monotonic_comparison",
+        "multiple_pointer_traversal",
+        "multiple_recursive_paths",
+        "neighbor_traversal",
+        "node_constructor",
+        "opposite_direction_updates",
+        "parent_pointer_chase",
+        "parent_root_merge",
+        "pointer_rewiring",
+        "queue_dequeue",
+        "recursive_call_in_conditional",
+        "recursive_depth_tracking",
+        "self_recursive_call",
+        "sorting_operation",
+        "stack_operation",
+        "state_restoration",
+        "subscript_index_access",
+        "subscript_read",
+        "variable_use_in_loop_body",
+        "visited_tracking",
+        "while_loop_comparison",
+        "while_loop_truthiness",
+        "window_size_constant",
+    }
+)
 
 
 def _syntax(source: str) -> ast.Module:
@@ -118,15 +165,16 @@ class TestOriginsReachability:
         assert "derived" in origins
 
     def test_origin_element(self) -> None:
+        # `element` describes the *key's* provenance: the key must itself be a
+        # Subscript expression (or a Name bound to one). Here `arr[i]` is the
+        # key of the outer lookup, so `m` gets `element`.
         rel = _rel(
             """
-            def f(arr, i):
-                v = arr[i]
-                return v
+            def f(m, arr, i):
+                return m[arr[i]]
             """
         )
-        origins = _all_origins_present(rel)
-        assert "element" in origins
+        assert rel.lookup_key_origins.get("m") == {"element"}
 
     def test_origin_parameter(self) -> None:
         rel = _rel(
@@ -143,9 +191,11 @@ class TestOriginsReachability:
     def test_origin_iteration(self) -> None:
         rel = _rel(
             """
-            def f(items):
+            def f(items, m):
                 for item in items:
-                    pass
+                    if item in m:
+                        return True
+                return False
             """
         )
         origins = _all_origins_present(rel)
@@ -155,16 +205,23 @@ class TestOriginsReachability:
         rel = _rel(
             """
             def f():
-                return {'a': 1}['a']
+                m = {'a': 1}
+                return m['a']
             """
         )
         origins = _all_origins_present(rel)
         assert "literal" in origins
 
     def test_origin_unknown(self) -> None:
-        rel = _rel("x = y")
-        origins = _all_origins_present(rel)
-        assert "unknown" in origins
+        # `q` is not a parameter, not a loop target and never assigned, so it
+        # cannot be safely classified.
+        rel = _rel(
+            """
+            def f(z):
+                return z[q]
+            """
+        )
+        assert rel.lookup_key_origins.get("z") == {"unknown"}
 
 
 # ===========================================================================
@@ -176,17 +233,20 @@ class TestPrecedenceChain:
     """Where an element is also a parameter, element wins over parameter."""
 
     def test_parameter_subscript_used_as_look_key_yields_element(self) -> None:
+        # `k` starts as a parameter but is reassigned from a subscript, so the
+        # stronger `element` provenance must win over `parameter`.
         rel = _rel(
             """
-            def f(m, k):
+            def f(m, k, arr):
+                k = arr[0]
                 if k in m:
                     return m[k]
                 return None
             """
         )
-        origins = _all_origins_present(rel)
-        assert "element" in origins, (
-            f"element must win precedence over parameter; got {sorted(origins)}"
+        assert rel.lookup_key_origins.get("m") == {"element"}, (
+            f"element must win precedence over parameter; "
+            f"got {rel.lookup_key_origins.get('m')}"
         )
 
     def test_derived_beats_literal_for_a_computed_key(self) -> None:
@@ -206,9 +266,11 @@ class TestPrecedenceChain:
     def test_iteration_origin_present_for_enumerate_tuple_unpack(self) -> None:
         rel = _rel(
             """
-            def f(items):
+            def f(items, m):
                 for a, b in items:
-                    pass
+                    if a in m:
+                        return True
+                return False
             """
         )
         origins = _all_origins_present(rel)
@@ -226,19 +288,27 @@ class TestExplicitSubscript:
     """arr[i] must be element; the slice node itself must not be misclassified."""
 
     def test_bracketed_subscript_is_element(self) -> None:
-        rel = _rel("v = arr[i]")
-        origins = _all_origins_present(rel)
-        assert "element" in origins, (
-            f"arr[i] is an element subscript; expected element in {sorted(origins)}"
+        # `arr[i]` is the *key* of the outer mapping lookup, so the key node is
+        # the Subscript itself (not its slice `i`) -> element.
+        rel = _rel(
+            """
+            def f(m, arr, i):
+                return m[arr[i]]
+            """
+        )
+        assert rel.lookup_key_origins.get("m") == {"element"}, (
+            f"a Subscript key must classify as element; "
+            f"got {rel.lookup_key_origins.get('m')}"
         )
 
     def test_subscript_slice_node_not_misclassified_as_look_key(self) -> None:
         rel = _rel("v = arr[1:3]")
-        origins = _all_origins_present(rel)
-        # A slice used as a subscript index is not a lookup key origin in the
-        # element/lookup sense; the impl must not invent a spurious origin here.
-        assert "literal" not in origins or len(origins) <= 3, (
-            f"slice subscript must not produce a spurious origin set; got {sorted(origins)}"
+        # `arr[1:3]` reads arr; the key is a Slice node - not a literal and not
+        # a Subscript - so it falls back to unknown. Critically it must NOT be
+        # reported as `element`: the Slice is not the Subscript node itself.
+        assert rel.lookup_key_origins.get("arr") == {"unknown"}, (
+            f"slice key must not be misclassified as element; "
+            f"got {rel.lookup_key_origins.get('arr')}"
         )
 
 
@@ -279,10 +349,17 @@ class TestNameResolution:
         )
 
     def test_unresolved_name_is_unknown(self) -> None:
-        rel = _rel("x = y")
-        origins = _all_origins_present(rel)
-        assert "unknown" in origins, (
-            f"a free/unresolved name should be unknown; got {sorted(origins)}"
+        # `q` is never assigned, never a parameter and never a loop target, so
+        # it cannot be safely classified and must fall back to unknown.
+        rel = _rel(
+            """
+            def f(z):
+                return z[q]
+            """
+        )
+        assert rel.lookup_key_origins.get("z") == {"unknown"}, (
+            f"a free/unresolved name should be unknown; "
+            f"got {rel.lookup_key_origins.get('z')}"
         )
 
 
@@ -359,15 +436,27 @@ class TestAdditivity:
     """Pre-existing fields are untouched; only the new field is added."""
 
     def test_pre_existing_fields_stable(self) -> None:
-        src = "x = y"
-        rel = _rel(src)
-        fields = {f.name for f in dataclasses.fields(SubmissionRelations)}
-        assert "lookup_key_origins" in fields, (
-            "SubmissionRelations must declare lookup_key_origins"
+        # Frozen snapshot of every pre-B11 relation field for this snippet. The
+        # pre-existing collectors never read lookup_key_origins, so adding it
+        # must leave these values byte-identical.
+        rel = _rel(
+            """
+            def f(nums):
+                total = 0
+                for x in nums:
+                    total = total + x
+                return total
+            """
         )
-        # Extracted relations must still carry a real lookup provenance mapping,
-        # not an empty shell.
-        assert isinstance(rel.lookup_key_origins, dict)
+        assert rel.updated_in_loop == {"total": {"for"}}
+        assert rel.used_as_subscript_index == set()
+        assert rel.used_anywhere == {"x", "total", "nums"}
+        assert rel.assigned_anywhere == {"total"}
+        assert rel.def_use_pairs == {"total": {"total"}, "x": {"total"}}
+        assert rel.collection_ops == {}
+        assert rel.iterated_in_for == {"nums"}
+        assert rel.self_referential_updates == {}
+        assert rel.lookup_key_origins == {}
 
     def test_submission_relations_is_a_dataclass(self) -> None:
         # The old contract mentioned a diff primitive; B11 only required the new
@@ -406,17 +495,19 @@ class TestLookupCollection:
                 total = 0
                 for i, ch in enumerate(s):
                     val = roman[ch]
-                    if i + 1 < len(s) and roman[s[i+1]] < val:
+                    if i + 1 < len(s) and roman[s[i]] < val:
                         total -= val
                     else:
                         total += val
                 return total
             """
         )
-        # ch is used as a lookup key, s[i+1] is a gated subscript read.
-        origins = _all_origins_present(rel)
-        assert "element" in origins, (
-            f"gated subscript read must create element provenance; got {sorted(origins)}"
+        # `roman[ch]` uses a loop target as key -> iteration.
+        # `roman[s[i]]` uses a bare Subscript as key -> element.
+        roman = rel.lookup_key_origins.get("roman", set())
+        assert "iteration" in roman, f"loop-target key must be iteration; got {roman}"
+        assert "element" in roman, (
+            f"gated subscript read must create element provenance; got {roman}"
         )
 
     def test_write_target_does_not_populate_read_provenance(self) -> None:
@@ -427,14 +518,17 @@ class TestLookupCollection:
                 return None
             """
         )
-        # Writing m[k] = v is a store, not a read/test; the lookup provenance
-        # relation must not be populated by the write target alone.
-        origins = _all_origins_present(rel)
-        assert (
-            "derived" not in origins
-            and "element" not in origins
-            and "literal" not in origins
-        ), f"write-only target must not create read/test provenance; got {sorted(origins)}"
+        # Writing m[k] = v is a store, not a read/test: the subscript carries
+        # Store context and reads nothing from `m`. `m` must not appear in the
+        # relation at all - for ANY origin value.
+        assert "m" not in rel.lookup_key_origins, (
+            f"write-only target must not create read/test provenance; "
+            f"got {rel.lookup_key_origins}"
+        )
+        assert rel.lookup_key_origins == {}, (
+            f"write-only program must produce no provenance; "
+            f"got {rel.lookup_key_origins}"
+        )
 
 
 # ===========================================================================
@@ -446,10 +540,15 @@ class TestNoIdentifierNameHeuristics:
     """Classification is shape-based, not name-based."""
 
     def test_arbitrary_name_used_as_element_classifies_as_element(self) -> None:
-        rel = _rel("v = zzz[abc]")
-        origins = _all_origins_present(rel)
-        assert "element" in origins, (
-            f"subscript origin must be element regardless of name; got {sorted(origins)}"
+        rel = _rel(
+            """
+            def f(m, zzz, abc):
+                return m[zzz[abc]]
+            """
+        )
+        assert rel.lookup_key_origins.get("m") == {"element"}, (
+            f"Subscript key must classify as element regardless of name; "
+            f"got {rel.lookup_key_origins.get('m')}"
         )
 
     def test_arbitrary_name_used_as_parameter_classifies_as_parameter(self) -> None:
@@ -504,14 +603,48 @@ class TestRegistryInvariants:
         )
 
     def test_no_new_fact_type_introduced(self) -> None:
-        # Verify the concept table still only contains the expected structural fact
-        # kind(s) already present before B11. The concrete set is whatever the
-        # registry currently carries; the assertion bounds the change to zero new
-        # fact types.
-        sample = CONCEPTS.get("two_pointers_same")
-        assert sample is not None, "two_pointers_same must exist in the registry"
-        tag_names = {t.name for t in sample.tags}
-        assert len(tag_names) >= 1
+        # B11 is a relation-layer addition. Structural facts still come only
+        # from the fact extractor, and `lookup_key_origins` must never surface
+        # as a fact type. The frozen vocabulary pins the pre-B11 fact surface,
+        # so introducing any new fact type fails this test.
+        import inspect
+        import re
+
+        from pathforge.ast_analysis.shadow import fact_extractor
+
+        emitted = set(
+            re.findall(r'fact_type="([a-z_]+)"', inspect.getsource(fact_extractor))
+        )
+        assert emitted == FACT_TYPE_VOCABULARY, (
+            f"fact-type vocabulary changed: "
+            f"added={sorted(emitted - FACT_TYPE_VOCABULARY)} "
+            f"removed={sorted(FACT_TYPE_VOCABULARY - emitted)}"
+        )
+        # `cache_lookup` is a legitimate pre-existing fact type; the B11
+        # relation name must never become one, and the relation must not leak
+        # into fact extraction.
+        assert "lookup_key_origins" not in emitted, (
+            "B11 must not introduce a lookup_key_origins fact type"
+        )
+        roman = _syntax(
+            """
+            def romanToInt(s):
+                roman = {'I': 1, 'V': 5}
+                total = 0
+                for ch in s:
+                    total += roman[ch]
+                return total
+            """
+        )
+        from pathforge.ast_analysis.shadow.fact_extractor import (
+            extract_structural_facts,
+        )
+
+        produced = {f.fact_type for f in extract_structural_facts(roman)}
+        assert produced <= FACT_TYPE_VOCABULARY, (
+            f"relation extraction leaked a new fact type: "
+            f"{sorted(produced - FACT_TYPE_VOCABULARY)}"
+        )
 
 
 # ===========================================================================
@@ -539,9 +672,22 @@ class TestFreshProcessVerification:
         )
 
     def test_hasattr_lookup_key_origins(self) -> None:
-        assert hasattr(SubmissionRelations, "lookup_key_origins"), (
-            "SubmissionRelations must expose lookup_key_origins"
+        # A dataclass field declared with default_factory is NOT a class
+        # attribute, so `hasattr(SubmissionRelations, ...)` is False by design
+        # and is not part of the contract. The authoritative checks are the
+        # dataclass field registry and the instance attribute.
+        assert "lookup_key_origins" in SubmissionRelations.__dataclass_fields__, (
+            "SubmissionRelations.__dataclass_fields__ must include lookup_key_origins"
         )
+        declared = {f.name for f in dataclasses.fields(SubmissionRelations)}
+        assert "lookup_key_origins" in declared, (
+            f"dataclasses.fields must include lookup_key_origins; got {sorted(declared)}"
+        )
+        inst = build_relations(_syntax("x = y"))
+        assert hasattr(inst, "lookup_key_origins"), (
+            "instances must expose lookup_key_origins"
+        )
+        assert isinstance(inst.lookup_key_origins, dict)
 
     def test_build_relations_produces_lookup_key_origins(self) -> None:
         src = "x = y"

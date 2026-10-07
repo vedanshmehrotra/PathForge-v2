@@ -27,17 +27,20 @@ import json
 import pathlib
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Dict, List, Optional, Sequence, Tuple
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from pathforge.ast_analysis import lookup_specificity as specificity  # noqa: E402
 from pathforge.ast_analysis import strategy_contract as sc  # noqa: E402
 from pathforge.ast_analysis.shadow import shadow_runner  # noqa: E402
 from pathforge.ast_analysis.shadow.data_structures import EXTRACTOR_VERSION  # noqa: E402
-from pathforge.ast_analysis.shadow.relations import RELATIONS_VERSION  # noqa: E402
+from pathforge.ast_analysis.shadow.fact_extractor import extract_structural_facts  # noqa: E402
+from pathforge.ast_analysis.shadow.relations import RELATIONS_VERSION, build_relations  # noqa: E402
+from pathforge.ast_analysis.shadow.techniques import detect_techniques  # noqa: E402
 from pathforge.services import product_eligibility as b6  # noqa: E402
 from pathforge.services.ground_truth_builder import (  # noqa: E402
     mark_family_relations,
@@ -287,6 +290,121 @@ def _to_contract_measurement(corpus: str, measurement: Measurement) -> sc.Corpus
         neither_count=measurement.counts["neither"],
         error_ids=tuple(measurement.ids["error"]),
     )
+
+
+# ============================================================================
+# B11 strategy specificity (key provenance)
+# ============================================================================
+
+#: The declared discriminator whose availability the B11 relation layer decides.
+_KEY_ORIGIN_DISCRIMINATOR = "key_origin"
+
+
+def _strategy_specificity(code: str, concept_id: str):
+    """The B11 specificity verdict, or ``None`` when the concept does not fire.
+
+    Raw technique presence is untouched. This reads the cited mapping fact and
+    the shared relations bundle and answers only whether the citation is
+    specific enough to support an algorithmic conclusion.
+    """
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return None
+    facts = extract_structural_facts(tree)
+    relations = build_relations(tree)
+    evidence = next(
+        (t for t in detect_techniques(facts, relations=relations)
+         if t.technique_id == concept_id),
+        None,
+    )
+    return specificity.evaluate_evidence_specificity(evidence, facts, relations)
+
+
+def _key_origin_measurement(
+    spec: "CandidateSpec", corpora: Dict[str, List[CorpusRecord]]
+) -> Tuple[sc.Separation, Dict[str, int]]:
+    """Measure the key-provenance discriminator over both corpora.
+
+    Ground-truth anchor: a record the discriminator calls strategy-eligible but
+    whose own required set does not name the concept is an over-coverage entry —
+    the positive form holds where the concept is not the approach. Refused
+    records are the ones the specificity rule declines to establish.
+    """
+    eligible: List[str] = []
+    refused: List[str] = []
+    over_covered: List[str] = []
+    states: Dict[str, int] = {}
+    for records in corpora.values():
+        for record in records:
+            verdict = _strategy_specificity(record.code, spec.concept_id)
+            if verdict is None:
+                continue
+            states[verdict.state] = states.get(verdict.state, 0) + 1
+            if not verdict.strategy_eligible:
+                refused.append(record.record_id)
+                continue
+            requires = any(
+                spec.concept_id in (group.get("required") or [])
+                for group in record.groups
+            )
+            (eligible if requires else over_covered).append(record.record_id)
+    return sc.Separation(
+        positive_records=tuple(eligible),
+        negative_records=tuple(refused),
+        misclassified=tuple(over_covered),
+    ), states
+
+
+def _measured_discriminators(
+    spec: "CandidateSpec",
+    separation: Optional[sc.Separation],
+    states: Dict[str, int],
+) -> Tuple[sc.Discriminator, ...]:
+    """Attach the measured separation to the declared key-provenance rule.
+
+    Only that one discriminator is touched; every other declaration (and every
+    other candidate's declarations) is returned unchanged, so no unrelated
+    verdict can move.
+    """
+    if separation is None:
+        return spec.discriminators
+    measured = []
+    for discriminator in spec.discriminators:
+        if discriminator.name != _KEY_ORIGIN_DISCRIMINATOR:
+            measured.append(discriminator)
+            continue
+        state_summary = ", ".join(f"{k}={v}" for k, v in sorted(states.items()))
+        measured.append(replace(
+            discriminator,
+            source=f"{sc.SOURCE_RELATION}:lookup_key_origins",
+            availability=sc.AVAILABLE,
+            separates=separation,
+            evidence_ref=(
+                "B11 measurement over native 46 + benchmark 301 and the four "
+                f"control classes; specificity states: {state_summary}"
+            ),
+        ))
+    return tuple(measured)
+
+
+def _specificity_block(
+    separation: Optional[sc.Separation], states: Dict[str, int]
+) -> Optional[dict]:
+    """The strategy-specificity evidence for one candidate, if it has a rule."""
+    if separation is None:
+        return None
+    return {
+        "version": specificity.SPECIFICITY_VERSION,
+        "relation": "lookup_key_origins",
+        "states": states,
+        "key_origin_separation": separation.to_dict(),
+        "note": (
+            "B11 evaluates whether the mapping cited by the detected evidence "
+            "is specific enough for an algorithmic strategy conclusion; raw "
+            "technique presence is never changed and nothing is promoted"
+        ),
+    }
 
 
 # ============================================================================
@@ -786,17 +904,24 @@ CANDIDATES: Tuple[CandidateSpec, ...] = (
                 name="key_origin",
                 source="derived:key_provenance",
                 positive_form=(
-                    "the tested key is derived from the current element (a "
-                    "complement or transformation), not a raw symbol from a table"
+                    "the cited mapping is built and probed by the scan - its keys "
+                    "resolve to computed, element or loop-target provenance - so "
+                    "the lookup is algorithmic rather than a static table or an "
+                    "externally keyed store"
                 ),
                 negative_form=(
-                    "the key is the element itself, read out of a fixed value table"
+                    "the cited mapping is an immutable dict literal (a reference "
+                    "table), or every lookup key is a function parameter and the "
+                    "mapping is never updated (a caller-keyed cache)"
                 ),
+                # Availability and the measured separation are attached at
+                # measurement time (see `_measured_discriminators`), because the
+                # separation can only be measured against a corpus.
                 availability=sc.NEEDS_EXTRACTION,
                 evidence_ref=(
-                    "membership_test exposes only {variable, negated}; "
-                    "subscript_read only {structure, gated}; SubmissionRelations "
-                    "has no key-provenance relation"
+                    "B11: SubmissionRelations.lookup_key_origins supplies the "
+                    "key-provenance relation this discriminator needed; the rule "
+                    "lives in pathforge/ast_analysis/lookup_specificity.py"
                 ),
             ),
         ),
@@ -1022,6 +1147,11 @@ def _measure_candidate(
         reviews=tuple(reviews.get(spec.concept_id) or ()),
     )
     controls = _negative_controls(spec)
+    separation, specificity_states = (
+        _key_origin_measurement(spec, corpora)
+        if any(d.name == _KEY_ORIGIN_DISCRIMINATOR for d in spec.discriminators)
+        else (None, {})
+    )
     authority_path, authority_evidence = _authority_path(
         spec, [r for records in corpora.values() for r in records]
     )
@@ -1031,7 +1161,9 @@ def _measure_candidate(
         concept_id=spec.concept_id,
         identity_meaning=spec.identity_meaning,
         identity_is_mechanism_only=spec.identity_is_mechanism_only,
-        discriminators=spec.discriminators,
+        discriminators=_measured_discriminators(
+            spec, separation, specificity_states
+        ),
         precision=precision,
         negative_controls=controls,
         gt=sc.GTCompatibility(
@@ -1071,7 +1203,7 @@ def _measure_candidate(
         if entry.record_id in flagged and entry.is_complete()
     ]
 
-    return {
+    result = {
         "concept": spec.concept_id,
         "concept_metadata": metadata,
         "identity": {
@@ -1121,6 +1253,10 @@ def _measure_candidate(
         "contract": verdict.to_dict(),
         "recommendation": _recommendation(verdict),
     }
+    block = _specificity_block(separation, specificity_states)
+    if block is not None:
+        result["strategy_specificity"] = block
+    return result
 
 
 def _regression_checks() -> dict:
@@ -1230,6 +1366,14 @@ def main() -> int:
                   f"neither={data['counts']['neither']:3d} "
                   f"| legacy_evidence_only={data['legacy_evidence_only']:3d}")
         print(f"      failing clauses: {result['contract']['failing_clauses']}")
+        block = result.get("strategy_specificity")
+        if block:
+            separated = block["key_origin_separation"]
+            print(f"      B11 specificity: {block['states']} | "
+                  f"eligible={len(separated['positive_records'])} "
+                  f"refused={len(separated['negative_records'])} "
+                  f"over_covered={len(separated['misclassified'])}")
+            print(f"      B11 refused: {separated['negative_records']}")
     print("  promoted: 0  (this batch promotes nothing)")
     print("written:", OUT_JSON.relative_to(ROOT))
     print("review :", OUT_REVIEW.relative_to(ROOT))

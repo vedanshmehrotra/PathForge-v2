@@ -4,7 +4,7 @@
   "contract_version": "1.0.0",
   "analysis_versions": {
     "extractor": "1.0.0",
-    "relations": "1.1.0"
+    "relations": "1.2.0"
   },
   "feature_flag": {
     "env_var": "SHADOW_AUTHORITY_PRODUCT_GATING",
@@ -601,7 +601,7 @@
           {
             "clause": "C2_DISCRIMINATOR",
             "passed": false,
-            "detail": "no AVAILABLE discriminator with measured separation: incremental_keyed_lookup=misclassifies 2 tool-use record(s): hm_memoize_expensive, hm_adjacency_list; key_origin=NEEDS_EXTRACTION"
+            "detail": "no AVAILABLE discriminator with measured separation: incremental_keyed_lookup=misclassifies 2 tool-use record(s): hm_memoize_expensive, hm_adjacency_list; key_origin=misclassifies 9 tool-use record(s): ps_subarray_equals_k, ps_contiguous_subarray_sum, sw_longest_substring_k, ps_subarray_divisible_k, sw_longest_unique"
           },
           {
             "clause": "C3_PRECISION",
@@ -640,7 +640,60 @@
           }
         ]
       },
-      "recommendation": "UNSAFE"
+      "recommendation": "UNSAFE",
+      "strategy_specificity": {
+        "version": "1.0.0",
+        "relation": "lookup_key_origins",
+        "states": {
+          "STRATEGY_ELIGIBLE": 32,
+          "NOT_ESTABLISHED": 4
+        },
+        "key_origin_separation": {
+          "positive_records": [
+            "db-11",
+            "db-39",
+            "hm_two_sum_map",
+            "hm_isomorphic_strings",
+            "hm_group_anagrams",
+            "hm_word_pattern",
+            "hm_subarray_sum_k",
+            "hm_rename_two_sum",
+            "hm_while_two_sum",
+            "hm_adjacency_list",
+            "hm_valid_anagram",
+            "hm_ransom_note",
+            "hm_contains_nearby_duplicate",
+            "hm_two_sum_sorted",
+            "hm_rename_group_anagrams",
+            "hm_two_sum_brute_to_map",
+            "hm_longestSubstring_no_repeat",
+            "hm_subarray_sum_k_v2",
+            "hm_group_strings",
+            "hm_group_by_key",
+            "hm_check_permutation",
+            "hm_map_pair_sum",
+            "hm_array_pair_sum"
+          ],
+          "negative_records": [
+            "db-33",
+            "stack_valid_parens",
+            "hm_memoize_expensive",
+            "hm_roman_to_int"
+          ],
+          "misclassified": [
+            "ps_subarray_equals_k",
+            "ps_contiguous_subarray_sum",
+            "sw_longest_substring_k",
+            "ps_subarray_divisible_k",
+            "sw_longest_unique",
+            "sw_fruits_into_baskets",
+            "ps_subarray_count_k",
+            "ps_zero_sum_subarrays",
+            "ps_max_subarray_len"
+          ]
+        },
+        "note": "B11 evaluates whether the mapping cited by the detected evidence is specific enough for an algorithmic strategy conclusion; raw technique presence is never changed and nothing is promoted"
+      }
     },
     {
       "concept": "sequential_accumulation",

@@ -40,6 +40,13 @@ _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 #: the single registry consumer so the B10 harness never imports the registry
 #: itself. It is required to live under `pathforge/ast_analysis/` (never under
 #: `pathforge/services/`) and to leave the decision-path packages untouched.
+#:
+#: B11 adds NO runtime consumer. It authorises exactly one additional TEST
+#: consumer — the B11 relation-contract tests — which read the registry only to
+#: pin its invariants (96 concepts / 25 conclusion-eligible) and to prove the
+#: relation layer introduced no fact type. It promotes nothing, and it lives
+#: under `pathforge/ast_analysis/shadow/tests/`, so the decision-path guard is
+#: unaffected.
 _ALLOWED_REGISTRY_REFERERS = {
     "pathforge/tests/test_concept_registry.py",
     "pathforge/tests/test_tri_state_evidence.py",
@@ -47,6 +54,7 @@ _ALLOWED_REGISTRY_REFERERS = {
     "pathforge/tests/test_primary_strategy.py",
     "pathforge/tests/test_b8_authority_reconciliation.py",
     "pathforge/tests/test_b10_strategy_contract.py",
+    "pathforge/ast_analysis/shadow/tests/test_b11_lookup_key_origins.py",
     "pathforge/ast_analysis/shadow/evidence_state.py",
     "pathforge/ast_analysis/shadow/family_coverage.py",
     "pathforge/ast_analysis/shadow/primary_strategy.py",
