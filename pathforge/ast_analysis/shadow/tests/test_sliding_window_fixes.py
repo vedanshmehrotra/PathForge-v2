@@ -745,14 +745,13 @@ def minWindow(s, t):
 
 
 class TestKnownLimitations:
-    """These tests document known limitations that are NOT regressions
-    but are noted for future improvement."""
+    """Track remaining limitations and reviewed repairs of those limitations."""
 
-    def test_424_if_shrink_not_yet_detected(self):
+    def test_424_if_shrink_has_linked_window_evidence(self):
         """Problem 424 uses an if-shrink (not while-shrink) where the
         modified variable is only used in the return statement outside
-        the for-loop. This is a known limitation of the def-use chain
-        detector which only checks within the for-loop body."""
+        the for-loop. S2 can now link the incoming/outgoing count updates
+        and advancing bounds without broadening the general def-use detector."""
         code = """
 def maxReplacement(s, k):
     from collections import Counter
@@ -768,13 +767,9 @@ def maxReplacement(s, k):
     return len(s) - left
 """
         _, _, strategies = _extract_all(code)
-        # Known limitation: sliding_window NOT detected for if-shrink pattern
-        # where modified variable is only used in return outside the loop.
-        # This test documents the limitation; if it starts passing, update
-        # the test to assert True and remove this comment.
-        assert "sliding_window" not in _strategy_ids(strategies), \
-            "KNOWN LIMITATION changed: if-shrink pattern is now detected. " \
-            "Update this test and remove the known-limitation annotation."
+        # count[s[right]] grows, count[s[left]] shrinks, and left advances
+        # under the window-extent condition: genuine conditional maintenance.
+        assert "sliding_window" in _strategy_ids(strategies)
 
     def test_209_accumulator_not_two_pointers(self):
         """Problem 209: while total >= target with total -= nums[left]; left += 1.

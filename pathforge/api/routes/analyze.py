@@ -12,10 +12,8 @@ from pydantic import BaseModel
 
 from pathforge.api.services.analysis import run_analysis
 from pathforge.auth.auth_middleware import get_current_user
-from pathforge.services.problem_resolver import resolve_problem
-from pathforge.services.ground_truth_builder import GroundTruthError
+from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
 from pathforge.services.persistence import run_persistence
-from pathforge.llm.graphql_client import GraphQLUnavailableError
 from pathforge.db.db import get_connection
 from pathforge.api.services.shadow_observability import (
     record_shadow_result, get_shadow_log_dict,
@@ -100,6 +98,8 @@ class ShadowAnalysisResult(BaseModel):
     technique_evidence: list[dict] = []
     strategy_evidence: list[dict] = []
     match_outcome: Optional[dict] = None
+    coverage: Optional[dict] = None
+    strategy_selection: Optional[dict] = None
     extractor_version: str = ""
     elapsed_ms: float = 0.0
 
@@ -129,12 +129,13 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                     conn,
                     leetcode_id=req.problem.leetcode_id,
                     title_slug=req.problem.title_slug,
+                    allow_preparation=False,
                 )
                 groups = ctx.accepted_solution_groups
+            except ProblemReadinessError as e:
+                raise HTTPException(status_code=409, detail=e.detail)
             except ValueError as e:
                 raise HTTPException(status_code=404, detail=str(e))
-            except (GraphQLUnavailableError, GroundTruthError) as e:
-                raise HTTPException(status_code=502, detail=str(e))
 
         result = run_analysis(req.code, req.language, accepted_solution_groups=groups)
         if "error" in result:

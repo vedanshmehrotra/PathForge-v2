@@ -282,7 +282,7 @@ class QuickFind:
         assert any(e.type == "parent_array" for e in result.evidence)
         assert any(e.type == "union_operation" for e in result.evidence)
 
-    def test_not_detected_union_find_functional(self):
+    def test_detected_union_find_functional(self):
         code = """
 def find(parent, x):
     if parent[x] != x:
@@ -302,7 +302,8 @@ def union(parent, rank, x, y):
         rank[px] += 1
 """
         result = self.detector.detect(ast.parse(code))
-        assert result.detected == False
+        assert result.detected == True
+        assert {e.type for e in result.evidence} == {"parent_array", "find_recursive", "union_operation"}
 
     def test_detected_number_of_islands_union_find(self):
         code = """

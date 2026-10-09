@@ -17,6 +17,8 @@ import ast
 from typing import Optional
 
 from pathforge.ast_analysis.shadow.data_structures import StructuralFact, EXTRACTOR_VERSION
+from pathforge.ast_analysis.shadow.binary_search_links import extract_binary_search_links
+from pathforge.ast_analysis.shadow.window_links import extract_window_links
 
 
 # --- Carry-like variable name heuristic (not naming-dependent, just heuristic) ---
@@ -79,6 +81,10 @@ def extract_structural_facts(ast_root: ast.AST) -> list[StructuralFact]:
     extractor = _FactExtractor()
     extractor.visit(ast_root)
     facts = extractor._deduplicate()
+    # Append scoped S1 observations so existing raw facts and their IDs stay
+    # stable. Other techniques/strategies do not consume this relation.
+    facts.extend(extract_binary_search_links(ast_root))
+    facts.extend(extract_window_links(ast_root))
     for i, fact in enumerate(facts):
         fact.fact_id = f"fact_{i:03d}"
     return facts

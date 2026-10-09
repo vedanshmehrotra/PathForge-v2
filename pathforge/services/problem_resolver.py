@@ -35,10 +35,80 @@ class ProblemContext:
     ground_truth_consistency: list = field(default_factory=list)
 
 
+class ProblemReadinessError(Exception):
+    """Problem context is unavailable; analysis must not prepare it implicitly."""
+
+    def __init__(self, code: str, reason: str, message: str):
+        super().__init__(message)
+        self.detail = {"code": code, "reason": reason, "message": message}
+
+
+def _has_usable_solution_groups(groups: list) -> bool:
+    """Check production pattern availability, independently of Shadow authority."""
+    return any(
+        isinstance(group, dict)
+        and isinstance(group.get("patterns"), list)
+        and bool(group["patterns"])
+        and all(isinstance(pattern, str) and pattern.strip() for pattern in group["patterns"])
+        for group in groups
+    )
+
+
+def _validate_stored_ground_truth_shapes(
+    patterns_raw, confidence_raw, solution_groups_raw, curated_patterns,
+):
+    """Check consumed list shapes before derivation; never infer label validity."""
+    def unavailable():
+        return ProblemReadinessError(
+            "GROUND_TRUTH_UNAVAILABLE", "UNUSABLE_GROUND_TRUTH",
+            "Analysis is unavailable for this problem because its preparation is unusable. "
+            "Try another problem or contact support.",
+        )
+
+    def decode(raw):
+        if isinstance(raw, str) and raw:
+            try:
+                return json.loads(raw)
+            except json.JSONDecodeError as exc:
+                raise unavailable() from exc
+        return None if raw == "" else raw
+
+    def string_list(value, *, nullable=False, patterns=False):
+        if value is None and nullable:
+            return
+        if not isinstance(value, list) or not all(
+            isinstance(item, str) and (not patterns or item.strip()) for item in value
+        ):
+            raise unavailable()
+
+    string_list(decode(patterns_raw), nullable=True, patterns=True)
+    string_list(curated_patterns, nullable=True, patterns=True)
+    confidence = decode(confidence_raw)
+    if confidence is not None and not isinstance(confidence, dict):
+        raise unavailable()
+    groups = decode(solution_groups_raw)
+    if groups is None:
+        return
+    if not isinstance(groups, list):
+        raise unavailable()
+    for group in groups:
+        if not isinstance(group, dict):
+            raise unavailable()
+        if "confidence" in group and not isinstance(group["confidence"], dict):
+            raise unavailable()
+        for field in ("patterns", "required", "optional", "excluded", "provenance"):
+            string_list(
+                group.get(field, []), nullable=field in ("patterns", "required"),
+                patterns=field == "patterns",
+            )
+
+
 def resolve_problem(
     connection,
     leetcode_id: Optional[int] = None,
     title_slug: Optional[str] = None,
+    *,
+    allow_preparation: bool = True,
 ) -> ProblemContext:
     """Resolve a problem identifier (numeric ID or title_slug) to a ProblemContext.
 
@@ -51,18 +121,42 @@ def resolve_problem(
     Cache-hit path (every subsequent time):
         1. Load from problems table
         2. Load from problem_ground_truth table
+
+    With allow_preparation=False, only SELECTs are allowed: missing cache
+    components raise ProblemReadinessError instead of fetching or generating.
     """
+    if leetcode_id is None and not title_slug:
+        raise ValueError("Either leetcode_id or title_slug is required")
     row = _find_problem_in_db(connection, leetcode_id, title_slug)
 
     if row is None:
+        if not allow_preparation:
+            raise ProblemReadinessError(
+                "PREPARATION_REQUIRED", "PROBLEM_NOT_CACHED",
+                "Prepare this problem before running analysis.",
+            )
         row = _fetch_and_store_problem(connection, leetcode_id, title_slug)
 
     pid = row["id"]
     slug = row.get("title_slug") or ""
 
-    _ensure_ground_truth(connection, row)
+    if allow_preparation:
+        _ensure_ground_truth(connection, row)
+    elif connection.execute(
+        "SELECT 1 FROM problem_ground_truth WHERE problem_id = %s", (pid,),
+    ).fetchone() is None:
+        raise ProblemReadinessError(
+            "PREPARATION_REQUIRED", "GROUND_TRUTH_MISSING",
+            "Prepare this problem before running analysis.",
+        )
 
     groups, confidence = _load_ground_truth(connection, pid, row)
+    if not _has_usable_solution_groups(groups):
+        raise ProblemReadinessError(
+            "GROUND_TRUTH_UNAVAILABLE", "UNUSABLE_GROUND_TRUTH",
+            "Analysis is unavailable for this problem because its preparation is unusable. "
+            "Try another problem or contact support.",
+        )
 
     from pathforge.services.ground_truth_builder import (
         find_ground_truth_disagreements,
@@ -298,6 +392,9 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
 
     # Load CSV-curated patterns from problems.pattern
     csv_patterns = _load_csv_patterns(connection, problem_id)
+    _validate_stored_ground_truth_shapes(
+        patterns_raw, confidence_raw, solution_groups_raw, csv_patterns,
+    )
 
     # Phase 3B: if solution_groups column exists and has data, use it directly
     if solution_groups_raw is not None:
@@ -328,7 +425,7 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                 # Preserve original legacy patterns for the production matcher.
                 legacy_patterns = g.get("patterns", [])
                 if not legacy_patterns:
-                    legacy_patterns = g.get("required", [])
+                    legacy_patterns = g.get("required") or []
 
                 # Determine required concepts for the shadow matcher.
                 #

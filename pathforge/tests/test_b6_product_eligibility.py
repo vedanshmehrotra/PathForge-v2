@@ -17,6 +17,8 @@ import ast
 import copy
 import json
 import pathlib
+from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
 
@@ -34,6 +36,7 @@ from pathforge.ast_analysis.shadow.shadow_runner import run_shadow_analysis
 from pathforge.ast_analysis.shadow.strategies import evaluate_strategies
 from pathforge.ast_analysis.shadow.techniques import detect_techniques
 from pathforge.services import product_eligibility as b6
+from pathforge.services import persistence
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 _CORPUS_A = (
@@ -307,15 +310,24 @@ class TestFlagOff:
         assert decision["allow_shadow"] is False
         assert decision["eligibility"] is None
 
-    def test_flag_off_run_persistence_has_no_b6_effect(self, monkeypatch, tmp_path):
-        """Flag OFF: legacy scoring path is byte-identical to pre-B6."""
+    @pytest.mark.parametrize("evidence,scoring_allowed", [
+        ("structurally_observed", True),
+        ("llm_proposed", False),
+    ])
+    def test_flag_off_run_persistence_has_no_b6_effect(
+        self, monkeypatch, persistence_case, evidence, scoring_allowed,
+    ):
+        """Flag OFF uses the real legacy gate without consulting B6."""
         monkeypatch.setenv(b6.FLAG_ENV_VAR, "")
-        from pathforge.services import persistence as persistence_module
-        source = pathlib.Path(
-            persistence_module.__file__
-        ).read_text(encoding="utf-8")
-        # the gate is only consulted when the flag is on
-        assert "b6_enabled = b6.flag_enabled()" in source
+        groups = [_persistence_group(evidence)]
+        result = persistence_case.run(groups)
+        persistence_case.evaluate.assert_not_called()
+        persistence_case.gate.assert_not_called()
+        assert result["b6_gate"]["source"] == "legacy"
+        assert result["verdict_type"] == (
+            "authoritative" if scoring_allowed else "analysis_only"
+        )
+        _assert_product_consequences(persistence_case, result, scoring_allowed)
 
     def test_legacy_matcher_unchanged_flag_off(self):
         groups = [family("group_0", ["sliding_window"], authority="human_curated")]
@@ -339,75 +351,196 @@ class _FakeCursor:
 
 
 class _FakeConn:
-    """Minimal recording double: counts ELO/gap/recommendation side effects."""
+    """Record submission SQL in memory; reject unexpected database access."""
 
     def __init__(self):
-        self.elo_calls = 0
-        self.gap_calls = 0
-        self.recommendation_calls = 0
+        self.queries = []
+        self.fail_on = None
+        self.commit = Mock()
+        self.rollback = Mock()
 
-    def execute(self, *args, **kwargs):
-        return _FakeCursor({"id": 1})
+    def execute(self, sql, params):
+        self.queries.append((sql, params))
+        if self.fail_on and self.fail_on in sql:
+            raise RuntimeError("isolated persistence failure")
+        if "INSERT INTO submissions" in sql:
+            return _FakeCursor({"id": 123})
+        if "SELECT * FROM submissions" in sql:
+            return _FakeCursor({"id": 123, "user_id": 7})
+        if "SELECT * FROM problems" in sql:
+            return _FakeCursor({"id": 209, "difficulty": "Medium"})
+        raise AssertionError(f"Unexpected SQL: {sql}")
 
 
-class _RecordingGate:
-    """Instrumented gating: records which consequence path would run."""
-
-    def __init__(self):
-        self.elo_ran = False
-        self.gap_ran = False
-        self.recommendation_ran = False
+def _persistence_group(evidence, required=None):
+    group = family("g0", required or ["sliding_window"], authority=evidence)
+    group.update(patterns=["sliding_window_variable"], evidence=evidence)
+    return group
 
 
-def _gated_consequences(eligibility_eligible: bool, monkeypatch) -> _RecordingGate:
-    """Drive the persistence branch that B6 gates, with the flag ON."""
-    monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
-    gate = _RecordingGate()
+@pytest.fixture
+def persistence_case(monkeypatch):
+    """Run production orchestration with real B6 decisions and mocked writes."""
+    from pathforge.db import db
 
-    # Mirror the persistence branch: is_authoritative only when both the legacy
-    # evidence gate AND (flag ON) the B6 canonical gate allow.
-    legacy_authoritative = True  # simulate a legacy-authoritative verdict
-    b6_allows = eligibility_eligible
-    runs = legacy_authoritative and b6_allows
-    if runs:
-        gate.elo_ran = gate.gap_ran = gate.recommendation_ran = True
-    return gate
+    monkeypatch.setattr(
+        db, "_ensure_pool", Mock(side_effect=AssertionError("Database access forbidden")),
+    )
+    connection = _FakeConn()
+    profile = Mock(return_value={"topic": "sliding_window_variable"})
+    gap_engine = Mock(spec=["compute_signals", "persist_signals"])
+    gap_engine.compute_signals.return_value = {"gap_signals": [{}], "summary": {}}
+    elo_engine = Mock(spec=["compute_updates", "persist_elos"])
+    elo_engine.compute_updates.return_value = {"pattern_elo_updates": [{}]}
+    recommend = Mock(return_value={"problem_id": 209})
+    log_recommendation = Mock(return_value=456)
+    mark_acted_on = Mock()
+    streak = Mock()
+    evaluate = Mock(wraps=b6.evaluate_submission)
+    gate = Mock(wraps=b6.gating_decision)
+    monkeypatch.setattr(persistence, "update_topic_profile", profile)
+    monkeypatch.setattr(persistence, "_gap_engine", gap_engine)
+    monkeypatch.setattr(persistence, "_elo_engine", elo_engine)
+    monkeypatch.setattr(persistence, "get_recommendation", recommend)
+    monkeypatch.setattr(persistence, "_log_recommendation", log_recommendation)
+    monkeypatch.setattr(persistence, "_mark_last_recommendation_acted_on", mark_acted_on)
+    monkeypatch.setattr(persistence, "_update_user_streak", streak)
+    monkeypatch.setattr(persistence, "_next_attempt_number", Mock(return_value=1))
+    monkeypatch.setattr(persistence, "load_submissions", Mock(return_value=[]))
+    monkeypatch.setattr(persistence, "load_user_pattern_elo", Mock(return_value={}))
+    monkeypatch.setattr(b6, "evaluate_submission", evaluate)
+    monkeypatch.setattr(b6, "gating_decision", gate)
+
+    def run(groups):
+        return persistence.run_persistence(
+            connection=connection, user_id=7, problem_id=209,
+            problem_difficulty="Medium", code=WINDOW_209,
+            ast_output={"detected_patterns": [
+                {"pattern_id": "sliding_window_variable", "confidence": 0.9},
+            ]},
+            match_result={"match_result": "FULL_MATCH", "matched_groups": [0],
+                          "confidence_score": 0.9, "unmatched_patterns": []},
+            groups=groups,
+        )
+
+    return SimpleNamespace(
+        connection=connection, run=run, profile=profile, gap_engine=gap_engine,
+        elo_engine=elo_engine, recommend=recommend, log_recommendation=log_recommendation,
+        mark_acted_on=mark_acted_on, streak=streak, evaluate=evaluate, gate=gate,
+    )
+
+
+def _assert_product_consequences(case, result, allowed):
+    for operation in (
+        case.profile, case.gap_engine.compute_signals, case.gap_engine.persist_signals,
+        case.elo_engine.compute_updates, case.elo_engine.persist_elos,
+        case.recommend, case.mark_acted_on, case.log_recommendation,
+    ):
+        if allowed:
+            operation.assert_called_once()
+        else:
+            operation.assert_not_called()
+    assert result["submission_id"] == 123
+    assert "INSERT INTO submissions" in case.connection.queries[0][0]
+    assert result["gap_signals_count"] == int(allowed)
+    assert result["elo_updates_count"] == int(allowed)
+    assert result["recommendation_id"] == (456 if allowed else None)
+    case.streak.assert_called_once()
+    # Transaction ownership remains with the caller.
+    case.connection.commit.assert_not_called()
+    case.connection.rollback.assert_not_called()
 
 
 class TestFlagOnGating:
 
-    def test_16_flag_on_blocks_elo_for_non_authoritative(self, monkeypatch):
+    def test_16_flag_on_blocks_elo_for_non_authoritative(self, monkeypatch, persistence_case):
         # structurally_observed + CONFIRMED + primary -> legacy would score,
         # B6 blocks.
-        groups = [family("g0", ["sliding_window"], authority="structurally_observed")]
-        eligibility, _ = eligibility_for(groups, snapshot_with_strategies("sliding_window"))
-        assert eligibility.eligible is False
-        gate = _gated_consequences(eligibility.eligible, monkeypatch)
-        assert gate.elo_ran is False
-        assert gate.gap_ran is False
-        assert gate.recommendation_ran is False
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        result = persistence_case.run([_persistence_group("structurally_observed")])
+        assert result["verdict_type"] == "authoritative"
+        assert result["b6_gate"]["eligibility"]["eligible"] is False
+        assert result["b6_gate"]["eligibility"]["canonical_authority"] == vocab.STRUCTURALLY_OBSERVED
+        _assert_product_consequences(persistence_case, result, False)
 
-    def test_17_flag_on_blocks_gaps_for_provisional(self, monkeypatch):
-        groups = [family("g0", ["sliding_window", "prefix_sum"],
-                         authority="human_curated")]
-        eligibility, _ = eligibility_for(groups, snapshot_with_strategies("sliding_window"))
-        assert eligibility.eligible is False
-        gate = _gated_consequences(eligibility.eligible, monkeypatch)
-        assert gate.gap_ran is False
+    def test_17_flag_on_blocks_gaps_for_provisional(self, monkeypatch, persistence_case):
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        groups = [_persistence_group("externally_listed", ["sliding_window", "prefix_sum"])]
+        result = persistence_case.run(groups)
+        assert result["b6_gate"]["eligibility"]["reason_codes"] == ["coverage_not_confirmed"]
+        assert result["verdict_type"] == "authoritative"
+        _assert_product_consequences(persistence_case, result, False)
 
-    def test_18_flag_on_blocks_recommendations_for_inferred(self, monkeypatch):
-        groups = [family("g0", ["sliding_window"], authority="llm_proposed")]
-        eligibility, _ = eligibility_for(groups, snapshot_with_strategies("sliding_window"))
-        assert eligibility.eligible is False
-        gate = _gated_consequences(eligibility.eligible, monkeypatch)
-        assert gate.recommendation_ran is False
+    def test_18_flag_on_blocks_recommendations_for_inferred(self, monkeypatch, persistence_case):
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        result = persistence_case.run([_persistence_group("llm_proposed")])
+        assert result["b6_gate"]["eligibility"]["canonical_authority"] == vocab.INFERRED
+        assert result["b6_gate"]["allow_shadow"] is False
+        _assert_product_consequences(persistence_case, result, False)
 
-    def test_flag_on_allows_consequences_when_eligible(self, monkeypatch):
-        groups = [family("g0", ["sliding_window"], authority="human_curated")]
-        eligibility, _ = eligibility_for(groups, snapshot_with_strategies("sliding_window"))
-        assert eligibility.eligible is True
-        gate = _gated_consequences(eligibility.eligible, monkeypatch)
-        assert gate.elo_ran is True
+    def test_flag_on_allows_consequences_when_eligible(self, monkeypatch, persistence_case):
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        groups = [_persistence_group("externally_listed")]
+        result = persistence_case.run(groups)
+        persistence_case.evaluate.assert_called_once_with(WINDOW_209, groups)
+        persistence_case.gate.assert_called_once()
+        assert persistence_case.gate.call_args.args[0] is persistence_case.connection
+        assert result["b6_gate"]["allow_shadow"] is True
+        assert result["b6_gate"]["eligibility"]["canonical_authority"] == vocab.EXTERNAL_VERIFIED
+        assert result["verdict_type"] == "authoritative"
+        _assert_product_consequences(persistence_case, result, True)
+
+    def test_flag_on_cannot_override_legacy_gate(self, monkeypatch, persistence_case):
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        result = persistence_case.run([_persistence_group("human_curated")])
+        assert result["b6_gate"]["allow_shadow"] is True
+        assert result["b6_gate"]["eligibility"]["canonical_authority"] == vocab.HUMAN_APPROVED
+        assert result["verdict_type"] == "analysis_only"
+        _assert_product_consequences(persistence_case, result, False)
+
+    @pytest.mark.parametrize("failure", ["missing_evaluation", "evaluation_error", "gate_error"])
+    def test_run_persistence_gating_failure_is_closed(self, monkeypatch, persistence_case, failure):
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        if failure == "missing_evaluation":
+            persistence_case.evaluate.side_effect = lambda *args: None
+        elif failure == "evaluation_error":
+            persistence_case.evaluate.side_effect = RuntimeError("isolated evaluation failure")
+        else:
+            persistence_case.gate.side_effect = RuntimeError("isolated gate failure")
+        result = persistence_case.run([_persistence_group("externally_listed")])
+        assert result["b6_gate"]["source"] == "b6_gate"
+        assert result["b6_gate"]["allow_shadow"] is False
+        assert result["verdict_type"] == "authoritative"
+        if failure != "missing_evaluation":
+            expected = "evaluation" if failure == "evaluation_error" else "gate"
+            assert result["b6_gate"]["error"] == f"RuntimeError: isolated {expected} failure"
+        _assert_product_consequences(persistence_case, result, False)
+
+    @pytest.mark.parametrize("failure", ["submission_insert", "gap_write"])
+    def test_run_persistence_write_failure_propagates(self, monkeypatch, persistence_case, failure):
+        monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")
+        if failure == "submission_insert":
+            persistence_case.connection.fail_on = "INSERT INTO submissions"
+        else:
+            persistence_case.gap_engine.persist_signals.side_effect = RuntimeError(
+                "isolated persistence failure",
+            )
+        with pytest.raises(RuntimeError, match="^isolated persistence failure$"):
+            persistence_case.run([_persistence_group("externally_listed")])
+        if failure == "submission_insert":
+            persistence_case.evaluate.assert_not_called()
+            persistence_case.profile.assert_not_called()
+            persistence_case.gap_engine.compute_signals.assert_not_called()
+        else:
+            persistence_case.profile.assert_called_once()
+            persistence_case.gap_engine.persist_signals.assert_called_once()
+        persistence_case.elo_engine.compute_updates.assert_not_called()
+        persistence_case.elo_engine.persist_elos.assert_not_called()
+        persistence_case.recommend.assert_not_called()
+        persistence_case.log_recommendation.assert_not_called()
+        persistence_case.streak.assert_not_called()
+        persistence_case.connection.commit.assert_not_called()
+        persistence_case.connection.rollback.assert_not_called()
 
     def test_gating_decision_fail_closed_on_missing_evaluation(self, monkeypatch):
         monkeypatch.setenv(b6.FLAG_ENV_VAR, "1")

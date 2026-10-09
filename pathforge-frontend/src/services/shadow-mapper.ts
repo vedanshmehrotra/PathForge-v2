@@ -1,18 +1,8 @@
 /**
- * Shadow Analysis Presentation Mapper
- *
- * Converts internal shadow analysis data (strategy IDs, technique IDs,
- * satisfaction scores, outcomes) into simple, user-friendly text.
- *
- * This module is the ONLY place where internal IDs are mapped to
- * human-readable names. The UI should never reference raw IDs directly.
+ * Present canonical B3 coverage and B4 selection without changing their decisions.
+ * Older matching and raw evidence remain available for diagnostics.
  */
-
 import type { ShadowAnalysisResult } from '@/types/api'
-
-// ============================================================
-// Human-readable approach names (strategy_id → display name)
-// ============================================================
 
 const STRATEGY_NAMES: Record<string, string> = {
   two_pointers_opposite: 'Two Pointers',
@@ -25,8 +15,9 @@ const STRATEGY_NAMES: Record<string, string> = {
   union_find: 'Union-Find',
   monotonic_stack_strategy: 'Monotonic Stack',
 }
-
 const TECHNIQUE_NAMES: Record<string, string> = {
+  hash_lookup: 'Hash lookup',
+  candidate_selection: 'Candidate selection',
   sequential_accumulation: 'Running total',
   bidirectional_index_scan: 'Two-way scan',
   forward_pointer_advance: 'Forward pointer advance',
@@ -39,95 +30,65 @@ const TECHNIQUE_NAMES: Record<string, string> = {
   monotonic_stack_maintenance: 'Monotonic stack',
 }
 
-// ============================================================
-// Confidence level mapping
-// ============================================================
+function displayName(id: string, names: Record<string, string>): string {
+  return names[id] ?? id.replace(/_/g, ' ').replace(/^./, initial => initial.toUpperCase())
+}
 
+// Retain the existing display bands; confidence comes only from B4's selected candidate.
 function confidenceLevel(score: number): 'High' | 'Medium' | 'Low' {
   if (score >= 0.8) return 'High'
   if (score >= 0.5) return 'Medium'
   return 'Low'
 }
 
-// ============================================================
-// Outcome status mapping
-// ============================================================
+function confirmedSelection(shadow: ShadowAnalysisResult): { id: string; confidence: number } | null {
+  const coverage = shadow.coverage
+  const selection = shadow.strategy_selection
+  const primary = selection?.submission
+  if (!coverage || coverage.no_ground_truth !== false || !Array.isArray(coverage.families)
+      || !selection || !Array.isArray(selection.families) || !primary
+      || primary.scope !== 'submission' || typeof primary.selected !== 'string' || !primary.selected
+      || primary.ambiguity !== false || primary.tie_resolved !== false
+      || !Array.isArray(primary.candidates)) return null
+
+  const selected = primary.selected
+  const candidates = primary.candidates.filter(c => c?.concept_id === selected)
+  if (candidates.length !== 1) return null
+  const confidence = candidates[0].confidence
+  if (typeof confidence !== 'number' || !Number.isFinite(confidence) || confidence < 0 || confidence > 1) return null
+
+  // B3's aggregate is a measurement, not a global verdict. Join an actually
+  // confirmed family to its B4 primary; never choose/rank a replacement in the UI.
+  const familyIds = coverage.families.map(f => f?.family_id)
+  if (familyIds.some(id => typeof id !== 'string' || !id) || new Set(familyIds).size !== familyIds.length) return null
+  const established = coverage.families.some(family => {
+    if (family.coverage_state !== 'CONFIRMED' || !Array.isArray(family.conclusion_eligible_present)
+        || !family.conclusion_eligible_present.includes(selected)) return false
+    const familySelections = selection.families.filter(f => f?.family_id === family.family_id)
+    if (familySelections.length !== 1) return false
+    const scoped = familySelections[0]
+    if (scoped.scope !== 'family' || scoped.selected !== selected || scoped.ambiguity !== false
+        || scoped.tie_resolved !== false || !Array.isArray(scoped.candidates)) return false
+    const scopedCandidates = scoped.candidates.filter(c => c?.concept_id === selected)
+    return scopedCandidates.length === 1 && scopedCandidates[0].confidence === confidence
+  })
+  return established ? { id: selected, confidence } : null
+}
 
 type OutcomeStatus = 'likely_match' | 'not_enough_evidence' | 'possible_mismatch'
 
-function outcomeStatus(
-  outcome: string,
-  _satisfactionScore: number,
-): OutcomeStatus {
-  switch (outcome) {
-    case 'CONFIRMED':
-      return 'likely_match'
-    case 'CONTRADICTED':
-      return 'possible_mismatch'
-    case 'UNRESOLVED':
-    default:
-      return 'not_enough_evidence'
-  }
-}
-
-// ============================================================
-// Short explanation generation
-// ============================================================
-
-function generateExplanation(
-  outcome: string,
-  strategies: string[],
-  techniques: string[],
-  _reasoning: string[],
-): string {
-  if (outcome === 'CONFIRMED' && strategies.length > 0) {
-    const name = STRATEGY_NAMES[strategies[0]] ?? strategies[0]
-    return `The solution follows a ${name} approach for this problem.`
-  }
-
-  if (outcome === 'CONFIRMED' && techniques.length > 0) {
-    const techName = TECHNIQUE_NAMES[techniques[0]] ?? techniques[0]
-    return `The solution uses ${techName.toLowerCase()}, which matches the expected approach.`
-  }
-
-  if (outcome === 'CONFIRMED') {
-    return 'The solution matches the expected approach for this problem.'
-  }
-
-  if (outcome === 'CONTRADICTED') {
-    return 'The code appears to use a different approach from what is expected for this problem.'
-  }
-
-  // UNRESOLVED
-  return 'The code contains some relevant patterns, but there isn\'t enough information to confirm the approach with confidence.'
-}
-
-// ============================================================
-// Public API: Map shadow analysis to display data
-// ============================================================
-
 export interface ShadowDisplayData {
-  /** Whether to show the experimental panel at all */
   visible: boolean
-
-  /** Primary status: 'likely_match' | 'not_enough_evidence' | 'possible_mismatch' */
   status: OutcomeStatus
-
-  /** Human-readable status label */
   statusLabel: string
-
-  /** Human-readable approach name(s) */
   approaches: string[]
-
-  /** Confidence as user-friendly text */
+  techniques: string[]
   confidence: 'High' | 'Medium' | 'Low' | '—'
-
-  /** One short explanation */
   explanation: string
-
-  /** Internal data for developer details (hidden by default) */
   developerDetails: {
     outcome: string
+    canonicalPrimary: string | null
+    families: Array<{ id: string; state: string }>
     strategies: Array<{ id: string; name: string; confidence: number }>
     techniques: Array<{ id: string; name: string; confidence: number }>
     satisfactionScore: number | null
@@ -139,126 +100,47 @@ export interface ShadowDisplayData {
   }
 }
 
-const STATUS_LABELS: Record<OutcomeStatus, string> = {
-  likely_match: 'Likely match',
-  not_enough_evidence: 'Not enough evidence',
-  possible_mismatch: 'Possible mismatch',
-}
-
-/**
- * Map a ShadowAnalysisResult from the API into user-friendly display data.
- * Returns { visible: false } if the shadow analysis is absent or invalid.
- */
-export function mapShadowToDisplay(
-  shadow: ShadowAnalysisResult | null | undefined,
-): ShadowDisplayData {
-  // Hidden by default — no shadow data means no panel
-  if (!shadow || !shadow.match_outcome) {
-    return {
-      visible: false,
-      status: 'not_enough_evidence',
-      statusLabel: '',
-      approaches: [],
-      confidence: '—',
-      explanation: '',
-      developerDetails: {
-        outcome: '',
-        strategies: [],
-        techniques: [],
-        satisfactionScore: null,
-        authorityTier: '',
-        elapsedMs: 0,
-        extractorVersion: '',
-        factCount: 0,
-        reasoning: [],
-      },
-    }
-  }
-
-  const outcome = shadow.match_outcome
-  const strategies = shadow.strategy_evidence ?? []
-  const techniques = shadow.technique_evidence ?? []
-
-  // Sort strategies by confidence descending
-  const sortedStrategies = [...strategies].sort(
-    (a, b) => b.confidence - a.confidence,
-  )
-
-  // Map strategy IDs to human-readable names
-  const strategyNames = sortedStrategies
-    .map((s) => STRATEGY_NAMES[s.strategy_id] ?? s.strategy_id)
-    .filter(Boolean)
-
-  // Map technique IDs to user-friendly names for fallback display
-  const techniqueNames = techniques
-    .map((t) => TECHNIQUE_NAMES[t.technique_id] ?? t.technique_id)
-    .filter(Boolean)
-
-  // Build the approach list depending on outcome.
-  // CONFIRMED: show the primary strategy (or technique fallback)
-  // UNRESOLVED: show up to 2 candidate names (or 'unclear' if too many)
-  // CONTRADICTED: always 'unclear'
-  let approaches: string[]
-  if (outcome.outcome === 'CONFIRMED') {
-    approaches = strategyNames.length > 0 ? [strategyNames[0]] : techniqueNames.length > 0 ? [techniqueNames[0]] : []
-  } else if (outcome.outcome === 'UNRESOLVED' && strategyNames.length <= 2 && strategyNames.length > 0) {
-    approaches = strategyNames
-  } else if (outcome.outcome === 'UNRESOLVED' && strategyNames.length > 2) {
-    approaches = [] // too many candidates
-  } else {
-    approaches = []
-  }
-
-  // Confidence from the best strategy or best technique (only meaningful for CONFIRMED)
-  const bestConfidence =
-    outcome.outcome === 'CONFIRMED'
-      ? sortedStrategies.length > 0
-        ? sortedStrategies[0].confidence
-        : techniques.length > 0
-          ? Math.max(...techniques.map((t) => t.presence_confidence))
-          : 0
-      : 0
-
-  const status = outcomeStatus(outcome.outcome, bestConfidence)
-  const explanation = generateExplanation(
-    outcome.outcome,
-    strategyIds(strategies),
-    techniqueNames,
-    outcome.reasoning ?? [],
-  )
+export function mapShadowToDisplay(shadow: ShadowAnalysisResult | null | undefined): ShadowDisplayData {
+  const visible = !!shadow && !!(shadow.match_outcome || shadow.coverage || shadow.strategy_selection)
+  const outcome = shadow?.match_outcome
+  const strategies = (Array.isArray(shadow?.strategy_evidence) ? shadow.strategy_evidence : [])
+    .filter(s => s && typeof s.strategy_id === 'string')
+  const techniques = (Array.isArray(shadow?.technique_evidence) ? shadow.technique_evidence : [])
+    .filter(t => t && typeof t.technique_id === 'string')
+  const confirmed = shadow ? confirmedSelection(shadow) : null
+  const techniqueNames = [...new Set(techniques.map(t => displayName(t.technique_id, TECHNIQUE_NAMES)))]
+  const selectedName = confirmed ? displayName(confirmed.id, STRATEGY_NAMES) : null
 
   return {
-    visible: true,
-    status,
-    statusLabel: STATUS_LABELS[status],
-    approaches:
-      approaches.length > 0 ? approaches
-        : outcome.outcome === 'CONFIRMED' ? ['Approach detected']
-        : ['Approach unclear'],
-    confidence: outcome.outcome === 'CONFIRMED' ? confidenceLevel(bestConfidence) : '—',
-    explanation,
+    visible,
+    status: confirmed ? 'likely_match' : 'not_enough_evidence',
+    statusLabel: visible ? confirmed ? 'Observed strategy' : 'Not enough evidence' : '',
+    approaches: visible ? selectedName ? [selectedName] : ['Approach unclear'] : [],
+    techniques: techniqueNames,
+    confidence: confirmed ? confidenceLevel(confirmed.confidence) : '—',
+    explanation: !visible ? '' : confirmed
+      ? `The code contains confirmed ${selectedName} strategy evidence.`
+      : 'The available evidence does not establish a confirmed primary strategy.',
     developerDetails: {
-      outcome: outcome.outcome,
-      strategies: sortedStrategies.map((s) => ({
-        id: s.strategy_id,
-        name: STRATEGY_NAMES[s.strategy_id] ?? s.strategy_id,
-        confidence: s.confidence,
+      outcome: outcome?.outcome ?? '',
+      canonicalPrimary: typeof shadow?.strategy_selection?.submission?.selected === 'string'
+        ? shadow.strategy_selection.submission.selected : null,
+      families: (Array.isArray(shadow?.coverage?.families) ? shadow.coverage.families : [])
+        .filter(f => f && typeof f.family_id === 'string' && typeof f.coverage_state === 'string')
+        .map(f => ({ id: f.family_id, state: f.coverage_state })),
+      strategies: strategies.map(s => ({
+        id: s.strategy_id, name: displayName(s.strategy_id, STRATEGY_NAMES), confidence: s.confidence,
       })),
-      techniques: techniques.map((t) => ({
-        id: t.technique_id,
-        name: TECHNIQUE_NAMES[t.technique_id] ?? t.technique_id,
+      techniques: techniques.map(t => ({
+        id: t.technique_id, name: displayName(t.technique_id, TECHNIQUE_NAMES),
         confidence: t.presence_confidence,
       })),
-      satisfactionScore: bestConfidence,
-      authorityTier: outcome.authority_tier ?? '',
-      elapsedMs: shadow.elapsed_ms ?? 0,
-      extractorVersion: shadow.extractor_version ?? '',
-      factCount: outcome.fact_count ?? 0,
-      reasoning: outcome.reasoning ?? [],
+      satisfactionScore: confirmed?.confidence ?? null,
+      authorityTier: outcome?.authority_tier ?? '',
+      elapsedMs: typeof shadow?.elapsed_ms === 'number' && Number.isFinite(shadow.elapsed_ms) ? shadow.elapsed_ms : 0,
+      extractorVersion: shadow?.extractor_version ?? '',
+      factCount: outcome?.fact_count ?? (Array.isArray(shadow?.structural_facts) ? shadow.structural_facts.length : 0),
+      reasoning: Array.isArray(outcome?.reasoning) ? outcome.reasoning : [],
     },
   }
-}
-
-function strategyIds(strategies: { strategy_id: string }[]): string[] {
-  return strategies.map((s) => s.strategy_id)
 }

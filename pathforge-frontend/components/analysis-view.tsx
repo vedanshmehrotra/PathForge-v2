@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Check,
   ChevronRight,
@@ -42,12 +42,19 @@ export function AnalysisView() {
   const [code, setCode] = useState('')
   const [problemInput, setProblemInput] = useState('')
 
-  const { result, loading, error, run } = useAnalyzeCode()
+  const { result, loading, error, errorCode, run } = useAnalyzeCode()
   const prep = usePrepareProblem()
   const { data: gapData } = useGapData(profile?.user_id ?? 0)
+  const needsPreparation = !!problemInput.trim() && !prep.result
+
+  useEffect(() => {
+    if (errorCode === 'PREPARATION_REQUIRED' || errorCode === 'GROUND_TRUTH_UNAVAILABLE') {
+      prep.clear()
+    }
+  }, [errorCode, prep.clear])
 
   const handleRun = () => {
-    if (profile) {
+    if (profile && !needsPreparation && !prep.loading && !loading) {
       const req: Parameters<typeof run>[0] = {
         user_id: profile.user_id,
         code,
@@ -62,7 +69,7 @@ export function AnalysisView() {
 
   // Clear stale prepare result when user edits the input after a prepare
   const handleProblemInputChange = (val: string) => {
-    if (prep.result && val.trim() !== problemInput.trim()) {
+    if (val.trim() !== problemInput.trim()) {
       prep.clear()
     }
     setProblemInput(val)
@@ -103,7 +110,7 @@ export function AnalysisView() {
         </div>
         <button
           onClick={handleRun}
-          disabled={loading || !profile || prep.loading}
+          disabled={loading || !profile || prep.loading || needsPreparation}
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {loading ? <Cpu className="size-4 animate-pulse" /> : <Play className="size-4" />}
@@ -146,6 +153,12 @@ export function AnalysisView() {
           </button>
         )}
       </div>
+
+      {needsPreparation && !prep.loading && (
+        <p className="text-xs text-muted-foreground">
+          Prepare the entered problem before running analysis, or clear it for analysis without a problem.
+        </p>
+      )}
 
       {prep.error && (
         <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">

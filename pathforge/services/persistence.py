@@ -157,7 +157,7 @@ def run_persistence(
         try:
             shadow_evaluation = b6.evaluate_submission(code, groups)
             b6_decision = b6.gating_decision(
-                conn, user_id, code, groups, match_result,
+                connection, user_id, code, groups, match_result,
                 shadow_evaluation=shadow_evaluation,
             )
         except Exception as exc:  # fail-closed: gating failure must not score

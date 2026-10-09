@@ -62,8 +62,37 @@ export interface ShadowAnalysisResult {
     problem_context_signals: Record<string, unknown>
   }>
   match_outcome?: ShadowMatchOutcome | null
+  coverage?: {
+    no_ground_truth: boolean
+    aggregate_state: string
+    families: Array<{
+      family_id: string
+      coverage_state: 'CONFIRMED' | 'PROVISIONAL' | 'UNRESOLVED' | 'CONTRADICTED' | 'UNMATCHABLE'
+      conclusion_eligible_present: string[]
+    }>
+  } | null
+  strategy_selection?: {
+    submission: ShadowStrategySelection
+    families: ShadowStrategySelection[]
+  } | null
   extractor_version: string
   elapsed_ms: number
+}
+
+export interface ShadowStrategySelection {
+  scope: 'submission' | 'family'
+  family_id: string | null
+  selected: string | null
+  ambiguity: boolean
+  tie_resolved: boolean
+  reason_codes: string[]
+  candidates: Array<{
+    concept_id: string
+    confidence: number
+    specificity_rank: number
+    tier: string
+    evidence_source: string
+  }>
 }
 
 export interface AnalyzeResponse {

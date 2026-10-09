@@ -698,6 +698,45 @@ def mark_family_relations(groups) -> list:
     return changed
 
 
+def _validate_generated_response(raw: dict) -> None:
+    """Validate response shape, without changing normalization or vocabulary."""
+    if not isinstance(raw, dict):
+        raise GroundTruthError("Ground truth generation failed: response must be an object")
+
+    def validate_fields(fields, default_confidence):
+        patterns = fields.get("patterns", [])
+        if not isinstance(patterns, list) or not all(isinstance(p, str) for p in patterns):
+            raise GroundTruthError("Ground truth generation failed: patterns must be a list of strings")
+        confidence = fields.get("confidence", default_confidence)
+        if not isinstance(confidence, dict) or not all(isinstance(key, str) for key in confidence):
+            raise GroundTruthError("Ground truth generation failed: confidence must be an object with string keys")
+
+    if "patterns" not in raw:
+        raise GroundTruthError("Ground truth generation failed: patterns are missing")
+    validate_fields(raw, {})
+    approaches = raw.get("approaches")
+    if approaches is not None:
+        if not isinstance(approaches, list):
+            raise GroundTruthError("Ground truth generation failed: approaches must be a list")
+        for approach in approaches:
+            if not isinstance(approach, dict):
+                raise GroundTruthError("Ground truth generation failed: each approach must be an object")
+            validate_fields(approach, raw.get("confidence", {}))
+            # Explicit approach scores bypass _normalize_patterns. Require
+            # numeric scores here; inherited scores retain its existing clamp.
+            if "confidence" in approach and not all(
+                isinstance(value, (int, float)) for value in approach["confidence"].values()
+            ):
+                raise GroundTruthError("Ground truth generation failed: approach confidence scores must be numbers")
+            if "name" in approach and not isinstance(approach["name"], str):
+                raise GroundTruthError("Ground truth generation failed: approach names must be strings")
+
+    try:
+        json.dumps(raw, allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise GroundTruthError("Ground truth generation failed: response is not valid JSON data") from exc
+
+
 def build_ground_truth(problem_id: int, problem_description: str, connection) -> list[str]:
     """Generate ground truth for a problem.
 
@@ -711,11 +750,14 @@ def build_ground_truth(problem_id: int, problem_description: str, connection) ->
             "Ground truth generation failed: OpenRouter/LLM unavailable or returned no valid output"
         )
 
+    _validate_generated_response(raw)
     patterns = raw.get("patterns", [])
     confidence = raw.get("confidence", {})
     approaches = raw.get("approaches", [])  # Optional: LLM may propose multiple approaches
 
     canonical, filtered_confidence = _normalize_patterns(patterns, confidence)
+    if not canonical:
+        raise GroundTruthError("Ground truth generation failed: no recognized patterns remain after normalization")
 
     _store_ground_truth(connection, problem_id, canonical, filtered_confidence, approaches)
 
@@ -1056,6 +1098,8 @@ def _store_ground_truth(
     approaches: list = None,
 ):
     """Store ground truth with both legacy flat columns and new solution_groups."""
+    if not patterns:
+        raise GroundTruthError("Ground truth generation failed: cannot store empty patterns")
     now = iso_now()
     patterns_json = json.dumps(patterns)
     confidence_json = json.dumps(confidence) if confidence else "{}"

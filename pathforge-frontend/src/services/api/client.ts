@@ -7,6 +7,9 @@ export function setAccessToken(token: string | null) {
 }
 
 export class ApiError extends Error {
+  public code?: string
+  public reason?: string
+
   constructor(
     public status: number,
     message: string,
@@ -14,6 +17,12 @@ export class ApiError extends Error {
   ) {
     super(message)
     this.name = 'ApiError'
+    const detail = (body as { detail?: unknown } | null)?.detail
+    if (detail && typeof detail === 'object') {
+      const fields = detail as { code?: unknown; reason?: unknown }
+      if (typeof fields.code === 'string') this.code = fields.code
+      if (typeof fields.reason === 'string') this.reason = fields.reason
+    }
   }
 }
 
@@ -37,9 +46,16 @@ export async function apiRequest<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => null)
+    const message = typeof body?.detail === 'string'
+      ? body.detail
+      : typeof body?.detail?.message === 'string'
+        ? body.detail.message
+        : typeof body?.error === 'string'
+          ? body.error
+          : `Request failed with status ${res.status}`
     throw new ApiError(
       res.status,
-      body?.detail || body?.error || `Request failed with status ${res.status}`,
+      message,
       body,
     )
   }

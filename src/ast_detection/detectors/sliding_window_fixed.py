@@ -9,6 +9,7 @@ Does NOT detect variable-size sliding window patterns.
 
 import ast
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.window_structure import has_offset_window_update, boundary_window_link
 
 
 @register_detector
@@ -38,6 +39,14 @@ class SlidingWindowFixedDetector(BaseDetector):
                     window_sum -= arr[left]
                     left += 1
         """
+        preceding = {}
+        for parent in ast.walk(ast_root):
+            for _, children in ast.iter_fields(parent):
+                if isinstance(children, list):
+                    for index, child in enumerate(children):
+                        if isinstance(child, ast.For):
+                            preceding[child] = children[:index]
+
         for node in ast.walk(ast_root):
             if not isinstance(node, ast.For):
                 continue
@@ -49,6 +58,30 @@ class SlidingWindowFixedDetector(BaseDetector):
             if window_var is None:
                 continue
 
+            if self._has_offset_window_update(node, preceding.get(node, [])):
+                location = f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None
+                evidence.extend([
+                    EvidenceItem(
+                        type="window_size_check",
+                        description="Initial window sum and loop start share a fixed width",
+                        location=location, weight=0.30,
+                    ),
+                    EvidenceItem(
+                        type="window_expand",
+                        description=f"Incoming sequence element indexed by '{window_var}' advancing by one",
+                        location=location, weight=0.20,
+                    ),
+                    EvidenceItem(
+                        type="window_shrink_fixed",
+                        description="Same accumulator removes the same sequence's element at a fixed offset",
+                        location=location, weight=0.35,
+                    ),
+                ])
+                continue
+
+            # A threshold and subtraction alone do not establish a window.
+            if boundary_window_link(node, preceding.get(node, [])) is None:
+                continue
             bound_check = self._find_window_bound_check(node.body, window_var)
             if bound_check is None:
                 continue
@@ -119,6 +152,9 @@ class SlidingWindowFixedDetector(BaseDetector):
                                 weight=0.35,
                             )
                         )
+
+    def _has_offset_window_update(self, loop: ast.For, preceding: list) -> bool:
+        return has_offset_window_update(loop, preceding)
 
     def _find_window_bound_check(self, body: list, window_var: str):
         """Find the if statement that checks if window reached full size."""

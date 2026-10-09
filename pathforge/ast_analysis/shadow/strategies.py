@@ -180,46 +180,29 @@ def _evaluate_binary_search(
 ) -> Optional[StrategyEvidence]:
     """S1: Binary Search
 
-    Required techniques: boundary_narrowing, midpoint_calculation
-    Required structural constraints:
-    - while-loop comparing two index variables
-    - midpoint calculation present
-    - one index updated conditionally based on comparison result
+    Required structural constraint: a scoped binary_search_partition linking
+    the loop bounds, midpoint, predicate and midpoint-based boundary writes.
+    Feasibility calls qualify only for the reviewed ceiling-sum helper form.
 
     Must NOT classify:
     - two-pointer palindrome (no midpoint)
     - sliding window (no midpoint)
     """
-    tech_ids = _technique_ids(technique_evidence)
-    fact_types = _fact_types(facts)
-
-    # Required facts: while_loop_comparison + midpoint_calculation
-    has_comparison = "while_loop_comparison" in fact_types
-    has_midpoint = "midpoint_calculation" in fact_types
-
-    if not has_comparison or not has_midpoint:
-        return None
-
-    # Must have conditional index update (the if/elif/else branches)
-    has_conditional = "conditional_index_update" in fact_types
-    if not has_conditional:
+    partitions = [f for f in facts if f.fact_type == "binary_search_partition"
+                  and f.attributes.get("partition", {}).get("kind") in ("sequence", "ceiling_sum_budget")]
+    if not partitions:
         return None
 
     # Absence constraint: must NOT have opposite_direction_updates
     # (opposite updates without midpoint = two pointers, not binary search)
-    has_opposite = "opposite_direction_updates" in fact_types
+    has_opposite = "opposite_direction_updates" in _fact_types(facts)
     if has_opposite:
         return None
 
     supporting_techniques = []
-    # boundary_narrowing is not a technique yet (Phase 1 limitation);
-    # we use the structural fact combination instead
-    supporting_facts = _collect_supporting_facts(
-        {"while_loop_comparison", "midpoint_calculation", "conditional_index_update"},
-        facts,
-    )
+    supporting_facts = [f.fact_id for f in partitions[:10]]
 
-    # Confidence: high when midpoint + conditional update present
+    # Retain S1's existing confidence convention for qualifying evidence.
     confidence = 0.85
 
     return StrategyEvidence(
@@ -247,13 +230,11 @@ def _evaluate_sliding_window(
     - fixed_window_maintenance (fixed window with constant offset)
 
     Required structural constraints:
-    - loop (while or for)
-    - for variable window: state variable used in later expression AND
-      index participation, meaning either the conditionally updated
-      variable is itself a subscript-index variable, or the collection is
-      traversed by a range-driven index loop (the shrink step must actually
-      move a pointer into the collection)
-    - for fixed window: constant window offset
+    - scoped window_maintenance linking content, state and progressing bounds
+    - fixed windows: initialized offset updates or a stable fill boundary
+    - variable windows: opposing content updates and a linked trailing advance
+    - jump windows: guarded last-seen lookup, protected advance and position write
+    Generic loop-state tracking and indexed range iteration are insufficient.
 
     Must NOT classify:
     - two-pointer palindrome (no variable_use, unconditional updates)
@@ -267,35 +248,19 @@ def _evaluate_sliding_window(
 
     # Check for variable window (existing path)
     has_loop_state = "loop_state_tracking" in tech_ids
-    has_variable_use = "variable_use_in_loop_body" in fact_types
 
     # Check for fixed window (new path)
     has_fixed_window = "fixed_window_maintenance" in tech_ids
     has_window_constant = "window_size_constant" in fact_types
 
-    # Must have at least one of these paths.
-    #
-    # Index participation: a variable window is only a window if the code
-    # actually moves a pointer into the collection. Without this constraint,
-    # ANY loop that carries state and re-reads it (a nested doubling loop such
-    # as repeated subtraction / exponentiation by squaring, digit loops, plain
-    # while-accumulation) satisfies loop_state_tracking +
-    # variable_use_in_loop_body and is wrongly promoted to a window.
-    #
-    # Two structural forms count as participation, both from existing facts:
-    #   (i)  the conditionally updated variable is itself read as a subscript
-    #        index (the shrink pointer reads nums[left] / s[left]); or
-    #   (ii) the loop is range-driven and its variable indexes the collection
-    #        (for right in range(len(s)): ... s[right]), which covers the
-    #        jump-style window where the left boundary is only used in
-    #        window-size arithmetic (right - left + 1) and never as an index.
-    index_vars = _subscript_index_vars(facts)
-    window_index_participation = bool(
-        _conditionally_updated_vars(facts) & index_vars
-    ) or _has_range_driven_index_loop(facts, index_vars)
-
-    variable_window = has_loop_state and has_variable_use and window_index_participation
-    fixed_window = has_fixed_window and has_window_constant
+    window_links = [f for f in facts if f.fact_type == "window_maintenance"]
+    if not window_links:
+        return None
+    kinds = {f.attributes.get("window", {}).get("kind") for f in window_links}
+    # Linked maintenance supplies the scope/content/boundary relationship;
+    # range iteration or generic state tracking cannot supply it alone.
+    variable_window = has_loop_state and bool(kinds & {"variable", "jump", "fixed_boundary"})
+    fixed_window = has_fixed_window and has_window_constant and bool(kinds & {"fixed_offset", "fixed_boundary"})
 
     # Exclude fixed windows where the structure is also a cache (dict/hash map)
     # This prevents hash-map lookups like seen[prefix_sum - k] from being
@@ -382,7 +347,7 @@ def _evaluate_sliding_window(
         strategy_id="sliding_window",
         strategy_version=STRATEGY_VERSION,
         supporting_technique_ids=supporting_techniques,
-        supporting_fact_ids=supporting_facts,
+        supporting_fact_ids=supporting_facts + [f.fact_id for f in window_links],
         confidence=confidence,
         problem_context_signals={},
     )

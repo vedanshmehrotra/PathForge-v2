@@ -10,7 +10,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from pathforge.services.problem_resolver import resolve_problem
+from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
 from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.ground_truth_builder import GroundTruthError
 from pathforge.llm.graphql_client import GraphQLUnavailableError
@@ -47,7 +47,10 @@ def prepare_problem_endpoint(req: PrepareRequest, request: Request):
                 conn,
                 leetcode_id=req.problem.leetcode_id,
                 title_slug=req.problem.title_slug,
+                allow_preparation=True,
             )
+        except ProblemReadinessError as e:
+            raise HTTPException(status_code=409, detail=e.detail)
         except ValueError as e:
             raise HTTPException(
                 status_code=404,

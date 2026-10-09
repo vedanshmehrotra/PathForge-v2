@@ -49,8 +49,12 @@ function DeveloperDetails({ data }: { data: ShadowDisplayData['developerDetails'
       </button>
       {open && (
         <div className="space-y-2 border-t border-border px-3 py-2.5 font-mono text-[10px] text-muted-foreground">
-          <Row label="Outcome" value={data.outcome} />
-          <Row label="Authority" value={data.authorityTier || '—'} />
+          <Row label="Legacy outcome" value={data.outcome || '—'} />
+          <Row label="Legacy authority" value={data.authorityTier || '—'} />
+          <Row label="Canonical primary" value={data.canonicalPrimary || '—'} />
+          {data.families.map(family => (
+            <Row key={family.id} label={family.id} value={family.state} />
+          ))}
           <Row label="Facts" value={String(data.factCount)} />
           <Row label="Latency" value={`${data.elapsedMs.toFixed(1)}ms`} />
           <Row label="Extractor" value={data.extractorVersion || '—'} />
@@ -148,7 +152,7 @@ export function ExperimentalPanel({ shadowAnalysis }: ExperimentalPanelProps) {
           <p className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">
             {data.approaches[0] === 'Approach unclear'
               ? 'Approach'
-              : 'Likely approach'}
+              : 'Observed approach'}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {data.approaches.map((name) => (
@@ -159,12 +163,28 @@ export function ExperimentalPanel({ shadowAnalysis }: ExperimentalPanelProps) {
           </div>
         </div>
 
+        {data.techniques.length > 0 && (
+          <div>
+            <p className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">
+              Detected techniques
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {data.techniques.map(name => (
+                <Badge key={name} variant="outline" className="text-xs">{name}</Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Explanation */}
         <div>
           <p className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">
             Why
           </p>
           <p className="text-xs text-foreground/80">{data.explanation}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Pattern evidence does not verify solution correctness or scoring eligibility.
+          </p>
         </div>
 
         {/* Developer details (collapsed) */}
