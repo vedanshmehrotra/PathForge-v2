@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, Braces, Check, Cpu, Layers2, Play, Route, ScanLine, X } from 'lucide-react'
-import { useAnalyzeCode, usePrepareProblem, useGapData } from '@/hooks/useApi'
+import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { ExperimentalPanel } from '@/components/experimental-panel'
 import { ApproachComparison, approachComparisonHeading } from '@/components/approach-comparison'
-import { mapShadowToDisplay } from '@/services/shadow-mapper'
+import { AnalysisEffects } from '@/components/analysis-effects'
 
 export function AnalysisView() {
   const { profile } = useAuth()
@@ -16,7 +16,6 @@ export function AnalysisView() {
   const [submittedInput, setSubmittedInput] = useState<{ code: string; problem: string; problemId: number | null } | null>(null)
   const { result: analysisResult, loading, error, errorCode, run } = useAnalyzeCode()
   const prep = usePrepareProblem()
-  const { data: gapData } = useGapData(profile?.user_id ?? 0)
   const needsPreparation = !!problemInput.trim() && !prep.result
   const resultIsCurrent = !submittedInput || (code === submittedInput.code &&
     problemInput.trim() === submittedInput.problem && (prep.result?.leetcode_id ?? null) === submittedInput.problemId)
@@ -46,7 +45,6 @@ export function AnalysisView() {
     pattern_id?: string; name?: string; category?: string; confidence?: number; nodes?: number
   }> | undefined
   const matchResult = result?.match_result as (Record<string, unknown> & { reasoning_signals?: string[] }) | undefined
-  const shadow = mapShadowToDisplay(result?.shadow_analysis)
   const comparisonHeading = approachComparisonHeading(result?.problem_info?.solution_groups)
 
   return (
@@ -97,15 +95,11 @@ export function AnalysisView() {
       {analysisResult && !resultIsCurrent && <p role="status" className="text-sm text-muted-foreground">Your inputs changed. Run analysis again to see observations for the current code and problem.</p>}
 
       {result && (
-        <section id="analysis-summary" aria-labelledby="summary-heading" className="detail-enter border-l-2 border-l-mint pl-5">
-          <h2 id="summary-heading" className="text-xl font-medium">What this analysis tells you</h2>
-          <dl className="mt-4 grid gap-5 text-sm leading-relaxed md:grid-cols-3">
-            <div><dt className="font-medium">Observed Code Patterns</dt><dd className="mt-1 text-muted-foreground">{detectedPatterns?.length ? detectedPatterns.map(p => p.name || p.pattern_id?.replace(/_/g, ' ')).filter(Boolean).join(', ') : 'No supported code patterns were observed. This may reflect detector coverage.'}</dd></div>
-            <div><dt className="font-medium">Approach Comparison</dt><dd className="mt-1 text-muted-foreground">{comparisonHeading}. {result.problem_info ? 'Review the approach definitions and their limits below.' : 'No problem context was supplied.'}</dd></div>
-            {shadow.visible && <div><dt className="font-medium">Experimental strategy evidence</dt><dd className="mt-1 text-muted-foreground">{shadow.status === 'likely_match' ? 'Observed strategy: ' + shadow.approaches.join(', ') + '.' : shadow.explanation}</dd></div>}
-          </dl>
-          <p className="mt-4 text-sm text-muted-foreground">These observations do not establish solution correctness, optimality, or a skill deficit.</p>
-          <a href="#approach-details" className="text-link mt-3">Read the approach comparison</a>
+        <section id="analysis-summary" aria-labelledby="summary-heading" className="detail-enter flex flex-wrap items-start justify-between gap-5 border-l-2 border-l-sky pl-5">
+          <div><h2 id="summary-heading" className="text-xl font-medium">Analysis result</h2>
+            <p className="mt-1 text-sm font-medium">{comparisonHeading}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Pattern comparison, not a code-correctness verdict.</p></div>
+          <AnalysisEffects result={result} />
         </section>
       )}
 
@@ -138,8 +132,8 @@ export function AnalysisView() {
           {result ? (
             <>
               {result.problem_info?.title && <p className="mb-4 text-sm text-muted-foreground">{result.problem_info.title}</p>}
-              {!!detectedPatterns?.length && <div className="mb-5"><p className="eyebrow mb-3 text-mint"><ScanLine className="size-3.5" />Observed in your code</p><div className="flex flex-wrap gap-2">{detectedPatterns.map((pattern, index) => <span key={pattern.pattern_id ?? index} className="rounded-md border border-mint/20 bg-mint/5 px-2.5 py-1.5 text-xs text-mint">{pattern.name || pattern.pattern_id?.replace(/_/g, ' ')}</span>)}</div></div>}
-              <ApproachComparison groups={result.problem_info?.solution_groups} legacyPatterns={result.problem_info?.canonical_patterns} />
+              <div className="mb-5"><h3 className="eyebrow mb-3 text-mint"><ScanLine className="size-3.5" />Detected in your code</h3><div className="flex flex-wrap gap-2">{detectedPatterns?.length ? detectedPatterns.map((pattern, index) => <span key={pattern.pattern_id ?? index} className="rounded-md border border-mint/20 bg-mint/5 px-2.5 py-1.5 text-xs text-mint">{pattern.name || pattern.pattern_id?.replace(/_/g, ' ')}</span>) : <p className="text-sm text-muted-foreground">No supported patterns observed.</p>}</div></div>
+              <ApproachComparison groups={result.problem_info?.solution_groups} legacyPatterns={result.problem_info?.canonical_patterns} showSummary={false} />
             </>
           ) : loading ? (
             <div role="status" className="flex min-h-72 flex-col items-center justify-center gap-4 text-center"><ScanLine className="size-9 animate-pulse text-mint" /><p className="text-sm font-medium">Inspecting the structure of your code…</p><p className="max-w-xs text-xs text-muted-foreground">Observations will appear when analysis completes.</p></div>
@@ -174,7 +168,6 @@ export function AnalysisView() {
             {!result.elo_updates?.length ? <p className="mt-2 text-sm text-muted-foreground">No skill updates were recorded for this analysis.</p> : result.elo_updates.map(update => (
               <p key={update.pattern_id} className="mt-2 text-sm">{update.pattern_id.replace(/_/g, ' ')}: {Math.round(update.elo_before)} → {Math.round(update.elo_after)}</p>
             ))}
-            {!!gapData?.gap_signals?.length && <p className="mt-4 text-sm text-muted-foreground">Stored history signals: {gapData.gap_signals.map(signal => signal.pattern_id.replace(/_/g, ' ')).join(', ')}. These signals are separate from the current code observations.</p>}
           </details>
           <details>
             <summary className="cursor-pointer text-sm font-medium">Experimental evidence and developer details</summary>

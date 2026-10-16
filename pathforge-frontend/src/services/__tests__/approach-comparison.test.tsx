@@ -48,8 +48,10 @@ describe('consistent approach presentation using real engine/API results', () =>
     const html = render('composite_partial')
     expect(html).toContain('Inconclusive comparison')
     expect(html).toContain('combined requirements')
-    expect(html).toContain('Observed here: hash map lookup')
-    expect(html).toContain('Not observed in this approach: prefix sum')
+    expect(html).toContain('Stored expectation')
+    expect(html).toContain('Detected evidence')
+    expect(html).toMatch(/prefix sum<\/th><td[^>]*>Not observed/)
+    expect(html).toMatch(/hash map lookup<\/th><td[^>]*>Observed/)
     expect(html).not.toContain('Pattern alignment observed')
   })
 
@@ -88,7 +90,7 @@ describe('consistent approach presentation using real engine/API results', () =>
     ('the full analysis view avoids misleading verdicts for %s', name => {
       fixture.response = cases[name].response
       const html = renderToStaticMarkup(createElement(AnalysisView))
-      expect(html).toContain('Observed Code Patterns')
+      expect(html).toContain('Detected in your code')
       expect(html).toContain('Approach Comparison')
       expect(html).not.toMatch(/No expected patterns detected|Some expected patterns missing|All expected patterns detected|Submission Gap/)
       if (name !== 'fixed_alternative') expect(html).not.toContain('Pattern alignment observed')

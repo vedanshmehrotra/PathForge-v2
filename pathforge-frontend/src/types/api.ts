@@ -127,6 +127,7 @@ export interface AnalyzeResponse {
     gap_signals_count: number
     elo_updates_count: number
     recommendation_id?: number | null
+    skill_updates_skipped?: boolean | null
   }
   shadow_analysis?: ShadowAnalysisResult | null
 }

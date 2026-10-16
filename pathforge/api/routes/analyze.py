@@ -43,6 +43,7 @@ class PersistenceInfo(BaseModel):
     gap_signals_count: int
     elo_updates_count: int
     recommendation_id: Optional[int] = None
+    skill_updates_skipped: Optional[bool] = None
 
 
 class CanonicalPattern(BaseModel):
@@ -315,6 +316,7 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 gap_signals_count=persisted["gap_signals_count"],
                 elo_updates_count=persisted["elo_updates_count"],
                 recommendation_id=persisted.get("recommendation_id"),
+                skill_updates_skipped=persisted.get("skill_updates_skipped"),
             ),
             hybrid_analysis=hybrid_analysis,
             shadow_analysis=shadow_result,

@@ -269,6 +269,8 @@ def run_persistence(
     return {
         "submission_id": submission_id,
         "verdict_type": verdict_type,
+        # Report the existing gate's effect; this does not change eligibility.
+        "skill_updates_skipped": not is_authoritative,
         "profile_update": profile_update,
         "gap_signals_count": len(gap_output.get("gap_signals", [])),
         "gap_output": gap_output,

@@ -445,6 +445,7 @@ def _assert_product_consequences(case, result, allowed):
     assert result["gap_signals_count"] == int(allowed)
     assert result["elo_updates_count"] == int(allowed)
     assert result["recommendation_id"] == (456 if allowed else None)
+    assert result["skill_updates_skipped"] is (not allowed)
     case.streak.assert_called_once()
     # Transaction ownership remains with the caller.
     case.connection.commit.assert_not_called()
