@@ -178,6 +178,10 @@ class MatchingEngine:
         all_llm_patterns: Set[str],
         llm_groups: List[Set[str]],
     ) -> List[str]:
+        # Accepted groups are alternatives in this legacy contract. Completing
+        # any one satisfies it; unused approaches do not create submission gaps.
+        if any(group and group <= ast_pattern_set for group in llm_groups):
+            return []
         unmatched = set()
         for group in llm_groups:
             for p in group:

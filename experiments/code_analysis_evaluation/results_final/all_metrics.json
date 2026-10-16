@@ -1,0 +1,1567 @@
+{
+  "dataset_size": 81,
+  "concepts_evaluated": 35,
+  "concepts_list": [
+    "backtracking_permutation",
+    "backtracking_subset",
+    "bfs_level_order",
+    "bfs_shortest_path",
+    "binary_search_answer",
+    "binary_search_rotated",
+    "binary_search_standard",
+    "binary_search_tree",
+    "dfs_iterative",
+    "dfs_recursive",
+    "dp_1d_forward",
+    "dp_1d_sequence",
+    "dp_2d_grid",
+    "dp_2d_string",
+    "dp_bottom_up",
+    "dp_interval",
+    "dp_knapsack",
+    "dp_state_machine",
+    "dp_top_down",
+    "fast_slow_pointers",
+    "greedy_interval",
+    "greedy_local",
+    "hash_map_frequency",
+    "hash_map_lookup",
+    "heap_top_k",
+    "linked_list_reversal",
+    "monotonic_deque",
+    "monotonic_stack",
+    "prefix_sum",
+    "sliding_window_fixed",
+    "sliding_window_variable",
+    "topological_sort",
+    "two_pointers_opposite",
+    "two_pointers_same",
+    "union_find"
+  ],
+  "legacy_overall": {
+    "micro": {
+      "precision": 0.5258,
+      "recall": 0.6623,
+      "f1": 0.5862,
+      "false_positive_rate": 0.0167,
+      "false_negative_rate": 0.3377,
+      "tp": 51,
+      "fp": 46,
+      "fn": 26,
+      "tn": 2712
+    },
+    "macro": {
+      "precision": 0.6176,
+      "recall": 0.6724,
+      "f1": 0.6051
+    },
+    "weighted": {
+      "precision": 0.6392,
+      "recall": 0.6623,
+      "f1": 0.5969
+    }
+  },
+  "shadow_overall": {
+    "micro": {
+      "precision": 0.4348,
+      "recall": 0.3896,
+      "f1": 0.411,
+      "false_positive_rate": 0.0141,
+      "false_negative_rate": 0.6104,
+      "tp": 30,
+      "fp": 39,
+      "fn": 47,
+      "tn": 2719
+    },
+    "macro": {
+      "precision": 0.2046,
+      "recall": 0.2981,
+      "f1": 0.2201
+    },
+    "weighted": {
+      "precision": 0.2942,
+      "recall": 0.3896,
+      "f1": 0.3183
+    }
+  },
+  "legacy_per_concept": {
+    "backtracking_permutation": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "tn": 78,
+      "precision": 1.0,
+      "recall": 0.3333,
+      "f1": 0.5,
+      "support": 3
+    },
+    "backtracking_subset": {
+      "tp": 2,
+      "fp": 3,
+      "fn": 0,
+      "tn": 76,
+      "precision": 0.4,
+      "recall": 1.0,
+      "f1": 0.5714,
+      "support": 2
+    },
+    "bfs_level_order": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "tn": 78,
+      "precision": 0.6667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "support": 2
+    },
+    "bfs_shortest_path": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "binary_search_answer": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "binary_search_rotated": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "binary_search_standard": {
+      "tp": 2,
+      "fp": 3,
+      "fn": 2,
+      "tn": 74,
+      "precision": 0.4,
+      "recall": 0.5,
+      "f1": 0.4444,
+      "support": 4
+    },
+    "binary_search_tree": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "dfs_iterative": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "dfs_recursive": {
+      "tp": 6,
+      "fp": 5,
+      "fn": 0,
+      "tn": 70,
+      "precision": 0.5455,
+      "recall": 1.0,
+      "f1": 0.7059,
+      "support": 6
+    },
+    "dp_1d_forward": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 3,
+      "tn": 76,
+      "precision": 1.0,
+      "recall": 0.4,
+      "f1": 0.5714,
+      "support": 5
+    },
+    "dp_1d_sequence": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_2d_grid": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "tn": 79,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+    },
+    "dp_2d_string": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "dp_bottom_up": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_interval": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 1,
+      "tn": 77,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_knapsack": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "dp_state_machine": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "tn": 79,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+    },
+    "dp_top_down": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "fast_slow_pointers": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 79,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "greedy_interval": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "greedy_local": {
+      "tp": 2,
+      "fp": 17,
+      "fn": 0,
+      "tn": 62,
+      "precision": 0.1053,
+      "recall": 1.0,
+      "f1": 0.1905,
+      "support": 2
+    },
+    "hash_map_frequency": {
+      "tp": 3,
+      "fp": 4,
+      "fn": 1,
+      "tn": 73,
+      "precision": 0.4286,
+      "recall": 0.75,
+      "f1": 0.5455,
+      "support": 4
+    },
+    "hash_map_lookup": {
+      "tp": 4,
+      "fp": 3,
+      "fn": 0,
+      "tn": 74,
+      "precision": 0.5714,
+      "recall": 1.0,
+      "f1": 0.7273,
+      "support": 4
+    },
+    "heap_top_k": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "linked_list_reversal": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 79,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "monotonic_deque": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "monotonic_stack": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 78,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+    },
+    "prefix_sum": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 1,
+      "tn": 78,
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "support": 2
+    },
+    "sliding_window_fixed": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 3,
+      "tn": 77,
+      "precision": 1.0,
+      "recall": 0.25,
+      "f1": 0.4,
+      "support": 4
+    },
+    "sliding_window_variable": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 78,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+    },
+    "topological_sort": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 80,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "two_pointers_opposite": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 1,
+      "tn": 76,
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1": 0.8889,
+      "support": 5
+    },
+    "two_pointers_same": {
+      "tp": 0,
+      "fp": 4,
+      "fn": 3,
+      "tn": 74,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    },
+    "union_find": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    }
+  },
+  "shadow_per_concept": {
+    "backtracking_permutation": {
+      "tp": 3,
+      "fp": 2,
+      "fn": 0,
+      "tn": 76,
+      "precision": 0.6,
+      "recall": 1.0,
+      "f1": 0.75,
+      "support": 3
+    },
+    "backtracking_subset": {
+      "tp": 2,
+      "fp": 3,
+      "fn": 0,
+      "tn": 76,
+      "precision": 0.4,
+      "recall": 1.0,
+      "f1": 0.5714,
+      "support": 2
+    },
+    "bfs_level_order": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "bfs_shortest_path": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 1,
+      "tn": 77,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "binary_search_answer": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "binary_search_rotated": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "binary_search_standard": {
+      "tp": 4,
+      "fp": 2,
+      "fn": 0,
+      "tn": 75,
+      "precision": 0.6667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "support": 4
+    },
+    "binary_search_tree": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dfs_iterative": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "dfs_recursive": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 75,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 6
+    },
+    "dp_1d_forward": {
+      "tp": 3,
+      "fp": 8,
+      "fn": 2,
+      "tn": 68,
+      "precision": 0.2727,
+      "recall": 0.6,
+      "f1": 0.375,
+      "support": 5
+    },
+    "dp_1d_sequence": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_2d_grid": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_2d_string": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_bottom_up": {
+      "tp": 1,
+      "fp": 8,
+      "fn": 0,
+      "tn": 72,
+      "precision": 0.1111,
+      "recall": 1.0,
+      "f1": 0.2,
+      "support": 1
+    },
+    "dp_interval": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_knapsack": {
+      "tp": 1,
+      "fp": 8,
+      "fn": 0,
+      "tn": 72,
+      "precision": 0.1111,
+      "recall": 1.0,
+      "f1": 0.2,
+      "support": 1
+    },
+    "dp_state_machine": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "dp_top_down": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 79,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "fast_slow_pointers": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "greedy_interval": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "greedy_local": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "hash_map_frequency": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "tn": 77,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 4
+    },
+    "hash_map_lookup": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "tn": 77,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 4
+    },
+    "heap_top_k": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "linked_list_reversal": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "monotonic_deque": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "monotonic_stack": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 78,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+    },
+    "prefix_sum": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 79,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "sliding_window_fixed": {
+      "tp": 4,
+      "fp": 1,
+      "fn": 0,
+      "tn": 76,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.8889,
+      "support": 4
+    },
+    "sliding_window_variable": {
+      "tp": 1,
+      "fp": 4,
+      "fn": 2,
+      "tn": 74,
+      "precision": 0.2,
+      "recall": 0.3333,
+      "f1": 0.25,
+      "support": 3
+    },
+    "topological_sort": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 80,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "two_pointers_opposite": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "tn": 76,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 5
+    },
+    "two_pointers_same": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "tn": 78,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    },
+    "union_find": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "tn": 79,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+    }
+  },
+  "comparison": [
+    {
+      "concept": "backtracking_permutation",
+      "legacy_f1": 0.5,
+      "shadow_f1": 0.75,
+      "legacy_p": 1.0,
+      "legacy_r": 0.3333,
+      "shadow_p": 0.6,
+      "shadow_r": 1.0,
+      "support": 3
+    },
+    {
+      "concept": "backtracking_subset",
+      "legacy_f1": 0.5714,
+      "shadow_f1": 0.5714,
+      "legacy_p": 0.4,
+      "legacy_r": 1.0,
+      "shadow_p": 0.4,
+      "shadow_r": 1.0,
+      "support": 2
+    },
+    {
+      "concept": "bfs_level_order",
+      "legacy_f1": 0.8,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.6667,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 2
+    },
+    {
+      "concept": "bfs_shortest_path",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "binary_search_answer",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "binary_search_rotated",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "binary_search_standard",
+      "legacy_f1": 0.4444,
+      "shadow_f1": 0.8,
+      "legacy_p": 0.4,
+      "legacy_r": 0.5,
+      "shadow_p": 0.6667,
+      "shadow_r": 1.0,
+      "support": 4
+    },
+    {
+      "concept": "binary_search_tree",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "dfs_iterative",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 2
+    },
+    {
+      "concept": "dfs_recursive",
+      "legacy_f1": 0.7059,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.5455,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 6
+    },
+    {
+      "concept": "dp_1d_forward",
+      "legacy_f1": 0.5714,
+      "shadow_f1": 0.375,
+      "legacy_p": 1.0,
+      "legacy_r": 0.4,
+      "shadow_p": 0.2727,
+      "shadow_r": 0.6,
+      "support": 5
+    },
+    {
+      "concept": "dp_1d_sequence",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_2d_grid",
+      "legacy_f1": 0.6667,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.5,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_2d_string",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_bottom_up",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.2,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 0.1111,
+      "shadow_r": 1.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_interval",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_knapsack",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.2,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.1111,
+      "shadow_r": 1.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_state_machine",
+      "legacy_f1": 0.6667,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.5,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "dp_top_down",
+      "legacy_f1": 0.0,
+      "shadow_f1": 1.0,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 1.0,
+      "shadow_r": 1.0,
+      "support": 2
+    },
+    {
+      "concept": "fast_slow_pointers",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 2
+    },
+    {
+      "concept": "greedy_interval",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "greedy_local",
+      "legacy_f1": 0.1905,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.1053,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 2
+    },
+    {
+      "concept": "hash_map_frequency",
+      "legacy_f1": 0.5455,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.4286,
+      "legacy_r": 0.75,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 4
+    },
+    {
+      "concept": "hash_map_lookup",
+      "legacy_f1": 0.7273,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.5714,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 4
+    },
+    {
+      "concept": "heap_top_k",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "linked_list_reversal",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 2
+    },
+    {
+      "concept": "monotonic_deque",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "monotonic_stack",
+      "legacy_f1": 1.0,
+      "shadow_f1": 1.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 1.0,
+      "shadow_r": 1.0,
+      "support": 3
+    },
+    {
+      "concept": "prefix_sum",
+      "legacy_f1": 0.5,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.5,
+      "legacy_r": 0.5,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 2
+    },
+    {
+      "concept": "sliding_window_fixed",
+      "legacy_f1": 0.4,
+      "shadow_f1": 0.8889,
+      "legacy_p": 1.0,
+      "legacy_r": 0.25,
+      "shadow_p": 0.8,
+      "shadow_r": 1.0,
+      "support": 4
+    },
+    {
+      "concept": "sliding_window_variable",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.25,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.2,
+      "shadow_r": 0.3333,
+      "support": 3
+    },
+    {
+      "concept": "topological_sort",
+      "legacy_f1": 1.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 1.0,
+      "legacy_r": 1.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 1
+    },
+    {
+      "concept": "two_pointers_opposite",
+      "legacy_f1": 0.8889,
+      "shadow_f1": 1.0,
+      "legacy_p": 1.0,
+      "legacy_r": 0.8,
+      "shadow_p": 1.0,
+      "shadow_r": 1.0,
+      "support": 5
+    },
+    {
+      "concept": "two_pointers_same",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.0,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 0.0,
+      "shadow_r": 0.0,
+      "support": 3
+    },
+    {
+      "concept": "union_find",
+      "legacy_f1": 0.0,
+      "shadow_f1": 0.6667,
+      "legacy_p": 0.0,
+      "legacy_r": 0.0,
+      "shadow_p": 1.0,
+      "shadow_r": 0.5,
+      "support": 2
+    }
+  ],
+  "robustness": {
+    "total_variants": 14,
+    "legacy_stability_rate": 0.3571,
+    "shadow_stability_rate": 0.9286,
+    "legacy_detection_rate": 0.3571,
+    "shadow_detection_rate": 0.2143,
+    "details": [
+      {
+        "concept": "two_pointers_opposite",
+        "variant": "rename",
+        "legacy_stable": true,
+        "legacy_detected_target": true,
+        "shadow_stable": true,
+        "shadow_detected_target": true,
+        "orig_legacy": [
+          "two_pointers_opposite"
+        ],
+        "var_legacy": [
+          "two_pointers_opposite"
+        ],
+        "orig_shadow": [
+          "bidirectional_index_scan",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ],
+        "var_shadow": [
+          "bidirectional_index_scan",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ]
+      },
+      {
+        "concept": "two_pointers_opposite",
+        "variant": "while_not",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": true,
+        "orig_legacy": [
+          "two_pointers_opposite"
+        ],
+        "var_legacy": [],
+        "orig_shadow": [
+          "bidirectional_index_scan",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ],
+        "var_shadow": [
+          "bidirectional_index_scan",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ]
+      },
+      {
+        "concept": "two_pointers_opposite",
+        "variant": "increment",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": true,
+        "orig_legacy": [
+          "two_pointers_opposite"
+        ],
+        "var_legacy": [],
+        "orig_shadow": [
+          "bidirectional_index_scan",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ],
+        "var_shadow": [
+          "bidirectional_index_scan",
+          "sequential_accumulation",
+          "two_pointers_opposite"
+        ]
+      },
+      {
+        "concept": "binary_search_standard",
+        "variant": "overflow_safe",
+        "legacy_stable": true,
+        "legacy_detected_target": true,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "binary_search_standard"
+        ],
+        "var_legacy": [
+          "binary_search_standard"
+        ],
+        "orig_shadow": [
+          "binary_search",
+          "loop_state_tracking"
+        ],
+        "var_shadow": [
+          "binary_search",
+          "loop_state_tracking"
+        ]
+      },
+      {
+        "concept": "binary_search_standard",
+        "variant": "bitshift",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "binary_search_standard"
+        ],
+        "var_legacy": [],
+        "orig_shadow": [
+          "binary_search",
+          "loop_state_tracking"
+        ],
+        "var_shadow": [
+          "binary_search",
+          "loop_state_tracking"
+        ]
+      },
+      {
+        "concept": "binary_search_standard",
+        "variant": "rename",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "binary_search_standard"
+        ],
+        "var_legacy": [],
+        "orig_shadow": [
+          "binary_search",
+          "loop_state_tracking"
+        ],
+        "var_shadow": [
+          "binary_search",
+          "loop_state_tracking"
+        ]
+      },
+      {
+        "concept": "sliding_window_fixed",
+        "variant": "rename",
+        "legacy_stable": true,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "greedy_local"
+        ],
+        "var_legacy": [
+          "array_traversal",
+          "greedy_local"
+        ],
+        "orig_shadow": [
+          "fixed_window_maintenance",
+          "sliding_window"
+        ],
+        "var_shadow": [
+          "fixed_window_maintenance",
+          "sliding_window"
+        ]
+      },
+      {
+        "concept": "sliding_window_fixed",
+        "variant": "helper",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "greedy_local"
+        ],
+        "var_legacy": [
+          "array_traversal",
+          "dp_state_machine",
+          "greedy_local"
+        ],
+        "orig_shadow": [
+          "fixed_window_maintenance",
+          "sliding_window"
+        ],
+        "var_shadow": [
+          "fixed_window_maintenance",
+          "sliding_window"
+        ]
+      },
+      {
+        "concept": "monotonic_stack",
+        "variant": "rename",
+        "legacy_stable": true,
+        "legacy_detected_target": true,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "brute_force",
+          "monotonic_stack"
+        ],
+        "var_legacy": [
+          "array_traversal",
+          "brute_force",
+          "monotonic_stack"
+        ],
+        "orig_shadow": [
+          "monotonic_stack_maintenance",
+          "monotonic_stack_strategy"
+        ],
+        "var_shadow": [
+          "monotonic_stack_maintenance",
+          "monotonic_stack_strategy"
+        ]
+      },
+      {
+        "concept": "monotonic_stack",
+        "variant": "explicit_len",
+        "legacy_stable": true,
+        "legacy_detected_target": true,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "brute_force",
+          "monotonic_stack"
+        ],
+        "var_legacy": [
+          "array_traversal",
+          "brute_force",
+          "monotonic_stack"
+        ],
+        "orig_shadow": [
+          "monotonic_stack_maintenance",
+          "monotonic_stack_strategy"
+        ],
+        "var_shadow": [
+          "monotonic_stack_maintenance",
+          "monotonic_stack_strategy"
+        ]
+      },
+      {
+        "concept": "backtracking_permutation",
+        "variant": "used_array",
+        "legacy_stable": false,
+        "legacy_detected_target": true,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "backtracking_subset",
+          "brute_force"
+        ],
+        "var_legacy": [
+          "array_traversal",
+          "backtracking_permutation",
+          "backtracking_subset",
+          "brute_force",
+          "dfs_recursive"
+        ],
+        "orig_shadow": [
+          "dfs_backtracking"
+        ],
+        "var_shadow": [
+          "dfs_backtracking"
+        ]
+      },
+      {
+        "concept": "backtracking_permutation",
+        "variant": "remaining_list",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "backtracking_subset",
+          "brute_force"
+        ],
+        "var_legacy": [
+          "array_traversal",
+          "backtracking_subset",
+          "brute_force",
+          "dfs_recursive"
+        ],
+        "orig_shadow": [
+          "dfs_backtracking"
+        ],
+        "var_shadow": [
+          "dfs_backtracking"
+        ]
+      },
+      {
+        "concept": "dp_1d_forward",
+        "variant": "space_opt",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": false,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "dp_1d_forward"
+        ],
+        "var_legacy": [],
+        "orig_shadow": [
+          "dp_bottom_up",
+          "iterative_table_filling"
+        ],
+        "var_shadow": []
+      },
+      {
+        "concept": "dp_1d_forward",
+        "variant": "dict_memo",
+        "legacy_stable": false,
+        "legacy_detected_target": false,
+        "shadow_stable": true,
+        "shadow_detected_target": false,
+        "orig_legacy": [
+          "array_traversal",
+          "dp_1d_forward"
+        ],
+        "var_legacy": [
+          "array_traversal"
+        ],
+        "orig_shadow": [
+          "dp_bottom_up",
+          "iterative_table_filling"
+        ],
+        "var_shadow": [
+          "dp_bottom_up",
+          "iterative_table_filling"
+        ]
+      }
+    ]
+  },
+  "error_types": {
+    "legacy": {
+      "FALSE_POSITIVE": 124,
+      "FALSE_NEGATIVE_WRONG_CONCEPT": 21,
+      "MISSING_DETECTION": 5
+    },
+    "shadow": {
+      "MISSING_DETECTION": 25,
+      "FALSE_NEGATIVE_WRONG_CONCEPT": 43,
+      "FALSE_POSITIVE": 86
+    }
+  },
+  "legacy_confidence": {
+    "avg_correct": 0.8461,
+    "avg_incorrect": 0.6996,
+    "num_correct": 51,
+    "num_incorrect": 124,
+    "distribution": {
+      "0.0-0.3": {
+        "total": 10,
+        "correct": 1,
+        "incorrect": 9,
+        "accuracy": 0.1
+      },
+      "0.3-0.5": {
+        "total": 24,
+        "correct": 2,
+        "incorrect": 22,
+        "accuracy": 0.083
+      },
+      "0.5-0.7": {
+        "total": 27,
+        "correct": 5,
+        "incorrect": 22,
+        "accuracy": 0.185
+      },
+      "0.7-0.9": {
+        "total": 43,
+        "correct": 15,
+        "incorrect": 28,
+        "accuracy": 0.349
+      },
+      "0.9-1.0": {
+        "total": 71,
+        "correct": 28,
+        "incorrect": 43,
+        "accuracy": 0.394
+      }
+    }
+  },
+  "shadow_confidence": {
+    "avg_correct": 0.8722,
+    "avg_incorrect": 0.7715,
+    "num_correct": 9,
+    "num_incorrect": 86,
+    "distribution": {
+      "0.0-0.3": {
+        "total": 5,
+        "correct": 0,
+        "incorrect": 5,
+        "accuracy": 0.0
+      },
+      "0.3-0.5": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.5-0.7": {
+        "total": 0,
+        "correct": 0,
+        "incorrect": 0,
+        "accuracy": null
+      },
+      "0.7-0.9": {
+        "total": 80,
+        "correct": 4,
+        "incorrect": 76,
+        "accuracy": 0.05
+      },
+      "0.9-1.0": {
+        "total": 10,
+        "correct": 5,
+        "incorrect": 5,
+        "accuracy": 0.5
+      }
+    }
+  },
+  "success_rates": {
+    "legacy": 1.0,
+    "shadow": 1.0
+  }
+}

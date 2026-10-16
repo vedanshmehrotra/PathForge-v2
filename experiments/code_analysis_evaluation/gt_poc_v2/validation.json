@@ -1,0 +1,1565 @@
+{
+  "phase": "5b_validation",
+  "overall_state": "VALIDATION_FAILED",
+  "rules_unchanged_on_failure": true,
+  "split": {
+    "derivation": [
+      "S0003",
+      "S0005",
+      "S0006",
+      "S0007",
+      "S0009",
+      "S0010",
+      "S0012",
+      "S0016",
+      "S0019",
+      "S0020",
+      "S0024",
+      "S0027",
+      "S0030",
+      "S0031",
+      "S0037",
+      "S0038",
+      "S0039",
+      "S0040",
+      "S0042",
+      "S0046",
+      "S0048",
+      "S0051",
+      "S0053",
+      "S0055",
+      "S0056",
+      "S0059",
+      "S0060",
+      "S0063",
+      "S0065",
+      "S0069",
+      "S0072",
+      "S0073",
+      "S0075",
+      "S0077",
+      "S0079",
+      "S0082",
+      "S0084",
+      "S0085",
+      "S0088",
+      "S0092",
+      "S0093",
+      "S0094",
+      "S0095",
+      "S0096"
+    ],
+    "held_out": [
+      "S0001",
+      "S0002",
+      "S0004",
+      "S0008",
+      "S0011",
+      "S0013",
+      "S0014",
+      "S0015",
+      "S0017",
+      "S0018",
+      "S0021",
+      "S0022",
+      "S0023",
+      "S0025",
+      "S0026",
+      "S0028",
+      "S0029",
+      "S0032",
+      "S0033",
+      "S0034",
+      "S0035",
+      "S0036",
+      "S0041",
+      "S0043",
+      "S0044",
+      "S0045",
+      "S0047",
+      "S0049",
+      "S0050",
+      "S0052",
+      "S0054",
+      "S0057",
+      "S0058",
+      "S0061",
+      "S0062",
+      "S0064",
+      "S0066",
+      "S0067",
+      "S0068",
+      "S0070",
+      "S0071",
+      "S0074",
+      "S0076",
+      "S0078",
+      "S0080",
+      "S0081",
+      "S0083",
+      "S0086",
+      "S0087",
+      "S0089",
+      "S0090",
+      "S0091"
+    ],
+    "per_family": [
+      {
+        "family_key": "lc1_fam1",
+        "problem_id": 1,
+        "n": 3,
+        "derivation": [
+          "S0006"
+        ],
+        "held_out": [
+          "S0001",
+          "S0002"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc1_fam2",
+        "problem_id": 1,
+        "n": 2,
+        "derivation": [
+          "S0003"
+        ],
+        "held_out": [
+          "S0004"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc1_fam3",
+        "problem_id": 1,
+        "n": 1,
+        "derivation": [
+          "S0005"
+        ],
+        "held_out": [],
+        "state": "VALIDATION_LIMITED"
+      },
+      {
+        "family_key": "lc1_fam4",
+        "problem_id": 1,
+        "n": 2,
+        "derivation": [
+          "S0007"
+        ],
+        "held_out": [
+          "S0008"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc21_fam1",
+        "problem_id": 21,
+        "n": 1,
+        "derivation": [
+          "S0009"
+        ],
+        "held_out": [],
+        "state": "VALIDATION_LIMITED"
+      },
+      {
+        "family_key": "lc21_fam2",
+        "problem_id": 21,
+        "n": 2,
+        "derivation": [
+          "S0010"
+        ],
+        "held_out": [
+          "S0011"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc21_fam3",
+        "problem_id": 21,
+        "n": 2,
+        "derivation": [
+          "S0012"
+        ],
+        "held_out": [
+          "S0013"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc21_fam4",
+        "problem_id": 21,
+        "n": 3,
+        "derivation": [
+          "S0016"
+        ],
+        "held_out": [
+          "S0014",
+          "S0015"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc46_fam1",
+        "problem_id": 46,
+        "n": 3,
+        "derivation": [
+          "S0019"
+        ],
+        "held_out": [
+          "S0017",
+          "S0018"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc46_fam2",
+        "problem_id": 46,
+        "n": 2,
+        "derivation": [
+          "S0020"
+        ],
+        "held_out": [
+          "S0021"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc46_fam3",
+        "problem_id": 46,
+        "n": 3,
+        "derivation": [
+          "S0024"
+        ],
+        "held_out": [
+          "S0022",
+          "S0023"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc70_fam1",
+        "problem_id": 70,
+        "n": 3,
+        "derivation": [
+          "S0027"
+        ],
+        "held_out": [
+          "S0025",
+          "S0026"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc70_fam2",
+        "problem_id": 70,
+        "n": 3,
+        "derivation": [
+          "S0030"
+        ],
+        "held_out": [
+          "S0028",
+          "S0029"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc70_fam3",
+        "problem_id": 70,
+        "n": 2,
+        "derivation": [
+          "S0031"
+        ],
+        "held_out": [
+          "S0032"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc102_fam1",
+        "problem_id": 102,
+        "n": 4,
+        "derivation": [
+          "S0039",
+          "S0040"
+        ],
+        "held_out": [
+          "S0033",
+          "S0034"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc102_fam2",
+        "problem_id": 102,
+        "n": 4,
+        "derivation": [
+          "S0037",
+          "S0038"
+        ],
+        "held_out": [
+          "S0035",
+          "S0036"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc125_fam1",
+        "problem_id": 125,
+        "n": 3,
+        "derivation": [
+          "S0048"
+        ],
+        "held_out": [
+          "S0041",
+          "S0047"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc125_fam2",
+        "problem_id": 125,
+        "n": 2,
+        "derivation": [
+          "S0042"
+        ],
+        "held_out": [
+          "S0043"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc125_fam3",
+        "problem_id": 125,
+        "n": 3,
+        "derivation": [
+          "S0046"
+        ],
+        "held_out": [
+          "S0044",
+          "S0045"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc209_fam1",
+        "problem_id": 209,
+        "n": 4,
+        "derivation": [
+          "S0055",
+          "S0056"
+        ],
+        "held_out": [
+          "S0049",
+          "S0050"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc209_fam2",
+        "problem_id": 209,
+        "n": 2,
+        "derivation": [
+          "S0051"
+        ],
+        "held_out": [
+          "S0052"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc209_fam3",
+        "problem_id": 209,
+        "n": 2,
+        "derivation": [
+          "S0053"
+        ],
+        "held_out": [
+          "S0054"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc242_fam1",
+        "problem_id": 242,
+        "n": 3,
+        "derivation": [
+          "S0059"
+        ],
+        "held_out": [
+          "S0057",
+          "S0058"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc242_fam2",
+        "problem_id": 242,
+        "n": 2,
+        "derivation": [
+          "S0060"
+        ],
+        "held_out": [
+          "S0064"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc242_fam3",
+        "problem_id": 242,
+        "n": 3,
+        "derivation": [
+          "S0063"
+        ],
+        "held_out": [
+          "S0061",
+          "S0062"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc547_fam1",
+        "problem_id": 547,
+        "n": 2,
+        "derivation": [
+          "S0065"
+        ],
+        "held_out": [
+          "S0066"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc547_fam2",
+        "problem_id": 547,
+        "n": 3,
+        "derivation": [
+          "S0069"
+        ],
+        "held_out": [
+          "S0067",
+          "S0068"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc547_fam3",
+        "problem_id": 547,
+        "n": 3,
+        "derivation": [
+          "S0072"
+        ],
+        "held_out": [
+          "S0070",
+          "S0071"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc560_fam1",
+        "problem_id": 560,
+        "n": 2,
+        "derivation": [
+          "S0073"
+        ],
+        "held_out": [
+          "S0074"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc560_fam2",
+        "problem_id": 560,
+        "n": 2,
+        "derivation": [
+          "S0075"
+        ],
+        "held_out": [
+          "S0076"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc560_fam3",
+        "problem_id": 560,
+        "n": 2,
+        "derivation": [
+          "S0077"
+        ],
+        "held_out": [
+          "S0078"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc560_fam4",
+        "problem_id": 560,
+        "n": 2,
+        "derivation": [
+          "S0079"
+        ],
+        "held_out": [
+          "S0080"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc704_fam1",
+        "problem_id": 704,
+        "n": 4,
+        "derivation": [
+          "S0084",
+          "S0085"
+        ],
+        "held_out": [
+          "S0081",
+          "S0083"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc704_fam2",
+        "problem_id": 704,
+        "n": 1,
+        "derivation": [
+          "S0082"
+        ],
+        "held_out": [],
+        "state": "VALIDATION_LIMITED"
+      },
+      {
+        "family_key": "lc704_fam3",
+        "problem_id": 704,
+        "n": 3,
+        "derivation": [
+          "S0088"
+        ],
+        "held_out": [
+          "S0086",
+          "S0087"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc3236_fam1",
+        "problem_id": 3236,
+        "n": 7,
+        "derivation": [
+          "S0093",
+          "S0094",
+          "S0095",
+          "S0096"
+        ],
+        "held_out": [
+          "S0089",
+          "S0090",
+          "S0091"
+        ],
+        "state": "OK"
+      },
+      {
+        "family_key": "lc3236_fam2",
+        "problem_id": 3236,
+        "n": 1,
+        "derivation": [
+          "S0092"
+        ],
+        "held_out": [],
+        "state": "VALIDATION_LIMITED"
+      }
+    ],
+    "overlap": [],
+    "limited_families": [
+      "lc1_fam3",
+      "lc21_fam1",
+      "lc704_fam2",
+      "lc3236_fam2"
+    ]
+  },
+  "held_out_results": [
+    {
+      "solution_id": "S0001",
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "family_active": true,
+      "own_group_id": "lc1_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc1_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0002",
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "family_active": true,
+      "own_group_id": "lc1_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc1_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0004",
+      "problem_id": 1,
+      "family_key": "lc1_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": true,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0008",
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0011",
+      "problem_id": 21,
+      "family_key": "lc21_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0013",
+      "problem_id": 21,
+      "family_key": "lc21_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0014",
+      "problem_id": 21,
+      "family_key": "lc21_fam4",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0015",
+      "problem_id": 21,
+      "family_key": "lc21_fam4",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0017",
+      "problem_id": 46,
+      "family_key": "lc46_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": true,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0018",
+      "problem_id": 46,
+      "family_key": "lc46_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": true,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0021",
+      "problem_id": 46,
+      "family_key": "lc46_fam2",
+      "family_active": true,
+      "own_group_id": "lc46_fam2_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc46_fam2_g0"
+      ]
+    },
+    {
+      "solution_id": "S0022",
+      "problem_id": 46,
+      "family_key": "lc46_fam3",
+      "family_active": true,
+      "own_group_id": "lc46_fam3_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc46_fam2_g0"
+      ]
+    },
+    {
+      "solution_id": "S0023",
+      "problem_id": 46,
+      "family_key": "lc46_fam3",
+      "family_active": true,
+      "own_group_id": "lc46_fam3_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc46_fam2_g0"
+      ]
+    },
+    {
+      "solution_id": "S0025",
+      "problem_id": 70,
+      "family_key": "lc70_fam1",
+      "family_active": true,
+      "own_group_id": "lc70_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc70_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0026",
+      "problem_id": 70,
+      "family_key": "lc70_fam1",
+      "family_active": true,
+      "own_group_id": "lc70_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc70_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0028",
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "CONTRADICTED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0029",
+      "problem_id": 70,
+      "family_key": "lc70_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "CONTRADICTED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0032",
+      "problem_id": 70,
+      "family_key": "lc70_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": true,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0033",
+      "problem_id": 102,
+      "family_key": "lc102_fam1",
+      "family_active": true,
+      "own_group_id": "lc102_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc102_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0034",
+      "problem_id": 102,
+      "family_key": "lc102_fam1",
+      "family_active": true,
+      "own_group_id": "lc102_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc102_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0035",
+      "problem_id": 102,
+      "family_key": "lc102_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "CONTRADICTED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0036",
+      "problem_id": 102,
+      "family_key": "lc102_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "CONTRADICTED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0041",
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "family_active": true,
+      "own_group_id": "lc125_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc125_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0043",
+      "problem_id": 125,
+      "family_key": "lc125_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": true,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0044",
+      "problem_id": 125,
+      "family_key": "lc125_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0045",
+      "problem_id": 125,
+      "family_key": "lc125_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0047",
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "family_active": true,
+      "own_group_id": "lc125_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc125_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0049",
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "family_active": true,
+      "own_group_id": "lc209_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc209_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0050",
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "family_active": true,
+      "own_group_id": "lc209_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc209_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0052",
+      "problem_id": 209,
+      "family_key": "lc209_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0054",
+      "problem_id": 209,
+      "family_key": "lc209_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0057",
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "family_active": true,
+      "own_group_id": "lc242_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc242_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0058",
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "family_active": true,
+      "own_group_id": "lc242_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc242_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0061",
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "family_active": true,
+      "own_group_id": "lc242_fam3_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc242_fam3_g0"
+      ]
+    },
+    {
+      "solution_id": "S0062",
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "family_active": true,
+      "own_group_id": "lc242_fam3_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc242_fam3_g0"
+      ]
+    },
+    {
+      "solution_id": "S0064",
+      "problem_id": 242,
+      "family_key": "lc242_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": true,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0066",
+      "problem_id": 547,
+      "family_key": "lc547_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0067",
+      "problem_id": 547,
+      "family_key": "lc547_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0068",
+      "problem_id": 547,
+      "family_key": "lc547_fam2",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0070",
+      "problem_id": 547,
+      "family_key": "lc547_fam3",
+      "family_active": true,
+      "own_group_id": "lc547_fam3_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc547_fam3_g0"
+      ]
+    },
+    {
+      "solution_id": "S0071",
+      "problem_id": 547,
+      "family_key": "lc547_fam3",
+      "family_active": true,
+      "own_group_id": "lc547_fam3_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc547_fam3_g0"
+      ]
+    },
+    {
+      "solution_id": "S0074",
+      "problem_id": 560,
+      "family_key": "lc560_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0076",
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "family_active": true,
+      "own_group_id": "lc560_fam2_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc560_fam2_g0"
+      ]
+    },
+    {
+      "solution_id": "S0078",
+      "problem_id": 560,
+      "family_key": "lc560_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0080",
+      "problem_id": 560,
+      "family_key": "lc560_fam4",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0081",
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "family_active": true,
+      "own_group_id": "lc704_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc704_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0083",
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "family_active": true,
+      "own_group_id": "lc704_fam1_g0",
+      "own_group_confirmed": true,
+      "zero_evidence": false,
+      "outcome": "CONFIRMED",
+      "satisfied_group_ids": [
+        "lc704_fam1_g0"
+      ]
+    },
+    {
+      "solution_id": "S0086",
+      "problem_id": 704,
+      "family_key": "lc704_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0087",
+      "problem_id": 704,
+      "family_key": "lc704_fam3",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0089",
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0090",
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    },
+    {
+      "solution_id": "S0091",
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "family_active": false,
+      "own_group_id": null,
+      "own_group_confirmed": false,
+      "zero_evidence": false,
+      "outcome": "UNRESOLVED",
+      "satisfied_group_ids": []
+    }
+  ],
+  "group_satisfiability": [
+    {
+      "group_id": "lc1_fam1_g0",
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "required": [
+        "hash_lookup"
+      ],
+      "derivation_members": [
+        "S0006"
+      ],
+      "satisfied_by": [
+        "S0006"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc46_fam2_g0",
+      "problem_id": 46,
+      "family_key": "lc46_fam2",
+      "required": [
+        "dfs_backtracking"
+      ],
+      "derivation_members": [
+        "S0020"
+      ],
+      "satisfied_by": [
+        "S0020"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc46_fam3_g0",
+      "problem_id": 46,
+      "family_key": "lc46_fam3",
+      "required": [
+        "dfs_backtracking"
+      ],
+      "derivation_members": [
+        "S0024"
+      ],
+      "satisfied_by": [
+        "S0024"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc70_fam1_g0",
+      "problem_id": 70,
+      "family_key": "lc70_fam1",
+      "required": [
+        "dp_bottom_up"
+      ],
+      "derivation_members": [
+        "S0027"
+      ],
+      "satisfied_by": [
+        "S0027"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc102_fam1_g0",
+      "problem_id": 102,
+      "family_key": "lc102_fam1",
+      "required": [
+        "bfs_shortest_path"
+      ],
+      "derivation_members": [
+        "S0039",
+        "S0040"
+      ],
+      "satisfied_by": [
+        "S0039",
+        "S0040"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc125_fam1_g0",
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "required": [
+        "two_pointers_opposite"
+      ],
+      "derivation_members": [
+        "S0048"
+      ],
+      "satisfied_by": [
+        "S0048"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc209_fam1_g0",
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "derivation_members": [
+        "S0055",
+        "S0056"
+      ],
+      "satisfied_by": [
+        "S0055",
+        "S0056"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc242_fam1_g0",
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "required": [
+        "frequency_counting"
+      ],
+      "derivation_members": [
+        "S0059"
+      ],
+      "satisfied_by": [
+        "S0059"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc242_fam3_g0",
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "required": [
+        "frequency_counting"
+      ],
+      "derivation_members": [
+        "S0063"
+      ],
+      "satisfied_by": [
+        "S0063"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc547_fam3_g0",
+      "problem_id": 547,
+      "family_key": "lc547_fam3",
+      "required": [
+        "union_find"
+      ],
+      "derivation_members": [
+        "S0072"
+      ],
+      "satisfied_by": [
+        "S0072"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc560_fam2_g0",
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "derivation_members": [
+        "S0075"
+      ],
+      "satisfied_by": [
+        "S0075"
+      ],
+      "satisfied_by_all": true
+    },
+    {
+      "group_id": "lc704_fam1_g0",
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "required": [
+        "binary_search"
+      ],
+      "derivation_members": [
+        "S0084",
+        "S0085"
+      ],
+      "satisfied_by": [
+        "S0084",
+        "S0085"
+      ],
+      "satisfied_by_all": true
+    }
+  ],
+  "metrics": {
+    "singleton_families": 4,
+    "family_count": 37,
+    "singleton_rate": 0.1081,
+    "families_per_problem": {
+      "1": 4,
+      "21": 4,
+      "46": 3,
+      "70": 3,
+      "102": 2,
+      "125": 3,
+      "209": 3,
+      "242": 3,
+      "547": 3,
+      "560": 4,
+      "704": 3,
+      "3236": 2
+    },
+    "max_families_per_problem": 4,
+    "held_out_population": 52,
+    "held_out_population_gate": 36,
+    "held_out_population_gate_met": true,
+    "derivation_population": 44,
+    "limited_families": 4,
+    "confirmed": 22,
+    "unresolved": 26,
+    "contradicted": 4,
+    "positive_confirm_rate": 0.4231,
+    "unresolved_rate": 0.5,
+    "family_coverage": 1.0,
+    "family_coverage_scope": "22 confirmed of 22 non-zero-evidence held-out solutions in families that activated a group",
+    "group_satisfiability": 1.0,
+    "group_satisfiability_detail": "12/12 active groups confirmed by all derivation members",
+    "activation_rate": 0.75,
+    "activated_groups": 12,
+    "narrowing_violations": 0,
+    "discrimination_FP": 0.0,
+    "discrimination_FP_detail": "0/881 eligible control pairs",
+    "D1_classification": {
+      "correct": 7,
+      "total": 7
+    },
+    "D2_classification": {
+      "correct": 32,
+      "total": 32
+    },
+    "zero_evidence_solutions": 12,
+    "zero_evidence_held_out": 6,
+    "zero_evidence_confirmed": 0,
+    "zero_evidence_labeled": 0,
+    "zero_evidence_controls": 0,
+    "divergence_distribution": {
+      "LABEL_OK": 12,
+      "LABEL_GENERIC": 4,
+      "LABEL_PARTIAL": 0,
+      "LABEL_UNEXPRESSIBLE": 0,
+      "LABEL_MULTI_OVERLAP": 0,
+      "NO_INDEPENDENT_LABEL": 10,
+      "ZERO_EVIDENCE": 6,
+      "REVIEW_REQUIRED_SCREEN_FAILED": 5
+    },
+    "approved_family_labels": 0
+  },
+  "acceptance_criteria": [
+    {
+      "criterion": "singleton_families_rate",
+      "gate": "<= 0.25",
+      "observed": 0.1081,
+      "met": true,
+      "detail": "4 of 37",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "families_per_problem",
+      "gate": "<= 4",
+      "observed": 4,
+      "met": true,
+      "detail": "max 4",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "held_out_population",
+      "gate": ">= 36",
+      "observed": 52,
+      "met": true,
+      "detail": "",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "discrimination_FP",
+      "gate": "<= 0.05",
+      "observed": 0.0,
+      "met": true,
+      "detail": "0/881 eligible control pairs",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "group_satisfiability",
+      "gate": "= 1.00",
+      "observed": 1.0,
+      "met": true,
+      "detail": "12/12 active groups confirmed by all derivation members",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "narrowing_violations",
+      "gate": "= 0",
+      "observed": 0,
+      "met": true,
+      "detail": "",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "family_coverage",
+      "gate": ">= 0.85",
+      "observed": 1.0,
+      "met": true,
+      "detail": "22 confirmed of 22 non-zero-evidence held-out solutions in families that activated a group",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "D1_exercised",
+      "gate": ">= 3 correct",
+      "observed": {
+        "correct": 7,
+        "total": 7
+      },
+      "met": true,
+      "detail": "",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "D2_exercised",
+      "gate": ">= 3 correct",
+      "observed": {
+        "correct": 32,
+        "total": 32
+      },
+      "met": true,
+      "detail": "",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "ZERO_EVIDENCE_handled",
+      "gate": "3 cases, none confirmed/labeled/control",
+      "observed": {
+        "solutions": 12,
+        "confirmed": 0,
+        "labeled": 0,
+        "controls": 0
+      },
+      "met": true,
+      "detail": "",
+      "met_under_gate": true
+    },
+    {
+      "criterion": "approved_family_labels",
+      "gate": ">= 6",
+      "observed": 0,
+      "met": false,
+      "detail": "human review unavailable in this environment (PA1)",
+      "met_under_gate": false
+    }
+  ],
+  "failed_criteria": [
+    "approved_family_labels"
+  ],
+  "label_mode_comparison": {
+    "strict_human": {
+      "activated_groups": 0,
+      "activation_rate": 0.0,
+      "note": "no family label is APPROVED in this environment, so strict mode activates nothing"
+    },
+    "provisional_unreviewed": {
+      "activated_groups": 12,
+      "activation_rate": 0.75,
+      "assumption": "PA1: the POC runs with label_mode='provisional_unreviewed' because this environment cannot supply a human reviewer. A family label that passes the spec V2 \u00a73.4 consistency screen is treated as provisionally activatable. No label is marked APPROVED; the '>=6 APPROVED labels' acceptance criterion is reported NOT MET. See \u00a710 OPEN-3 / OPEN-4."
+    }
+  }
+}

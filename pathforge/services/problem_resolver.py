@@ -8,8 +8,11 @@ Runtime analysis must never call GraphQL or the LLM directly.
 Every other service reads from the DB only.
 """
 import json
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 from pathforge.db.profile_manager import iso_now
 from pathforge.llm.graphql_client import (
@@ -29,12 +32,83 @@ class ProblemContext:
     description: str
     accepted_solution_groups: list = field(default_factory=list)
     ground_truth_confidence: dict = field(default_factory=dict)
+    ground_truth_consistency: list = field(default_factory=list)
+
+
+class ProblemReadinessError(Exception):
+    """Problem context is unavailable; analysis must not prepare it implicitly."""
+
+    def __init__(self, code: str, reason: str, message: str):
+        super().__init__(message)
+        self.detail = {"code": code, "reason": reason, "message": message}
+
+
+def _has_usable_solution_groups(groups: list) -> bool:
+    """Check production pattern availability, independently of Shadow authority."""
+    return any(
+        isinstance(group, dict)
+        and isinstance(group.get("patterns"), list)
+        and bool(group["patterns"])
+        and all(isinstance(pattern, str) and pattern.strip() for pattern in group["patterns"])
+        for group in groups
+    )
+
+
+def _validate_stored_ground_truth_shapes(
+    patterns_raw, confidence_raw, solution_groups_raw, curated_patterns,
+):
+    """Check consumed list shapes before derivation; never infer label validity."""
+    def unavailable():
+        return ProblemReadinessError(
+            "GROUND_TRUTH_UNAVAILABLE", "UNUSABLE_GROUND_TRUTH",
+            "Analysis is unavailable for this problem because its preparation is unusable. "
+            "Try another problem or contact support.",
+        )
+
+    def decode(raw):
+        if isinstance(raw, str) and raw:
+            try:
+                return json.loads(raw)
+            except json.JSONDecodeError as exc:
+                raise unavailable() from exc
+        return None if raw == "" else raw
+
+    def string_list(value, *, nullable=False, patterns=False):
+        if value is None and nullable:
+            return
+        if not isinstance(value, list) or not all(
+            isinstance(item, str) and (not patterns or item.strip()) for item in value
+        ):
+            raise unavailable()
+
+    string_list(decode(patterns_raw), nullable=True, patterns=True)
+    string_list(curated_patterns, nullable=True, patterns=True)
+    confidence = decode(confidence_raw)
+    if confidence is not None and not isinstance(confidence, dict):
+        raise unavailable()
+    groups = decode(solution_groups_raw)
+    if groups is None:
+        return
+    if not isinstance(groups, list):
+        raise unavailable()
+    for group in groups:
+        if not isinstance(group, dict):
+            raise unavailable()
+        if "confidence" in group and not isinstance(group["confidence"], dict):
+            raise unavailable()
+        for field in ("patterns", "required", "optional", "excluded", "provenance"):
+            string_list(
+                group.get(field, []), nullable=field in ("patterns", "required"),
+                patterns=field == "patterns",
+            )
 
 
 def resolve_problem(
     connection,
     leetcode_id: Optional[int] = None,
     title_slug: Optional[str] = None,
+    *,
+    allow_preparation: bool = True,
 ) -> ProblemContext:
     """Resolve a problem identifier (numeric ID or title_slug) to a ProblemContext.
 
@@ -47,18 +121,51 @@ def resolve_problem(
     Cache-hit path (every subsequent time):
         1. Load from problems table
         2. Load from problem_ground_truth table
+
+    With allow_preparation=False, only SELECTs are allowed: missing cache
+    components raise ProblemReadinessError instead of fetching or generating.
     """
+    if leetcode_id is None and not title_slug:
+        raise ValueError("Either leetcode_id or title_slug is required")
     row = _find_problem_in_db(connection, leetcode_id, title_slug)
 
     if row is None:
+        if not allow_preparation:
+            raise ProblemReadinessError(
+                "PREPARATION_REQUIRED", "PROBLEM_NOT_CACHED",
+                "Prepare this problem before running analysis.",
+            )
         row = _fetch_and_store_problem(connection, leetcode_id, title_slug)
 
     pid = row["id"]
     slug = row.get("title_slug") or ""
 
-    _ensure_ground_truth(connection, row)
+    if allow_preparation:
+        _ensure_ground_truth(connection, row)
+    elif connection.execute(
+        "SELECT 1 FROM problem_ground_truth WHERE problem_id = %s", (pid,),
+    ).fetchone() is None:
+        raise ProblemReadinessError(
+            "PREPARATION_REQUIRED", "GROUND_TRUTH_MISSING",
+            "Prepare this problem before running analysis.",
+        )
 
-    groups, confidence = _load_ground_truth(connection, pid)
+    groups, confidence = _load_ground_truth(connection, pid, row)
+    if not _has_usable_solution_groups(groups):
+        raise ProblemReadinessError(
+            "GROUND_TRUTH_UNAVAILABLE", "UNUSABLE_GROUND_TRUTH",
+            "Analysis is unavailable for this problem because its preparation is unusable. "
+            "Try another problem or contact support.",
+        )
+
+    from pathforge.services.ground_truth_builder import (
+        find_ground_truth_disagreements,
+    )
+
+    curated_patterns = _parse_curated_patterns(row.get("pattern")) or []
+    # No curated declaration is available to compare in this context. An absent
+    # label list is not evidence that every explicit approach is inconsistent.
+    consistency = find_ground_truth_disagreements(curated_patterns, groups) if curated_patterns else []
 
     topics = _parse_topics(row.get("topics") or "")
     description = row.get("description") or ""
@@ -72,6 +179,7 @@ def resolve_problem(
         description=description,
         accepted_solution_groups=groups,
         ground_truth_confidence=confidence,
+        ground_truth_consistency=consistency,
     )
 
 
@@ -190,41 +298,296 @@ def _ensure_ground_truth(connection, row):
     connection.commit()
 
 
-def _load_ground_truth(connection, problem_id):
-    row = connection.execute(
+def _parse_curated_patterns(raw):
+    """Parse a curated pattern field (JSON text or JSONB) into a list or None.
+
+    Returns the pattern list only when it is a non-empty list of strings.
+    """
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            return None
+    if raw and isinstance(raw, list):
+        return raw
+    return None
+
+
+def _load_csv_patterns(connection, problem_id):
+    """Load CSV-curated patterns from problems.pattern.
+
+    Returns the pattern list if non-empty, None otherwise.
+    """
+    try:
+        row = connection.execute(
+            "SELECT pattern FROM problems WHERE id = %s", (problem_id,)
+        ).fetchone()
+        if not row:
+            return None
+        return _parse_curated_patterns(row["pattern"])
+    except Exception:
+        return None
+
+
+def _finalize_derived_groups(groups: list) -> list:
+    """Apply the shared matchability rule to freshly derived solution groups.
+
+    Derived groups must carry the same explicit matchability annotation as
+    stored groups, so an unsatisfiable group is never emitted as a normal
+    requirement regardless of which derivation path produced it.
+    """
+    from pathforge.services.ground_truth_builder import mark_group_matchability
+
+    for group in groups:
+        if isinstance(group, dict):
+            mark_group_matchability(group)
+    return groups
+
+
+def _log_ground_truth_disagreements(problem_id, patterns, groups):
+    """Warn when the flat pattern label and the structured groups disagree."""
+    from pathforge.services.ground_truth_builder import (
+        find_ground_truth_disagreements,
+    )
+
+    findings = find_ground_truth_disagreements(patterns, groups)
+    for finding in findings:
+        logger.warning(
+            "Ground truth representation disagreement for problem %d: %s",
+            problem_id,
+            finding,
+        )
+    return findings
+
+
+def _load_ground_truth(connection, problem_id, problem_row=None):
+    """Load ground truth for a problem.
+
+    Reconciliation logic:
+    - If problems.pattern (CSV-curated) is non-empty, use it as the production
+      matcher's pattern list. This prevents incorrect LLM labels from causing
+      false NO_MATCH results.
+    - The shadow matcher's V1 fields (required/optional/excluded) are NEVER
+      modified by reconciliation.
+    - If problems.pattern is empty, LLM ground truth is used but marked as
+      unverified.
+    - Conflicts between curated and LLM patterns are logged.
+    """
+    from pathforge.services.ground_truth_builder import mark_family_relations
+    from pathforge.ast_analysis import authority_vocabulary as authority_vocab
+    from pathforge.services.authority_reconciliation import (
+        RECONCILIATION_MARKER as rec_marker,
+    )
+
+    gt_row = connection.execute(
         "SELECT patterns, confidence, solution_groups, validation_status FROM problem_ground_truth WHERE problem_id = %s",
         (problem_id,),
     ).fetchone()
-    if row is None:
+    if gt_row is None:
         return [], {}
 
-    patterns_raw = row["patterns"]
-    confidence_raw = row["confidence"]
-    solution_groups_raw = row["solution_groups"] if "solution_groups" in row.keys() else None
-    validation_status = row["validation_status"] if "validation_status" in row.keys() else None
+    patterns_raw = gt_row["patterns"]
+    confidence_raw = gt_row["confidence"]
+    solution_groups_raw = gt_row["solution_groups"] if "solution_groups" in gt_row.keys() else None
+    validation_status = gt_row["validation_status"] if "validation_status" in gt_row.keys() else None
 
-    # Phase 0C: if solution_groups column exists and has data, use it directly
+    # Load CSV-curated patterns from problems.pattern
+    csv_patterns = _load_csv_patterns(connection, problem_id)
+    _validate_stored_ground_truth_shapes(
+        patterns_raw, confidence_raw, solution_groups_raw, csv_patterns,
+    )
+
+    # Phase 3B: if solution_groups column exists and has data, use it directly
     if solution_groups_raw is not None:
         sg = _parse_json_field(solution_groups_raw)
         if isinstance(sg, list) and sg:
-            # Each group already has patterns, evidence, confidence
-            # Ensure backward compat: fill missing fields
+            # Batch 2A: re-derive concepts from each group's OWN stored legacy
+            # patterns, BEFORE reconciliation replaces them with curated
+            # patterns. This is what lets a stored group pick up the current
+            # vocabulary instead of staying tied to an obsolete concept, without
+            # ever rewriting concepts that came from the curated pattern label.
+            from pathforge.services.ground_truth_builder import (
+                refresh_groups_vocabulary,
+            )
+
+            raw_groups = [g for g in sg if isinstance(g, dict)]
+            refreshed = refresh_groups_vocabulary(raw_groups)
+            if refreshed:
+                logger.info(
+                    "Refreshed stored solution groups for problem %d with the "
+                    "current vocabulary: %s",
+                    problem_id,
+                    refreshed,
+                )
+
             groups = []
             all_confidence = {}
-            for g in sg:
-                if not isinstance(g, dict):
-                    continue
-                group_patterns = g.get("patterns", [])
-                if not group_patterns:
-                    continue
-                groups.append({
-                    "id": g.get("id", f"group_{len(groups)}"),
-                    "patterns": group_patterns,
-                    "evidence": g.get("evidence", validation_status or "unobserved"),
-                    "confidence": g.get("confidence", {}),
-                })
+            for g in raw_groups:
+                # Preserve original legacy patterns for the production matcher.
+                legacy_patterns = g.get("patterns", [])
+                if not legacy_patterns:
+                    legacy_patterns = g.get("required") or []
+
+                # Determine required concepts for the shadow matcher.
+                #
+                # If the group carries explicit V1 concepts they are
+                # authoritative and preserved exactly. Otherwise the concepts
+                # must be re-derived from the group's own legacy patterns --
+                # and re-derivation must NOT silently turn ALTERNATIVE
+                # approaches into ONE conjunctive requirement. A stored group
+                # whose flat patterns span more than one solution family
+                # (e.g. ["hash_map_lookup", "prefix_sum"] = approach A OR
+                # approach B) has lost the alternative structure, so it is
+                # expanded into the same alternative groups the flat-pattern
+                # fallback already derives. A single-family group keeps the
+                # existing construction unchanged.
+                has_v1_required = "required" in g and g["required"]
+                if has_v1_required or g.get("approach_definition") == "EXPLICIT":
+                    variants = [{
+                        "required": list(g.get("required") or []),
+                        "optional": list(g.get("optional", [])),
+                        "excluded": list(g.get("excluded", [])),
+                        "patterns": None,
+                    }]
+                else:
+                    confidence = g.get("confidence") or {}
+                    best_conf = max(confidence.values()) if confidence else 1.0
+                    split = _split_csv_patterns_to_groups(
+                        legacy_patterns,
+                        confidence,
+                        best_conf,
+                        g.get("evidence", g.get("authority_tier", "unobserved")),
+                    )
+                    if len(split) > 1:
+                        variants = [{
+                            "required": list(sg.get("required") or []),
+                            "optional": list(sg.get("optional") or []),
+                            "excluded": list(sg.get("excluded") or []),
+                            "patterns": list(sg.get("patterns") or []),
+                            # B5.5: preserve the explicit ONE_OF relation the
+                            # alternative split assigned, so it survives into the
+                            # returned groups.
+                            "family_relation": sg.get("family_relation"),
+                            "alternative_group_id": sg.get("alternative_group_id"),
+                        } for sg in split]
+                    else:
+                        variants = [{
+                            "required": _map_legacy_patterns_to_v1(legacy_patterns),
+                            "optional": list(g.get("optional", [])),
+                            "excluded": list(g.get("excluded", [])),
+                            "patterns": None,
+                        }]
+
+                # --- RECONCILIATION ---
+                # If CSV-curated patterns exist and differ from LLM patterns,
+                # use CSV patterns for the production matcher.
+                # The V1 fields (required/optional/excluded) are NEVER modified.
+                production_patterns = legacy_patterns
+                provenance = list(g.get("provenance", []))
+                authority = g.get("authority_tier", g.get("evidence", validation_status or "unobserved"))
+
+                # B8: an explicitly reconciled authority (b8_authority_
+                # reconciliation marker in the stored provenance) is the
+                # product of a documented GT decision — the CSV-pattern path
+                # must NOT overwrite it with "human_curated" again (that
+                # overwrite is exactly what created the B7 conflicts). The
+                # production patterns still come from the curated CSV: this
+                # guards authority only, and leaves the legacy fields
+                # (patterns, evidence) untouched.
+                b8_reconciled = rec_marker in set(provenance)
+
+                explicit_approach = g.get("approach_definition") == "EXPLICIT"
+                if explicit_approach:
+                    # Flat CSV labels cannot redefine an explicit approach or
+                    # promote its authority. Keep its own declared components.
+                    if csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
+                        logger.info("Flat labels differ from explicit approach %s for problem %d", g.get("id"), problem_id)
+                elif csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
+                    logger.warning(
+                        "Ground truth conflict for problem %d: "
+                        "CSV=%s, LLM=%s. Using CSV for production matcher.",
+                        problem_id, csv_patterns, legacy_patterns,
+                    )
+                    production_patterns = csv_patterns
+                    if not b8_reconciled:
+                        provenance.append("csv_curated_override")
+                        authority = "human_curated"
+                elif csv_patterns:
+                    # Patterns agree — CSV is authoritative but no conflict
+                    production_patterns = csv_patterns
+                    if authority != "human_curated" and not b8_reconciled:
+                        authority = "human_curated"
+                        provenance.append("csv_curated")
+
+                base_id = g.get("id", f"group_{len(groups)}")
+                for index, variant in enumerate(variants):
+                    # Alternative groups carry their own family's patterns so the
+                    # stored and flat representations converge; single-family
+                    # groups keep the reconciled production patterns.
+                    group_patterns = (
+                        variant["patterns"]
+                        if variant["patterns"] is not None
+                        else production_patterns
+                    )
+                    groups.append({
+                        "id": base_id if len(variants) == 1 else f"{base_id}_alt{index}",
+                        "version": g.get("version", 1),
+                        "required": variant["required"],
+                        "optional": variant["optional"],
+                        "excluded": variant["excluded"],
+                        "threshold": g.get("threshold", 0.5),
+                        "authority_tier": authority,
+                        "provenance": provenance,
+                        # Legacy fields for backward compatibility
+                        # "patterns" is the production matcher input
+                        "patterns": group_patterns,
+                        # Batch 2A: keep the patterns the V1 concepts were
+                        # actually derived from. Reconciliation may override
+                        # "patterns" with curated ones, and drift can only be
+                        # detected if both representations stay visible.
+                        "derivation_patterns": (
+                            list(variant["patterns"])
+                            if variant["patterns"] is not None
+                            else list(legacy_patterns)
+                        ),
+                        "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
+                        "confidence": g.get("confidence", {}),
+                    })
+                    for field in ("approach_name", "approach_definition", "unmapped_patterns"):
+                        if field in g:
+                            groups[-1][field] = g[field]
+                    if "approach_definition" not in g and not g.get("family_relation"):
+                        # Relations inferred during this load are not explicit
+                        # source declarations. Preserve comparisons, flag limits.
+                        groups[-1]["approach_definition"] = "UNSPECIFIED"
+                    if variant.get("family_relation"):
+                        groups[-1]["family_relation"] = variant["family_relation"]
+                        groups[-1]["alternative_group_id"] = variant.get(
+                            "alternative_group_id"
+                        )
+                    elif g.get("family_relation"):
+                        groups[-1]["family_relation"] = g["family_relation"]
+                        groups[-1]["alternative_group_id"] = g.get("alternative_group_id")
                 all_confidence.update(g.get("confidence", {}))
             if groups:
+                # B5.5: mark explicitly-declared alternative (ONE_OF) families
+                # before returning. Ordinary problems are untouched.
+                mark_family_relations(groups)
+                # B6.5: attach the explicit authority-normalization diagnostic
+                # to every group (additive; never overwrites a stored field).
+                # Conflicts are reported here and later fail closed in the
+                # canonical authority path — they are NOT silently resolved.
+                for group in groups:
+                    if isinstance(group, dict):
+                        group["authority_normalization"] = (
+                            authority_vocab.normalize_group_authority(group)
+                        )
+                # Batch 2A: annotate matchability before returning, so an
+                # unsatisfiable group is never presented as a normal one.
+                _finalize_derived_groups(groups)
+                _log_ground_truth_disagreements(
+                    problem_id, csv_patterns or _parse_json_list(patterns_raw), groups
+                )
                 return groups, all_confidence
 
     # Fallback: legacy flat patterns column
@@ -235,18 +598,161 @@ def _load_ground_truth(connection, problem_id):
     confidence = _parse_json_dict(confidence_raw)
 
     if patterns:
+        # Apply reconciliation to fallback path too
+        if csv_patterns and sorted(csv_patterns) != sorted(patterns):
+            logger.warning(
+                "Ground truth conflict for problem %d (fallback): "
+                "CSV=%s, LLM=%s. Using CSV.",
+                problem_id, csv_patterns, patterns,
+            )
+            patterns = csv_patterns
+        elif csv_patterns:
+            patterns = csv_patterns
+
         best_conf = max(confidence.values()) if confidence else 1.0
-        groups = [
-            {
-                "id": "group_0",
-                "patterns": patterns,
-                "evidence": validation_status or "unobserved",
-                "confidence": {p: confidence.get(p, best_conf) for p in patterns},
-            }
-        ]
+        evidence = validation_status or "unobserved"
+
+        # Split CSV patterns into per-strategy groups.
+        # CSV patterns like ["bfs_shortest_path", "dp_1d_forward"] represent
+        # ALTERNATIVE approaches, not all-required.  Each pattern maps to a
+        # different V1 strategy, so they must become separate groups.
+        groups = _split_csv_patterns_to_groups(patterns, confidence, best_conf, evidence)
+        # B5.5: mark shared-pattern curated alternatives too (the split already
+        # marked its own multi-family alternatives).
+        mark_family_relations(groups)
+        # B6.5: attach the same authority-normalization diagnostic the stored-
+        # groups path attaches, so the fallback corpus is normalized as well.
+        for group in groups:
+            if isinstance(group, dict):
+                group["approach_definition"] = "UNSPECIFIED"
+                group["authority_normalization"] = (
+                    authority_vocab.normalize_group_authority(group)
+                )
+        _log_ground_truth_disagreements(
+            problem_id, csv_patterns or patterns, groups
+        )
         return groups, confidence
 
     return [], {}
+
+
+def _split_csv_patterns_to_groups(
+    patterns: list, confidence: dict, best_conf: float, evidence: str
+) -> list:
+    """Split CSV patterns into per-strategy solution groups.
+
+    CSV patterns like ["bfs_shortest_path", "dp_1d_forward"] represent
+    ALTERNATIVE approaches (not all required simultaneously).  Each pattern
+    that maps to a different primary strategy becomes its own group.
+    Patterns that map to the same strategy are merged.
+    """
+    from pathforge.services.ground_truth_builder import (
+        alternative_group_id_for, pattern_family,
+    )
+
+    # Group patterns by solution family (their primary concept)
+    strategy_to_patterns = {}
+    unmapped_patterns = []
+
+    for pattern in patterns:
+        family = pattern_family(pattern)
+        if family is not None:
+            strategy_to_patterns.setdefault(family, []).append(pattern)
+        else:
+            unmapped_patterns.append(pattern)
+
+    # If zero or one strategy cluster and no unmapped patterns, single group
+    if len(strategy_to_patterns) <= 1 and not unmapped_patterns:
+        required = _map_legacy_patterns_to_v1(patterns)
+        excluded = _get_v1_excluded_for_patterns(patterns)
+        return _finalize_derived_groups([{
+            "id": "group_0",
+            "required": required,
+            "optional": [],
+            "excluded": excluded,
+            "patterns": patterns,
+            "evidence": evidence,
+            "confidence": {p: confidence.get(p, best_conf) for p in patterns},
+        }])
+
+    # All unmapped (no strategy clusters): single group preserving original patterns
+    if not strategy_to_patterns:
+        return _finalize_derived_groups([{
+            "id": "group_0",
+            "required": [],
+            "optional": _map_legacy_patterns_to_v1(patterns),
+            "excluded": [],
+            "patterns": patterns,
+            "evidence": evidence,
+            "confidence": {p: confidence.get(p, best_conf) for p in patterns},
+        }])
+
+    # Multiple strategy clusters: create separate groups
+    groups = []
+    for i, (strategy, group_patterns) in enumerate(sorted(strategy_to_patterns.items())):
+        required = _map_legacy_patterns_to_v1(group_patterns)
+        excluded = _get_v1_excluded_for_patterns(group_patterns)
+        groups.append({
+            "id": f"group_{i}",
+            "required": required,
+            "optional": [],
+            "excluded": excluded,
+            "patterns": group_patterns,
+            "evidence": evidence,
+            "confidence": {p: confidence.get(p, best_conf) for p in group_patterns},
+        })
+
+    # B5.5: patterns from more than one solution family are ALTERNATIVE
+    # approaches (approach A OR approach B), so the split groups are one
+    # explicitly declared ONE_OF set.
+    if len(groups) > 1:
+        group_id = alternative_group_id_for(tuple(sorted(patterns)))
+        for group in groups:
+            group["family_relation"] = "ONE_OF"
+            group["alternative_group_id"] = group_id
+
+    # Add unmapped patterns to the first group as optional
+    if unmapped_patterns and groups:
+        unmapped_required = _map_legacy_patterns_to_v1(unmapped_patterns)
+        groups[0]["optional"].extend(unmapped_required)
+        groups[0]["optional"] = sorted(set(groups[0]["optional"]))
+
+    return _finalize_derived_groups(groups)
+
+
+def _map_legacy_patterns_to_v1(patterns: list) -> list:
+    """Map legacy pattern IDs to V1 technique/strategy concepts.
+
+    Uses the same PATTERN_TO_V1_MAPPING from the ground truth builder.
+    This ensures that even legacy groups stored before Phase 4A can produce
+    V1 concept IDs for the shadow matcher.
+    """
+    from pathforge.services.ground_truth_builder import PATTERN_TO_V1_MAPPING
+
+    required = set()
+    for pattern in patterns:
+        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+        if mapping and mapping.get("required"):
+            required.update(mapping["required"])
+    return sorted(required) if required else []
+
+
+def _get_v1_excluded_for_patterns(patterns: list) -> list:
+    """Extract excluded V1 concepts for a list of legacy patterns.
+
+    Uses the same PATTERN_TO_V1_MAPPING from the ground truth builder.
+    Returns the union of all excluded concepts across the given patterns.
+    This allows CSV-derived solution groups to carry the correct exclusion
+    information for the shadow matcher.
+    """
+    from pathforge.services.ground_truth_builder import PATTERN_TO_V1_MAPPING
+
+    excluded = set()
+    for pattern in patterns:
+        mapping = PATTERN_TO_V1_MAPPING.get(pattern)
+        if mapping and mapping.get("excluded"):
+            excluded.update(mapping["excluded"])
+    return sorted(excluded) if excluded else []
 
 
 def _parse_json_field(raw):

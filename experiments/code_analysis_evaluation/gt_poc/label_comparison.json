@@ -1,0 +1,804 @@
+{
+  "poc_version": "1.0.0",
+  "phase": "4_label_comparison",
+  "note": "Diagnostic artifact only. Not part of the reviewer-facing review sheet; produced after it, for post-hoc agreement analysis.",
+  "entries": [
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "proposed_required": [
+        "hash_lookup"
+      ],
+      "analyzer_technique_signature": [
+        "hash_lookup"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0001",
+          "techniques": [
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0002",
+          "techniques": [
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam2",
+      "proposed_required": [
+        "hash_lookup"
+      ],
+      "analyzer_technique_signature": [],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0003",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam3",
+      "proposed_required": [
+        "hash_lookup"
+      ],
+      "analyzer_technique_signature": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [
+        "two_pointers_opposite"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0004",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "proposed_required": [
+        "hash_lookup"
+      ],
+      "analyzer_technique_signature": [
+        "hash_lookup"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0005",
+          "techniques": [
+            "hash_lookup"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam1",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_technique_signature": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0006",
+          "techniques": [
+            "forward_pointer_advance",
+            "linked_list_traversal"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam2",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_technique_signature": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0007",
+          "techniques": [
+            "linked_list_traversal",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam3",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_technique_signature": [
+        "linked_list_traversal",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0008",
+          "techniques": [
+            "linked_list_traversal",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam4",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_technique_signature": [
+        "recursive_branching"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0009",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam5",
+      "proposed_required": [
+        "forward_pointer_advance"
+      ],
+      "analyzer_technique_signature": [
+        "candidate_selection",
+        "linked_list_traversal",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0010",
+          "techniques": [
+            "candidate_selection",
+            "linked_list_traversal",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "proposed_required": [
+        "two_pointers_opposite"
+      ],
+      "analyzer_technique_signature": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [
+        "two_pointers_opposite"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0011",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0015",
+          "techniques": [
+            "bidirectional_index_scan",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam2",
+      "proposed_required": [
+        "two_pointers_opposite"
+      ],
+      "analyzer_technique_signature": [],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0012",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam3",
+      "proposed_required": [
+        "two_pointers_opposite"
+      ],
+      "analyzer_technique_signature": [
+        "recursive_branching"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0013",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam4",
+      "proposed_required": [
+        "two_pointers_opposite"
+      ],
+      "analyzer_technique_signature": [
+        "bidirectional_index_scan",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [
+        "two_pointers_opposite"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0014",
+          "techniques": [
+            "bidirectional_index_scan",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "two_pointers_opposite"
+          ],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "proposed_required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "analyzer_technique_signature": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [
+        "sliding_window"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0016",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0017",
+          "techniques": [
+            "forward_pointer_advance",
+            "loop_state_tracking",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "sliding_window"
+          ],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam2",
+      "proposed_required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "analyzer_technique_signature": [
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0018",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam3",
+      "proposed_required": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "analyzer_technique_signature": [
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0019",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0020",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "proposed_required": [
+        "frequency_counting"
+      ],
+      "analyzer_technique_signature": [
+        "frequency_counting"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0021",
+          "techniques": [
+            "frequency_counting"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam2",
+      "proposed_required": [
+        "frequency_counting"
+      ],
+      "analyzer_technique_signature": [],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0022",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0025",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "proposed_required": [
+        "frequency_counting"
+      ],
+      "analyzer_technique_signature": [
+        "frequency_counting",
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0023",
+          "techniques": [
+            "frequency_counting",
+            "hash_lookup",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam4",
+      "proposed_required": [
+        "frequency_counting"
+      ],
+      "analyzer_technique_signature": [],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0024",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam1",
+      "proposed_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "analyzer_technique_signature": [
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0026",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "proposed_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "analyzer_technique_signature": [
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0027",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam3",
+      "proposed_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "analyzer_technique_signature": [
+        "fixed_window_maintenance",
+        "forward_pointer_advance",
+        "frequency_counting",
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [
+        "dp_bottom_up"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0028",
+          "techniques": [
+            "fixed_window_maintenance",
+            "forward_pointer_advance",
+            "frequency_counting",
+            "iterative_table_filling",
+            "sequential_accumulation"
+          ],
+          "strategies": [
+            "dp_bottom_up"
+          ],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam4",
+      "proposed_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "analyzer_technique_signature": [
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0029",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam5",
+      "proposed_required": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "analyzer_technique_signature": [
+        "forward_pointer_advance",
+        "frequency_counting",
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0030",
+          "techniques": [
+            "forward_pointer_advance",
+            "frequency_counting",
+            "hash_lookup",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "proposed_required": [
+        "binary_search"
+      ],
+      "analyzer_technique_signature": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "analyzer_strategy_signature": [
+        "binary_search"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0031",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0034",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam2",
+      "proposed_required": [
+        "binary_search"
+      ],
+      "analyzer_technique_signature": [],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0032",
+          "techniques": [],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam3",
+      "proposed_required": [
+        "binary_search"
+      ],
+      "analyzer_technique_signature": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "analyzer_strategy_signature": [
+        "binary_search"
+      ],
+      "per_member": [
+        {
+          "solution_id": "S0033",
+          "techniques": [
+            "candidate_selection",
+            "loop_state_tracking"
+          ],
+          "strategies": [
+            "binary_search"
+          ],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam4",
+      "proposed_required": [
+        "binary_search"
+      ],
+      "analyzer_technique_signature": [
+        "recursive_branching"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0035",
+          "techniques": [
+            "recursive_branching"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        }
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "proposed_required": [],
+      "analyzer_technique_signature": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0036",
+          "techniques": [
+            "forward_pointer_advance",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0037",
+          "techniques": [
+            "forward_pointer_advance",
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam2",
+      "proposed_required": [],
+      "analyzer_technique_signature": [
+        "sequential_accumulation"
+      ],
+      "analyzer_strategy_signature": [],
+      "per_member": [
+        {
+          "solution_id": "S0038",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D4"
+        },
+        {
+          "solution_id": "S0039",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        },
+        {
+          "solution_id": "S0040",
+          "techniques": [
+            "sequential_accumulation"
+          ],
+          "strategies": [],
+          "dedup_level": "D3"
+        }
+      ]
+    }
+  ]
+}

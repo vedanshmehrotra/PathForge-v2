@@ -1,0 +1,28 @@
+{
+  "total_variants_tested": 14,
+  "legacy_stability_rate": 1.0,
+  "shadow_stability_rate": 0.6428571428571429,
+  "legacy_detection_rate": 0.0,
+  "shadow_detection_rate": 0.07142857142857142,
+  "categories_tested": [
+    "backtracking_permutation",
+    "binary_search_standard",
+    "sliding_window_fixed",
+    "dp_1d_forward",
+    "monotonic_stack",
+    "two_pointers_opposite"
+  ],
+  "transforms_tested": [
+    "bitshift_division",
+    "expression_style",
+    "overflow_safe_midpoint",
+    "explicit_length_check",
+    "space_optimization",
+    "used_boolean_array",
+    "loop_condition_invert",
+    "dict_instead_of_list",
+    "helper_function",
+    "variable_rename",
+    "remaining_list"
+  ]
+}

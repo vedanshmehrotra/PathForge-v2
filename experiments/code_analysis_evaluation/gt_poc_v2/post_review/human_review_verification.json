@@ -1,0 +1,131 @@
+{
+  "checks": [
+    {
+      "check": "decision_count",
+      "passed": true,
+      "detail": "37 decisions for 37 families"
+    },
+    {
+      "check": "unique_family_keys",
+      "passed": true,
+      "detail": "37 unique of 37"
+    },
+    {
+      "check": "coverage_bijective",
+      "passed": true,
+      "detail": "unreviewed=[] unknown=[]"
+    },
+    {
+      "check": "tally_matches_summary",
+      "passed": true,
+      "detail": "transcript={'APPROVED': 16, 'CORRECTED_LABEL': 20, 'REJECTED': 1} summary={'reviewed_families': 37, 'approved': 16, 'corrected_label': 20, 'rejected': 1}"
+    },
+    {
+      "check": "reviewer_reason_recorded",
+      "passed": true,
+      "detail": "every decision carries a reviewer reason"
+    },
+    {
+      "check": "source_ref_recorded",
+      "passed": true,
+      "detail": "every decision carries a source reference"
+    },
+    {
+      "check": "review_status_recorded",
+      "passed": true,
+      "detail": "every decision carries a review status"
+    },
+    {
+      "check": "label_terms_recorded",
+      "passed": true,
+      "detail": "every non-rejected decision has label terms"
+    },
+    {
+      "check": "no_vocabulary_invention",
+      "passed": true,
+      "detail": "label terms are non-empty identifiers"
+    },
+    {
+      "check": "source_digests_not_mismatched",
+      "passed": true,
+      "detail": "decisions_pdf=verified; solutions_pdf=verified; extracted_decisions_txt=verified; extracted_solutions_txt=verified"
+    },
+    {
+      "check": "extraction_family_keys_match",
+      "passed": true,
+      "detail": "decisions pdf mentions 37 family keys"
+    },
+    {
+      "check": "extraction_summary_match",
+      "passed": true,
+      "detail": "summary line ['16', '20', '1'] vs {'reviewed_families': 37, 'approved': 16, 'corrected_label': 20, 'rejected': 1}"
+    },
+    {
+      "check": "extraction_decisions_match",
+      "passed": true,
+      "detail": "parsed 37 per-family decisions from the reviewer sheet; mismatches=[]"
+    },
+    {
+      "check": "extraction_labels_match",
+      "passed": true,
+      "detail": "label mismatches between reviewer sheet and transcript: []"
+    }
+  ],
+  "passed": true,
+  "failed_checks": [],
+  "tally": {
+    "APPROVED": 16,
+    "CORRECTED_LABEL": 20,
+    "REJECTED": 1
+  },
+  "declared_summary": {
+    "reviewed_families": 37,
+    "approved": 16,
+    "corrected_label": 20,
+    "rejected": 1
+  },
+  "member_total": 96,
+  "source_status": [
+    {
+      "name": "decisions_pdf",
+      "path": "PathForge_V2_Review_Decisions-2.pdf",
+      "role": "authoritative reviewer decisions and remarks (raw teacher artifact)",
+      "expected_sha256": "cc689465bc41844a433e8e8b2b676e1381149dc15d99a35d886a3084fb9eba5b",
+      "observed_sha256": "cc689465bc41844a433e8e8b2b676e1381149dc15d99a35d886a3084fb9eba5b",
+      "state": "verified"
+    },
+    {
+      "name": "solutions_pdf",
+      "path": "pathforge_v2_solutions.pdf",
+      "role": "the blind review sheet that was handed to the reviewer (one reference implementation per family)",
+      "expected_sha256": "71b64b504ff147ff12547ded626270cb567e4c3620e95422039174e4e1e08ffb",
+      "observed_sha256": "71b64b504ff147ff12547ded626270cb567e4c3620e95422039174e4e1e08ffb",
+      "state": "verified"
+    },
+    {
+      "name": "extracted_decisions_txt",
+      "path": "human_review_source.txt",
+      "role": "mechanical pdftotext -layout extraction of decisions_pdf (traceability only)",
+      "expected_sha256": "3d800508c27333321896e71a00837f309a4dc56a780db472d92e1f6f748e4391",
+      "observed_sha256": "3d800508c27333321896e71a00837f309a4dc56a780db472d92e1f6f748e4391",
+      "state": "verified"
+    },
+    {
+      "name": "extracted_solutions_txt",
+      "path": "human_review_solutions_source.txt",
+      "role": "mechanical pdftotext extraction of solutions_pdf; carries per-family decision docstrings used for verification",
+      "expected_sha256": "887f01539ed7bb3a8cca8f549841fa5ce197014ecfed713bec28bcfeb7707a1b",
+      "observed_sha256": "887f01539ed7bb3a8cca8f549841fa5ce197014ecfed713bec28bcfeb7707a1b",
+      "state": "verified"
+    }
+  ],
+  "extraction": {
+    "decisions_txt_family_keys": 37,
+    "decisions_txt_summary": [
+      "16",
+      "20",
+      "1"
+    ],
+    "solutions_txt_decisions_parsed": 37
+  }
+}

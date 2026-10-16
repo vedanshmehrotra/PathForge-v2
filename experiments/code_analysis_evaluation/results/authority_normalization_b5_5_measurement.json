@@ -1,0 +1,265 @@
+{
+  "batch": "B5.5",
+  "layer": "Ground-Truth authority normalization + ONE_OF alternative families",
+  "canonical_vocabulary": {
+    "tiers": [
+      "HUMAN_APPROVED",
+      "EXTERNAL_VERIFIED",
+      "STRUCTURALLY_OBSERVED",
+      "INFERRED"
+    ],
+    "authorizing_tiers": [
+      "EXTERNAL_VERIFIED",
+      "HUMAN_APPROVED"
+    ],
+    "source_tier_map": {
+      "bootstrap": "INFERRED",
+      "editorial": "HUMAN_APPROVED",
+      "external_verified": "EXTERNAL_VERIFIED",
+      "externally_listed": "EXTERNAL_VERIFIED",
+      "human_approved": "HUMAN_APPROVED",
+      "human_curated": "HUMAN_APPROVED",
+      "hypothesis": "INFERRED",
+      "inferred": "INFERRED",
+      "llm_proposed": "INFERRED",
+      "reviewed": "HUMAN_APPROVED",
+      "structurally_observed": "STRUCTURALLY_OBSERVED",
+      "unknown": "INFERRED",
+      "unobserved": "INFERRED"
+    },
+    "valid_gt_tiers": [
+      "bootstrap",
+      "editorial",
+      "externally_listed",
+      "human_curated",
+      "llm_proposed",
+      "reviewed",
+      "structurally_observed"
+    ],
+    "legacy_production_authoritative_states": [
+      "externally_listed",
+      "structurally_observed"
+    ],
+    "legacy_production_authoritative_tiers": [
+      "editorial",
+      "externally_listed",
+      "structurally_observed"
+    ]
+  },
+  "declared_tier_data_quality": {
+    "unrecognized": {},
+    "missing_metadata": {
+      "unknown": 51
+    },
+    "not_builder_accepted": {
+      "unknown": 51
+    }
+  },
+  "corpus_a_46_real_submissions": {
+    "coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 46
+    },
+    "canonical_tier_counts": {
+      "HUMAN_APPROVED": 0,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 51
+    },
+    "declared_tier_counts": {
+      "unknown": 51
+    },
+    "family_coverage_states": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 16
+    },
+    "one_of_group_count": 4,
+    "one_of_submissions": 4,
+    "mixed_authority_submissions": 0,
+    "safe_for_product_scoring_submissions": 0,
+    "serialization_round_trip_failures": 0,
+    "authority_evidence_disagreements": 0,
+    "missing_authority_families": 51,
+    "baseline_coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "coverage_matches_baseline": true,
+    "baseline_old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "old_outcome_matches_baseline": true,
+    "baseline_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "selected_matches_baseline": true
+  },
+  "corpus_a_authority_enriched_view": {
+    "coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "aggregation_distribution": {
+      "ALL_FAMILIES_AUTHORITATIVE": 20,
+      "NO_AUTHORITATIVE_FAMILY": 26
+    },
+    "canonical_tier_counts": {
+      "HUMAN_APPROVED": 30,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 21
+    },
+    "declared_tier_counts": {
+      "human_curated": 30,
+      "llm_proposed": 5,
+      "unknown": 16
+    },
+    "family_coverage_states": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 16
+    },
+    "one_of_group_count": 4,
+    "one_of_submissions": 4,
+    "mixed_authority_submissions": 0,
+    "safe_for_product_scoring_submissions": 20,
+    "serialization_round_trip_failures": 0,
+    "authority_evidence_disagreements": 0,
+    "missing_authority_families": 16,
+    "baseline_coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "coverage_matches_baseline": true,
+    "baseline_old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "old_outcome_matches_baseline": true,
+    "baseline_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "selected_matches_baseline": true
+  },
+  "corpus_b_301_disjoint_cases": {
+    "coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "old_outcome_distribution": {
+      "CONFIRMED": 112,
+      "UNRESOLVED": 189
+    },
+    "selected_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27,
+      "None": 272
+    },
+    "aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 301
+    },
+    "canonical_tier_counts": {
+      "HUMAN_APPROVED": 0,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 301
+    },
+    "declared_tier_counts": {
+      "llm_proposed": 301
+    },
+    "family_coverage_states": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "one_of_group_count": 0,
+    "one_of_submissions": 0,
+    "mixed_authority_submissions": 0,
+    "safe_for_product_scoring_submissions": 0,
+    "serialization_round_trip_failures": 0,
+    "authority_evidence_disagreements": 0,
+    "missing_authority_families": 0,
+    "baseline_coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "coverage_matches_baseline": true,
+    "baseline_old_outcome_distribution": {
+      "CONFIRMED": 112,
+      "UNRESOLVED": 189
+    },
+    "old_outcome_matches_baseline": true,
+    "baseline_selected_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27,
+      "None": 272
+    },
+    "selected_matches_baseline": true
+  }
+}

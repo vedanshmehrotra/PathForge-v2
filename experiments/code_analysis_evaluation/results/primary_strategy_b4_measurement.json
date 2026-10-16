@@ -1,0 +1,126 @@
+{
+  "batch": "B4",
+  "layer": "specificity + primary-strategy selection (shadow/presentation only)",
+  "pre_b4_reconstruction": {
+    "source": "pathforge\\ast_analysis\\shadow\\shadow_runner.py",
+    "removed_line_count": 18,
+    "removed_lines": [
+      "from pathforge.ast_analysis.shadow.primary_strategy import select_submission_primary",
+      "        # Step 8 (B4): specificity + primary-strategy selection. PURELY ADDITIVE",
+      "        # presentation-layer instrumentation. It selects among the B2-evidenced,",
+      "        # conclusion-eligible concepts relevant to the evaluated families. It",
+      "        # does NOT change family coverage, and the old matcher's `match_outcome`",
+      "        # (including its own `primary_strategy`) is NOT overwritten.",
+      "        try:",
+      "            strategy_selection = select_submission_primary(",
+      "                solution_groups, evidence_snapshot, coverage_report",
+      "            ).to_dict()",
+      "        except Exception as e:  # pragma: no cover - defensive",
+      "            logging.getLogger(__name__).debug(",
+      "                \"Primary-strategy selection failed: %s: %s\", type(e).__name__, e",
+      "            )",
+      "            strategy_selection = None",
+      "",
+      "            # B4 additive key (primary strategy selection). Independently additive;",
+      "            \"strategy_selection\": strategy_selection,"
+    ]
+  },
+  "corpus_a_46_real_submissions": {
+    "before_coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "after_coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "coverage_identical": true,
+    "before_old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "after_old_outcome_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "old_outcome_identical": true,
+    "deterministic_field_mismatches": [],
+    "mismatch_count": 0,
+    "submission_candidate_counts": {
+      "zero": 23,
+      "exactly_one": 23
+    },
+    "family_candidate_counts": {
+      "zero": 28,
+      "exactly_one": 23
+    },
+    "selected_strategy_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1
+    },
+    "selection_reason_distribution": {
+      "no_conclusion_eligible_present": 23,
+      "single_candidate": 23
+    },
+    "deterministic_primary_selected": 23,
+    "unresolved_ties_broken_by_concept_id": 0,
+    "ambiguity_count": 0,
+    "ambiguity_cases": []
+  },
+  "corpus_b_301_disjoint_cases": {
+    "before_coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "after_coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "coverage_identical": true,
+    "before_old_outcome_distribution": {
+      "CONFIRMED": 112,
+      "UNRESOLVED": 189
+    },
+    "after_old_outcome_distribution": {
+      "CONFIRMED": 112,
+      "UNRESOLVED": 189
+    },
+    "old_outcome_identical": true,
+    "deterministic_field_mismatches": [],
+    "mismatch_count": 0,
+    "submission_candidate_counts": {
+      "zero": 272,
+      "exactly_one": 29
+    },
+    "family_candidate_counts": {
+      "zero": 272,
+      "exactly_one": 29
+    },
+    "selected_strategy_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27
+    },
+    "selection_reason_distribution": {
+      "no_conclusion_eligible_present": 272,
+      "single_candidate": 29
+    },
+    "deterministic_primary_selected": 29,
+    "unresolved_ties_broken_by_concept_id": 0,
+    "ambiguity_count": 0,
+    "ambiguity_cases": []
+  }
+}

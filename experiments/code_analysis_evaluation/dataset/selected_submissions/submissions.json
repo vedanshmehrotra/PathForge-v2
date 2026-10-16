@@ -1,0 +1,180 @@
+[
+  {
+    "submission_id": "sub_0001",
+    "problem_id": 0,
+    "problem_title": "Template: hash_map_lookup",
+    "problem_difficulty": "N/A",
+    "problem_topics": "hash_map_lookup",
+    "language": "python",
+    "source_code": "def twoSum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []",
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "target_concepts": [
+      "hash_map_lookup"
+    ]
+  },
+  {
+    "submission_id": "sub_0002",
+    "problem_id": 0,
+    "problem_title": "Template: hash_map_lookup",
+    "problem_difficulty": "N/A",
+    "problem_topics": "hash_map_lookup",
+    "language": "python",
+    "source_code": "def isAnagram(s, t):\n    if len(s) != len(t):\n        return False\n    count = {}\n    for c in s:\n        count[c] = count.get(c, 0) + 1\n    for c in t:\n        if c not in count:\n            return False\n        count[c] -= 1\n        if count[c] < 0:\n            return False\n    return True",
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "target_concepts": [
+      "hash_map_lookup"
+    ]
+  },
+  {
+    "submission_id": "sub_0003",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_fixed",
+    "problem_difficulty": "N/A",
+    "problem_topics": "sliding_window_fixed",
+    "language": "python",
+    "source_code": "def findMaxAverage(nums, k):\n    window_sum = sum(nums[:k])\n    max_sum = window_sum\n    for i in range(k, len(nums)):\n        window_sum += nums[i] - nums[i - k]\n        max_sum = max(max_sum, window_sum)\n    return max_sum / k",
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "target_concepts": [
+      "sliding_window_fixed"
+    ]
+  },
+  {
+    "submission_id": "sub_0004",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_fixed",
+    "problem_difficulty": "N/A",
+    "problem_topics": "sliding_window_fixed",
+    "language": "python",
+    "source_code": "def findMaxAverage(nums, k):\n    curr = sum(nums[:k])\n    best = curr\n    for i in range(k, len(nums)):\n        curr = curr - nums[i-k] + nums[i]\n        best = max(best, curr)\n    return best / k",
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "target_concepts": [
+      "sliding_window_fixed"
+    ]
+  },
+  {
+    "submission_id": "sub_0005",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_variable",
+    "problem_difficulty": "N/A",
+    "problem_topics": "sliding_window_variable",
+    "language": "python",
+    "source_code": "def lengthOfLongestSubstring(s):\n    seen = set()\n    left = 0\n    max_len = 0\n    for right in range(len(s)):\n        while s[right] in seen:\n            seen.remove(s[left])\n            left += 1\n        seen.add(s[right])\n        max_len = max(max_len, right - left + 1)\n    return max_len",
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "target_concepts": [
+      "sliding_window_variable"
+    ]
+  },
+  {
+    "submission_id": "sub_0006",
+    "problem_id": 0,
+    "problem_title": "Template: sliding_window_variable",
+    "problem_difficulty": "N/A",
+    "problem_topics": "sliding_window_variable",
+    "language": "python",
+    "source_code": "def minWindow(s, t):\n    from collections import Counter\n    need = Counter(t)\n    missing = len(t)\n    left = 0\n    start, end = 0, float('inf')\n    for right, c in enumerate(s):\n        if need[c] > 0:\n            missing -= 1\n        need[c] -= 1\n        while missing == 0:\n            if right - left < end - start:\n                start, end = left, right\n            need[s[left]] += 1\n            if need[s[left]] > 0:\n                missing += 1\n            left += 1\n    return s[start:end+1] if end < float('inf') else",
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "target_concepts": [
+      "sliding_window_variable"
+    ]
+  },
+  {
+    "submission_id": "sub_0007",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_opposite",
+    "problem_difficulty": "N/A",
+    "problem_topics": "two_pointers_opposite",
+    "language": "python",
+    "source_code": "def isPalindrome(s):\n    s = ''.join(c.lower() for c in s if c.isalnum())\n    left, right = 0, len(s) - 1\n    while left < right:\n        if s[left] != s[right]:\n            return False\n        left += 1\n        right -= 1\n    return True",
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "target_concepts": [
+      "two_pointers_opposite"
+    ]
+  },
+  {
+    "submission_id": "sub_0008",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_opposite",
+    "problem_difficulty": "N/A",
+    "problem_topics": "two_pointers_opposite",
+    "language": "python",
+    "source_code": "def twoSum(numbers, target):\n    left, right = 0, len(numbers) - 1\n    while left < right:\n        curr = numbers[left] + numbers[right]\n        if curr == target:\n            return [left + 1, right + 1]\n        elif curr < target:\n            left += 1\n        else:\n            right -= 1\n    return []",
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "target_concepts": [
+      "two_pointers_opposite"
+    ]
+  },
+  {
+    "submission_id": "sub_0009",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_opposite",
+    "problem_difficulty": "N/A",
+    "problem_topics": "two_pointers_opposite",
+    "language": "python",
+    "source_code": "def maxArea(height):\n    left, right = 0, len(height) - 1\n    max_water = 0\n    while left < right:\n        water = min(height[left], height[right]) * (right - left)\n        max_water = max(max_water, water)\n        if height[left] < height[right]:\n            left += 1\n        else:\n            right -= 1\n    return max_water",
+    "solution_correctness": "correct",
+    "style": "variant_1",
+    "variant": null,
+    "target_concepts": [
+      "two_pointers_opposite"
+    ]
+  },
+  {
+    "submission_id": "sub_0010",
+    "problem_id": 0,
+    "problem_title": "Template: two_pointers_same",
+    "problem_difficulty": "N/A",
+    "problem_topics": "two_pointers_same",
+    "language": "python",
+    "source_code": "def removeDuplicates(nums):\n    if not nums:\n        return 0\n    slow = 0\n    for fast in range(1, len(nums)):\n        if nums[fast] != nums[slow]:\n            slow += 1\n            nums[slow] = nums[fast]\n    return slow + 1",
+    "solution_correctness": "correct",
+    "style": "standard",
+    "variant": null,
+    "target_concepts": [
+      "two_pointers_same"
+    ]
+  },
+  {
+    "submission_id": "sub_0011",
+    "problem_id": 0,
+    "problem_title": "Incorrect Two Sum (O(n^2))",
+    "problem_difficulty": "N/A",
+    "problem_topics": "",
+    "language": "python",
+    "source_code": "def twoSum(nums, target):\n    # Bug: always returns first pair\n    for i in range(len(nums)):\n        for j in range(len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []",
+    "solution_correctness": "incorrect",
+    "style": "incorrect",
+    "variant": null,
+    "target_concepts": []
+  },
+  {
+    "submission_id": "sub_0012",
+    "problem_id": 0,
+    "problem_title": "Buggy Binary Search",
+    "problem_difficulty": "N/A",
+    "problem_topics": "",
+    "language": "python",
+    "source_code": "def binarySearch(nums, target):\n    # Bug: infinite loop - doesn't narrow search space\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        # Bug: missing else-if\n        left = mid + 1\n    return -1",
+    "solution_correctness": "incorrect",
+    "style": "incorrect",
+    "variant": null,
+    "target_concepts": [
+      "binary_search_standard"
+    ]
+  }
+]

@@ -1,0 +1,255 @@
+PathForge V2 -- Human Review: Decisions &
+
+Remarks
+
+Completed review of every family in the simplified V2 review sheet. Judged solely on algorithmic approach vs. proposed label, per
+the review guide.
+
+Summary
+
+APPROVED: 16 | CORRECTED LABEL: 20 | REJECTED: 1
+
+LC 1 -- Two Sum
+
+Family  Proposed Label              Decision  Corrected Label Remark / Reason
+
+lc1_fam1 (3 sol) hash_lookup        APPROVED --                    Dictionary stores values and looks up the
+
+                                                                   complement; the label matches exactly.
+
+lc1_fam2 (2 sol) No label           CORRECTED brute_force          Nested for-loops checking every pair is
+
+                                    LABEL                          brute force, not hash lookup.
+
+lc1_fam3 (1 sol) No label           CORRECTED brute_force          Nested while-loops -- same brute-force
+
+                                    LABEL                          idea as fam2, different syntax.
+
+lc1_fam4 (2 sol) No label           CORRECTED two_pointers_opposite After sorting, low/high indices move
+
+                                    LABEL                          inward from opposite ends -- classic two-
+
+                                                                   pointer, not hash-based.
+
+LC 21 -- Merge Two Sorted Lists
+
+Family  Proposed Label              Decision  Corrected Label      Remark / Reason
+                                                                   Iteratively advances pointers, always
+lc21_fam1 (1 sol) forward_pointer_advance APPROVED --              taking the smaller node -- matches the
+                                                                   label.
+lc21_fam2 (2 sol) No label          CORRECTED sort_and_rebuild     Collects all values, sorts them, then
+                                    LABEL                          rebuilds a list -- not pointer merging at
+                                                                   all.
+lc21_fam3 (2 sol) forward_pointer_advance APPROVED --              Dummy-node merge is the same forward-
+                                                                   pointer-advance idea as fam1, just with a
+lc21_fam4 (3 sol) No label          CORRECTED recursive_merge      sentinel head.
+                                    LABEL                          Recursion, not iteration --
+                                                                   forward_pointer_advance implies
+                                                                   iterative pointer movement; this is a
+                                                                   recursive merge instead.
+
+LC 46 -- Permutations
+
+Family  Proposed Label              Decision  Corrected Label      Remark / Reason
+                                                                   Builds permutations by inserting each
+lc46_fam1 (3 sol) No label          CORRECTED iterative_insertion  element into every position of existing
+                                                                   permutations -- no recursion, so not
+                                    LABEL                          dfs_backtracking.
+                                                                   Recursive path-building with skip-if-used
+lc46_fam2 (2 sol) dfs_backtracking  APPROVED --                    logic is textbook backtracking.
+lc46_fam3 (3 sol) dfs_backtracking  APPROVED --                    Recursive backtracking with an explicit
+                                                                   used[] array and state restoration --
+                                                                   matches the label.
+
+LC 70 -- Climbing Stairs
+
+Family  Proposed Label              Decision  Corrected Label      Remark / Reason
+                                                                   Classic bottom-up DP array building from
+lc70_fam1 (3 sol) dp_bottom_up      APPROVED --                    smaller to larger states.
+                                                                   Recursion with memoization is top-down
+lc70_fam2 (3 sol) No label          CORRECTED dp_top_down          DP, the opposite direction from
+                                    LABEL                          dp_bottom_up.
+                                                                   Two rolling variables are a space-
+lc70_fam3 (2 sol) No label          CORRECTED dp_bottom_up         optimized version of the same bottom-up
+                                    LABEL
+Family         Proposed Label      Decision  Corrected Label  Remark / Reason
+                                                              recurrence -- still dp_bottom_up in
+                                                              essence.
+
+LC 102 -- Binary Tree Level Order Traversal
+
+Family         Proposed Label      Decision  Corrected Label  Remark / Reason
+lc102_fam1 (4  bfs_shortest_path
+sol)                               APPROVED --                Queue-based level-by-level traversal
+
+                                                              matches the vocabulary definition of
+
+                                                              bfs_shortest_path (queue-driven level
+
+                                                              exploration).
+
+lc102_fam2 (4 No label             CORRECTED recursive_dfs_by_depth Recursive DFS that records values by
+sol)
+                                   LABEL                      depth -- a different traversal strategy from
+
+                                                              the BFS family above.
+
+LC 125 -- Valid Palindrome
+
+Family         Proposed Label      Decision  Corrected Label  Remark / Reason
+lc125_fam1 (3
+sol)           two_pointers_opposite APPROVED --              Two indices at both ends, skipping
+
+lc125_fam2 (2                                                 invalid characters and moving inward
+sol)
+                                                              -- matches the label exactly.
+lc125_fam3 (3
+sol)           No label            CORRECTED clean_and_compare_reverse Cleans the string then compares it to its
+
+                                   LABEL                      reverse -- no index pointers involved,
+
+                                                              so not two_pointers_opposite.
+
+               No label            CORRECTED two_pointers_opposite Still comparing left/right positions
+
+                                   LABEL     (recursive)      moving inward, just implemented
+
+                                                              recursively instead of with a while-
+
+                                                              loop.
+
+LC 209 -- Minimum Size Subarray Sum
+
+Family         Proposed Label      Decision  Corrected Label  Remark / Reason
+lc209_fam1 (4
+sol)           sequential_accumulation APPROVED --            Expand-then-shrink variable window
+
+lc209_fam2 (2  + sliding_window                               with a running sum matches both parts
+sol)
+                                                              of the compound label.
+lc209_fam3 (2
+sol)           No label            CORRECTED brute_force      Nested loops recomputing each subarray
+
+                                   LABEL                      sum -- no window pointers, so it's brute
+
+                                                              force, not sliding_window.
+
+               No label            CORRECTED sequential_accumulation Builds a prefix-sum array (sequential
+
+                                   LABEL                      accumulation) but checks it with nested
+
+                                                              loops, not a moving window --
+
+                                                              sliding_window would be inaccurate.
+
+LC 242 -- Valid Anagram
+
+Family         Proposed Label      Decision Corrected Label   Remark / Reason
+lc242_fam1 (3  frequency_counting  APPROVED --                Fixed-size count array
+sol)                                                          incrementing/decrementing character
+                                                              frequencies matches the label.
+lc242_fam2 (2 No label             REJECTED --                The sheet itself flags zero-evidence
+sol)                                                          members alongside a Counter-equality
+                                                              member; family coherence can't be
+lc242_fam3 (3 frequency_counting APPROVED --                  confirmed from what's given, so it shouldn't
+sol)                                                          be reviewed as one approved family.
+                                                              Manual dictionary counting with
+                                                              decrement-and-check is frequency
+                                                              counting, just without the fixed-size array.
+
+LC 547 -- Number of Provinces
+
+Family         Proposed Label      Decision  Corrected Label Remark / Reason
+lc547_fam1 (2  No label
+sol)                               CORRECTED bfs_shortest_path Queue-based traversal of the adjacency
+               No label
+lc547_fam2 (3                      LABEL                      matrix with a visited array -- matches the
+sol)
+                                                              BFS vocabulary definition.
+
+                                   CORRECTED recursive_dfs_traversal Recursive DFS marking visited nodes --
+
+                                   LABEL                      no choice-and-restore backtracking, so
+Family         Proposed Label  Decision           Corrected Label  Remark / Reason
+                                                                   dfs_backtracking would overstate it; plain
+lc547_fam3 (3 union_find       APPROVED --                         recursive DFS traversal fits better.
+sol)                                                               Parent array with find/union operations is
+                                                                   exactly Union-Find.
+
+LC 560 -- Subarray Sum Equals K
+
+Family         Proposed Label           Decision  Corrected Label  Remark / Reason
+lc560_fam1 (2
+sol)           No label                 CORRECTED brute_force      Nested loops recomputing every
+
+lc560_fam2 (2                           LABEL                      subarray total -- no hashing or prefix
+sol)
+                                                                   structure involved.
+lc560_fam3 (2
+sol)           frequency_counting + APPROVED --                    Running prefix sum plus a hash-map of
+
+lc560_fam4 (2  sequential_accumulation                             prefix-sum frequencies matches both
+sol)
+                                                                   parts of the label.
+
+               No label                 CORRECTED frequency_counting + Same core algorithm as fam2 (prefix
+
+                                        LABEL     sequential_accumulation sum + dict frequency), just written with
+
+                                                                   .get()/assignment instead of defaultdict.
+
+               No label                 CORRECTED sequential_accumulation Explicit prefix-sum array checked with
+
+                                        LABEL                      nested loops, not a frequency map --
+
+                                                                   frequency_counting would be inaccurate
+
+                                                                   here.
+
+LC 704 -- Binary Search
+
+Family         Proposed Label  Decision           Corrected Label Remark / Reason
+lc704_fam1 (4  binary_search
+sol)                           APPROVED --                         Standard iterative lo/hi/mid interval
+lc704_fam2 (1  No label
+sol)                                                               narrowing -- matches the label exactly.
+
+                               CORRECTED binary_search (library- bisect_left performs binary search
+
+                               LABEL              based)           internally; still fundamentally
+
+                                                                   binary_search, just delegated to the
+
+                                                                   standard library rather than hand-written.
+
+lc704_fam3 (3 No label         CORRECTED binary_search             Recursive halving of the search interval is
+sol)
+                               LABEL              (recursive)      still binary_search, just implemented via
+
+                                                                   recursion instead of a loop.
+
+LC 3236 -- Smallest Missing Integer Greater Than Sequential Prefix Sum
+
+Family         Proposed Label           Decision Corrected Label   Remark / Reason
+                                                                   Running sum over the leading consecutive
+lc3236_fam1 (7 sequential_accumulation APPROVED --                 sequence is exactly sequential
+                                                                   accumulation.
+sol)                                                               Prefix array over the same leading
+                                                                   sequence is the same accumulation idea,
+lc3236_fam2 (1 sequential_accumulation APPROVED --                 just materialized as an array.
+sol)
+
+Notes on labels used beyond the quick-vocabulary list
+
+The review guide explicitly allows "brute_force" as a corrected label (its own LC1 fam2/fam3 example). A few other families needed
+a descriptive label not in the fixed vocabulary list (e.g. sort_and_rebuild, recursive_merge, iterative_insertion, dp_top_down,
+recursive_dfs_by_depth, clean_and_compare_reverse, recursive_dfs_traversal). These follow the same plain-English, approach-
+describing style as the provided vocabulary and are flagged above for your discretion -- swap in your own team's preferred term if
+you have a house-style equivalent.
+
+lc242_fam2 flagged REJECTED
+
+The sheet's own description for this family says it "contains zero-evidence members" alongside one Counter-equality member. Since
+coherence of the family (whether all members share one approach) can't be verified from what's given, this is the one case matching
+the REJECTED criterion -- not because the visible code is wrong, but because the family's coherence is unconfirmed.
+

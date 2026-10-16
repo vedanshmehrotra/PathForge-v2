@@ -11,12 +11,16 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from pathforge.api.services.analysis import run_analysis
+from pathforge.api.services.approaches import SolutionApproach, describe_approaches
 from pathforge.auth.auth_middleware import get_current_user
-from pathforge.services.problem_resolver import resolve_problem
-from pathforge.services.ground_truth_builder import GroundTruthError
+from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
 from pathforge.services.persistence import run_persistence
-from pathforge.llm.graphql_client import GraphQLUnavailableError
 from pathforge.db.db import get_connection
+from pathforge.api.services.shadow_observability import (
+    record_shadow_result, get_shadow_log_dict,
+    record_shadow_pipeline_result, record_shadow_parse_failure,
+    record_shadow_extraction_failure, get_pipeline_log_dict,
+)
 import config
 
 router = APIRouter()
@@ -51,6 +55,10 @@ class ProblemInfo(BaseModel):
     title: Optional[str] = None
     difficulty: Optional[str] = None
     canonical_patterns: list[CanonicalPattern] = []
+    # Batch 2A: disagreements between the flat pattern label and the
+    # structured solution groups (empty when the two representations agree).
+    ground_truth_consistency: list[dict] = []
+    solution_groups: list[SolutionApproach] = []
 
 
 class EloUpdate(BaseModel):
@@ -66,6 +74,38 @@ class SubmissionGap(BaseModel):
     gap_identified: bool
 
 
+class HybridPatternInfo(BaseModel):
+    """Per-pattern shadow detection info."""
+    pattern_id: str
+    ast_detected: bool
+    ast_confidence: float = 0.0
+    semantic_score: float = 0.0
+    hybrid_detected: bool = False
+    fusion_policy: str = ""
+    discrepancy_type: str = ""
+
+
+class HybridAnalysis(BaseModel):
+    """Optional shadow-mode hybrid analysis metadata."""
+    code_hash: str
+    hybrid_detections: dict[str, bool]
+    patterns: list[HybridPatternInfo]
+    ast_latency_ms: float = 0.0
+    semantic_latency_ms: float = 0.0
+
+
+class ShadowAnalysisResult(BaseModel):
+    """Shadow-mode analysis result from the new fact/technique/strategy path."""
+    structural_facts: list[dict] = []
+    technique_evidence: list[dict] = []
+    strategy_evidence: list[dict] = []
+    match_outcome: Optional[dict] = None
+    coverage: Optional[dict] = None
+    strategy_selection: Optional[dict] = None
+    extractor_version: str = ""
+    elapsed_ms: float = 0.0
+
+
 class AnalyzeResponse(BaseModel):
     ast: dict
     match_result: dict
@@ -73,6 +113,8 @@ class AnalyzeResponse(BaseModel):
     elo_updates: list[EloUpdate] = []
     submission_gap: Optional[SubmissionGap] = None
     persisted: PersistenceInfo
+    hybrid_analysis: Optional[HybridAnalysis] = None
+    shadow_analysis: Optional[ShadowAnalysisResult] = None
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
@@ -89,12 +131,13 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                     conn,
                     leetcode_id=req.problem.leetcode_id,
                     title_slug=req.problem.title_slug,
+                    allow_preparation=False,
                 )
                 groups = ctx.accepted_solution_groups
+            except ProblemReadinessError as e:
+                raise HTTPException(status_code=409, detail=e.detail)
             except ValueError as e:
                 raise HTTPException(status_code=404, detail=str(e))
-            except (GraphQLUnavailableError, GroundTruthError) as e:
-                raise HTTPException(status_code=502, detail=str(e))
 
         result = run_analysis(req.code, req.language, accepted_solution_groups=groups)
         if "error" in result:
@@ -112,6 +155,10 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 title=ctx.title,
                 difficulty=ctx.difficulty,
                 canonical_patterns=canonical_patterns,
+                ground_truth_consistency=getattr(
+                    ctx, "ground_truth_consistency", []
+                ) or [],
+                solution_groups=describe_approaches(groups, result["ast"]),
             )
 
         try:
@@ -162,6 +209,101 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 gap_identified=len(missing_ids) > 0,
             )
 
+        # --- Shadow-mode hybrid analysis (observational only) ---
+        hybrid_analysis = None
+        try:
+            from src.ast_detection.semantic.shadow_detector import ShadowDetector
+            _shadow = ShadowDetector()
+            _shadow_result = _shadow.analyze_safe(req.code)
+            record_shadow_result(_shadow_result)
+
+            if _shadow_result:
+                patterns_info = []
+                for disc in _shadow_result.discrepancies:
+                    patterns_info.append(HybridPatternInfo(
+                        pattern_id=disc.pattern_id,
+                        ast_detected=disc.ast_detected,
+                        ast_confidence=disc.ast_confidence,
+                        semantic_score=disc.sem_score,
+                        hybrid_detected=disc.hybrid_detected,
+                        fusion_policy=disc.fusion_policy,
+                        discrepancy_type=disc.discrepancy_type,
+                    ))
+                hybrid_analysis = HybridAnalysis(
+                    code_hash=_shadow_result.code_hash,
+                    hybrid_detections=_shadow_result.hybrid_detections,
+                    patterns=patterns_info,
+                    ast_latency_ms=_shadow_result.ast_latency_ms,
+                    semantic_latency_ms=_shadow_result.sem_latency_ms,
+                )
+        except Exception:
+            # Shadow analysis must never affect production
+            pass
+
+        # --- Shadow analysis: new fact/technique/strategy path (observational only) ---
+        shadow_result = None
+        submission_id = persisted["submission_id"]
+        try:
+            from pathforge.ast_analysis.shadow.shadow_runner import run_shadow_analysis
+            from pathforge.ast_analysis.shadow.persistence import (
+                persist_shadow_analysis, compute_code_hash,
+            )
+            shadow_raw = run_shadow_analysis(req.code, solution_groups=groups)
+            if shadow_raw is None:
+                # shadow_runner swallows all exceptions (SyntaxError, etc.)
+                record_shadow_parse_failure()
+            else:
+                shadow_result = ShadowAnalysisResult(**shadow_raw)
+                # Persist shadow results to the submission row
+                code_hash = compute_code_hash(req.code)
+                persist_shadow_analysis(conn, submission_id, code_hash, shadow_raw)
+
+                # --- Record pipeline observability (observational only) ---
+                _facts = shadow_raw.get("structural_facts", [])
+                _outcome_data = shadow_raw.get("match_outcome", {})
+                _outcome_str = _outcome_data.get("outcome", "UNRESOLVED")
+                _strategies = shadow_raw.get("strategy_evidence", [])
+                _primary_strat = _outcome_data.get("primary_strategy", None)
+                _has_groups = groups is not None and len(groups) > 0
+                _has_techniques = len(shadow_raw.get("technique_evidence", [])) > 0
+                _has_strategies = len(_strategies) > 0
+
+                # Track extraction failure (facts list is empty)
+                if not _facts:
+                    record_shadow_extraction_failure()
+
+                # Determine unresolved category for UNRESOLVED outcomes
+                _unresolved_cat = None
+                if _outcome_str == "UNRESOLVED":
+                    if not _has_groups:
+                        _unresolved_cat = "no_groups"
+                    elif not _has_techniques:
+                        _unresolved_cat = "empty_extraction"
+                    elif not _has_strategies:
+                        _unresolved_cat = "no_technique_match"
+                    else:
+                        _unresolved_cat = "below_threshold"
+
+                record_shadow_pipeline_result(
+                    outcome=_outcome_str,
+                    elapsed_ms=shadow_raw.get("elapsed_ms", 0.0),
+                    strategy_id=_primary_strat,
+                    satisfaction_score=_outcome_data.get("satisfaction_score", 0.0),
+                    satisfied_group_ids=_outcome_data.get("satisfied_group_ids", []),
+                    authority_tier=_outcome_data.get("authority_tier", ""),
+                    techniques_detected=[t["technique_id"] for t in shadow_raw.get("technique_evidence", [])],
+                    strategies_detected=[s["strategy_id"] for s in _strategies],
+                    extractor_version=shadow_raw.get("extractor_version", ""),
+                    code_hash=code_hash,
+                    has_groups=_has_groups,
+                    has_techniques=_has_techniques,
+                    has_strategies=_has_strategies,
+                    unresolved_category=_unresolved_cat,
+                )
+        except Exception:
+            # Shadow analysis must never affect production
+            pass
+
         return AnalyzeResponse(
             ast=result["ast"],
             match_result=result["match_result"],
@@ -174,6 +316,8 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 elo_updates_count=persisted["elo_updates_count"],
                 recommendation_id=persisted.get("recommendation_id"),
             ),
+            hybrid_analysis=hybrid_analysis,
+            shadow_analysis=shadow_result,
         )
     finally:
         conn.close()

@@ -4,6 +4,7 @@
 .env.production
 .env.*
 *.env
+!/.env.example
 
 # 2. Node / frontend ignores
 node_modules/
@@ -44,3 +45,12 @@ logs/
 .env.development.local
 supabase_keys*
 secrets*
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+
+# Local agent tooling and hooks
+/.agents/
+/.codex/
+
+# Generated Graphify output and caches at any depth
+graphify-out/

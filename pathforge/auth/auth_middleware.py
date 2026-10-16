@@ -5,6 +5,7 @@ user to an internal PathForge user record.
 """
 
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from typing import Optional
@@ -22,6 +23,8 @@ import config
 _JWKS_CACHE: Optional[dict] = None
 _JWKS_URL: Optional[str] = None
 _SUPABASE_PROJECT_REF: Optional[str] = None
+
+logger = logging.getLogger(__name__)
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -69,21 +72,21 @@ def verify_supabase_token(token: str) -> dict:
     try:
         unverified = jwt.get_unverified_header(token)
     except JWTError as e:
-        print(f"[AuthMiddleware] Malformed token header: {e}")
+        logger.warning("Malformed token header: %s", type(e).__name__)
         raise HTTPException(status_code=401, detail=f"Malformed token header: {e}")
     except Exception as e:
-        print(f"[AuthMiddleware] Cannot decode token: {e}")
+        logger.warning("Cannot decode token header: %s", type(e).__name__)
         raise HTTPException(status_code=401, detail=f"Cannot decode token: {e}")
 
     kid = unverified.get("kid")
     if not kid:
-        print("[AuthMiddleware] Missing kid in token header")
+        logger.warning("Token header missing kid claim")
         raise HTTPException(status_code=401, detail="Missing kid in token header")
 
     try:
         jwk_data = _get_jwk(kid)
         if jwk_data is None:
-            print(f"[AuthMiddleware] No matching JWK found for kid: {kid}")
+            logger.warning("No matching JWK found for kid")
             raise HTTPException(status_code=401, detail="No matching JWK found")
         # Pass the algorithm hint so python-jose constructs EC keys (ES256) correctly
         alg = unverified.get("alg", "RS256")
@@ -91,7 +94,7 @@ def verify_supabase_token(token: str) -> dict:
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[AuthMiddleware] JWK retrieval failed: {e}")
+        logger.warning("JWK retrieval failed: %s", type(e).__name__)
         raise HTTPException(status_code=401, detail=f"JWK retrieval failed: {e}")
 
     try:
@@ -103,7 +106,7 @@ def verify_supabase_token(token: str) -> dict:
             options={"verify_exp": True},
         )
     except JWTError as e:
-        print(f"[AuthMiddleware] Invalid token signature/claims: {e}")
+        logger.warning("Invalid token signature/claims: %s", type(e).__name__)
         raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
 
     return payload
@@ -179,9 +182,9 @@ def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = None,
 ) -> VerifiedUser:
     auth_header = request.headers.get("Authorization", "")
-    print(f"[AuthMiddleware] Authorization Header: '{auth_header[:30]}...' (length: {len(auth_header)})")
+    logger.debug("Auth header present (length: %d)", len(auth_header))
     if not auth_header.startswith("Bearer "):
-        print(f"[AuthMiddleware] Rejected: Header does not start with 'Bearer '")
+        logger.debug("Rejected: header does not start with 'Bearer '")
         raise HTTPException(
             status_code=401,
             detail="Missing or invalid Authorization header",
@@ -201,7 +204,7 @@ def get_current_user(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[AuthMiddleware] User resolution failed: {e}")
+        logger.warning("User resolution failed: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail=f"User resolution failed: {e}")
 
     return VerifiedUser(

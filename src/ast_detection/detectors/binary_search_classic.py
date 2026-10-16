@@ -44,20 +44,36 @@ class BinarySearchClassicDetector(BaseDetector):
             if not isinstance(node, ast.While):
                 continue
 
-            if not self._is_binary_search_condition(node.test):
+            # Names and co-occurring statements are not sufficient: every
+            # accepted form must link the interval, midpoint, ordered indexed
+            # comparison, and midpoint-based updates in the same loop.
+            if not self._has_linked_binary_search(node):
                 continue
 
-            has_midpoint = self._find_midpoint_calculation(node.body)
-            has_boundary_update = self._find_boundary_update(node.body)
-            has_mid_comparison = self._find_mid_comparison(node.body)
-            has_answer_space_check = self._find_answer_space_check(node.body)
+            has_midpoint = has_boundary_update = has_mid_comparison = False
+            has_answer_space_check = False
+            midpoint_description = "Midpoint calculation: (left + right) // 2"
+            boundary_description = "Boundary update: left = mid + 1 or right = mid - 1"
+            if self._is_binary_search_condition(node.test):
+                has_midpoint = self._find_midpoint_calculation(node.body)
+                has_boundary_update = self._find_boundary_update(node.body)
+                has_mid_comparison = self._find_mid_comparison(node.body)
+                has_answer_space_check = self._find_answer_space_check(node.body)
+
+            # Retain the existing evidence descriptions for validated legacy
+            # forms; additional names/syntax use the same structural gate.
+            if not (has_midpoint and has_boundary_update and has_mid_comparison and not has_answer_space_check):
+                has_midpoint = has_boundary_update = has_mid_comparison = True
+                has_answer_space_check = False
+                midpoint_description = "Midpoint derived by halving the current interval"
+                boundary_description = "Both interval boundaries narrow from that midpoint under indexed comparison"
 
             if has_midpoint and has_boundary_update and has_mid_comparison and not has_answer_space_check:
                 if has_midpoint:
                     evidence.append(
                         EvidenceItem(
                             type="binary_midpoint",
-                            description="Midpoint calculation: (left + right) // 2",
+                            description=midpoint_description,
                             location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
                             weight=0.35,
                         )
@@ -66,7 +82,7 @@ class BinarySearchClassicDetector(BaseDetector):
                     evidence.append(
                         EvidenceItem(
                             type="boundary_update",
-                            description="Boundary update: left = mid + 1 or right = mid - 1",
+                            description=boundary_description,
                             location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
                             weight=0.25,
                         )
@@ -88,6 +104,152 @@ class BinarySearchClassicDetector(BaseDetector):
                         weight=0.20,
                     )
                 )
+
+    def _has_linked_binary_search(self, loop: ast.While) -> bool:
+        test = loop.test
+        if not (isinstance(test, ast.Compare) and len(test.ops) == 1
+                and isinstance(test.left, ast.Name) and isinstance(test.comparators[0], ast.Name)):
+            return False
+        if isinstance(test.ops[0], (ast.Lt, ast.LtE)):
+            lower, upper = test.left.id, test.comparators[0].id
+        elif isinstance(test.ops[0], (ast.Gt, ast.GtE)):
+            lower, upper = test.comparators[0].id, test.left.id
+        else:
+            return False
+        if lower == upper:
+            return False
+
+        for position, statement in enumerate(loop.body):
+            if not (isinstance(statement, ast.Assign) and len(statement.targets) == 1
+                    and isinstance(statement.targets[0], ast.Name)
+                    and statement.targets[0].id not in (lower, upper)
+                    and self._midpoint_uses_bounds(statement.value, lower, upper)):
+                continue
+            midpoint = statement.targets[0].id
+            following = loop.body[position + 1:]
+            if any(isinstance(n, ast.Name) and n.id == midpoint and isinstance(n.ctx, (ast.Store, ast.Del))
+                   for s in following for n in ast.walk(s)):
+                continue
+            if self._linked_comparison_updates(following, midpoint, lower, upper):
+                return True
+        return False
+
+    @staticmethod
+    def _midpoint_uses_bounds(value: ast.AST, lower: str, upper: str) -> bool:
+        def is_half(node):
+            return (isinstance(node, ast.BinOp) and isinstance(node.right, ast.Constant)
+                    and type(node.right.value) is int and (
+                        (isinstance(node.op, ast.FloorDiv) and node.right.value == 2)
+                        or (isinstance(node.op, ast.RShift) and node.right.value == 1)
+                    ))
+
+        if is_half(value):
+            operands = value.left
+            return (isinstance(operands, ast.BinOp) and isinstance(operands.op, ast.Add)
+                    and isinstance(operands.left, ast.Name) and isinstance(operands.right, ast.Name)
+                    and {operands.left.id, operands.right.id} == {lower, upper})
+        if isinstance(value, ast.BinOp) and isinstance(value.op, ast.Add):
+            for base, half in ((value.left, value.right), (value.right, value.left)):
+                if isinstance(base, ast.Name) and base.id == lower and is_half(half):
+                    difference = half.left
+                    if (isinstance(difference, ast.BinOp) and isinstance(difference.op, ast.Sub)
+                            and isinstance(difference.left, ast.Name) and difference.left.id == upper
+                            and isinstance(difference.right, ast.Name) and difference.right.id == lower):
+                        return True
+        return False
+
+    def _linked_comparison_updates(self, body: list, midpoint: str, lower: str, upper: str) -> bool:
+        """Collect narrowing writes controlled by an ordered sequence[mid] comparison.
+
+        Do not borrow evidence from separate conditions, nested loops/functions,
+        or feasibility calls. Unknown writes to the bounds fail this new path.
+        """
+        updated = set()
+        updated_sequences = set()
+
+        def indexed_comparison(test):
+            """Return the linked sequence and whether an ordered midpoint clause exists."""
+            if isinstance(test, ast.Compare):
+                operands = [test.left, *test.comparators]
+                sequences, ordered_midpoint = set(), False
+                for index, op in enumerate(test.ops):
+                    if not isinstance(op, (ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.Eq, ast.NotEq)):
+                        return None
+                    reads = []
+                    for value in operands[index:index + 2]:
+                        if isinstance(value, (ast.Name, ast.Constant)):
+                            continue
+                        if not isinstance(value, ast.Subscript) or not isinstance(value.value, ast.Name):
+                            return None
+                        position = value.slice
+                        direct = isinstance(position, ast.Name) and position.id in (midpoint, lower, upper)
+                        adjacent = (isinstance(position, ast.BinOp) and isinstance(position.op, (ast.Add, ast.Sub))
+                                    and isinstance(position.left, ast.Name) and position.left.id == midpoint
+                                    and isinstance(position.right, ast.Constant) and type(position.right.value) is int
+                                    and position.right.value == 1)
+                        if not (direct or adjacent):
+                            return None
+                        reads.append(value)
+                        sequences.add(value.value.id)
+                    # Every chained clause must concern the same interval's sequence.
+                    if not reads:
+                        return None
+                    if isinstance(op, (ast.Lt, ast.LtE, ast.Gt, ast.GtE)):
+                        ordered_midpoint |= any(isinstance(value.slice, ast.Name) and value.slice.id == midpoint
+                                                for value in reads)
+                return (next(iter(sequences)), ordered_midpoint) if len(sequences) == 1 else None
+            if isinstance(test, ast.BoolOp):
+                links = [indexed_comparison(value) for value in test.values]
+                if not all(links) or len({link[0] for link in links}) != 1:
+                    return None
+                return links[0][0], any(link[1] for link in links)
+            if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+                return indexed_comparison(test.operand)
+            return None
+
+        def visit(statements, controlled=None):
+            for statement in statements:
+                if isinstance(statement, ast.If):
+                    for node in ast.walk(statement.test):
+                        if isinstance(node, ast.Call) and any(
+                            isinstance(n, ast.Name) and n.id == midpoint
+                            for arg in [*node.args, *(kw.value for kw in node.keywords)]
+                            for n in ast.walk(arg)
+                        ):
+                            return False
+                    indexed = indexed_comparison(statement.test)
+                    if indexed and controlled:
+                        # Only a linked guard on the same sequence may retain
+                        # its parent's ordered evidence. Unknown guards reset it.
+                        indexed = ((indexed[0], indexed[1] or controlled[1])
+                                   if indexed[0] == controlled[0] else None)
+                    if not (visit(statement.body, indexed)
+                            and visit(statement.orelse, indexed)):
+                        return False
+                elif (isinstance(statement, ast.Assign) and len(statement.targets) == 1
+                      and isinstance(statement.targets[0], ast.Name)
+                      and statement.targets[0].id in (lower, upper)):
+                    target = statement.targets[0].id
+                    value = statement.value
+                    direct_upper = target == upper and isinstance(value, ast.Name) and value.id == midpoint
+                    offset_update = (
+                        isinstance(value, ast.BinOp)
+                        and isinstance(value.left, ast.Name) and value.left.id == midpoint
+                        and isinstance(value.right, ast.Constant) and type(value.right.value) is int
+                        and value.right.value == 1
+                        and ((target == lower and isinstance(value.op, ast.Add))
+                             or (target == upper and isinstance(value.op, ast.Sub)))
+                    )
+                    if not controlled or not controlled[1] or not (direct_upper or offset_update):
+                        return False
+                    updated.add(target)
+                    updated_sequences.add(controlled[0])
+                elif any(isinstance(n, ast.Name) and n.id in (lower, upper)
+                         and isinstance(n.ctx, (ast.Store, ast.Del)) for n in ast.walk(statement)):
+                    return False
+            return True
+
+        return visit(body) and updated == {lower, upper} and len(updated_sequences) == 1
 
     def _is_binary_search_condition(self, test: ast.AST) -> bool:
         """Check if the while condition is a binary search pattern (left <= right or left < right)."""

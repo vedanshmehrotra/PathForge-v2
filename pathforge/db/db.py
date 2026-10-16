@@ -118,31 +118,33 @@ def connect(db_path: Optional[str] = None):
         conn.close()
 
 
-def init_db(db_path: Optional[str] = None) -> None:
-    """Verify all required tables exist, then apply idempotent schema migrations.
+def init_db(db_path: Optional[str] = None) -> PgConnection:
+    """Verify all required tables exist, apply idempotent schema migrations,
+    and return the connection for backward compatibility with callers that
+    assign the return value (``conn = init_db(db_path)``).
 
+    The caller is responsible for closing the returned connection.
     The migration section of schema_pg.sql contains ALTER TABLE statements
     using ADD COLUMN IF NOT EXISTS which are safe to run repeatedly.
     """
     conn = get_connection(db_path)
-    try:
-        cur = conn._conn.cursor()
-        cur.execute(
-            "SELECT table_name FROM information_schema.tables "
-            "WHERE table_schema = 'public'"
-        )
-        existing = {row[0] for row in cur.fetchall()}
-        missing = [t for t in REQUIRED_TABLES if t not in existing]
-        if missing:
-            raise RuntimeError(
-                f"Missing required tables: {', '.join(missing)}. "
-                "Run pathforge/db/schema_pg.sql against the database first."
-            )
-
-        # Apply idempotent migrations (ADD COLUMN IF NOT EXISTS, CREATE INDEX IF NOT EXISTS)
-        _apply_migrations(conn)
-    finally:
+    cur = conn._conn.cursor()
+    cur.execute(
+        "SELECT table_name FROM information_schema.tables "
+        "WHERE table_schema = 'public'"
+    )
+    existing = {row[0] for row in cur.fetchall()}
+    missing = [t for t in REQUIRED_TABLES if t not in existing]
+    if missing:
         conn.close()
+        raise RuntimeError(
+            f"Missing required tables: {', '.join(missing)}. "
+            "Run pathforge/db/schema_pg.sql against the database first."
+        )
+
+    # Apply idempotent migrations (ADD COLUMN IF NOT EXISTS, CREATE INDEX IF NOT EXISTS)
+    _apply_migrations(conn)
+    return conn
 
 
 def _strip_comment_lines(sql_text: str) -> str:

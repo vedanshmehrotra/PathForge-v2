@@ -1,0 +1,159 @@
+{
+  "batch": "B6.5",
+  "layer": "canonical authority persistence normalization + native corpus",
+  "feature_flag": {
+    "env_var": "SHADOW_AUTHORITY_PRODUCT_GATING",
+    "enabled": false,
+    "state": "<unset>"
+  },
+  "corpus_a_46_native": {
+    "provenance": "NATIVE",
+    "native": true,
+    "provenance_note": "GT read from live problem_ground_truth rows via the production loader; no measurement-time authority fabrication",
+    "case_count": 46,
+    "coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "PROVISIONAL": 10,
+      "UNRESOLVED": 12
+    },
+    "b4_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "b5_aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 46
+    },
+    "canonical_authority_distribution": {
+      "HUMAN_APPROVED": 3,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 21,
+      "INFERRED": 22
+    },
+    "native_authority_tier_distribution": {
+      "<missing>": 7,
+      "human_curated": 3,
+      "llm_proposed": 19,
+      "structurally_observed": 25
+    },
+    "normalization_diagnostics": {
+      "AUTHORITY_CONFLICT": 3,
+      "AUTHORITY_MISSING": 7
+    },
+    "eligible_submissions": 0,
+    "blocked_submissions": 46,
+    "one_of_groups": 7,
+    "one_of_submissions": 7
+  },
+  "corpus_a_46_enriched": {
+    "provenance": "ENRICHED",
+    "native": false,
+    "provenance_note": "authority-enriched / measurement-time: the record-level shadow_authority_tier re-attached for comparison only \u2014 NOT native provenance",
+    "case_count": 46,
+    "coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "b4_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "b5_aggregation_distribution": {
+      "ALL_FAMILIES_AUTHORITATIVE": 20,
+      "NO_AUTHORITATIVE_FAMILY": 26
+    },
+    "canonical_authority_distribution": {
+      "HUMAN_APPROVED": 26,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 20
+    },
+    "native_authority_tier_distribution": {
+      "human_curated": 30,
+      "llm_proposed": 5,
+      "unknown": 16
+    },
+    "normalization_diagnostics": {},
+    "eligible_submissions": 20,
+    "blocked_submissions": 26,
+    "one_of_groups": 4,
+    "one_of_submissions": 4
+  },
+  "corpus_b_301": {
+    "provenance": "NATIVE (llm_proposed GT)",
+    "native": true,
+    "case_count": 301,
+    "coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "b4_selected_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27,
+      "None": 272
+    },
+    "b5_aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 301
+    },
+    "canonical_authority_distribution": {
+      "HUMAN_APPROVED": 0,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 301
+    },
+    "native_authority_tier_distribution": {
+      "llm_proposed": 301
+    },
+    "normalization_diagnostics": {},
+    "eligible_submissions": 0,
+    "blocked_submissions": 301,
+    "one_of_groups": 0,
+    "one_of_submissions": 0
+  },
+  "serialization_round_trip_failures": 0,
+  "native_vs_enriched_comparison": {
+    "authoritative_families": {
+      "old_native": 0,
+      "enriched": 20,
+      "new_native": 0
+    },
+    "eligible_submissions": {
+      "old_native": 0,
+      "enriched": 20,
+      "new_native": 0
+    },
+    "blocked_submissions": {
+      "old_native": 46,
+      "enriched": 26,
+      "new_native": 46
+    },
+    "one_of_requirements": {
+      "old_native": 0,
+      "enriched": 4,
+      "new_native": 7
+    },
+    "authority_conflicts": {
+      "old_native": 0,
+      "enriched": 0,
+      "new_native": 3
+    }
+  }
+}

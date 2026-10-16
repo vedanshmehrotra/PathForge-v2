@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'PathForge \u2014 Skill Intelligence',
+  title: 'PathForge \u2014 Practice workspace',
   description:
-    'PathForge analyzes programming solutions, detects patterns, and tracks skill development with per-pattern Elo scoring.',
+    'Explore patterns in Python solutions, compare available approaches, and choose what to practise next.',
 }
 
 export const viewport: Viewport = {

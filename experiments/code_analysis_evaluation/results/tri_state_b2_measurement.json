@@ -1,0 +1,148 @@
+{
+  "batch": "B2",
+  "instrumentation": "tri-state per-concept evidence (shadow path only)",
+  "pre_b2_reconstruction": {
+    "source": "pathforge\\ast_analysis\\shadow\\shadow_runner.py",
+    "removed_line_count": 58,
+    "removed_lines": [
+      "from pathforge.ast_analysis.shadow.evidence_state import build_evidence_snapshot",
+      "from pathforge.ast_analysis.shadow.family_coverage import build_family_coverage",
+      "from pathforge.ast_analysis.shadow.primary_strategy import select_submission_primary",
+      "        # Step 6 (B2): tri-state per-concept evidence. PURELY ADDITIVE",
+      "        # instrumentation \u2014 it is attached alongside the existing result and is",
+      "        # read by nothing. It is built in its own guard so that a snapshot",
+      "        # failure can never suppress the existing shadow result (which would",
+      "        # itself be a behaviour change).",
+      "        try:",
+      "            evidence_snapshot = build_evidence_snapshot(",
+      "                facts, technique_evidence, strategy_evidence",
+      "            )",
+      "            evidence_state = evidence_snapshot.to_dict()",
+      "        except Exception as e:  # pragma: no cover - defensive",
+      "            logging.getLogger(__name__).debug(",
+      "                \"Tri-state evidence snapshot failed: %s: %s\", type(e).__name__, e",
+      "            )",
+      "            evidence_snapshot = None",
+      "            evidence_state = None",
+      "",
+      "        # Step 7 (B3): per-family coverage + PROVISIONAL state. PURELY ADDITIVE",
+      "        # instrumentation, built on top of the B2 snapshot above. It is built in",
+      "        # its own guard so a coverage failure can never suppress the existing",
+      "        # shadow result. The existing `match_outcome` (old matcher) is untouched",
+      "        # and remains present for cross-checking.",
+      "        try:",
+      "            coverage_report = build_family_coverage(",
+      "                solution_groups, evidence_snapshot",
+      "            )",
+      "            coverage = coverage_report.to_dict()",
+      "        except Exception as e:  # pragma: no cover - defensive",
+      "            logging.getLogger(__name__).debug(",
+      "                \"Family coverage failed: %s: %s\", type(e).__name__, e",
+      "            )",
+      "            coverage_report = None",
+      "            coverage = None",
+      "",
+      "        # Step 8 (B4): specificity + primary-strategy selection. PURELY ADDITIVE",
+      "        # presentation-layer instrumentation. It selects among the B2-evidenced,",
+      "        # conclusion-eligible concepts relevant to the evaluated families. It",
+      "        # does NOT change family coverage, and the old matcher's `match_outcome`",
+      "        # (including its own `primary_strategy`) is NOT overwritten.",
+      "        try:",
+      "            strategy_selection = select_submission_primary(",
+      "                solution_groups, evidence_snapshot, coverage_report",
+      "            ).to_dict()",
+      "        except Exception as e:  # pragma: no cover - defensive",
+      "            logging.getLogger(__name__).debug(",
+      "                \"Primary-strategy selection failed: %s: %s\", type(e).__name__, e",
+      "            )",
+      "            strategy_selection = None",
+      "",
+      "            # B2 additive key. Consumers of the keys above are unaffected.",
+      "            \"evidence_state\": evidence_state,",
+      "            # B3 additive key (family coverage). Consumers of the keys above are",
+      "            \"coverage\": coverage,",
+      "            # B4 additive key (primary strategy selection). Independently additive;",
+      "            \"strategy_selection\": strategy_selection,"
+    ]
+  },
+  "corpus_a_46_real_submissions": {
+    "cases": 46,
+    "before_outcome_counts": {
+      "UNRESOLVED": 14,
+      "CONFIRMED": 32
+    },
+    "after_outcome_counts": {
+      "UNRESOLVED": 14,
+      "CONFIRMED": 32
+    },
+    "outcome_changed": false,
+    "excluded_nondeterministic_keys": [
+      "elapsed_ms"
+    ],
+    "instrumentation_cost_ms": {
+      "median_delta": 1.97,
+      "p90_delta": 7.69,
+      "max_delta": 16.83
+    },
+    "field_mismatches": [],
+    "mismatch_count": 0,
+    "cases_missing_evidence_state": 0,
+    "tri_state_totals": {
+      "CONTRADICTED": 18,
+      "NOT_ESTABLISHED": 3939,
+      "PRESENT": 459,
+      "contradicted_by_falsifier": 18,
+      "contradicted_by_mutex": 0,
+      "reason:documented_only": 92,
+      "reason:no_producer": 1518,
+      "reason:present": 459,
+      "reason:silent": 2329,
+      "reason:structural_falsifier": 18
+    },
+    "drift_vs_recorded_artifact": {
+      "pre_b2_drift_fields": 119,
+      "post_b2_drift_fields": 119,
+      "drift_identical_in_both_arms": true,
+      "b2_attributable_drift": []
+    }
+  },
+  "corpus_b_301_disjoint_cases": {
+    "cases": 301,
+    "before_outcome_counts": {
+      "UNRESOLVED": 301
+    },
+    "after_outcome_counts": {
+      "UNRESOLVED": 301
+    },
+    "outcome_changed": false,
+    "excluded_nondeterministic_keys": [
+      "elapsed_ms"
+    ],
+    "instrumentation_cost_ms": {
+      "median_delta": 2.0,
+      "p90_delta": 6.03,
+      "max_delta": 16.09
+    },
+    "field_mismatches": [],
+    "mismatch_count": 0,
+    "cases_missing_evidence_state": 0,
+    "tri_state_totals": {
+      "CONTRADICTED": 70,
+      "NOT_ESTABLISHED": 26508,
+      "PRESENT": 2318,
+      "contradicted_by_falsifier": 70,
+      "contradicted_by_mutex": 0,
+      "reason:documented_only": 602,
+      "reason:no_producer": 9933,
+      "reason:present": 2318,
+      "reason:silent": 15973,
+      "reason:structural_falsifier": 70
+    },
+    "drift_vs_recorded_artifact": {
+      "pre_b2_drift_fields": 345,
+      "post_b2_drift_fields": 345,
+      "drift_identical_in_both_arms": true,
+      "b2_attributable_drift": []
+    }
+  }
+}

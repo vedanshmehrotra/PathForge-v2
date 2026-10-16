@@ -1,0 +1,368 @@
+[
+  {
+    "category": "two_pointers_opposite",
+    "variant_name": "renamed_variables",
+    "transforms": [
+      "variable_rename"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "variant_shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "two_pointers_opposite"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": true
+  },
+  {
+    "category": "two_pointers_opposite",
+    "variant_name": "loop_style_while_not",
+    "transforms": [
+      "loop_condition_invert"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "variant_shadow_concepts": [],
+    "shadow_stable": false,
+    "shadow_detection_changed": true,
+    "expected_concepts": [
+      "two_pointers_opposite"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "two_pointers_opposite",
+    "variant_name": "increment_style",
+    "transforms": [
+      "expression_style"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "variant_shadow_concepts": [
+      "sequential_accumulation"
+    ],
+    "shadow_stable": false,
+    "shadow_detection_changed": true,
+    "expected_concepts": [
+      "two_pointers_opposite"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "binary_search_standard",
+    "variant_name": "overflow_safe_midpoint",
+    "transforms": [
+      "overflow_safe_midpoint"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "variant_shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "binary_search_standard"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "binary_search_standard",
+    "variant_name": "bitshift_midpoint",
+    "transforms": [
+      "bitshift_division"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "variant_shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "binary_search_standard"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "binary_search_standard",
+    "variant_name": "renamed_variables",
+    "transforms": [
+      "variable_rename"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "variant_shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "binary_search_standard"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "sliding_window_fixed",
+    "variant_name": "renamed_variables",
+    "transforms": [
+      "variable_rename"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "variant_shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "sliding_window_fixed"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "sliding_window_fixed",
+    "variant_name": "helper_function",
+    "transforms": [
+      "helper_function"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "variant_shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "sliding_window_fixed"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "monotonic_stack",
+    "variant_name": "renamed_variables",
+    "transforms": [
+      "variable_rename"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "monotonic_stack_maintenance",
+      "monotonic_stack_strategy"
+    ],
+    "variant_shadow_concepts": [],
+    "shadow_stable": false,
+    "shadow_detection_changed": true,
+    "expected_concepts": [
+      "monotonic_stack"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "monotonic_stack",
+    "variant_name": "list_as_stack",
+    "transforms": [
+      "explicit_length_check"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "monotonic_stack_maintenance",
+      "monotonic_stack_strategy"
+    ],
+    "variant_shadow_concepts": [],
+    "shadow_stable": false,
+    "shadow_detection_changed": true,
+    "expected_concepts": [
+      "monotonic_stack"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "backtracking_permutation",
+    "variant_name": "used_boolean_array",
+    "transforms": [
+      "used_boolean_array"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "variant_shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "backtracking_permutation"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "backtracking_permutation",
+    "variant_name": "renamed_variables",
+    "transforms": [
+      "variable_rename",
+      "remaining_list"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "variant_shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "backtracking_permutation"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "dp_1d_forward",
+    "variant_name": "space_optimized",
+    "transforms": [
+      "space_optimization"
+    ],
+    "note": "Space-optimized version may not be detected as DP by AST",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "variant_shadow_concepts": [],
+    "shadow_stable": false,
+    "shadow_detection_changed": true,
+    "expected_concepts": [
+      "dp_1d_forward"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  },
+  {
+    "category": "dp_1d_forward",
+    "variant_name": "dict_memo",
+    "transforms": [
+      "dict_instead_of_list"
+    ],
+    "note": "",
+    "original_legacy_concepts": [],
+    "variant_legacy_concepts": [],
+    "legacy_stable": true,
+    "legacy_detection_changed": false,
+    "original_shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "variant_shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_stable": true,
+    "shadow_detection_changed": false,
+    "expected_concepts": [
+      "dp_1d_forward"
+    ],
+    "legacy_detected_expected": false,
+    "shadow_detected_expected": false
+  }
+]

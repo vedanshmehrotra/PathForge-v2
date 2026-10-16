@@ -1,7 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { analyzeCode, prepareProblem, fetchGaps, fetchElo, fetchRecommendations } from '@/services/api/endpoints'
+import { fetchAuthProfile } from '@/services/api/auth'
+import { ApiError } from '@/services/api/client'
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -9,6 +11,7 @@ import type {
   GapResponse,
   EloResponse,
   RecommendResponse,
+  AuthProfile,
 } from '@/types/api'
 
 function useApiData<T>(
@@ -57,42 +60,70 @@ export function useGapData(userId: number) {
   )
 }
 
-export function useRecommendations(userId: number) {
-  return useApiData<RecommendResponse>(
-    () => fetchRecommendations({ user_id: userId }),
-    [userId],
-    !userId || userId <= 0,
-  )
+export function useRecommendations(userId: number, difficulty?: 'Easy' | 'Medium' | 'Hard', excludedIds: string[] = []) {
+  const [revision, setRevision] = useState(0)
+  const exclusions = JSON.stringify(excludedIds)
+  const key = JSON.stringify([userId, difficulty, exclusions, revision])
+  const [state, setState] = useState<{
+    key: string; data: RecommendResponse | null; error: string | null
+  } | null>(null)
+  const refresh = useCallback(() => setRevision(value => value + 1), [])
+
+  useEffect(() => {
+    if (userId <= 0) return
+    let active = true
+    fetchRecommendations({ user_id: userId, mode: 'practice', difficulty, excluded_ids: JSON.parse(exclusions) })
+      .then(data => { if (active) setState({ key, data, error: null }) })
+      .catch(e => { if (active) setState({ key, data: null, error: e instanceof Error ? e.message : 'Request failed' }) })
+    return () => { active = false }
+  }, [userId, difficulty, exclusions, key])
+
+  // Never render another account/filter's data while its request is in flight.
+  const current = state?.key === key ? state : null
+  return { data: userId > 0 ? current?.data ?? null : null,
+    error: userId > 0 ? current?.error ?? null : null,
+    loading: userId > 0 && current === null, refresh }
+}
+
+// Topic profiles (attempts, pass counts, accuracy, last attempt) from the
+// existing GET /auth/profile endpoint. Used to show real practice history.
+export function useAuthProfile() {
+  return useApiData<AuthProfile>(() => fetchAuthProfile(), [], false)
 }
 
 export function useAnalyzeCode() {
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
 
   const run = useCallback(async (req: AnalyzeRequest) => {
     setLoading(true)
     setError(null)
+    setErrorCode(null)
     setResult(null)
     try {
       const res = await analyzeCode(req)
       setResult(res)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Analysis failed')
+      setErrorCode(e instanceof ApiError ? e.code ?? null : null)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  return { result, loading, error, run }
+  return { result, loading, error, errorCode, run }
 }
 
 export function usePrepareProblem() {
   const [result, setResult] = useState<PrepareResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const requestId = useRef(0)
 
   const run = useCallback(async (problem: string) => {
+    const id = ++requestId.current
     setLoading(true)
     setError(null)
     setResult(null)
@@ -103,15 +134,22 @@ export function usePrepareProblem() {
           ? { leetcode_id: parseInt(slug, 10) }
           : { title_slug: slug },
       })
-      setResult(res)
+      if (id === requestId.current) setResult(res)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Preparation failed')
+      if (id === requestId.current) {
+        setError(e instanceof Error ? e.message : 'Preparation failed')
+      }
     } finally {
-      setLoading(false)
+      if (id === requestId.current) setLoading(false)
     }
   }, [])
 
-  const clear = useCallback(() => setResult(null), [])
+  const clear = useCallback(() => {
+    ++requestId.current
+    setResult(null)
+    setError(null)
+    setLoading(false)
+  }, [])
 
   return { result, loading, error, run, clear }
 }

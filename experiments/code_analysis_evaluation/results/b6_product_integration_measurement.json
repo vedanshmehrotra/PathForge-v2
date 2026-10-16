@@ -1,0 +1,685 @@
+{
+  "batch": "B6",
+  "layer": "controlled canonical-authority product eligibility (flag OFF by default)",
+  "feature_flag": {
+    "env_var": "SHADOW_AUTHORITY_PRODUCT_GATING",
+    "default": "OFF",
+    "state_at_measurement": "<unset>",
+    "enabled": false
+  },
+  "authority_provenance_note": "corpus_a 'native' = the recorded historical corpus has NO authority_tier on groups (dropped by the pre-B5.5 serialization), so native-mode authority is absent -> everything blocked. corpus_a 'enriched' = measurement-time re-attachment of the record-level shadow_authority_tier; NOT native corpus provenance. corpus_b native = llm_proposed (the only value its GT supports).",
+  "corpus_a_46_real_submissions_native": {
+    "authority_mode": "native",
+    "coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "b4_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "b5_aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 46
+    },
+    "canonical_authority_distribution": {
+      "HUMAN_APPROVED": 0,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 46
+    },
+    "eligibility_reason_distribution": {
+      "inferred_authority": 43,
+      "no_authoritative_alternative": 4
+    },
+    "comparison_categories": {
+      "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED": 32,
+      "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED": 14
+    },
+    "eligible_submissions": 0,
+    "blocked_submissions": 46,
+    "safe_for_product_scoring_submissions": 0,
+    "authoritative_families": 0,
+    "total_families": 47,
+    "one_of_groups": 4,
+    "one_of_submissions": 4,
+    "cases": [
+      {
+        "case": "db-11",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-18",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-20",
+        "coverage": "CONFIRMED",
+        "b4_selected": "two_pointers_opposite",
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-33",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-35",
+        "coverage": "CONFIRMED",
+        "b4_selected": "sliding_window",
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-36",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-37",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-39",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-41",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-48",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-49",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-50",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      }
+    ]
+  },
+  "corpus_a_46_real_submissions_authority_enriched": {
+    "authority_mode": "enriched",
+    "coverage_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "b4_selected_distribution": {
+      "bfs_shortest_path": 1,
+      "binary_search": 2,
+      "dfs_backtracking": 2,
+      "dp_bottom_up": 3,
+      "dp_top_down": 2,
+      "sliding_window": 7,
+      "two_pointers_opposite": 5,
+      "union_find": 1,
+      "None": 23
+    },
+    "b5_aggregation_distribution": {
+      "ALL_FAMILIES_AUTHORITATIVE": 20,
+      "NO_AUTHORITATIVE_FAMILY": 26
+    },
+    "canonical_authority_distribution": {
+      "HUMAN_APPROVED": 26,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 20
+    },
+    "eligibility_reason_distribution": {
+      "authorized": 20,
+      "coverage_not_confirmed": 6,
+      "inferred_authority": 21
+    },
+    "comparison_categories": {
+      "LEGACY_CONFIRMED_SHADOW_AUTHORIZED": 20,
+      "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED": 12,
+      "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED": 14
+    },
+    "eligible_submissions": 20,
+    "blocked_submissions": 26,
+    "safe_for_product_scoring_submissions": 20,
+    "authoritative_families": 20,
+    "total_families": 47,
+    "one_of_groups": 4,
+    "one_of_submissions": 4,
+    "cases": [
+      {
+        "case": "db-11",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-18",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-20",
+        "coverage": "CONFIRMED",
+        "b4_selected": "two_pointers_opposite",
+        "b5_aggregation": "ALL_FAMILIES_AUTHORITATIVE",
+        "b5_authoritative_families": 1,
+        "canonical_authority": "HUMAN_APPROVED",
+        "eligible": true,
+        "eligibility_reasons": [
+          "authorized"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_AUTHORIZED"
+      },
+      {
+        "case": "db-33",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-35",
+        "coverage": "CONFIRMED",
+        "b4_selected": "sliding_window",
+        "b5_aggregation": "ALL_FAMILIES_AUTHORITATIVE",
+        "b5_authoritative_families": 1,
+        "canonical_authority": "HUMAN_APPROVED",
+        "eligible": true,
+        "eligibility_reasons": [
+          "authorized"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_AUTHORIZED"
+      },
+      {
+        "case": "db-36",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-37",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-39",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-41",
+        "coverage": "UNMATCHABLE",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-48",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "HUMAN_APPROVED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "coverage_not_confirmed"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-49",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "db-50",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "HUMAN_APPROVED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "coverage_not_confirmed"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      }
+    ]
+  },
+  "corpus_b_301_disjoint_cases_native": {
+    "authority_mode": "native",
+    "coverage_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "b4_selected_distribution": {
+      "binary_search": 2,
+      "two_pointers_opposite": 27,
+      "None": 272
+    },
+    "b5_aggregation_distribution": {
+      "NO_AUTHORITATIVE_FAMILY": 301
+    },
+    "canonical_authority_distribution": {
+      "HUMAN_APPROVED": 0,
+      "EXTERNAL_VERIFIED": 0,
+      "STRUCTURALLY_OBSERVED": 0,
+      "INFERRED": 301
+    },
+    "eligibility_reason_distribution": {
+      "inferred_authority": 301
+    },
+    "comparison_categories": {
+      "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED": 112,
+      "LEGACY_UNRESOLVED_SHADOW_NOT_AUTHORIZED": 189
+    },
+    "eligible_submissions": 0,
+    "blocked_submissions": 301,
+    "safe_for_product_scoring_submissions": 0,
+    "authoritative_families": 0,
+    "total_families": 301,
+    "one_of_groups": 0,
+    "one_of_submissions": 0,
+    "cases": [
+      {
+        "case": "ps_subarray_equals_k",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_range_sum_query",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_contiguous_subarray_sum",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_find_pivot_index",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_running_total_transform",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_product_except_self",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_min_subarray_len",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_max_avg_subarray",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "ps_rolling_average",
+        "coverage": "UNRESOLVED",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "hm_two_sum_map",
+        "coverage": "PROVISIONAL",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "hm_isomorphic_strings",
+        "coverage": "PROVISIONAL",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      },
+      {
+        "case": "hm_group_anagrams",
+        "coverage": "PROVISIONAL",
+        "b4_selected": null,
+        "b5_aggregation": "NO_AUTHORITATIVE_FAMILY",
+        "b5_authoritative_families": 0,
+        "canonical_authority": "INFERRED",
+        "eligible": false,
+        "eligibility_reasons": [
+          "inferred_authority"
+        ],
+        "total_requirements": 1,
+        "one_of_groups": 0,
+        "comparison_category": "LEGACY_CONFIRMED_SHADOW_NOT_AUTHORIZED"
+      }
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "02caf086a1f16c1dba3175be5c37d4144e3b6c779bcf1084f7e07125c4dca275": {
+    "analysed_at": "2026-09-16T12:58:31.997664+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3875,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "044e6795f1956be355981d1fe72f740e682c3dee702f32448a24dfdd5c6542e7": {
+    "analysed_at": "2026-09-16T12:58:32.029172+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 283,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "1971a1d7d74d53ae7d157c4de349954660a4eccfb0fc3d3fb4193e85977fc321": {
+    "analysed_at": "2026-09-16T12:58:31.966977+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 29,
+    "root_causes": [
+      "ground_truth_pattern_unmapped",
+      "legacy_ast_vocabulary_mismatch",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "8021ca7e1ff52bcd48dad4f13e7c64e40d7c9c00ee8694140758dd487c733b51": {
+    "analysed_at": "2026-09-16T12:58:32.013077+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3876,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "b1f13e0c5c4e52375e0ec09e40c6d0371639df74b7c1f2b488d228df0c840b69": {
+    "analysed_at": "2026-09-16T12:58:31.980772+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3903,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_accumulation_needs_while_loop",
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "b4f5066011f7c552abcf9c152d8f94d8c932d6e974a3f78a9181310a457e8efb": {
+    "analysed_at": "2026-09-16T12:58:32.041425+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 724,
+    "root_causes": [
+      "required_accumulation_needs_while_loop",
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "d709a8fb58376a51773aa5ea3f50828108bef83d3ca6b173f0f4718306d518ab": {
+    "analysed_at": "2026-09-16T12:58:31.946675+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 21,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  }
+}

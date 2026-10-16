@@ -1,0 +1,25 @@
+submission_id,concept,error_type,system,result,probable_failure_layer,short_explanation
+sub_0001,hash_map_lookup,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0001,hash_map_lookup,TECHNIQUE_DETECTION_FAILURE,shadow,false_negative,technique_detection,Technique detection failed despite facts being present
+sub_0002,hash_map_lookup,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0002,hash_map_lookup,TECHNIQUE_DETECTION_FAILURE,shadow,false_negative,technique_detection,Technique detection failed despite facts being present
+sub_0003,sliding_window_fixed,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0003,sliding_window,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0004,sliding_window_fixed,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0004,sliding_window,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0005,sliding_window_variable,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0005,sliding_window_variable,TECHNIQUE_DETECTION_FAILURE,shadow,false_negative,technique_detection,Technique detection failed despite facts being present
+sub_0006,sliding_window_variable,PARSER_FAILURE,legacy,false_negative,parsing,Code could not be parsed into AST
+sub_0006,sliding_window_variable,PARSER_FAILURE,shadow,false_negative,parsing,Code could not be parsed into AST
+sub_0007,two_pointers_opposite,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0007,sequential_accumulation,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0008,two_pointers_opposite,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0008,loop_state_tracking,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0008,sequential_accumulation,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0009,two_pointers_opposite,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0009,loop_state_tracking,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0009,sequential_accumulation,UNKNOWN,shadow,false_positive,unknown,Failure cause unclear
+sub_0010,two_pointers_same,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0010,two_pointers_same,TECHNIQUE_DETECTION_FAILURE,shadow,false_negative,technique_detection,Technique detection failed despite facts being present
+sub_0012,binary_search_standard,UNKNOWN,legacy,false_negative,unknown,Failure cause unclear
+sub_0012,binary_search_standard,TECHNIQUE_DETECTION_FAILURE,shadow,false_negative,technique_detection,Technique detection failed despite facts being present

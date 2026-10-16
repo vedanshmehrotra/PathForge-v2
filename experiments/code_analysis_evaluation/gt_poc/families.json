@@ -1,0 +1,996 @@
+{
+  "poc_version": "1.0.0",
+  "taxonomy_version": "v1",
+  "pipeline_version": {
+    "extractor": "1.0.0",
+    "relations": "1.1.0",
+    "strategy": "1.0.0"
+  },
+  "phase": "3_grouping",
+  "provisional_skeleton_threshold": 0.35,
+  "provisional_threshold_rationale": "Chosen as a single documented constant, not calibrated. Reported as an OPEN decision; the POC treats it as evidence-gathering input, not a result.",
+  "grouping_algorithm": {
+    "primary_partition": "exact equality of signature_class = sorted(technique_ids | strategy_ids)",
+    "refinement": "split when normalized skeleton token distance >= tau",
+    "tie_break": "none needed (deterministic; no randomness, no clustering pass invoked)",
+    "anti_split_guard": "union-find connectivity: a D1/D2/D3 link always merges",
+    "llm_proposals": "NOT run in this POC (spec \u00a78 step 5 deferred)",
+    "ordering": "members sorted by solution_id; families numbered by smallest member id"
+  },
+  "totals": {
+    "family_count": 31,
+    "singleton_families": 23,
+    "family_size_histogram": {
+      "1": 23,
+      "2": 7,
+      "3": 1
+    },
+    "families_by_problem": {
+      "1": [
+        "lc1_fam1",
+        "lc1_fam2",
+        "lc1_fam3",
+        "lc1_fam4"
+      ],
+      "21": [
+        "lc21_fam1",
+        "lc21_fam2",
+        "lc21_fam3",
+        "lc21_fam4",
+        "lc21_fam5"
+      ],
+      "125": [
+        "lc125_fam1",
+        "lc125_fam2",
+        "lc125_fam3",
+        "lc125_fam4"
+      ],
+      "209": [
+        "lc209_fam1",
+        "lc209_fam2",
+        "lc209_fam3"
+      ],
+      "242": [
+        "lc242_fam1",
+        "lc242_fam2",
+        "lc242_fam3",
+        "lc242_fam4"
+      ],
+      "560": [
+        "lc560_fam1",
+        "lc560_fam2",
+        "lc560_fam3",
+        "lc560_fam4",
+        "lc560_fam5"
+      ],
+      "704": [
+        "lc704_fam1",
+        "lc704_fam2",
+        "lc704_fam3",
+        "lc704_fam4"
+      ],
+      "3236": [
+        "lc3236_fam1",
+        "lc3236_fam2"
+      ]
+    }
+  },
+  "families": [
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam1",
+      "members": [
+        "S0001",
+        "S0002"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0001",
+      "technique_signature": [
+        "hash_lookup"
+      ],
+      "strategy_signature": [],
+      "signature_class": "hash_lookup",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Class{Def[3]{Assign(Name=Dict(->)),For(Call<enumerate>(Name)){Assign(Name=Sub(Name,Name)),If(Compare[In](Name,Name)){Return(List(Sub(Name),Name))}else{},Assign(Sub(Name)=Name)},Return(List())}}]",
+        "canonical_token_count": 93,
+        "max_intra_skeleton_distance": 0.098
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "pathforge_db"
+      ],
+      "member_relations": [
+        {
+          "a": "S0001",
+          "b": "S0002",
+          "same_signature_class": true,
+          "skeleton_distance": 0.098
+        }
+      ]
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam2",
+      "members": [
+        "S0003"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0003",
+      "technique_signature": [],
+      "strategy_signature": [],
+      "signature_class": "",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{For(Call<range>(Call<len>(Name))){For(Call<range>(Add(Name,Const),Call<len>(Name))){If(Compare[Eq](Add(Sub(Name),Sub(Name)),Name)){Return(List(Name,Name))}else{}}},Return(List())}]",
+        "canonical_token_count": 96,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam3",
+      "members": [
+        "S0004"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0004",
+      "technique_signature": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [
+        "two_pointers_opposite"
+      ],
+      "signature_class": "bidirectional_index_scan|loop_state_tracking|sequential_accumulation|two_pointers_opposite",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Call<sorted>(Call<range>(Call<len>(Name)))),Assign(Name=Const),Assign(Name=Sub(Call<len>(Name),Const)),While(Compare[Lt](Name,Name)){Assign(Name=Add(Sub(Name),Sub(Name))),If(Compare[Eq](Name,Name)){Return(List(Sub(Name),Sub(Name)))}else{},If(Compare[Lt](Name,Name)){Aug(NameAddConst)}else{Aug(NameSubConst)}},Return(List())}]",
+        "canonical_token_count": 156,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 1,
+      "family_key": "lc1_fam4",
+      "members": [
+        "S0005"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0005",
+      "technique_signature": [
+        "hash_lookup"
+      ],
+      "strategy_signature": [],
+      "signature_class": "hash_lookup",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Dict(->)),For(Call<enumerate>(Name)){Assign(Sub(Name)=Name)},For(Call<enumerate>(Name)){Assign(Name=Sub(Name,Name)),If(And(Compare[In](Name,Name),Compare[NotEq](Sub(Name),Name))){Return(List(Name,Sub(Name)))}else{}},Return(List())}]",
+        "canonical_token_count": 118,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam1",
+      "members": [
+        "S0006"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0006",
+      "technique_signature": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "strategy_signature": [],
+      "signature_class": "forward_pointer_advance|linked_list_traversal",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Class{Def[3]{Assign(Name=Call<ListNode>(Const)),Assign(Name=Name),Expr(Call<print>(Attr(Name))),While(And(Name,Name)){If(Compare[LtE](Attr(Name),Attr(Name))){Assign(Attr(Name)=Name),Assign(Name=Attr(Name))}else{Assign(Attr(Name)=Name),Assign(Name=Attr(Name))},Assign(Name=Attr(Name))},If(Name){Assign(Attr(Name)=Name)}else{Assign(Attr(Name)=Name)},Return(Attr(Name))}}]",
+        "canonical_token_count": 164,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "pathforge_db"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam2",
+      "members": [
+        "S0007"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0007",
+      "technique_signature": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "linked_list_traversal|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=List()),While(Compare[IsNot](Name,Const)){Expr(Call<append>(Attr(Name))),Assign(Name=Attr(Name))},While(Compare[IsNot](Name,Const)){Expr(Call<append>(Attr(Name))),Assign(Name=Attr(Name))},Expr(Call<sort>()),Assign(Name=Call<ListNode>(Const)),Assign(Name=Name),For(Name){Assign(Attr(Name)=Call<ListNode>(Name)),Assign(Name=Attr(Name))},Return(Attr(Name))}]",
+        "canonical_token_count": 163,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam3",
+      "members": [
+        "S0008"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0008",
+      "technique_signature": [
+        "linked_list_traversal",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "linked_list_traversal|loop_state_tracking|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Call<ListNode>(Const)),Assign(Name=Name),While(And(Compare[IsNot](Name,Const),Compare[IsNot](Name,Const))){If(Compare[Lt](Attr(Name),Attr(Name))){Assign(Attr(Name)=Name),Assign(Name=Attr(Name))}else{Assign(Attr(Name)=Name),Assign(Name=Attr(Name))},Assign(Name=Attr(Name))},If(Compare[IsNot](Name,Const)){Assign(Attr(Name)=Name)}else{Assign(Attr(Name)=Name)},Return(Attr(Name))}]",
+        "canonical_token_count": 171,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam4",
+      "members": [
+        "S0009"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0009",
+      "technique_signature": [
+        "recursive_branching"
+      ],
+      "strategy_signature": [],
+      "signature_class": "recursive_branching",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{If(Compare[Is](Name,Const)){Return(Name)}else{},If(Compare[Is](Name,Const)){Return(Name)}else{},If(Compare[LtE](Attr(Name),Attr(Name))){Assign(Attr(Name)=Call<merge_recursive>(Attr(Name),Name)),Return(Name)}else{},Assign(Attr(Name)=Call<merge_recursive>(Name,Attr(Name))),Return(Name)}]",
+        "canonical_token_count": 127,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 21,
+      "family_key": "lc21_fam5",
+      "members": [
+        "S0010"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0010",
+      "technique_signature": [
+        "candidate_selection",
+        "linked_list_traversal",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "candidate_selection|linked_list_traversal|loop_state_tracking|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{If(Compare[Is](Name,Const)){Return(Name)}else{},If(Compare[Is](Name,Const)){Return(Name)}else{},Assign(Name=IfExp(Compare[LtE](Attr(Name),Attr(Name))?Name:Name)),Assign(Name=Const),While(And(Compare[IsNot](Name,Const),Compare[IsNot](Name,Const))){If(Compare[LtE](Attr(Name),Attr(Name))){Assign(Name=Name),Assign(Name=Attr(Name))}else{Assign(Name=Name),Assign(Name=Attr(Name))},If(Compare[IsNot](Name,Const)){Assign(Attr(Name)=Name)}else{},Assign(Name=Name)},Assign(Attr(Name)=IfExp(Compare[IsNot](Name,Const)?Name:Name)),Return(Name)}]",
+        "canonical_token_count": 234,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam1",
+      "members": [
+        "S0011",
+        "S0015"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0011",
+      "technique_signature": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [
+        "two_pointers_opposite"
+      ],
+      "signature_class": "bidirectional_index_scan|loop_state_tracking|sequential_accumulation|two_pointers_opposite",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Class{Def[2]{Assign(Name=Const),Assign(Name=Sub(Call<len>(Name),Const)),While(Compare[Lt](Name,Name)){While(And(Compare[Lt](Name,Name),Not(Call<isalnum>()))){Aug(NameAddConst)},While(And(Compare[Lt](Name,Name),Not(Call<isalnum>()))){Aug(NameSubConst)},If(Compare[NotEq](Call<lower>(),Call<lower>())){Return(Const)}else{},Aug(NameAddConst),Aug(NameSubConst)},Return(Const)}}]",
+        "canonical_token_count": 161,
+        "max_intra_skeleton_distance": 0.0248
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ],
+      "member_relations": [
+        {
+          "a": "S0011",
+          "b": "S0015",
+          "same_signature_class": true,
+          "skeleton_distance": 0.0248
+        }
+      ]
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam2",
+      "members": [
+        "S0012"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0012",
+      "technique_signature": [],
+      "strategy_signature": [],
+      "signature_class": "",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[1]{Assign(Name=ListComp(Call<lower>())),Return(Compare[Eq](Name,Sub(Name)))}]",
+        "canonical_token_count": 39,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam3",
+      "members": [
+        "S0013"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0013",
+      "technique_signature": [
+        "recursive_branching"
+      ],
+      "strategy_signature": [],
+      "signature_class": "recursive_branching",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[1]{Assign(Name=ListComp(Call<lower>())),Def[2]{If(Compare[GtE](Name,Name)){Return(Const)}else{},If(Compare[NotEq](Sub(Name),Sub(Name))){Return(Const)}else{},Return(Call<check>(Add(Name,Const),Sub(Name,Const)))},Return(Call<check>(Const,Sub(Call<len>(Name),Const)))}]",
+        "canonical_token_count": 126,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 125,
+      "family_key": "lc125_fam4",
+      "members": [
+        "S0014"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0014",
+      "technique_signature": [
+        "bidirectional_index_scan",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [
+        "two_pointers_opposite"
+      ],
+      "signature_class": "bidirectional_index_scan|sequential_accumulation|two_pointers_opposite",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Import,Def[1]{Assign(Name=Call<lower>()),Assign(Name=Const),Assign(Name=Sub(Call<len>(Name),Const)),While(Compare[Lt](Name,Name)){If(Compare[NotEq](Sub(Name),Sub(Name))){Return(Const)}else{},Aug(NameAddConst),Aug(NameSubConst)},Return(Const)}]",
+        "canonical_token_count": 104,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam1",
+      "members": [
+        "S0016",
+        "S0017"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0016",
+      "technique_signature": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [
+        "sliding_window"
+      ],
+      "signature_class": "forward_pointer_advance|loop_state_tracking|sequential_accumulation|sliding_window",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Class{Def[3]{Assign(Name=Const),Assign(Name=Const),Assign(Name=Add(Call<len>(Name),Const)),For(Call<range>(Call<len>(Name))){Aug(NameAddSub(Name)),While(Compare[GtE](Name,Name)){Assign(Name=Call<min>(Name,Add(Sub(Name,Name),Const))),Aug(NameSubSub(Name)),Aug(NameAddConst)}},If(Compare[Eq](Name,Add(Call<len>(Name),Const))){Return(Const)}else{},Return(Name)}}]",
+        "canonical_token_count": 159,
+        "max_intra_skeleton_distance": 0.1006
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "pathforge_db"
+      ],
+      "member_relations": [
+        {
+          "a": "S0016",
+          "b": "S0017",
+          "same_signature_class": true,
+          "skeleton_distance": 0.1006
+        }
+      ]
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam2",
+      "members": [
+        "S0018"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0018",
+      "technique_signature": [
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Add(Call<len>(Name),Const)),For(Call<range>(Call<len>(Name))){Assign(Name=Const),For(Call<range>(Name,Call<len>(Name))){Aug(NameAddSub(Name)),If(Compare[GtE](Name,Name)){Assign(Name=Call<min>(Name,Add(Sub(Name,Name),Const))),Break}else{}}},Return(IfExp(Compare[Eq](Name,Add(Call<len>(Name),Const))?Const:Name))}]",
+        "canonical_token_count": 154,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 209,
+      "family_key": "lc209_fam3",
+      "members": [
+        "S0019",
+        "S0020"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0019",
+      "technique_signature": [
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Import,Def[2]{Assign(Name=List(Const)),For(Name){Expr(Call<append>(Add(Sub(Name),Name)))},Assign(Name=Add(Call<len>(Name),Const)),For(Call<range>(Call<len>(Name))){Assign(Name=Add(Sub(Name),Name)),Assign(Name=Call<bisect_left>(Name,Name,Add(Name,Const))),If(Compare[LtE](Name,Call<len>(Name))){Assign(Name=Call<min>(Name,Sub(Name,Name)))}else{}},Return(IfExp(Compare[Eq](Name,Add(Call<len>(Name),Const))?Const:Name))}]",
+        "canonical_token_count": 192,
+        "max_intra_skeleton_distance": 0.1927
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": [
+        {
+          "a": "S0019",
+          "b": "S0020",
+          "same_signature_class": true,
+          "skeleton_distance": 0.1927
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam1",
+      "members": [
+        "S0021"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0021",
+      "technique_signature": [
+        "frequency_counting"
+      ],
+      "strategy_signature": [],
+      "signature_class": "frequency_counting",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{If(Compare[NotEq](Call<len>(Name),Call<len>(Name))){Return(Const)}else{},Assign(Name=Mult(List(Const),Const)),For(Name){Aug(Sub(Name)AddConst)},For(Name){Aug(Sub(Name)SubConst)},Return(Call<all>(GenExp(Compare[Eq](Name,Const))))}]",
+        "canonical_token_count": 109,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam2",
+      "members": [
+        "S0022",
+        "S0025"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0022",
+      "technique_signature": [],
+      "strategy_signature": [],
+      "signature_class": "",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[ImportFrom,Def[2]{Return(Compare[Eq](Call<Counter>(Name),Call<Counter>(Name)))}]",
+        "canonical_token_count": 35,
+        "max_intra_skeleton_distance": 0.1143
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": [
+        {
+          "a": "S0022",
+          "b": "S0025",
+          "same_signature_class": true,
+          "skeleton_distance": 0.1143
+        }
+      ]
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam3",
+      "members": [
+        "S0023"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0023",
+      "technique_signature": [
+        "frequency_counting",
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "frequency_counting|hash_lookup|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{If(Compare[NotEq](Call<len>(Name),Call<len>(Name))){Return(Const)}else{},Assign(Name=Dict(->)),For(Name){Assign(Sub(Name)=Add(Call<get>(Name,Const),Const))},For(Name){If(Compare[NotIn](Name,Name)){Return(Const)}else{},Aug(Sub(Name)SubConst),If(Compare[Lt](Sub(Name),Const)){Return(Const)}else{}},Return(Const)}]",
+        "canonical_token_count": 149,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 242,
+      "family_key": "lc242_fam4",
+      "members": [
+        "S0024"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0024",
+      "technique_signature": [],
+      "strategy_signature": [],
+      "signature_class": "",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{If(Compare[NotEq](Call<len>(Name),Call<len>(Name))){Return(Const)}else{},For(Call<set>(Name)){If(Compare[NotEq](Call<count>(Name),Call<count>(Name))){Return(Const)}else{}},Return(Const)}]",
+        "canonical_token_count": 93,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam1",
+      "members": [
+        "S0026"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0026",
+      "technique_signature": [
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Const),For(Call<range>(Call<len>(Name))){Assign(Name=Const),For(Call<range>(Name,Call<len>(Name))){Aug(NameAddSub(Name)),If(Compare[Eq](Name,Name)){Aug(NameAddConst)}else{}}},Return(Name)}]",
+        "canonical_token_count": 95,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam2",
+      "members": [
+        "S0027"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0027",
+      "technique_signature": [
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=List(Const)),For(Name){Expr(Call<append>(Add(Sub(Name),Name)))},Assign(Name=Const),For(Call<range>(Call<len>(Name))){For(Call<range>(Add(Name,Const),Add(Call<len>(Name),Const))){If(Compare[Eq](Sub(Sub(Name),Sub(Name)),Name)){Aug(NameAddConst)}else{}}},Return(Name)}]",
+        "canonical_token_count": 136,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam3",
+      "members": [
+        "S0028"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0028",
+      "technique_signature": [
+        "fixed_window_maintenance",
+        "forward_pointer_advance",
+        "frequency_counting",
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [
+        "dp_bottom_up"
+      ],
+      "signature_class": "dp_bottom_up|fixed_window_maintenance|forward_pointer_advance|frequency_counting|iterative_table_filling|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[ImportFrom,Def[2]{Assign(Name=Call<defaultdict>(Name)),Assign(Sub(Name)=Const),Assign(Name=Const),Assign(Name=Const),For(Name){Aug(NameAddName),Aug(NameAddSub(Name)),Aug(Sub(Name)AddConst)},Return(Name)}]",
+        "canonical_token_count": 80,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam4",
+      "members": [
+        "S0029"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0029",
+      "technique_signature": [
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Dict(Const->Const)),Assign(Name=Const),Assign(Name=Const),For(Name){Aug(NameAddName),Aug(NameAddCall<get>(Sub(Name,Name),Const)),Assign(Sub(Name)=Add(Call<get>(Name,Const),Const))},Return(Name)}]",
+        "canonical_token_count": 92,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 560,
+      "family_key": "lc560_fam5",
+      "members": [
+        "S0030"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0030",
+      "technique_signature": [
+        "forward_pointer_advance",
+        "frequency_counting",
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "forward_pointer_advance|frequency_counting|hash_lookup|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Dict(Const->Const)),Assign(Name=Const),Assign(Name=Const),For(Name){Aug(NameAddName),Assign(Name=Sub(Name,Name)),If(Compare[In](Name,Name)){Aug(NameAddSub(Name))}else{},If(Compare[In](Name,Name)){Aug(Sub(Name)AddConst)}else{Assign(Sub(Name)=Const)}},Return(Name)}]",
+        "canonical_token_count": 123,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam1",
+      "members": [
+        "S0031",
+        "S0034"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0031",
+      "technique_signature": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "strategy_signature": [
+        "binary_search"
+      ],
+      "signature_class": "binary_search|candidate_selection|loop_state_tracking",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Class{Def[3]{Assign(Name=Const),Assign(Name=Sub(Call<len>(Name),Const)),While(Compare[LtE](Name,Name)){Assign(Name=FloorDiv(Add(Name,Name),Const)),If(Compare[Eq](Sub(Name),Name)){Return(Name)}else{},If(Compare[Lt](Sub(Name),Name)){Assign(Name=Add(Name,Const))}else{Assign(Name=Sub(Name,Const))}},Return(USub(Const))}}]",
+        "canonical_token_count": 143,
+        "max_intra_skeleton_distance": 0.1745
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ],
+      "member_relations": [
+        {
+          "a": "S0031",
+          "b": "S0034",
+          "same_signature_class": true,
+          "skeleton_distance": 0.1745
+        }
+      ]
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam2",
+      "members": [
+        "S0032"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0032",
+      "technique_signature": [],
+      "strategy_signature": [],
+      "signature_class": "",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Import,Def[2]{Assign(Name=Call<bisect_left>(Name,Name)),If(And(Compare[Lt](Name,Call<len>(Name)),Compare[Eq](Sub(Name),Name))){Return(Name)}else{},Return(USub(Const))}]",
+        "canonical_token_count": 77,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam3",
+      "members": [
+        "S0033"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0033",
+      "technique_signature": [
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "strategy_signature": [
+        "binary_search"
+      ],
+      "signature_class": "binary_search|candidate_selection|loop_state_tracking",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Assign(Name=Const),Assign(Name=Call<len>(Name)),While(Compare[Lt](Name,Name)){Assign(Name=FloorDiv(Add(Name,Name),Const)),If(Compare[Lt](Sub(Name),Name)){Assign(Name=Add(Name,Const))}else{Assign(Name=Name)}},If(And(Compare[Lt](Name,Call<len>(Name)),Compare[Eq](Sub(Name),Name))){Return(Name)}else{},Return(USub(Const))}]",
+        "canonical_token_count": 149,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 704,
+      "family_key": "lc704_fam4",
+      "members": [
+        "S0035"
+      ],
+      "member_count": 1,
+      "canonical_solution_id": "S0035",
+      "technique_signature": [
+        "recursive_branching"
+      ],
+      "strategy_signature": [],
+      "signature_class": "recursive_branching",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[2]{Def[2]{If(Compare[Gt](Name,Name)){Return(USub(Const))}else{},Assign(Name=FloorDiv(Add(Name,Name),Const)),If(Compare[Eq](Sub(Name),Name)){Return(Name)}else{},If(Compare[Lt](Sub(Name),Name)){Return(Call<search>(Add(Name,Const),Name))}else{},Return(Call<search>(Name,Sub(Name,Const)))},Return(Call<search>(Const,Sub(Call<len>(Name),Const)))}]",
+        "canonical_token_count": 161,
+        "max_intra_skeleton_distance": 0.0
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "singleton: no other solution shares this signature class within the threshold, so it forms its own family",
+      "is_singleton": true,
+      "sources": [
+        "authored"
+      ],
+      "member_relations": []
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam1",
+      "members": [
+        "S0036",
+        "S0037"
+      ],
+      "member_count": 2,
+      "canonical_solution_id": "S0036",
+      "technique_signature": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "forward_pointer_advance|sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Class{Def[2]{Assign(Name=Const),Assign(Name=Sub(Name)),While(And(Compare[Lt](Name,Call<len>(Name)),Compare[Eq](Sub(Name),Add(Sub(Name),Const)))){Aug(NameAddSub(Name)),Aug(NameAddConst)},While(Compare[In](Name,Name)){Aug(NameAddConst)},Return(Name)}}]",
+        "canonical_token_count": 109,
+        "max_intra_skeleton_distance": 0.0526
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "pathforge_db"
+      ],
+      "member_relations": [
+        {
+          "a": "S0036",
+          "b": "S0037",
+          "same_signature_class": true,
+          "skeleton_distance": 0.0526
+        }
+      ]
+    },
+    {
+      "problem_id": 3236,
+      "family_key": "lc3236_fam2",
+      "members": [
+        "S0038",
+        "S0039",
+        "S0040"
+      ],
+      "member_count": 3,
+      "canonical_solution_id": "S0038",
+      "technique_signature": [
+        "sequential_accumulation"
+      ],
+      "strategy_signature": [],
+      "signature_class": "sequential_accumulation",
+      "skeleton_metadata": {
+        "canonical_skeleton": "Module[Def[1]{Assign(Name=Const),Assign(Name=Sub(Name)),While(And(Compare[LtE](Name,Sub(Call<len>(Name),Const)),Compare[Eq](Sub(Name),Add(Sub(Name),Const)))){Aug(NameAddSub(Name)),Aug(NameAddConst)},While(Compare[In](Name,Name)){Aug(NameAddConst)},Return(Name)}]",
+        "canonical_token_count": 111,
+        "max_intra_skeleton_distance": 0.4248
+      },
+      "provisional_threshold": 0.35,
+      "grouping_reason": "connected by signature-class equality plus at least one skeleton distance below the threshold; no D2/D3-only split was allowed (anti-split guard)",
+      "is_singleton": false,
+      "sources": [
+        "authored",
+        "pathforge_db"
+      ],
+      "member_relations": [
+        {
+          "a": "S0038",
+          "b": "S0039",
+          "same_signature_class": true,
+          "skeleton_distance": 0.4248
+        },
+        {
+          "a": "S0038",
+          "b": "S0040",
+          "same_signature_class": true,
+          "skeleton_distance": 0.1681
+        },
+        {
+          "a": "S0039",
+          "b": "S0040",
+          "same_signature_class": true,
+          "skeleton_distance": 0.3203
+        }
+      ]
+    }
+  ]
+}

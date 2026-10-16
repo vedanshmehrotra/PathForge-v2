@@ -1,0 +1,397 @@
+{
+  "05cca89710e6663ede3194cf43176624a1dcd7c9826f574f586b75de9a1f3c0f": {
+    "analysed_at": "2026-09-18T16:10:30.179494+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 102,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "0708fbdb8a53c25c44cbf9d14ed6cb64759c0e1c5f4279485685e8f79da0d5d9": {
+    "analysed_at": "2026-09-18T16:10:35.698047+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 4284,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_accumulation_needs_acc_update",
+      "required_concept_not_detected"
+    ]
+  },
+  "0be5e5ae23da949c01824454d425e8b3f63d7a0f7bbaf7e9332711a69a3bb31c": {
+    "analysed_at": "2026-09-18T16:10:12.923260+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 496,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "extra_strategy_inferred"
+    ]
+  },
+  "0d202422a57c9b360603df5b137308583030d3cc12e3897fa8dee2274dc30b92": {
+    "analysed_at": "2026-09-18T16:10:16.041355+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 209,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "108a6edad7f72728961a6921e868fcda785f858ec263e8d11e1c135b607b8c18": {
+    "analysed_at": "2026-09-18T16:10:22.741590+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 70,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "concept_not_derived_from_patterns"
+    ]
+  },
+  "1300f5ec67309dbdca41282d58ef2cab0f4c98dfae01c9f4f0cb080bf19a5197": {
+    "analysed_at": "2026-09-18T16:10:03.273431+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 4080,
+    "root_causes": [
+      "gt_missing_vocabulary_exposed",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "14ee52845dd9cc25356ea8959612b64fee18ea9fd62ca80eb05d161699b4baa6": {
+    "analysed_at": "2026-09-18T16:10:24.855029+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 322,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "concept_not_derived_from_patterns"
+    ]
+  },
+  "15313c250834a7d3a48552b644e022ef52d8b7093e80a6a44a4c16beabd7d4e3": {
+    "analysed_at": "2026-09-18T16:09:57.304209+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3812,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "gt_missing_vocabulary_exposed",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "1e56bd619a6ac82dce28fdb40ec1139dcfa6a907f6944403334f19a49679bd6d": {
+    "analysed_at": "2026-09-18T16:09:50.745151+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 15,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "1e5d34f5cb4d60bf41113d21426963d873e6e084a668facc8c2297024338e533": {
+    "analysed_at": "2026-09-18T16:10:33.512543+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 21,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "2335c1c88e76ce0644e5706c4d9528f86f4eb91d87a385eb22a38e6033d084d2": {
+    "analysed_at": "2026-09-18T16:10:02.206388+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3236,
+    "root_causes": [
+      "required_concept_not_detected"
+    ]
+  },
+  "24f5e7a9982c60906dabec4b896e3fa206d7da0f1112ee6d579ba525ad949a6a": {
+    "analysed_at": "2026-09-18T16:10:37.851183+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 4258,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "2a26e03d345fbc43b30ebcee4f98ff26f9e7941dfb294b0c4af38089fb97a94c": {
+    "analysed_at": "2026-09-18T16:09:55.166973+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 1574,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "2f28974476a2d0b1a2e55c0a1ab0175c0150c5160e9383b851290dc2b6b55ccf": {
+    "analysed_at": "2026-09-18T16:10:13.980762+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3236,
+    "root_causes": [
+      "required_concept_not_detected"
+    ]
+  },
+  "32dc01fe7a5cf8c7e25c559c9e4b5d30d59d5cbfd674e607b5855b0c33656a60": {
+    "analysed_at": "2026-09-18T16:09:56.265145+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 1,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "37194757c9397bea46c429a650b5bf0daa9d1d44d48ff315e9f17fe6880564a9": {
+    "analysed_at": "2026-09-18T16:09:58.438065+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 2,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "38407905af1073eced862a8ce2054129546d793e580001472c89335474e1c581": {
+    "analysed_at": "2026-09-18T16:09:49.665733+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 628,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "39190fb8fbe45ee74daf69dcf4c3b461354b49ab10835d41377d99c2cc3e1521": {
+    "analysed_at": "2026-09-18T16:10:28.072668+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 46,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "5456a57929156dbea1260168bd3b3d6e980c4526e2e3d26a72f74e316d7274da": {
+    "analysed_at": "2026-09-18T16:10:08.708793+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 3349,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "5710e0ae4bf74f17e5823c171cd02fe50eace04de7924400d6486b305772f80e": {
+    "analysed_at": "2026-09-18T16:10:19.241583+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 15,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "5e2d002d1e792ffd868c299f4241086588336d7bbdd8ebdd9e457b5ec84355ee": {
+    "analysed_at": "2026-09-18T16:10:05.513272+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 11,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "6826590f694a2d575fe448f8db170b782c588b0a24c098950f7f1c6afd59b2cc": {
+    "analysed_at": "2026-09-18T16:10:34.564356+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 29,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_concept_not_detected"
+    ]
+  },
+  "688f965f177fc4c3dd5d7aa4b007ca4f47ac54b5f508eb0d453bea7c633c870f": {
+    "analysed_at": "2026-09-18T16:09:54.114959+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 1574,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "6b05482b3e3c933e75e6b853e19ce250e11392571133aa1bbbf1479126645572": {
+    "analysed_at": "2026-09-18T16:10:10.796896+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 424,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "6fc48782b6f5e4c9569291f1d33b5035430041dd599cff5f5c109599bad3bf6e": {
+    "analysed_at": "2026-09-18T16:09:48.627196+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 1,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "70892ffe851ee070d6708d400a1ab316eed900c2b0660aadf437baa12ff33907": {
+    "analysed_at": "2026-09-18T16:09:53.098566+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 3,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "7d8f3a4785a7ae8922a6d856ce8c40a80f31f2ec950a10e22216b3b92912c150": {
+    "analysed_at": "2026-09-18T16:10:07.593494+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 141,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "7f893cd0d1cbcfbbc8515cb87139804de7d665ad16fe094bff20a03b4ca0bd57": {
+    "analysed_at": "2026-09-18T16:10:17.051174+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 11,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "8e793f5c8c4f3b2674386811fd9d7ab926617c9261726d5ad4ed8c1bdd1df802": {
+    "analysed_at": "2026-09-18T16:10:25.927247+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 322,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "concept_not_derived_from_patterns",
+      "false_confirmation_label_mismatch",
+      "confirmed_on_unexpected_strategy"
+    ]
+  },
+  "8f05fbb9b09e458d42ed0c69cd0c3e1e7ad0bc429a0becd91eba263b846bb433": {
+    "analysed_at": "2026-09-18T16:10:36.811240+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 4256,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "a0b510c738b5d1b5f3d380fb878336b5e13c702f8e8e37b4c953b09aaeb47b07": {
+    "analysed_at": "2026-09-18T16:10:11.859972+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 438,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "gt_missing_vocabulary_exposed",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "a17ebb69bf9b08baa5230d3d12a5e30ebca8a4d68ff1c47c89da5a0ba72efccc": {
+    "analysed_at": "2026-09-18T16:10:27.007945+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 62,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "a6e62bcf0c5c10c1fa40a5f506488cd6da338361c7e46424fa69f3356b134d2b": {
+    "analysed_at": "2026-09-18T16:10:23.769411+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 70,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "concept_not_derived_from_patterns",
+      "false_confirmation_label_mismatch",
+      "confirmed_on_unexpected_strategy"
+    ]
+  },
+  "b00751c158e1a5b6c11c48a765a24a3b6d3f4d92d43402f5d159a0431356dcc8": {
+    "analysed_at": "2026-09-18T16:09:51.770264+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 13,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "b01d927a6555b4e0df08d998a0af22aa8e6deb1bfffc5d0609013a3372b49c1a": {
+    "analysed_at": "2026-09-18T16:10:06.552287+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 3225,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "patterns_vs_groups_drift"
+    ]
+  },
+  "b26eadf89ed4ac428829d7c87cb44c2e9adbb7f75382455a8f512951c9b3d78e": {
+    "analysed_at": "2026-09-18T16:09:59.486251+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 3236,
+    "root_causes": [
+      "required_concept_not_detected"
+    ]
+  },
+  "c2265ffb2ef183b43bc046ea429e8d27518b21f30ae8bd8adf7f3c75fb83d11c": {
+    "analysed_at": "2026-09-18T16:10:20.446202+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 704,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "c7122a128f99be95869d89c010e4b082b8f213a117f3ac059d9b82efa38d32d3": {
+    "analysed_at": "2026-09-18T16:10:29.110686+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 78,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "ccaac0a1ba6bddea29819574f2425f6733c732252497dd8f0cadd6346dc3924e": {
+    "analysed_at": "2026-09-18T16:10:32.429331+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 2212,
+    "root_causes": [
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "cfe77884ff46f3c73aa8218543ec646aea81babc224f80300843c683a68d6f1a": {
+    "analysed_at": "2026-09-18T16:10:18.160483+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 125,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "d08ae2cd80f4659f08fdb951ac085d9c425b1ca584e0a51e05432928ad93af02": {
+    "analysed_at": "2026-09-18T16:10:31.303764+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 200,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "extra_strategy_inferred"
+    ]
+  },
+  "d1414cdbdb5cabddfca8608a6833186c8c6826f47ddce48f063c0a4af6de83ea": {
+    "analysed_at": "2026-09-18T16:10:15.001056+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 3,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "ec6b6a90ae0bb6746e956983b86212f6d2f345802ab4a3eac137fa2710ca6d3c": {
+    "analysed_at": "2026-09-18T16:10:09.725826+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 209,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "f49c8a50a25e0272b35f2b3f63290e45d39eea37692638705bc6851970a2c3c2": {
+    "analysed_at": "2026-09-18T16:10:04.371846+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 2,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "fc5b9f132e21ab02df193221599ea9074a23f130a9304451327101d1c3f27a33": {
+    "analysed_at": "2026-09-18T16:10:21.523191+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 35,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "febb0ad9073f65692532a4e92e2147fc113a6ce8e91974ffb7877ff431efe717": {
+    "analysed_at": "2026-09-18T16:10:00.930006+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 2,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  }
+}

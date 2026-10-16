@@ -1,0 +1,107 @@
+{
+  "271ec916a05c9464dbd04659d737548dc8b099a26de52eceb8be18d04176fd7e": {
+    "analysed_at": "2026-09-16T14:38:58.970594+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "2c0fa96f65f232607bacdafb8ebed2d7f9e00de9b81a9e1e18b7dfa296e2e7e3": {
+    "analysed_at": "2026-09-16T14:38:59.017278+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "3c4e8e67d169b83f1a2ae9fa148737f476c948d148c7765ca0c0359c1574c097": {
+    "analysed_at": "2026-09-16T14:38:59.002850+00:00",
+    "outcome": null,
+    "problem_id": 0,
+    "root_causes": [
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "3c61e61e62c32b8888058733a32146f2fcf0c4484bfb405c9a433173c6d3b1b4": {
+    "analysed_at": "2026-09-16T14:38:59.090011+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 0,
+    "root_causes": [
+      "required_concept_not_detected",
+      "no_technique_evidence"
+    ]
+  },
+  "540f2d33d8b1b13572fd00d43e010092c47b6db6b36323d6fccb280d601a6d63": {
+    "analysed_at": "2026-09-16T14:38:59.050530+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "5b6b6e0e8103e7ec69eb3aede9d218e2f0c284f9bf80ffc0e248e627832f41ea": {
+    "analysed_at": "2026-09-16T14:38:58.990240+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "81761b75985222baec66f84c134e5bf430377d98712e3b7f67762845489dfcdd": {
+    "analysed_at": "2026-09-16T14:38:59.073467+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "no_ground_truth_groups"
+    ]
+  },
+  "99478ea1a20297c50adac47ba052310def41fdf4159b790ea17dd5d4eff6b868": {
+    "analysed_at": "2026-09-16T14:38:59.062549+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  },
+  "bd752875a708705cfbfd57a66c74f63e4f79b0387ce452f9eba4403033abc036": {
+    "analysed_at": "2026-09-16T14:38:58.941736+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "gt_missing_vocabulary_exposed",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "db6ccad0385fef874d41d42ae3cf2326c087d4be1e54c6a82e3f07ef51da9287": {
+    "analysed_at": "2026-09-16T14:38:59.033411+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "ok_confirmed"
+    ]
+  },
+  "e5501e0c4c9dde1df6d1d247a2bb6a613070801844a486b1b1ff2a776bd9d03f": {
+    "analysed_at": "2026-09-16T14:38:58.926527+00:00",
+    "outcome": "UNRESOLVED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch",
+      "gt_missing_vocabulary_exposed",
+      "group_unsatisfiable_empty_required",
+      "group_unmatchable_empty_required"
+    ]
+  },
+  "ecbf2d3d9f930ef128e776a57592a925497a8b1bbe0c58fffc9d4e88e7d4c298": {
+    "analysed_at": "2026-09-16T14:38:58.955853+00:00",
+    "outcome": "CONFIRMED",
+    "problem_id": 0,
+    "root_causes": [
+      "legacy_ast_vocabulary_mismatch"
+    ]
+  }
+}

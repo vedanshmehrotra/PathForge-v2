@@ -21,14 +21,14 @@ PROBLEMS = [
 def seed(connection):
     for pid, title, diff, topics, pattern, tcs, acc in PROBLEMS:
         connection.execute(
-            "INSERT INTO problems (id, title, difficulty, topics, pattern, test_cases, acceptance_rate, created_at) VALUES (?,?,?,?,?,?,?,'2026-06-04T00:00:00+00:00')",
+            "INSERT INTO problems (id, title, difficulty, topics, pattern, test_cases, acceptance_rate, created_at) VALUES (%s,%s,%s,%s,%s,%s,%s,'2026-06-04T00:00:00+00:00') ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title",
             (pid, title, diff, topics, pattern, tcs, acc),
         )
     connection.commit()
 
 def add_submission(connection, user_id, problem_id, verdict, topic, submitted_at):
     connection.execute(
-        "INSERT INTO submissions (user_id, problem_id, code_text, verdict, detected_pattern, detected_confidence, expected_pattern, target_pattern, gap_identified, diagnosis_confidence, time_taken_seconds, attempt_number, topic, submitted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO submissions (user_id, problem_id, code_text, verdict, detected_pattern, detected_confidence, expected_pattern, target_pattern, gap_identified, diagnosis_confidence, time_taken_seconds, attempt_number, topic, submitted_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
         (user_id, problem_id, "code", verdict, topic, 1.0, topic, None, False, 1.0, None, 1, topic, submitted_at),
     )
     connection.commit()
@@ -40,7 +40,7 @@ def run_trace():
     seed(connection)
     # Create user
     connection.execute(
-        "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (1,'user','u@e.com','h','2026-06-04T00:00:00+00:00','2026-06-04T00:00:00+00:00')"
+        "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (1,'user','u@e.com','h','2026-06-04T00:00:00+00:00','2026-06-04T00:00:00+00:00') ON CONFLICT (username) DO UPDATE SET email = EXCLUDED.email"
     )
     connection.commit()
 
@@ -53,7 +53,7 @@ def run_trace():
     # Also insert Array and Graph profiles for backward compat with _rotate_topic fallback
     for topic, elo in [("Array", 850), ("Graph", 700)]:
         connection.execute(
-            "INSERT INTO topic_profiles (user_id, topic, elo_rating, attempt_count, pass_count, accuracy, recent_failures, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id, topic) DO UPDATE SET elo_rating=excluded.elo_rating, accuracy=excluded.accuracy, recent_failures=excluded.recent_failures, updated_at=excluded.updated_at",
+            "INSERT INTO topic_profiles (user_id, topic, elo_rating, attempt_count, pass_count, accuracy, recent_failures, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(user_id, topic) DO UPDATE SET elo_rating=excluded.elo_rating, accuracy=excluded.accuracy, recent_failures=excluded.recent_failures, updated_at=excluded.updated_at",
             (1, topic, elo, 3, 1, 0.33, 2, "2026-06-04T00:00:00+00:00", "2026-06-04T00:00:00+00:00"),
         )
     connection.commit()
@@ -158,7 +158,7 @@ def run_trace():
         print(f"  recommended difficulty: {rec['difficulty']}")
         print(f"  problem: {rec['problem']['title'] if rec['problem'] else None}")
         print(f"  explanation: {rec['explanation']}")
-        print(f"  (tier: {rec['tier']}, recent_failures now: {connection.execute('SELECT recent_failures FROM topic_profiles WHERE user_id=1 AND topic=?', ('sliding_window_variable',)).fetchone()['recent_failures']})")
+        print(f"  (tier: {rec['tier']}, recent_failures now: {connection.execute('SELECT recent_failures FROM topic_profiles WHERE user_id=1 AND topic=%s', ('sliding_window_variable',)).fetchone()['recent_failures']})")
 
     connection.close()
     import os

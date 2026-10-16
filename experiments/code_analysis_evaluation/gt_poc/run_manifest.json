@@ -1,0 +1,19 @@
+{
+  "poc_version": "1.0.0",
+  "taxonomy_version": "v1",
+  "pipeline_version": {
+    "extractor": "1.0.0",
+    "relations": "1.1.0",
+    "strategy": "1.0.0"
+  },
+  "provisional_skeleton_tau": 0.35,
+  "artifacts": {
+    "families.json": "1e7427c51e8e1441d4f1c0c1df1afff751872fae3cee3bedb0c2aadbb62b10a0",
+    "label_comparison.json": "e8f371730561dd0a843b635846a71e0619decf92c8c49f45848f2a0d6fc7c550",
+    "normalized_solutions.json": "325fdcd131beb3362309559b102f384564f7248e45ad4e0525c9f3f71f9f13e0",
+    "reference_solutions.json": "a2fbcefd95232cdc36088a65198d3f35faed7def4d7c2a71e7980e0a36d795dc",
+    "review_sheet.json": "708cff8e9ed1bf703ada1a3953fb262198942889b2677a9e1d577c9d08f046ae",
+    "review_sheet.md": "24eb0fd05583eef590cd7c83df0bdb05a807334a6513c86181812a93cc59582d",
+    "validation.json": "933af2490872b94d5fa0f6640b35316ad20912e5dd481ecbc18916cde97adf6c"
+  }
+}

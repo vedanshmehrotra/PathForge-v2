@@ -1,0 +1,495 @@
+{
+  "batch": "B3",
+  "layers": "concept evidence (B2) -> family coverage -> coverage state",
+  "corpus_a_46_real_submissions": {
+    "cases": 46,
+    "recorded_old_distribution": {
+      "CONFIRMED": 31,
+      "UNRESOLVED": 15
+    },
+    "fresh_old_distribution": {
+      "CONFIRMED": 32,
+      "UNRESOLVED": 14
+    },
+    "b3_distribution": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 11
+    },
+    "transitions_recorded_old_to_b3": {
+      "CONFIRMED->CONFIRMED": 22,
+      "CONFIRMED->UNRESOLVED": 9,
+      "UNRESOLVED->CONFIRMED": 1,
+      "UNRESOLVED->CONTRADICTED": 1,
+      "UNRESOLVED->UNMATCHABLE": 11,
+      "UNRESOLVED->UNRESOLVED": 2
+    },
+    "transitions_fresh_old_to_b3": {
+      "CONFIRMED->CONFIRMED": 23,
+      "CONFIRMED->UNRESOLVED": 9,
+      "UNRESOLVED->CONTRADICTED": 1,
+      "UNRESOLVED->UNMATCHABLE": 11,
+      "UNRESOLVED->UNRESOLVED": 2
+    },
+    "enumerated_transitions": {
+      "1_old_CONFIRMED_to_b3_CONFIRMED": 23,
+      "2_old_CONFIRMED_to_b3_PROVISIONAL": 0,
+      "3_old_CONFIRMED_to_b3_UNRESOLVED": 9,
+      "4_old_CONFIRMED_to_b3_CONTRADICTED": 0,
+      "5_old_UNRESOLVED_to_b3_PROVISIONAL": 0,
+      "6_old_UNRESOLVED_to_b3_CONFIRMED": 0,
+      "7_old_UNRESOLVED_to_b3_UNRESOLVED": 2,
+      "8_unexpected_or_error": 11
+    },
+    "per_family_b3_states": {
+      "CONFIRMED": 23,
+      "CONTRADICTED": 1,
+      "UNMATCHABLE": 11,
+      "UNRESOLVED": 16
+    },
+    "confirmed_families_with_conclusion_eligible_present": 23,
+    "confirmed_families_without_conclusion_eligible_present": 0,
+    "provisional_families": 0,
+    "family_contradictions": 1,
+    "concept_contradictions_total": 18,
+    "concept_contradictions_not_escalated": 17,
+    "named_cases": {
+      "1": [
+        {
+          "submission_id": "db-11",
+          "recorded_old": "UNRESOLVED",
+          "fresh_old": "UNRESOLVED",
+          "b3_aggregate": "UNMATCHABLE",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNMATCHABLE",
+              "reasons": [
+                "unmatchable"
+              ],
+              "identifying_required": [],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        },
+        {
+          "submission_id": "db-39",
+          "recorded_old": "UNRESOLVED",
+          "fresh_old": "UNRESOLVED",
+          "b3_aggregate": "UNMATCHABLE",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNMATCHABLE",
+              "reasons": [
+                "unmatchable"
+              ],
+              "identifying_required": [],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "3236": [
+        {
+          "submission_id": "db-49",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "UNRESOLVED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNRESOLVED",
+              "reasons": [
+                "no_identifying_requirement"
+              ],
+              "identifying_required": [],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        },
+        {
+          "submission_id": "db-51",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "UNRESOLVED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNRESOLVED",
+              "reasons": [
+                "no_identifying_requirement"
+              ],
+              "identifying_required": [],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        },
+        {
+          "submission_id": "db-194",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "UNRESOLVED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNRESOLVED",
+              "reasons": [
+                "no_identifying_requirement"
+              ],
+              "identifying_required": [],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "209": [
+        {
+          "submission_id": "db-190",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "sliding_window"
+              ],
+              "conclusion_eligible_present": [
+                "sliding_window"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        },
+        {
+          "submission_id": "db-231",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "sliding_window"
+              ],
+              "conclusion_eligible_present": [
+                "sliding_window"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "125": [
+        {
+          "submission_id": "db-233",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "two_pointers_opposite"
+              ],
+              "conclusion_eligible_present": [
+                "two_pointers_opposite"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "704": [
+        {
+          "submission_id": "db-235",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "binary_search"
+              ],
+              "conclusion_eligible_present": [
+                "binary_search"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "70": [
+        {
+          "submission_id": "db-237",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "dp_bottom_up"
+              ],
+              "conclusion_eligible_present": [
+                "dp_bottom_up"
+              ],
+              "contradicted_identifying": []
+            },
+            {
+              "family_id": "group_1",
+              "state": "UNRESOLVED",
+              "reasons": [
+                "identifying_not_established"
+              ],
+              "identifying_required": [
+                "dp_top_down"
+              ],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        },
+        {
+          "submission_id": "db-238",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNRESOLVED",
+              "reasons": [
+                "identifying_not_established"
+              ],
+              "identifying_required": [
+                "dp_bottom_up"
+              ],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            },
+            {
+              "family_id": "group_1",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "dp_top_down"
+              ],
+              "conclusion_eligible_present": [
+                "dp_top_down"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "46": [
+        {
+          "submission_id": "db-242",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "dfs_backtracking"
+              ],
+              "conclusion_eligible_present": [
+                "dfs_backtracking"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "102": [
+        {
+          "submission_id": "db-244",
+          "recorded_old": "UNRESOLVED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "CONFIRMED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "CONFIRMED",
+              "reasons": [
+                "confirmed"
+              ],
+              "identifying_required": [
+                "bfs_shortest_path"
+              ],
+              "conclusion_eligible_present": [
+                "bfs_shortest_path"
+              ],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ],
+      "21": [
+        {
+          "submission_id": "db-252",
+          "recorded_old": "CONFIRMED",
+          "fresh_old": "CONFIRMED",
+          "b3_aggregate": "UNRESOLVED",
+          "families": [
+            {
+              "family_id": "group_0",
+              "state": "UNRESOLVED",
+              "reasons": [
+                "no_identifying_requirement"
+              ],
+              "identifying_required": [],
+              "conclusion_eligible_present": [],
+              "contradicted_identifying": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corpus_b_301_disjoint_cases": {
+    "cases": 301,
+    "recorded_verdict_distribution": {
+      "FN": 64,
+      "FP": 13,
+      "TN": 78,
+      "TP": 87,
+      "UNMAPPED_LABEL": 59
+    },
+    "b3_distribution": {
+      "CONFIRMED": 29,
+      "PROVISIONAL": 23,
+      "UNMATCHABLE": 59,
+      "UNRESOLVED": 190
+    },
+    "transitions_recorded_verdict_to_b3": {
+      "FN->UNRESOLVED": 64,
+      "FP->PROVISIONAL": 1,
+      "FP->UNRESOLVED": 12,
+      "TN->UNRESOLVED": 78,
+      "TP->CONFIRMED": 29,
+      "TP->PROVISIONAL": 22,
+      "TP->UNRESOLVED": 36,
+      "UNMAPPED_LABEL->UNMATCHABLE": 59
+    },
+    "per_expected_pattern_b3_states": {
+      "array_traversal": {
+        "UNMATCHABLE": 59
+      },
+      "binary_search_standard": {
+        "CONFIRMED": 2
+      },
+      "hash_map_lookup": {
+        "PROVISIONAL": 23,
+        "UNRESOLVED": 66
+      },
+      "prefix_sum": {
+        "UNRESOLVED": 82
+      },
+      "two_pointers_opposite": {
+        "CONFIRMED": 27,
+        "UNRESOLVED": 42
+      }
+    },
+    "family_contradictions": 0,
+    "concept_contradictions_not_escalated": 70,
+    "preserved_recorded_metrics": {
+      "array_traversal": {
+        "n": 59,
+        "positives": 29,
+        "negatives": 30,
+        "TP": 0,
+        "FP": 0,
+        "FN": 0,
+        "TN": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      },
+      "binary_search_standard": {
+        "n": 2,
+        "positives": 2,
+        "negatives": 0,
+        "TP": 2,
+        "FP": 0,
+        "FN": 0,
+        "TN": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "hash_map_lookup": {
+        "n": 89,
+        "positives": 58,
+        "negatives": 31,
+        "TP": 22,
+        "FP": 1,
+        "FN": 36,
+        "TN": 30,
+        "precision": 0.9565217391304348,
+        "recall": 0.3793103448275862,
+        "f1": 0.54320987654321
+      },
+      "prefix_sum": {
+        "n": 82,
+        "positives": 53,
+        "negatives": 29,
+        "TP": 36,
+        "FP": 12,
+        "FN": 17,
+        "TN": 17,
+        "precision": 0.75,
+        "recall": 0.6792452830188679,
+        "f1": 0.712871287128713
+      },
+      "two_pointers_opposite": {
+        "n": 69,
+        "positives": 38,
+        "negatives": 31,
+        "TP": 27,
+        "FP": 0,
+        "FN": 11,
+        "TN": 31,
+        "precision": 1.0,
+        "recall": 0.7105263157894737,
+        "f1": 0.8307692307692308
+      }
+    }
+  }
+}

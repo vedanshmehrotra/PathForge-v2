@@ -1,186 +1,82 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
-import { LineChart, Layers } from 'lucide-react'
-import { Panel, PanelBody, PanelHeader, PanelTitle } from '@/components/ui/panel'
-import { Badge } from '@/components/ui/badge'
-import { TrendPill } from '@/components/charts'
-import { StatTile } from '@/components/ui/stat'
-import { cn } from '@/lib/utils'
-import { useEloData } from '@/hooks/useApi'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/auth/AuthProvider'
+import { useAuthProfile, useEloData } from '@/hooks/useApi'
+import { cn, relativeTime } from '@/lib/utils'
 
 export function ProgressView() {
   const { profile } = useAuth()
-  const { data: eloData, loading } = useEloData(profile?.user_id ?? 0)
-
-  const entries = eloData?.pattern_elo
-    ? Object.entries(eloData.pattern_elo)
-        .map(([id, elo]) => ({
-          id,
-          name: id.replace(/_/g, ' '),
-          elo,
-        }))
-        .sort((a, b) => b.elo - a.elo)
-    : []
-
-  const [selected, setSelected] = useState<string | null>(entries[0]?.id ?? null)
-  const active = entries.find((e) => e.id === selected) ?? entries[0]
-
-  const strongCount = entries.filter((e) => e.elo >= 1800).length
-  const weakCount = entries.filter((e) => e.elo < 1650).length
-  const avgElo = entries.length
-    ? Math.round(entries.reduce((s, e) => s + e.elo, 0) / entries.length)
-    : 0
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4">
-        <h1 className="text-lg font-semibold tracking-tight">Learning Progress</h1>
-        <p className="text-sm text-muted-foreground">Loading Elo data...</p>
-      </div>
-    )
-  }
+  const elo = useEloData(profile?.user_id ?? 0)
+  const history = useAuthProfile()
+  const [selected, setSelected] = useState<string | null>(null)
+  const topics = new Map((history.data?.profiles ?? []).map(p => [p.topic, p]))
+  // Alphabetical order is a browsing aid, not a proficiency ranking.
+  const patterns = [...new Set([...Object.keys(elo.data?.pattern_elo ?? {}), ...topics.keys()])].sort()
+  const active = selected && patterns.includes(selected) ? selected : patterns[0]
+  const record = active ? topics.get(active) : undefined
+  const rating = active ? elo.data?.pattern_elo[active] : undefined
+  const loading = elo.loading || history.loading
+  const error = elo.error || history.error
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-lg font-semibold tracking-tight">Learning Progress</h1>
-        <p className="text-sm text-muted-foreground">
-          Elo trajectory, improvement trends, and skill clustering across all tracked patterns.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatTile label="Tracked Patterns" value={entries.length} icon={Layers} />
-        <StatTile label="Strong" value={strongCount} sub={<span className="text-success">Elo \u2265 1800</span>} />
-        <StatTile label="Weak" value={weakCount} sub={<span className="text-destructive">Elo &lt; 1650</span>} />
-        <StatTile label="Avg Elo" value={avgElo} />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Panel className="lg:col-span-2">
-          <PanelHeader>
-            <PanelTitle>
-              <LineChart className="size-4 text-primary" />
-              Pattern Detail
-            </PanelTitle>
-          </PanelHeader>
-          <PanelBody>
-            {!active && (
-              <p className="text-sm text-muted-foreground">No pattern data yet.</p>
-            )}
-            {active && (
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="font-mono text-lg tabular-nums">{active.name}</span>
-                  <span className="font-mono text-lg tabular-nums text-primary">{Math.round(active.elo)}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Select a pattern from the panel to view its details. Historical chart data will be
-                  available after multiple submissions.
-                </p>
-              </div>
-            )}
-          </PanelBody>
-        </Panel>
-
-        <Panel>
-          <PanelHeader>
-            <PanelTitle>Select Pattern</PanelTitle>
-          </PanelHeader>
-          <div className="max-h-[320px] divide-y divide-border overflow-y-auto">
-            {entries.length === 0 && (
-              <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                No patterns tracked yet.
-              </div>
-            )}
-            {entries.map((e) => (
-              <button
-                key={e.id}
-                onClick={() => setSelected(e.id)}
-                className={cn(
-                  'flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-accent/50',
-                  selected === e.id && 'bg-accent/60',
-                )}
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm">{e.name}</p>
-                </div>
-                <span className="w-10 text-right font-mono text-xs tabular-nums">{Math.round(e.elo)}</span>
-              </button>
-            ))}
-          </div>
-        </Panel>
-      </div>
-
-      <Panel>
-        <PanelHeader>
-          <PanelTitle>Pattern Progression</PanelTitle>
-          <span className="font-mono text-[10px] text-muted-foreground">{entries.length} rows</span>
-        </PanelHeader>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2 font-medium">Pattern</th>
-                <th className="px-4 py-2 text-right font-medium">Elo</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {entries.map((e) => (
-                <tr key={e.id} className="hover:bg-accent/30">
-                  <td className="px-4 py-2.5">{e.name}</td>
-                  <td className="px-4 py-2.5 text-right font-mono tabular-nums">{Math.round(e.elo)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="workspace-page">
+      <header className="page-intro">
+        <p className="workspace-kicker">Your practice notebook</p>
+        <h1 className="page-heading">Learning Progress</h1>
+        <p className="page-description">Revisit recorded patterns and choose a focus for your next session.</p>
+      </header>
+      {loading ? <p role="status" className="text-muted-foreground">Loading your practice history...</p> : error ? (
+        <div>
+          <p role="alert">Could not load your practice history. {error}</p>
+          <button type="button" onClick={() => { elo.refresh(); history.refresh() }} className="action-secondary mt-4">Retry history</button>
         </div>
-      </Panel>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Panel>
-          <PanelHeader>
-            <PanelTitle>
-              <span className="size-2 rounded-full bg-success" />
-              Strong Cluster
-            </PanelTitle>
-            <span className="font-mono text-[10px] text-muted-foreground">Elo \u2265 1800</span>
-          </PanelHeader>
-          <div className="flex flex-wrap gap-2 p-4">
-            {entries.filter((e) => e.elo >= 1800).length === 0 && (
-              <p className="text-sm text-muted-foreground">No strong patterns yet.</p>
-            )}
-            {entries.filter((e) => e.elo >= 1800).map((e) => (
-              <div key={e.id} className="flex items-center gap-2 rounded-md border border-success/25 bg-success/5 px-2.5 py-1.5">
-                <span className="text-xs">{e.name}</span>
-                <span className="font-mono text-xs tabular-nums text-success">{Math.round(e.elo)}</span>
-              </div>
-            ))}
-          </div>
-        </Panel>
-        <Panel>
-          <PanelHeader>
-            <PanelTitle>
-              <span className="size-2 rounded-full bg-destructive" />
-              Weak Cluster
-            </PanelTitle>
-            <span className="font-mono text-[10px] text-muted-foreground">Elo &lt; 1650</span>
-          </PanelHeader>
-          <div className="flex flex-wrap gap-2 p-4">
-            {entries.filter((e) => e.elo < 1650).length === 0 && (
-              <p className="text-sm text-muted-foreground">No weak patterns.</p>
-            )}
-            {entries.filter((e) => e.elo < 1650).map((e) => (
-              <div key={e.id} className="flex items-center gap-2 rounded-md border border-destructive/25 bg-destructive/5 px-2.5 py-1.5">
-                <span className="text-xs">{e.name}</span>
-                <span className="font-mono text-xs tabular-nums text-destructive">{Math.round(e.elo)}</span>
-              </div>
-            ))}
-          </div>
-        </Panel>
-      </div>
+      ) : patterns.length === 0 ? (
+        <section className="border-y border-border py-10">
+          <h2 className="text-2xl font-medium tracking-tight">Your notebook starts with a solution.</h2>
+          <p className="mt-3 max-w-xl text-base text-muted-foreground">Analyze Python code to start a record of the patterns you practise. There is no skill ranking to fill in first.</p>
+          <Link href="/analysis" className="action-primary mt-6">Analyze a solution <ArrowRight className="size-4" /></Link>
+        </section>
+      ) : (
+        <div className="grid gap-8 border-t border-border pt-8 lg:grid-cols-[minmax(220px,1fr)_2fr] lg:gap-12">
+          <section aria-labelledby="patterns-heading">
+            <h2 id="patterns-heading" className="section-title">Recorded patterns</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Choose a pattern to revisit. This list is alphabetical.</p>
+            <ul className="mt-5 divide-y divide-border">
+              {patterns.map(id => (
+                <li key={id}>
+                  <button type="button" aria-pressed={active === id} onClick={() => setSelected(id)}
+                    className={cn('flex min-h-12 w-full items-center justify-between gap-3 rounded px-2 py-3 text-left text-sm capitalize transition-colors', active === id ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground')}>
+                    <span>{id.replace(/_/g, ' ')}</span><ChevronRight className="size-4 shrink-0" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section aria-labelledby="focus-heading" aria-live="polite">
+            <p className="workspace-kicker">Choose your own focus</p>
+            <h2 id="focus-heading" className="mt-3 text-2xl font-medium capitalize tracking-tight">{active.replace(/_/g, ' ')}</h2>
+            <p className="mt-3 text-sm text-muted-foreground">{record?.last_attempt_at ? 'Last recorded ' + relativeTime(record.last_attempt_at) + '.' : 'A pattern in your saved practice record.'}</p>
+            <h3 className="section-title mt-8">Try a different implementation</h3>
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">Compare how two solutions express this pattern. Use analysis to inspect the evidence, including the places it cannot draw a conclusion.</p>
+            <Link href="/analysis" className="action-primary mt-6">Inspect another solution <ArrowRight className="size-4" /></Link>
+            <Link href="/recommendations" className="text-link ml-0 mt-4 block w-fit sm:ml-5 sm:inline-flex">Browse practice</Link>
+            <details className="mt-10 border-t border-border pt-5">
+              <summary className="cursor-pointer text-sm font-medium">Recorded metrics</summary>
+              <p className="mt-3 text-sm text-muted-foreground">Stored engine metrics are not a correctness grade or a proficiency certification.</p>
+              <dl className="mt-4 grid grid-cols-2 gap-5 text-sm">
+                <div><dt className="text-muted-foreground">Pattern Elo</dt><dd className="mt-1 font-mono">{rating === undefined ? 'Not recorded' : Math.round(rating)}</dd></div>
+                <div><dt className="text-muted-foreground">Pattern attempts</dt><dd className="mt-1 font-mono">{record?.attempt_count ?? 'Not recorded'}</dd></div>
+                <div><dt className="text-muted-foreground">Stored pass count</dt><dd className="mt-1 font-mono">{record?.pass_count ?? 'Not recorded'}</dd></div>
+                <div><dt className="text-muted-foreground">Stored accuracy</dt><dd className="mt-1 font-mono">{record && record.attempt_count > 0 ? Math.round(record.accuracy * 100) + '%' : 'Not recorded'}</dd></div>
+              </dl>
+              <p className="mt-5 text-sm text-muted-foreground">Rating history is not retained, so a progress-over-time chart is unavailable.</p>
+            </details>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

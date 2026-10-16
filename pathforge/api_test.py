@@ -11,10 +11,12 @@ don't need real tokens. Auth rejection is tested separately in auth_test.py.
 import json
 from unittest.mock import patch
 
+import psycopg2
 import pytest
 from fastapi.testclient import TestClient
 from pathforge.api.app import app
 from pathforge.auth.auth_middleware import VerifiedUser
+from pathforge.db.db import get_connection, init_db
 
 client = TestClient(app)
 
@@ -39,6 +41,39 @@ def _mock_auth():
     yield
     for p in patches:
         p.stop()
+
+
+def _create_test_user():
+    """Create user_id=1 for FK satisfaction in tests that trigger persistence."""
+    conn = get_connection()
+    try:
+        conn.execute(
+            "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) "
+            "VALUES (1, 'api-test-user', 'api-test@test.com', '', NOW(), NOW()) "
+            "ON CONFLICT (id) DO NOTHING"
+        )
+        conn.commit()
+    except psycopg2.Error:
+        conn.rollback()
+    finally:
+        conn.close()
+
+
+def _cleanup_test_user():
+    """Remove test user and any data created by tests."""
+    conn = get_connection()
+    try:
+        conn.execute("DELETE FROM submissions WHERE user_id = 1")
+        conn.execute("DELETE FROM topic_profiles WHERE user_id = 1")
+        conn.execute("DELETE FROM gap_signals WHERE user_id = 1")
+        conn.execute("DELETE FROM user_pattern_elo WHERE user_id = 1")
+        conn.execute("DELETE FROM recommendations WHERE user_id = 1")
+        conn.execute("DELETE FROM users WHERE id = 1")
+        conn.commit()
+    except psycopg2.Error:
+        conn.rollback()
+    finally:
+        conn.close()
 
 
 def test_health():
@@ -75,17 +110,21 @@ def two_sum(nums, target):
         seen[num] = i
     return []
 """
-    resp = client.post("/analyze", json={
-        "user_id": "1",
-        "code": code,
-        "language": "python",
-    })
-    assert resp.status_code == 200
-    data = resp.json()
-    assert "ast" in data
-    assert "match_result" in data
-    assert "detected_patterns" in data["ast"]
-    assert data["ast"]["patterns_detected"] >= 1
+    _create_test_user()
+    try:
+        resp = client.post("/analyze", json={
+            "user_id": "1",
+            "code": code,
+            "language": "python",
+        })
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "ast" in data
+        assert "match_result" in data
+        assert "detected_patterns" in data["ast"]
+        assert data["ast"]["patterns_detected"] >= 1
+    finally:
+        _cleanup_test_user()
 
 
 def test_analyze_syntax_error():
@@ -139,14 +178,18 @@ def test_all_endpoints_respond():
 
 
 def test_analyze_empty_code():
-    resp = client.post("/analyze", json={
-        "user_id": "1",
-        "code": "x = 1",
-        "language": "python",
-    })
-    assert resp.status_code == 200
-    data = resp.json()
-    assert "ast" in data
+    _create_test_user()
+    try:
+        resp = client.post("/analyze", json={
+            "user_id": "1",
+            "code": "x = 1",
+            "language": "python",
+        })
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "ast" in data
+    finally:
+        _cleanup_test_user()
 
 
 def test_gaps_missing_user_id():

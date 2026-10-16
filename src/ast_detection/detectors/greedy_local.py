@@ -78,6 +78,25 @@ class GreedyLocalDetector(BaseDetector):
                 )
 
     def _find_local_optimum_selection(self, func_def: ast.FunctionDef) -> bool:
+        """Find local optimum selection: a running best variable updated via max/min.
+
+        Requires the variable to be self-referential (x = max(x, ...)) or
+        have a 'best'/'profit'/'max'/'min' in the name.
+        Also requires the variable NOT to be used in the while/for loop condition
+        (to avoid false positives on sliding window, two pointers, etc.).
+        """
+        # First, collect variables used in loop conditions
+        loop_condition_vars = set()
+        for child in ast.walk(func_def):
+            if isinstance(child, ast.While):
+                for n in ast.walk(child.test):
+                    if isinstance(n, ast.Name):
+                        loop_condition_vars.add(n.id.lower())
+            if isinstance(child, ast.For):
+                for n in ast.walk(child.test) if child.orelse else []:
+                    if isinstance(n, ast.Name):
+                        loop_condition_vars.add(n.id.lower())
+
         for child in ast.walk(func_def):
             if isinstance(child, ast.Call):
                 if isinstance(child.func, ast.Name) and child.func.id in ("max", "min"):
@@ -87,6 +106,8 @@ class GreedyLocalDetector(BaseDetector):
                 if len(child.targets) == 1 and isinstance(child.targets[0], ast.Name):
                     target = child.targets[0].id.lower()
                     if any(kw in target for kw in ("best", "max", "min", "optimum", "optimal", "profit", "gain", "max_val", "min_val")):
+                        if target in loop_condition_vars:
+                            continue  # Skip if used in loop control
                         if isinstance(child.value, ast.BinOp) and isinstance(child.value.op, (ast.Add, ast.Sub)):
                             return True
                         if isinstance(child.value, ast.Call):
@@ -96,6 +117,8 @@ class GreedyLocalDetector(BaseDetector):
                 if isinstance(child.target, ast.Name):
                     target = child.target.id.lower()
                     if any(kw in target for kw in ("max", "min", "best", "profit")):
+                        if target in loop_condition_vars:
+                            continue  # Skip if used in loop control
                         return True
         return False
 

@@ -1,0 +1,14 @@
+{
+  "version": "starter-2026-10-16",
+  "review_scope": "IDs, titles, source difficulty and public problem statements checked against linked LeetCode pages. Topics are broad practice categories, not required algorithms, reviewed ground truth or product authority. No submission capability or learning benefit was verified.",
+  "items": [
+    {"leetcode_id":1,"title":"Two Sum","difficulty":"Easy","topic":"Arrays","problem_url":"https://leetcode.com/problems/two-sum/","checked_on":"2026-10-16"},
+    {"leetcode_id":1021,"title":"Remove Outermost Parentheses","difficulty":"Easy","topic":"Strings","problem_url":"https://leetcode.com/problems/remove-outermost-parentheses/","checked_on":"2026-10-16"},
+    {"leetcode_id":704,"title":"Binary Search","difficulty":"Easy","topic":"Search","problem_url":"https://leetcode.com/problems/binary-search/","checked_on":"2026-10-16"},
+    {"leetcode_id":70,"title":"Climbing Stairs","difficulty":"Easy","topic":"Counting","problem_url":"https://leetcode.com/problems/climbing-stairs/","checked_on":"2026-10-16"},
+    {"leetcode_id":3,"title":"Longest Substring Without Repeating Characters","difficulty":"Medium","topic":"Strings","problem_url":"https://leetcode.com/problems/longest-substring-without-repeating-characters/","checked_on":"2026-10-16"},
+    {"leetcode_id":200,"title":"Number of Islands","difficulty":"Medium","topic":"Grids","problem_url":"https://leetcode.com/problems/number-of-islands/","checked_on":"2026-10-16"},
+    {"leetcode_id":198,"title":"House Robber","difficulty":"Medium","topic":"Arrays","problem_url":"https://leetcode.com/problems/house-robber/","checked_on":"2026-10-16"},
+    {"leetcode_id":53,"title":"Maximum Subarray","difficulty":"Medium","topic":"Arrays","problem_url":"https://leetcode.com/problems/maximum-subarray/","checked_on":"2026-10-16"}
+  ]
+}

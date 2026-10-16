@@ -1,0 +1,1382 @@
+{
+  "batch": "B8",
+  "generated_at": "2026-09-27T11:32:06.247313+00:00",
+  "field_semantics": {
+    "authority_tier": {
+      "field": "authority_tier",
+      "semantics": "ground_truth_authority",
+      "meaning": "who/what established the expected solution family",
+      "stored_row_writers": [
+        "pathforge/scripts/seed_ground_truth.py (structurally_observed + provenance manual_verification)",
+        "pathforge/services/ground_truth_builder.py::_build_single_group (llm_proposed + provenance llm_ground_truth)"
+      ],
+      "load_time_writer": "problem_resolver._load_ground_truth CSV reconciliation overwrites the EMITTED authority_tier with 'human_curated' when a curated CSV pattern exists \u2014 the stored row is not modified",
+      "readers": [
+        "pathforge/ast_analysis/shadow/authority_gating.py (B5/B5.5)",
+        "pathforge/ast_analysis/shadow/family_coverage.py (B3 passthrough)"
+      ]
+    },
+    "evidence": {
+      "field": "evidence",
+      "semantics": "legacy_validation_state (overloaded)",
+      "meaning": "the validation state the GT row was written with; the legacy Elo reader additionally treats it as implementation-evidence strength",
+      "stored_row_writers": [
+        "pathforge/scripts/seed_ground_truth.py (equals authority_tier)",
+        "pathforge/services/ground_truth_builder.py (equals authority_tier)"
+      ],
+      "readers": [
+        "pathforge/services/persistence.py (legacy verdict_type gate: evidence in {structurally_observed, externally_listed})",
+        "pathforge/elo_engine.py (EVIDENCE_K_CEILINGS \u2014 implementation-evidence strength semantics)",
+        "problem_resolver._load_ground_truth (fallback when authority_tier is absent)"
+      ],
+      "overloading_note": "the 32 B7 conflicts are field-semantic collisions: CSV reconciliation rewrites the emitted authority_tier (GT-authority semantics) to human_curated while evidence keeps its legacy-validation value \u2014 the two fields never disagreed in the STORED rows"
+    }
+  },
+  "summary": {
+    "total_conflicts": 32,
+    "by_status": {
+      "RECONCILE_STRUCTURALLY_OBSERVED": 25,
+      "NEEDS_HUMAN_REVIEW": 3,
+      "RECONCILE_INFERRED": 4
+    },
+    "conflicted_problems": [
+      2,
+      3,
+      11,
+      15,
+      21,
+      35,
+      46,
+      62,
+      70,
+      78,
+      102,
+      125,
+      141,
+      200,
+      209,
+      322,
+      424,
+      438,
+      496,
+      704
+    ]
+  },
+  "conflicts": [
+    {
+      "problem_id": 15,
+      "group_id": "group_0",
+      "concepts": [
+        "two_pointers_opposite"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "two_pointers_opposite"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 3,
+      "group_id": "group_0",
+      "concepts": [
+        "sliding_window"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "hash_map_lookup",
+        "sliding_window_variable"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "concepts": [
+        "linked_list_traversal"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": null,
+      "stored_provenance": [],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "NEEDS_HUMAN_REVIEW",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "concepts": [
+        "linked_list_traversal"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": null,
+      "stored_provenance": [],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "NEEDS_HUMAN_REVIEW",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "concepts": [
+        "linked_list_traversal"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": null,
+      "stored_provenance": [],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "NEEDS_HUMAN_REVIEW",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']"
+    },
+    {
+      "problem_id": 11,
+      "group_id": "group_0",
+      "concepts": [
+        "two_pointers_opposite"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "two_pointers_opposite"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 141,
+      "group_id": "group_0",
+      "concepts": [
+        "forward_pointer_advance"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1",
+        "vocabulary_refresh",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "llm_proposed",
+      "stored_provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "fast_slow_pointers",
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "RECONCILE_INFERRED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'llm_proposed' with provenance ['llm_ground_truth', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 209,
+      "group_id": "group_0",
+      "concepts": [
+        "sliding_window"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "prefix_sum",
+        "sliding_window_variable"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 424,
+      "group_id": "group_0",
+      "concepts": [
+        "sliding_window"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "llm_proposed",
+      "stored_provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "hash_map_frequency",
+        "sliding_window_variable"
+      ],
+      "reconciliation_status": "RECONCILE_INFERRED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'llm_proposed' with provenance ['llm_ground_truth', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 438,
+      "group_id": "group_0",
+      "concepts": [
+        "frequency_counting"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1",
+        "vocabulary_refresh",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "llm_proposed",
+      "stored_provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "hash_map_frequency",
+        "sliding_window_fixed"
+      ],
+      "reconciliation_status": "RECONCILE_INFERRED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'llm_proposed' with provenance ['llm_ground_truth', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 496,
+      "group_id": "group_0",
+      "concepts": [
+        "monotonic_stack_maintenance"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "vocabulary_refresh",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "hash_map_lookup",
+        "monotonic_stack"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 3,
+      "group_id": "group_0",
+      "concepts": [
+        "sliding_window"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "hash_map_lookup",
+        "sliding_window_variable"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 209,
+      "group_id": "group_0",
+      "concepts": [
+        "sliding_window"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "prefix_sum",
+        "sliding_window_variable"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 11,
+      "group_id": "group_0",
+      "concepts": [
+        "two_pointers_opposite"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "two_pointers_opposite"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 125,
+      "group_id": "group_0",
+      "concepts": [
+        "two_pointers_opposite"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "two_pointers_opposite"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 15,
+      "group_id": "group_0",
+      "concepts": [
+        "two_pointers_opposite"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "two_pointers_opposite"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 704,
+      "group_id": "group_0",
+      "concepts": [
+        "binary_search"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "binary_search_standard"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 35,
+      "group_id": "group_0",
+      "concepts": [
+        "binary_search"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "binary_search_standard"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 70,
+      "group_id": "group_0",
+      "concepts": [
+        "dp_bottom_up"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 70,
+      "group_id": "group_1",
+      "concepts": [
+        "dp_top_down"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 70,
+      "group_id": "group_0",
+      "concepts": [
+        "dp_bottom_up"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 70,
+      "group_id": "group_1",
+      "concepts": [
+        "dp_top_down"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 322,
+      "group_id": "group_0",
+      "concepts": [
+        "dp_bottom_up"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 322,
+      "group_id": "group_1",
+      "concepts": [
+        "dp_top_down"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 322,
+      "group_id": "group_0",
+      "concepts": [
+        "dp_bottom_up"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 322,
+      "group_id": "group_1",
+      "concepts": [
+        "dp_top_down"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": "ONE_OF",
+      "alternative_group_id": "one_of_84f3dcbb8219",
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "bfs_shortest_path",
+        "dp_1d_forward"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 62,
+      "group_id": "group_0",
+      "concepts": [
+        "dp_bottom_up"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "dp_2d_grid"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 46,
+      "group_id": "group_0",
+      "concepts": [
+        "dfs_backtracking"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "backtracking_permutation"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 78,
+      "group_id": "group_0",
+      "concepts": [
+        "dfs_backtracking"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "backtracking_subset"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 102,
+      "group_id": "group_0",
+      "concepts": [
+        "bfs_shortest_path"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "bfs_level_order"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 200,
+      "group_id": "group_0",
+      "concepts": [
+        "union_find"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "structurally_observed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "STRUCTURALLY_OBSERVED",
+      "provenance": [
+        "manual_verification",
+        "vocabulary_v1",
+        "csv_curated_override"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "structurally_observed",
+      "stored_provenance": [
+        "manual_verification",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "structurally_observed",
+      "csv_pattern": [
+        "bfs_shortest_path",
+        "dfs_recursive",
+        "union_find"
+      ],
+      "reconciliation_status": "RECONCILE_STRUCTURALLY_OBSERVED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'structurally_observed' with provenance ['manual_verification', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    },
+    {
+      "problem_id": 21,
+      "group_id": "group_0",
+      "concepts": [
+        "forward_pointer_advance"
+      ],
+      "authority_tier": "human_curated",
+      "evidence": "llm_proposed",
+      "canonical_authority_tier_from_authority_tier": "HUMAN_APPROVED",
+      "canonical_authority_tier_from_evidence": "INFERRED",
+      "provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1",
+        "vocabulary_refresh",
+        "csv_curated"
+      ],
+      "version": 1,
+      "family_relation": null,
+      "alternative_group_id": null,
+      "sources": {
+        "authority_tier": "emitted group (load-time CSV reconciliation)",
+        "evidence": "stored problem_ground_truth.solution_groups row",
+        "provenance": "stored problem_ground_truth.solution_groups row",
+        "version": "stored problem_ground_truth.solution_groups row",
+        "concepts": "stored row required (V1 vocabulary)"
+      },
+      "legacy_behavior": "evidence-based gate",
+      "shadow_behavior": "canonical authority (fail-closed)",
+      "b6_behavior": "blocked (B6.5)",
+      "stored_authority_tier": "llm_proposed",
+      "stored_provenance": [
+        "llm_ground_truth",
+        "vocabulary_v1"
+      ],
+      "stored_validation_status": "llm_proposed",
+      "csv_pattern": [
+        "two_pointers_same"
+      ],
+      "reconciliation_status": "RECONCILE_INFERRED",
+      "reason": "load-time CSV reconciliation collision: the STORED row records authority_tier == evidence == 'llm_proposed' with provenance ['llm_ground_truth', 'vocabulary_v1']; the emitted tier was overwritten to 'human_curated' by the curated-pattern path. Resolution restores the stored authority explicitly (marker csv_reconciliation_field_collision)."
+    }
+  ],
+  "human_review_records": [
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "current_authority_tier": "human_curated",
+      "current_evidence": "llm_proposed",
+      "candidate_resolution": "HUMAN_APPROVED",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']",
+      "required_reviewer": "human",
+      "status": "NEEDS_HUMAN_REVIEW"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "current_authority_tier": "human_curated",
+      "current_evidence": "llm_proposed",
+      "candidate_resolution": "HUMAN_APPROVED",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']",
+      "required_reviewer": "human",
+      "status": "NEEDS_HUMAN_REVIEW"
+    },
+    {
+      "problem_id": 2,
+      "group_id": "group_0",
+      "current_authority_tier": "human_curated",
+      "current_evidence": "llm_proposed",
+      "candidate_resolution": "HUMAN_APPROVED",
+      "reason": "available records do not establish which authority value is correct; authority_tier='human_curated', evidence='llm_proposed', stored_tier=None, provenance=['csv_curated_override']",
+      "required_reviewer": "human",
+      "status": "NEEDS_HUMAN_REVIEW"
+    }
+  ]
+}

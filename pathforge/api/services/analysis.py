@@ -47,7 +47,22 @@ def run_analysis(
             ],
         }
     else:
-        llm_input = {"accepted_solution_groups": [["hash_map_lookup"]]}
+        # No ground truth available — do NOT fall back to a hardcoded pattern.
+        # Return an explicit unresolved result so the user is never told
+        # their code is wrong based on fabricated expected patterns.
+        return {
+            "ast": ast_output,
+            "match_result": {
+                "match_result": "NO_GROUND_TRUTH",
+                "matched_groups": [],
+                "unmatched_patterns": [],
+                "confidence_score": 0.0,
+                "reasoning_signals": [
+                    "No verified ground truth available for this problem.",
+                    "Matching was skipped.",
+                ],
+            },
+        }
 
     try:
         match_result = _matching_engine.match(llm_input, ast_for_matching)

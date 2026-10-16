@@ -1,0 +1,28 @@
+{
+  "total_submissions": 12,
+  "by_concept": {
+    "hash_map_lookup": 2,
+    "sliding_window_fixed": 2,
+    "sliding_window_variable": 2,
+    "two_pointers_opposite": 3,
+    "two_pointers_same": 1,
+    "binary_search_standard": 1
+  },
+  "by_correctness": {
+    "correct": 10,
+    "incorrect": 2
+  },
+  "by_style": {
+    "standard": 5,
+    "variant_1": 5,
+    "incorrect": 2
+  },
+  "concepts_covered": [
+    "binary_search_standard",
+    "hash_map_lookup",
+    "sliding_window_fixed",
+    "sliding_window_variable",
+    "two_pointers_opposite",
+    "two_pointers_same"
+  ]
+}

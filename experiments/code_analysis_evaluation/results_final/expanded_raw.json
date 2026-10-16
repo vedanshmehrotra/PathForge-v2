@@ -1,0 +1,2946 @@
+[
+  {
+    "idx": 0,
+    "concept": "hash_map_lookup",
+    "correct": true,
+    "style": "classic",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_lookup"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_lookup",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 1,
+    "concept": "hash_map_lookup",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_lookup"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_lookup",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 2,
+    "concept": "hash_map_lookup",
+    "correct": true,
+    "style": "index_loop",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_lookup"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_lookup",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 3,
+    "concept": "hash_map_lookup",
+    "correct": true,
+    "style": "frequency_variant",
+    "code_len": 13,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_frequency",
+      "hash_map_lookup"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_lookup",
+        1.0
+      ],
+      [
+        "hash_map_frequency",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 8,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 4,
+    "concept": "hash_map_frequency",
+    "correct": true,
+    "style": "classic",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_frequency"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_frequency",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 5,
+    "concept": "hash_map_frequency",
+    "correct": true,
+    "style": "counter_variant",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "hash_map_frequency"
+    ],
+    "legacy_confs": [
+      [
+        "hash_map_frequency",
+        0.7
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 2,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 6,
+    "concept": "hash_map_frequency",
+    "correct": true,
+    "style": "two_pass",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_frequency"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_frequency",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 7,
+    "concept": "hash_map_frequency",
+    "correct": true,
+    "style": "membership",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_lookup"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "hash_map_lookup",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 8,
+    "concept": "prefix_sum",
+    "correct": true,
+    "style": "classic",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "hash_map_frequency",
+      "prefix_sum"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "prefix_sum",
+        0.6499999999999999
+      ],
+      [
+        "hash_map_frequency",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "fixed_window_maintenance",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "fixed_window_maintenance",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 9,
+    "concept": "prefix_sum",
+    "correct": true,
+    "style": "simple_accumulator",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        0.6499999999999999
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 3,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 10,
+    "concept": "sliding_window_fixed",
+    "correct": true,
+    "style": "classic",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "shadow_confs": [
+      [
+        "fixed_window_maintenance",
+        0.8
+      ],
+      [
+        "sliding_window",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 11,
+    "concept": "sliding_window_fixed",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "dp_state_machine",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "dp_state_machine",
+        0.8
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "shadow_confs": [
+      [
+        "fixed_window_maintenance",
+        0.8
+      ],
+      [
+        "sliding_window",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 12,
+    "concept": "sliding_window_fixed",
+    "correct": true,
+    "style": "inline_accumulate",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "greedy_local",
+      "sliding_window_fixed"
+    ],
+    "legacy_confs": [
+      [
+        "sliding_window_fixed",
+        0.85
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "fixed_window_maintenance",
+      "loop_state_tracking",
+      "sliding_window"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "fixed_window_maintenance",
+        0.8
+      ],
+      [
+        "sliding_window",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 13,
+    "concept": "sliding_window_fixed",
+    "correct": true,
+    "style": "alt_naming",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        0.7
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "fixed_window_maintenance",
+      "sliding_window"
+    ],
+    "shadow_confs": [
+      [
+        "fixed_window_maintenance",
+        0.8
+      ],
+      [
+        "sliding_window",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 14,
+    "concept": "sliding_window_variable",
+    "correct": true,
+    "style": "classic",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "greedy_local",
+      "hash_map_lookup",
+      "sliding_window_variable"
+    ],
+    "legacy_confs": [
+      [
+        "hash_map_lookup",
+        1.0
+      ],
+      [
+        "sliding_window_variable",
+        0.9
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "greedy_local",
+        0.6
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 15,
+    "concept": "sliding_window_variable",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "greedy_local",
+      "hash_map_lookup",
+      "sliding_window_variable"
+    ],
+    "legacy_confs": [
+      [
+        "hash_map_lookup",
+        1.0
+      ],
+      [
+        "sliding_window_variable",
+        0.9
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "greedy_local",
+        0.6
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 16,
+    "concept": "sliding_window_variable",
+    "correct": true,
+    "style": "min_window",
+    "code_len": 18,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "hash_map_frequency",
+      "sliding_window_variable"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        0.85
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "hash_map_frequency",
+        0.7
+      ],
+      [
+        "sliding_window_variable",
+        0.6000000000000001
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "loop_state_tracking",
+      "sequential_accumulation",
+      "sliding_window"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "sliding_window",
+        0.75
+      ]
+    ],
+    "shadow_fact_count": 11,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 17,
+    "concept": "two_pointers_opposite",
+    "correct": true,
+    "style": "classic",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "two_pointers_opposite"
+    ],
+    "legacy_confs": [
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "bidirectional_index_scan",
+        0.9
+      ],
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 18,
+    "concept": "two_pointers_opposite",
+    "correct": true,
+    "style": "sorted_array",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "greedy_local",
+      "two_pointers_opposite"
+    ],
+    "legacy_confs": [
+      [
+        "two_pointers_opposite",
+        0.9
+      ],
+      [
+        "greedy_local",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bidirectional_index_scan",
+      "loop_state_tracking",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "bidirectional_index_scan",
+        0.9
+      ],
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_fact_count": 8,
+    "shadow_technique_count": 3,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 19,
+    "concept": "two_pointers_opposite",
+    "correct": true,
+    "style": "container_water",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "greedy_local",
+      "two_pointers_opposite"
+    ],
+    "legacy_confs": [
+      [
+        "two_pointers_opposite",
+        0.9
+      ],
+      [
+        "greedy_local",
+        0.6
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bidirectional_index_scan",
+      "loop_state_tracking",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "bidirectional_index_scan",
+        0.9
+      ],
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_fact_count": 8,
+    "shadow_technique_count": 3,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 20,
+    "concept": "two_pointers_opposite",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "two_pointers_opposite"
+    ],
+    "legacy_confs": [
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "bidirectional_index_scan",
+        0.9
+      ],
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 21,
+    "concept": "two_pointers_opposite",
+    "correct": true,
+    "style": "while_not_style",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [],
+    "legacy_confs": [],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bidirectional_index_scan",
+      "sequential_accumulation",
+      "two_pointers_opposite"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "bidirectional_index_scan",
+        0.9
+      ],
+      [
+        "two_pointers_opposite",
+        0.9
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 22,
+    "concept": "two_pointers_same",
+    "correct": true,
+    "style": "fast_slow",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 23,
+    "concept": "two_pointers_same",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 24,
+    "concept": "two_pointers_same",
+    "correct": true,
+    "style": "merge_sorted",
+    "code_len": 14,
+    "legacy_success": true,
+    "legacy_concepts": [],
+    "legacy_confs": [],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "loop_state_tracking",
+      "sequential_accumulation"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "loop_state_tracking",
+        0.75
+      ]
+    ],
+    "shadow_fact_count": 14,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 25,
+    "concept": "binary_search_standard",
+    "correct": true,
+    "style": "classic",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "binary_search_standard"
+    ],
+    "legacy_confs": [
+      [
+        "binary_search_standard",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "binary_search",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 26,
+    "concept": "binary_search_standard",
+    "correct": true,
+    "style": "insert_position",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "binary_search_standard"
+    ],
+    "legacy_confs": [
+      [
+        "binary_search_standard",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "binary_search",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 27,
+    "concept": "binary_search_standard",
+    "correct": true,
+    "style": "overflow_safe",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [],
+    "legacy_confs": [],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "binary_search",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 28,
+    "concept": "binary_search_standard",
+    "correct": true,
+    "style": "bitshift",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [],
+    "legacy_confs": [],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "binary_search",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 29,
+    "concept": "binary_search_rotated",
+    "correct": true,
+    "style": "classic",
+    "code_len": 17,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "binary_search_rotated",
+      "binary_search_standard"
+    ],
+    "legacy_confs": [
+      [
+        "binary_search_standard",
+        1.0
+      ],
+      [
+        "binary_search_rotated",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "binary_search",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 30,
+    "concept": "binary_search_answer",
+    "correct": true,
+    "style": "classic",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "binary_search_standard",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "binary_search_standard",
+        1.0
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "binary_search",
+      "loop_state_tracking"
+    ],
+    "shadow_confs": [
+      [
+        "loop_state_tracking",
+        0.75
+      ],
+      [
+        "binary_search",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 31,
+    "concept": "dfs_recursive",
+    "correct": true,
+    "style": "islands",
+    "code_len": 19,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        1.0
+      ],
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "dfs_recursive",
+        0.6
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 32,
+    "concept": "dfs_recursive",
+    "correct": true,
+    "style": "tree_depth",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force",
+      "dfs_recursive",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "dfs_recursive",
+        0.8
+      ],
+      [
+        "greedy_local",
+        0.35
+      ],
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 33,
+    "concept": "dfs_recursive",
+    "correct": true,
+    "style": "tree_invert",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "dfs_recursive",
+        0.8
+      ],
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 34,
+    "concept": "dfs_recursive",
+    "correct": true,
+    "style": "tree_symmetric",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "dfs_recursive",
+        0.6
+      ],
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 12,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 35,
+    "concept": "dfs_recursive",
+    "correct": true,
+    "style": "path_sum",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "dfs_recursive",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.4
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 14,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 36,
+    "concept": "dfs_recursive",
+    "correct": true,
+    "style": "diameter",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force",
+      "dfs_recursive",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "dfs_recursive",
+        0.8
+      ],
+      [
+        "greedy_local",
+        0.7
+      ],
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 9,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 37,
+    "concept": "dfs_iterative",
+    "correct": true,
+    "style": "classic",
+    "code_len": 12,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 11,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 38,
+    "concept": "dfs_iterative",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 39,
+    "concept": "bfs_level_order",
+    "correct": true,
+    "style": "classic",
+    "code_len": 17,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "bfs_level_order",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "bfs_level_order",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bfs_shortest_path"
+    ],
+    "shadow_confs": [
+      [
+        "bfs_shortest_path",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 11,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 40,
+    "concept": "bfs_level_order",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 18,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "bfs_level_order",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "bfs_level_order",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bfs_shortest_path"
+    ],
+    "shadow_confs": [
+      [
+        "bfs_shortest_path",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 11,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 41,
+    "concept": "bfs_shortest_path",
+    "correct": true,
+    "style": "rotting_oranges",
+    "code_len": 22,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "bfs_shortest_path",
+      "brute_force",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        1.0
+      ],
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "bfs_shortest_path",
+        1.0
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 12,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 42,
+    "concept": "topological_sort",
+    "correct": true,
+    "style": "classic",
+    "code_len": 17,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "bfs_level_order",
+      "brute_force",
+      "prefix_sum",
+      "topological_sort"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "topological_sort",
+        1.0
+      ],
+      [
+        "bfs_level_order",
+        0.85
+      ],
+      [
+        "prefix_sum",
+        0.7
+      ],
+      [
+        "brute_force",
+        0.6
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "bfs_shortest_path"
+    ],
+    "shadow_confs": [
+      [
+        "bfs_shortest_path",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 9,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 43,
+    "concept": "union_find",
+    "correct": true,
+    "style": "classic",
+    "code_len": 17,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.75
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "sequential_accumulation",
+      "union_find"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "union_find",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 12,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 44,
+    "concept": "union_find",
+    "correct": true,
+    "style": "path_compression",
+    "code_len": 16,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        1.0
+      ],
+      [
+        "array_traversal",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.75
+      ]
+    ],
+    "shadow_fact_count": 11,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 45,
+    "concept": "monotonic_stack",
+    "correct": true,
+    "style": "classic",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "monotonic_stack"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "monotonic_stack",
+        0.95
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "monotonic_stack_maintenance",
+      "monotonic_stack_strategy"
+    ],
+    "shadow_confs": [
+      [
+        "monotonic_stack_maintenance",
+        0.85
+      ],
+      [
+        "monotonic_stack_strategy",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 46,
+    "concept": "monotonic_stack",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "monotonic_stack"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "monotonic_stack",
+        0.95
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "monotonic_stack_maintenance",
+      "monotonic_stack_strategy"
+    ],
+    "shadow_confs": [
+      [
+        "monotonic_stack_maintenance",
+        0.85
+      ],
+      [
+        "monotonic_stack_strategy",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 47,
+    "concept": "monotonic_stack",
+    "correct": true,
+    "style": "explicit_length",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "monotonic_stack"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "monotonic_stack",
+        0.95
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "monotonic_stack_maintenance",
+      "monotonic_stack_strategy"
+    ],
+    "shadow_confs": [
+      [
+        "monotonic_stack_maintenance",
+        0.85
+      ],
+      [
+        "monotonic_stack_strategy",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 48,
+    "concept": "backtracking_permutation",
+    "correct": true,
+    "style": "classic",
+    "code_len": 14,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "backtracking_subset",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "backtracking_subset",
+        0.8
+      ],
+      [
+        "brute_force",
+        0.25
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_confs": [
+      [
+        "dfs_backtracking",
+        0.0
+      ]
+    ],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 49,
+    "concept": "backtracking_permutation",
+    "correct": true,
+    "style": "used_array",
+    "code_len": 17,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "backtracking_permutation",
+      "backtracking_subset",
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "backtracking_subset",
+        0.8
+      ],
+      [
+        "dfs_recursive",
+        0.6499999999999999
+      ],
+      [
+        "backtracking_permutation",
+        0.55
+      ],
+      [
+        "brute_force",
+        0.45
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_confs": [
+      [
+        "dfs_backtracking",
+        0.0
+      ]
+    ],
+    "shadow_fact_count": 7,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 50,
+    "concept": "backtracking_permutation",
+    "correct": true,
+    "style": "remaining_list",
+    "code_len": 12,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "backtracking_subset",
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "dfs_recursive",
+        0.85
+      ],
+      [
+        "backtracking_subset",
+        0.8
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "brute_force",
+        0.45
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_confs": [
+      [
+        "dfs_backtracking",
+        0.0
+      ]
+    ],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 51,
+    "concept": "backtracking_subset",
+    "correct": true,
+    "style": "classic",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "backtracking_subset",
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "backtracking_subset",
+        0.8
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "dfs_recursive",
+        0.6499999999999999
+      ],
+      [
+        "brute_force",
+        0.45
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_confs": [
+      [
+        "dfs_backtracking",
+        0.0
+      ]
+    ],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 52,
+    "concept": "backtracking_subset",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "backtracking_subset",
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "backtracking_subset",
+        0.8
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "dfs_recursive",
+        0.6499999999999999
+      ],
+      [
+        "brute_force",
+        0.45
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dfs_backtracking"
+    ],
+    "shadow_confs": [
+      [
+        "dfs_backtracking",
+        0.0
+      ]
+    ],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 53,
+    "concept": "dp_1d_forward",
+    "correct": true,
+    "style": "classic",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "dp_1d_forward"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "dp_1d_forward",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 17,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 54,
+    "concept": "dp_1d_forward",
+    "correct": true,
+    "style": "space_optimized",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [],
+    "legacy_confs": [],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 3,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 55,
+    "concept": "dp_1d_forward",
+    "correct": true,
+    "style": "dict_memo",
+    "code_len": 5,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 56,
+    "concept": "dp_1d_forward",
+    "correct": true,
+    "style": "counting_bits",
+    "code_len": 5,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 57,
+    "concept": "dp_1d_forward",
+    "correct": true,
+    "style": "min_cost",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "dp_1d_forward",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "dp_1d_forward",
+        1.0
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 13,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 58,
+    "concept": "dp_1d_sequence",
+    "correct": true,
+    "style": "greedy_two_pointer",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 59,
+    "concept": "dp_2d_grid",
+    "correct": true,
+    "style": "classic",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "dp_2d_grid",
+      "dp_interval"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "dp_interval",
+        1.0
+      ],
+      [
+        "dp_2d_grid",
+        0.95
+      ],
+      [
+        "brute_force",
+        0.75
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 11,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 60,
+    "concept": "dp_knapsack",
+    "correct": true,
+    "style": "classic",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "dp_2d_grid",
+      "dp_interval",
+      "dp_knapsack",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        1.0
+      ],
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "dp_2d_grid",
+        1.0
+      ],
+      [
+        "dp_knapsack",
+        1.0
+      ],
+      [
+        "dp_interval",
+        1.0
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 16,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 61,
+    "concept": "dp_interval",
+    "correct": true,
+    "style": "coin_change",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 16,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 62,
+    "concept": "dp_state_machine",
+    "correct": true,
+    "style": "classic",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "dp_state_machine",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "dp_state_machine",
+        0.8
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 5,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 63,
+    "concept": "heap_top_k",
+    "correct": true,
+    "style": "classic",
+    "code_len": 5,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "hash_map_frequency",
+      "heap_top_k",
+      "sorting"
+    ],
+    "legacy_confs": [
+      [
+        "hash_map_frequency",
+        0.5
+      ],
+      [
+        "heap_top_k",
+        0.25
+      ],
+      [
+        "sorting",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 1,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 64,
+    "concept": "greedy_local",
+    "correct": true,
+    "style": "classic",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        0.6499999999999999
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 65,
+    "concept": "greedy_local",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        0.6499999999999999
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 66,
+    "concept": "greedy_interval",
+    "correct": true,
+    "style": "classic",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "greedy_interval",
+      "greedy_local",
+      "sorting"
+    ],
+    "legacy_confs": [
+      [
+        "greedy_interval",
+        0.85
+      ],
+      [
+        "sorting",
+        0.6000000000000001
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 3,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 67,
+    "concept": "linked_list_reversal",
+    "correct": true,
+    "style": "classic",
+    "code_len": 9,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "linked_list_reversal",
+      "two_pointers_same"
+    ],
+    "legacy_confs": [
+      [
+        "linked_list_reversal",
+        1.0
+      ],
+      [
+        "two_pointers_same",
+        0.3
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "linked_list_traversal"
+    ],
+    "shadow_confs": [
+      [
+        "linked_list_traversal",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 68,
+    "concept": "linked_list_reversal",
+    "correct": true,
+    "style": "renamed_vars",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "linked_list_reversal",
+      "two_pointers_same"
+    ],
+    "legacy_confs": [
+      [
+        "linked_list_reversal",
+        1.0
+      ],
+      [
+        "two_pointers_same",
+        0.3
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "linked_list_traversal"
+    ],
+    "shadow_confs": [
+      [
+        "linked_list_traversal",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 6,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 69,
+    "concept": "fast_slow_pointers",
+    "correct": true,
+    "style": "classic",
+    "code_len": 11,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "fast_slow_pointers",
+      "two_pointers_same"
+    ],
+    "legacy_confs": [
+      [
+        "fast_slow_pointers",
+        1.0
+      ],
+      [
+        "two_pointers_same",
+        0.3
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "linked_list_traversal",
+      "sequential_accumulation"
+    ],
+    "shadow_confs": [
+      [
+        "sequential_accumulation",
+        0.85
+      ],
+      [
+        "linked_list_traversal",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 13,
+    "shadow_technique_count": 2,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 70,
+    "concept": "fast_slow_pointers",
+    "correct": true,
+    "style": "middle_finder",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "fast_slow_pointers",
+      "two_pointers_same"
+    ],
+    "legacy_confs": [
+      [
+        "fast_slow_pointers",
+        0.8
+      ],
+      [
+        "two_pointers_same",
+        0.3
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "linked_list_traversal"
+    ],
+    "shadow_confs": [
+      [
+        "linked_list_traversal",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 8,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 71,
+    "concept": "binary_search_tree",
+    "correct": true,
+    "style": "classic",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "binary_search_tree",
+      "brute_force",
+      "dfs_recursive"
+    ],
+    "legacy_confs": [
+      [
+        "binary_search_tree",
+        1.0
+      ],
+      [
+        "dfs_recursive",
+        0.8
+      ],
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 8,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 72,
+    "concept": "monotonic_deque",
+    "correct": true,
+    "style": "classic",
+    "code_len": 13,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "monotonic_deque"
+    ],
+    "legacy_confs": [
+      [
+        "monotonic_deque",
+        1.0
+      ],
+      [
+        "array_traversal",
+        0.7
+      ],
+      [
+        "brute_force",
+        0.55
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 73,
+    "concept": "dp_2d_string",
+    "correct": true,
+    "style": "classic",
+    "code_len": 10,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "dp_2d_string",
+      "dp_interval",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        1.0
+      ],
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "dp_2d_string",
+        1.0
+      ],
+      [
+        "dp_interval",
+        1.0
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 16,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 74,
+    "concept": "dp_top_down",
+    "correct": true,
+    "style": "classic",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_top_down",
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ],
+      [
+        "dp_top_down",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 75,
+    "concept": "dp_top_down",
+    "correct": true,
+    "style": "climbing_variant",
+    "code_len": 7,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_top_down",
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ],
+      [
+        "dp_top_down",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 10,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 76,
+    "concept": "dp_bottom_up",
+    "correct": true,
+    "style": "classic",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.8
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "dp_bottom_up",
+      "iterative_table_filling"
+    ],
+    "shadow_confs": [
+      [
+        "iterative_table_filling",
+        0.8
+      ],
+      [
+        "dp_bottom_up",
+        0.8
+      ]
+    ],
+    "shadow_fact_count": 16,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 1
+  },
+  {
+    "idx": 77,
+    "concept": "",
+    "correct": false,
+    "style": "brute_force_two_sum",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.75
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 78,
+    "concept": "",
+    "correct": false,
+    "style": "buggy_bs_missing_else",
+    "code_len": 8,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "binary_search_standard"
+    ],
+    "legacy_confs": [
+      [
+        "binary_search_standard",
+        1.0
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 79,
+    "concept": "",
+    "correct": false,
+    "style": "tle_recursion",
+    "code_len": 4,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "brute_force"
+    ],
+    "legacy_confs": [
+      [
+        "brute_force",
+        0.2
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [
+      "recursive_branching"
+    ],
+    "shadow_confs": [
+      [
+        "recursive_branching",
+        0.85
+      ]
+    ],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 1,
+    "shadow_strategy_count": 0
+  },
+  {
+    "idx": 80,
+    "concept": "",
+    "correct": false,
+    "style": "brute_force_o_n3",
+    "code_len": 6,
+    "legacy_success": true,
+    "legacy_concepts": [
+      "array_traversal",
+      "brute_force",
+      "greedy_local"
+    ],
+    "legacy_confs": [
+      [
+        "array_traversal",
+        1.0
+      ],
+      [
+        "brute_force",
+        0.75
+      ],
+      [
+        "greedy_local",
+        0.35
+      ]
+    ],
+    "shadow_success": true,
+    "shadow_concepts": [],
+    "shadow_confs": [],
+    "shadow_fact_count": 4,
+    "shadow_technique_count": 0,
+    "shadow_strategy_count": 0
+  }
+]

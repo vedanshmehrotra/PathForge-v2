@@ -1,0 +1,1554 @@
+{
+  "phase": "4_hr_overlay_audit",
+  "reviewer": "external human reviewer (subject teacher)",
+  "round": "human_review_round_1",
+  "totals": {
+    "families": 37,
+    "approval_states": {
+      "APPROVED": 36,
+      "REJECTED": 1
+    },
+    "approved": 36,
+    "approved_as_proposed": 16,
+    "approved_corrected": 20,
+    "rejected": 1,
+    "divergence_state_counts": {
+      "LABEL_OK": 14,
+      "ZERO_EVIDENCE": 6,
+      "LABEL_UNEXPRESSIBLE": 10,
+      "LABEL_GENERIC": 6,
+      "LABEL_PARTIAL": 1
+    }
+  },
+  "vocabulary_gaps": {
+    "brute_force": [
+      "lc1_fam2",
+      "lc1_fam3",
+      "lc209_fam2",
+      "lc560_fam1"
+    ],
+    "clean_and_compare_reverse": [
+      "lc125_fam2"
+    ],
+    "iterative_insertion": [
+      "lc46_fam1"
+    ],
+    "recursive_dfs_by_depth": [
+      "lc102_fam2"
+    ],
+    "recursive_dfs_traversal": [
+      "lc547_fam2"
+    ],
+    "recursive_merge": [
+      "lc21_fam4"
+    ],
+    "sort_and_rebuild": [
+      "lc21_fam2"
+    ]
+  },
+  "vocabulary_gap_family_count": 10,
+  "families": [
+    {
+      "family_key": "lc1_fam1",
+      "problem_id": 1,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "hash_lookup",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "hash_lookup"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "hash_lookup"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "hash_lookup"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "hash_lookup"
+      ],
+      "observed_union": [
+        "hash_lookup"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Dictionary stores values and looks up the complement; the label matches exactly.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 1 -- Two Sum"
+    },
+    {
+      "family_key": "lc1_fam2",
+      "problem_id": 1,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "brute_force",
+      "human_corrected_label": "brute_force",
+      "qualifier": null,
+      "human_label_terms": [
+        "brute_force"
+      ],
+      "unregistered_label_terms": [
+        "brute_force"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "ZERO_EVIDENCE",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "brute_force"
+        ],
+        "divergence_state": "ZERO_EVIDENCE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [],
+      "observed_union": [],
+      "zero_evidence": true,
+      "reviewer_reason": "Nested for-loops checking every pair is brute force, not hash lookup.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 1 -- Two Sum"
+    },
+    {
+      "family_key": "lc1_fam3",
+      "problem_id": 1,
+      "member_count": 1,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "brute_force",
+      "human_corrected_label": "brute_force",
+      "qualifier": null,
+      "human_label_terms": [
+        "brute_force"
+      ],
+      "unregistered_label_terms": [
+        "brute_force"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "brute_force"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Nested while-loops -- same brute-force idea as fam2, different syntax.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 1 -- Two Sum"
+    },
+    {
+      "family_key": "lc1_fam4",
+      "problem_id": 1,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "two_pointers_opposite",
+      "human_corrected_label": "two_pointers_opposite",
+      "qualifier": null,
+      "human_label_terms": [
+        "two_pointers_opposite"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "two_pointers_opposite"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "observed_union": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "After sorting, low/high indices move inward from opposite ends -- classic two-pointer, not hash-based.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 1 -- Two Sum"
+    },
+    {
+      "family_key": "lc21_fam1",
+      "problem_id": 21,
+      "member_count": 1,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "forward_pointer_advance",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "forward_pointer_advance"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "forward_pointer_advance"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_GENERIC",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "forward_pointer_advance"
+        ],
+        "divergence_state": "LABEL_GENERIC",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Iteratively advances pointers, always taking the smaller node -- matches the label.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 21 -- Merge Two Sorted Lists"
+    },
+    {
+      "family_key": "lc21_fam2",
+      "problem_id": 21,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "sort_and_rebuild",
+      "human_corrected_label": "sort_and_rebuild",
+      "qualifier": null,
+      "human_label_terms": [
+        "sort_and_rebuild"
+      ],
+      "unregistered_label_terms": [
+        "sort_and_rebuild"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "sort_and_rebuild"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "linked_list_traversal",
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Collects all values, sorts them, then rebuilds a list -- not pointer merging at all.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 21 -- Merge Two Sorted Lists"
+    },
+    {
+      "family_key": "lc21_fam3",
+      "problem_id": 21,
+      "member_count": 2,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "forward_pointer_advance",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "forward_pointer_advance"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "forward_pointer_advance"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_GENERIC",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "forward_pointer_advance"
+        ],
+        "divergence_state": "LABEL_GENERIC",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "linked_list_traversal"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Dummy-node merge is the same forward-pointer-advance idea as fam1, just with a sentinel head.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 21 -- Merge Two Sorted Lists"
+    },
+    {
+      "family_key": "lc21_fam4",
+      "problem_id": 21,
+      "member_count": 3,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "recursive_merge",
+      "human_corrected_label": "recursive_merge",
+      "qualifier": null,
+      "human_label_terms": [
+        "recursive_merge"
+      ],
+      "unregistered_label_terms": [
+        "recursive_merge"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "recursive_merge"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursion, not iteration -- forward_pointer_advance implies iterative pointer movement; this is a recursive merge instead.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 21 -- Merge Two Sorted Lists"
+    },
+    {
+      "family_key": "lc46_fam1",
+      "problem_id": 46,
+      "member_count": 3,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "iterative_insertion",
+      "human_corrected_label": "iterative_insertion",
+      "qualifier": null,
+      "human_label_terms": [
+        "iterative_insertion"
+      ],
+      "unregistered_label_terms": [
+        "iterative_insertion"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "ZERO_EVIDENCE",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "iterative_insertion"
+        ],
+        "divergence_state": "ZERO_EVIDENCE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [],
+      "observed_union": [],
+      "zero_evidence": true,
+      "reviewer_reason": "Builds permutations by inserting each element into every position of existing permutations -- no recursion, so not dfs_backtracking.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 46 -- Permutations"
+    },
+    {
+      "family_key": "lc46_fam2",
+      "problem_id": 46,
+      "member_count": 2,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "dfs_backtracking",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "dfs_backtracking"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "dfs_backtracking"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "dfs_backtracking"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursive path-building with skip-if-used logic is textbook backtracking.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 46 -- Permutations"
+    },
+    {
+      "family_key": "lc46_fam3",
+      "problem_id": 46,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "dfs_backtracking",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "dfs_backtracking"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "dfs_backtracking"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "dfs_backtracking"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "dfs_backtracking",
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursive backtracking with an explicit used[] array and state restoration -- matches the label.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 46 -- Permutations"
+    },
+    {
+      "family_key": "lc70_fam1",
+      "problem_id": 70,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "dp_bottom_up",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "dp_bottom_up"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "dp_bottom_up"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "dp_bottom_up"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "observed_union": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Classic bottom-up DP array building from smaller to larger states.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 70 -- Climbing Stairs"
+    },
+    {
+      "family_key": "lc70_fam2",
+      "problem_id": 70,
+      "member_count": 3,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "dp_top_down",
+      "human_corrected_label": "dp_top_down",
+      "qualifier": null,
+      "human_label_terms": [
+        "dp_top_down"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "dp_top_down"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "dp_top_down",
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "dp_top_down",
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursion with memoization is top-down DP, the opposite direction from dp_bottom_up.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 70 -- Climbing Stairs"
+    },
+    {
+      "family_key": "lc70_fam3",
+      "problem_id": 70,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "dp_bottom_up",
+      "human_corrected_label": "dp_bottom_up",
+      "qualifier": null,
+      "human_label_terms": [
+        "dp_bottom_up"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "ZERO_EVIDENCE",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "dp_bottom_up"
+        ],
+        "divergence_state": "ZERO_EVIDENCE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [],
+      "observed_union": [],
+      "zero_evidence": true,
+      "reviewer_reason": "Two rolling variables are a space-optimized version of the same bottom-up recurrence -- still dp_bottom_up in essence.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 70 -- Climbing Stairs"
+    },
+    {
+      "family_key": "lc102_fam1",
+      "problem_id": 102,
+      "member_count": 4,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "bfs_shortest_path",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "bfs_shortest_path"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "bfs_shortest_path"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "bfs_shortest_path"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "bfs_shortest_path"
+      ],
+      "observed_union": [
+        "bfs_shortest_path"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Queue-based level-by-level traversal matches the vocabulary definition of bfs_shortest_path (queue-driven level exploration).",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 102 -- Binary Tree Level Order Traversal"
+    },
+    {
+      "family_key": "lc102_fam2",
+      "problem_id": 102,
+      "member_count": 4,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "recursive_dfs_by_depth",
+      "human_corrected_label": "recursive_dfs_by_depth",
+      "qualifier": null,
+      "human_label_terms": [
+        "recursive_dfs_by_depth"
+      ],
+      "unregistered_label_terms": [
+        "recursive_dfs_by_depth"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "recursive_dfs_by_depth"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursive DFS that records values by depth -- a different traversal strategy from the BFS family above.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 102 -- Binary Tree Level Order Traversal"
+    },
+    {
+      "family_key": "lc125_fam1",
+      "problem_id": 125,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "two_pointers_opposite",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "two_pointers_opposite"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "two_pointers_opposite"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "two_pointers_opposite"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "observed_union": [
+        "bidirectional_index_scan",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Two indices at both ends, skipping invalid characters and moving inward -- matches the label exactly.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 125 -- Valid Palindrome"
+    },
+    {
+      "family_key": "lc125_fam2",
+      "problem_id": 125,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "clean_and_compare_reverse",
+      "human_corrected_label": "clean_and_compare_reverse",
+      "qualifier": null,
+      "human_label_terms": [
+        "clean_and_compare_reverse"
+      ],
+      "unregistered_label_terms": [
+        "clean_and_compare_reverse"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "ZERO_EVIDENCE",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "clean_and_compare_reverse"
+        ],
+        "divergence_state": "ZERO_EVIDENCE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [],
+      "observed_union": [],
+      "zero_evidence": true,
+      "reviewer_reason": "Cleans the string then compares it to its reverse -- no index pointers involved, so not two_pointers_opposite.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 125 -- Valid Palindrome"
+    },
+    {
+      "family_key": "lc125_fam3",
+      "problem_id": 125,
+      "member_count": 3,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "two_pointers_opposite",
+      "human_corrected_label": "two_pointers_opposite (recursive)",
+      "qualifier": "recursive",
+      "human_label_terms": [
+        "two_pointers_opposite"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "two_pointers_opposite"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Still comparing left/right positions moving inward, just implemented recursively instead of with a while-loop.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 125 -- Valid Palindrome"
+    },
+    {
+      "family_key": "lc209_fam1",
+      "problem_id": 209,
+      "member_count": 4,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "sequential_accumulation + sliding_window",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "sequential_accumulation",
+          "sliding_window"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "sequential_accumulation",
+          "sliding_window"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Expand-then-shrink variable window with a running sum matches both parts of the compound label.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 209 -- Minimum Size Subarray Sum"
+    },
+    {
+      "family_key": "lc209_fam2",
+      "problem_id": 209,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "brute_force",
+      "human_corrected_label": "brute_force",
+      "qualifier": null,
+      "human_label_terms": [
+        "brute_force"
+      ],
+      "unregistered_label_terms": [
+        "brute_force"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "brute_force"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Nested loops recomputing each subarray sum -- no window pointers, so it's brute force, not sliding_window.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 209 -- Minimum Size Subarray Sum"
+    },
+    {
+      "family_key": "lc209_fam3",
+      "problem_id": 209,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "sequential_accumulation",
+      "human_corrected_label": "sequential_accumulation",
+      "qualifier": null,
+      "human_label_terms": [
+        "sequential_accumulation"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "sequential_accumulation"
+        ],
+        "divergence_state": "LABEL_GENERIC",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Builds a prefix-sum array (sequential accumulation) but checks it with nested loops, not a moving window -- sliding_window would be inaccurate.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 209 -- Minimum Size Subarray Sum"
+    },
+    {
+      "family_key": "lc242_fam1",
+      "problem_id": 242,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "frequency_counting",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "frequency_counting"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "frequency_counting"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "frequency_counting"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "frequency_counting"
+      ],
+      "observed_union": [
+        "frequency_counting"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Fixed-size count array incrementing/decrementing character frequencies matches the label.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 242 -- Valid Anagram"
+    },
+    {
+      "family_key": "lc242_fam2",
+      "problem_id": 242,
+      "member_count": 2,
+      "human_decision": "REJECTED",
+      "approval_state": "REJECTED",
+      "label_origin": "human_rejected",
+      "human_label": null,
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "ZERO_EVIDENCE",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [],
+        "divergence_state": "ZERO_EVIDENCE",
+        "activation_eligible": false
+      },
+      "observed_intersection": [],
+      "observed_union": [],
+      "zero_evidence": true,
+      "reviewer_reason": "The sheet itself flags zero-evidence members alongside a Counter-equality member; family coherence can't be confirmed from what's given, so it shouldn't be reviewed as one approved family.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 242 -- Valid Anagram / lc242_fam2 flagged REJECTED"
+    },
+    {
+      "family_key": "lc242_fam3",
+      "problem_id": 242,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "frequency_counting",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "frequency_counting"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "frequency_counting"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "frequency_counting"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "frequency_counting",
+        "hash_lookup"
+      ],
+      "observed_union": [
+        "frequency_counting",
+        "hash_lookup",
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Manual dictionary counting with decrement-and-check is frequency counting, just without the fixed-size array.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 242 -- Valid Anagram"
+    },
+    {
+      "family_key": "lc547_fam1",
+      "problem_id": 547,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "bfs_shortest_path",
+      "human_corrected_label": "bfs_shortest_path",
+      "qualifier": null,
+      "human_label_terms": [
+        "bfs_shortest_path"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "bfs_shortest_path"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "observed_union": [
+        "loop_state_tracking",
+        "sequential_accumulation",
+        "sliding_window"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Queue-based traversal of the adjacency matrix with a visited array -- matches the BFS vocabulary definition.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 547 -- Number of Provinces"
+    },
+    {
+      "family_key": "lc547_fam2",
+      "problem_id": 547,
+      "member_count": 3,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "recursive_dfs_traversal",
+      "human_corrected_label": "recursive_dfs_traversal",
+      "qualifier": null,
+      "human_label_terms": [
+        "recursive_dfs_traversal"
+      ],
+      "unregistered_label_terms": [
+        "recursive_dfs_traversal"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "recursive_dfs_traversal"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "recursive_branching",
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "recursive_branching",
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursive DFS marking visited nodes -- no choice-and-restore backtracking, so dfs_backtracking would overstate it; plain recursive DFS traversal fits better.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 547 -- Number of Provinces"
+    },
+    {
+      "family_key": "lc547_fam3",
+      "problem_id": 547,
+      "member_count": 3,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "union_find",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "union_find"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "union_find"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "union_find"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation",
+        "union_find"
+      ],
+      "observed_union": [
+        "sequential_accumulation",
+        "union_find"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Parent array with find/union operations is exactly Union-Find.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 547 -- Number of Provinces"
+    },
+    {
+      "family_key": "lc560_fam1",
+      "problem_id": 560,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "brute_force",
+      "human_corrected_label": "brute_force",
+      "qualifier": null,
+      "human_label_terms": [
+        "brute_force"
+      ],
+      "unregistered_label_terms": [
+        "brute_force"
+      ],
+      "vocabulary_gap": true,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "brute_force"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Nested loops recomputing every subarray total -- no hashing or prefix structure involved.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 560 -- Subarray Sum Equals K"
+    },
+    {
+      "family_key": "lc560_fam2",
+      "problem_id": 560,
+      "member_count": 2,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "frequency_counting + sequential_accumulation",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "frequency_counting",
+          "sequential_accumulation"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "frequency_counting",
+          "sequential_accumulation"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "dp_bottom_up",
+        "fixed_window_maintenance",
+        "forward_pointer_advance",
+        "frequency_counting",
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "dp_bottom_up",
+        "fixed_window_maintenance",
+        "forward_pointer_advance",
+        "frequency_counting",
+        "iterative_table_filling",
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Running prefix sum plus a hash-map of prefix-sum frequencies matches both parts of the label.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 560 -- Subarray Sum Equals K"
+    },
+    {
+      "family_key": "lc560_fam3",
+      "problem_id": 560,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "frequency_counting + sequential_accumulation",
+      "human_corrected_label": "frequency_counting + sequential_accumulation",
+      "qualifier": null,
+      "human_label_terms": [
+        "frequency_counting",
+        "sequential_accumulation"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "frequency_counting",
+          "sequential_accumulation"
+        ],
+        "divergence_state": "LABEL_PARTIAL",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Same core algorithm as fam2 (prefix sum + dict frequency), just written with .get()/assignment instead of defaultdict.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 560 -- Subarray Sum Equals K"
+    },
+    {
+      "family_key": "lc560_fam4",
+      "problem_id": 560,
+      "member_count": 2,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "sequential_accumulation",
+      "human_corrected_label": "sequential_accumulation",
+      "qualifier": null,
+      "human_label_terms": [
+        "sequential_accumulation"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "REVIEW_REQUIRED_SCREEN_FAILED",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "sequential_accumulation"
+        ],
+        "divergence_state": "LABEL_GENERIC",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Explicit prefix-sum array checked with nested loops, not a frequency map -- frequency_counting would be inaccurate here.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 560 -- Subarray Sum Equals K"
+    },
+    {
+      "family_key": "lc704_fam1",
+      "problem_id": 704,
+      "member_count": 4,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "binary_search",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "binary_search"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "binary_search"
+        ],
+        "proposed_label_source": "curated_problems_pattern",
+        "divergence_state": "LABEL_OK",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "binary_search"
+        ],
+        "divergence_state": "LABEL_OK",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "binary_search",
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "observed_union": [
+        "binary_search",
+        "candidate_selection",
+        "loop_state_tracking"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Standard iterative lo/hi/mid interval narrowing -- matches the label exactly.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 704 -- Binary Search"
+    },
+    {
+      "family_key": "lc704_fam2",
+      "problem_id": 704,
+      "member_count": 1,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "binary_search",
+      "human_corrected_label": "binary_search (library-based)",
+      "qualifier": "library-based",
+      "human_label_terms": [
+        "binary_search"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "ZERO_EVIDENCE",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "binary_search"
+        ],
+        "divergence_state": "ZERO_EVIDENCE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [],
+      "observed_union": [],
+      "zero_evidence": true,
+      "reviewer_reason": "bisect_left performs binary search internally; still fundamentally binary_search, just delegated to the standard library rather than hand-written.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 704 -- Binary Search"
+    },
+    {
+      "family_key": "lc704_fam3",
+      "problem_id": 704,
+      "member_count": 3,
+      "human_decision": "CORRECTED_LABEL",
+      "approval_state": "APPROVED",
+      "label_origin": "human_corrected",
+      "human_label": "binary_search",
+      "human_corrected_label": "binary_search (recursive)",
+      "qualifier": "recursive",
+      "human_label_terms": [
+        "binary_search"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [],
+        "proposed_label_source": null,
+        "divergence_state": "NO_INDEPENDENT_LABEL",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "binary_search"
+        ],
+        "divergence_state": "LABEL_UNEXPRESSIBLE",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "recursive_branching"
+      ],
+      "observed_union": [
+        "recursive_branching"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Recursive halving of the search interval is still binary_search, just implemented via recursion instead of a loop.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 704 -- Binary Search"
+    },
+    {
+      "family_key": "lc3236_fam1",
+      "problem_id": 3236,
+      "member_count": 7,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "sequential_accumulation",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "sequential_accumulation"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "sequential_accumulation"
+        ],
+        "proposed_label_source": "authored_family_proposal",
+        "divergence_state": "LABEL_GENERIC",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "sequential_accumulation"
+        ],
+        "divergence_state": "LABEL_GENERIC",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "forward_pointer_advance",
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Running sum over the leading consecutive sequence is exactly sequential accumulation.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 3236 -- Smallest Missing Integer Greater Than Sequential Prefix Sum"
+    },
+    {
+      "family_key": "lc3236_fam2",
+      "problem_id": 3236,
+      "member_count": 1,
+      "human_decision": "APPROVED",
+      "approval_state": "APPROVED",
+      "label_origin": "approved_as_proposed",
+      "human_label": "sequential_accumulation",
+      "human_corrected_label": null,
+      "qualifier": null,
+      "human_label_terms": [
+        "sequential_accumulation"
+      ],
+      "unregistered_label_terms": [],
+      "vocabulary_gap": false,
+      "before": {
+        "proposed_required": [
+          "sequential_accumulation"
+        ],
+        "proposed_label_source": "authored_family_proposal",
+        "divergence_state": "LABEL_GENERIC",
+        "approval_state": "PENDING_REVIEW"
+      },
+      "after": {
+        "required": [
+          "sequential_accumulation"
+        ],
+        "divergence_state": "LABEL_GENERIC",
+        "activation_eligible": true
+      },
+      "observed_intersection": [
+        "sequential_accumulation"
+      ],
+      "observed_union": [
+        "sequential_accumulation"
+      ],
+      "zero_evidence": false,
+      "reviewer_reason": "Prefix array over the same leading sequence is the same accumulation idea, just materialized as an array.",
+      "source_ref": "PathForge_V2_Review_Decisions-2.pdf#LC 3236 -- Smallest Missing Integer Greater Than Sequential Prefix Sum"
+    }
+  ]
+}

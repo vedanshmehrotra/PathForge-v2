@@ -1,0 +1,333 @@
+{
+  "total_variants": 14,
+  "legacy_stability_rate": 0.3571,
+  "shadow_stability_rate": 0.6429,
+  "legacy_detection_rate": 0.3571,
+  "shadow_detection_rate": 0.0714,
+  "details": [
+    {
+      "concept": "two_pointers_opposite",
+      "variant": "rename",
+      "legacy_stable": true,
+      "legacy_detected_target": true,
+      "shadow_stable": true,
+      "shadow_detected_target": true,
+      "orig_legacy": [
+        "two_pointers_opposite"
+      ],
+      "var_legacy": [
+        "two_pointers_opposite"
+      ],
+      "orig_shadow": [
+        "bidirectional_index_scan",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "var_shadow": [
+        "bidirectional_index_scan",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ]
+    },
+    {
+      "concept": "two_pointers_opposite",
+      "variant": "while_not",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": false,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "two_pointers_opposite"
+      ],
+      "var_legacy": [],
+      "orig_shadow": [
+        "bidirectional_index_scan",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "var_shadow": []
+    },
+    {
+      "concept": "two_pointers_opposite",
+      "variant": "increment",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": false,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "two_pointers_opposite"
+      ],
+      "var_legacy": [
+        "two_pointers_same"
+      ],
+      "orig_shadow": [
+        "bidirectional_index_scan",
+        "sequential_accumulation",
+        "two_pointers_opposite"
+      ],
+      "var_shadow": [
+        "sequential_accumulation"
+      ]
+    },
+    {
+      "concept": "binary_search_standard",
+      "variant": "overflow_safe",
+      "legacy_stable": true,
+      "legacy_detected_target": true,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "var_legacy": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "orig_shadow": [
+        "binary_search",
+        "loop_state_tracking"
+      ],
+      "var_shadow": [
+        "binary_search",
+        "loop_state_tracking"
+      ]
+    },
+    {
+      "concept": "binary_search_standard",
+      "variant": "bitshift",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "var_legacy": [
+        "two_pointers_same"
+      ],
+      "orig_shadow": [
+        "binary_search",
+        "loop_state_tracking"
+      ],
+      "var_shadow": [
+        "binary_search",
+        "loop_state_tracking"
+      ]
+    },
+    {
+      "concept": "binary_search_standard",
+      "variant": "rename",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "binary_search_standard",
+        "two_pointers_same"
+      ],
+      "var_legacy": [
+        "two_pointers_same"
+      ],
+      "orig_shadow": [
+        "binary_search",
+        "loop_state_tracking"
+      ],
+      "var_shadow": [
+        "binary_search",
+        "loop_state_tracking"
+      ]
+    },
+    {
+      "concept": "sliding_window_fixed",
+      "variant": "rename",
+      "legacy_stable": true,
+      "legacy_detected_target": false,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "orig_shadow": [
+        "fixed_window_maintenance",
+        "sliding_window"
+      ],
+      "var_shadow": [
+        "fixed_window_maintenance",
+        "sliding_window"
+      ]
+    },
+    {
+      "concept": "sliding_window_fixed",
+      "variant": "helper",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "greedy_local"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "dp_state_machine",
+        "greedy_local"
+      ],
+      "orig_shadow": [
+        "fixed_window_maintenance",
+        "sliding_window"
+      ],
+      "var_shadow": [
+        "fixed_window_maintenance",
+        "sliding_window"
+      ]
+    },
+    {
+      "concept": "monotonic_stack",
+      "variant": "rename",
+      "legacy_stable": true,
+      "legacy_detected_target": true,
+      "shadow_stable": false,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "brute_force",
+        "monotonic_stack"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "brute_force",
+        "monotonic_stack"
+      ],
+      "orig_shadow": [
+        "monotonic_stack_maintenance",
+        "monotonic_stack_strategy"
+      ],
+      "var_shadow": []
+    },
+    {
+      "concept": "monotonic_stack",
+      "variant": "explicit_len",
+      "legacy_stable": true,
+      "legacy_detected_target": true,
+      "shadow_stable": false,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "brute_force",
+        "monotonic_stack"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "brute_force",
+        "monotonic_stack"
+      ],
+      "orig_shadow": [
+        "monotonic_stack_maintenance",
+        "monotonic_stack_strategy"
+      ],
+      "var_shadow": []
+    },
+    {
+      "concept": "backtracking_permutation",
+      "variant": "used_array",
+      "legacy_stable": false,
+      "legacy_detected_target": true,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "backtracking_subset",
+        "brute_force"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "backtracking_permutation",
+        "backtracking_subset",
+        "brute_force",
+        "dfs_recursive"
+      ],
+      "orig_shadow": [
+        "dfs_backtracking"
+      ],
+      "var_shadow": [
+        "dfs_backtracking"
+      ]
+    },
+    {
+      "concept": "backtracking_permutation",
+      "variant": "remaining_list",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "backtracking_subset",
+        "brute_force"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "backtracking_subset",
+        "brute_force",
+        "dfs_recursive"
+      ],
+      "orig_shadow": [
+        "dfs_backtracking"
+      ],
+      "var_shadow": [
+        "dfs_backtracking"
+      ]
+    },
+    {
+      "concept": "dp_1d_forward",
+      "variant": "space_opt",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": false,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "dp_1d_forward",
+        "prefix_sum"
+      ],
+      "var_legacy": [],
+      "orig_shadow": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "var_shadow": []
+    },
+    {
+      "concept": "dp_1d_forward",
+      "variant": "dict_memo",
+      "legacy_stable": false,
+      "legacy_detected_target": false,
+      "shadow_stable": true,
+      "shadow_detected_target": false,
+      "orig_legacy": [
+        "array_traversal",
+        "dp_1d_forward",
+        "prefix_sum"
+      ],
+      "var_legacy": [
+        "array_traversal",
+        "prefix_sum"
+      ],
+      "orig_shadow": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ],
+      "var_shadow": [
+        "dp_bottom_up",
+        "iterative_table_filling"
+      ]
+    }
+  ]
+}

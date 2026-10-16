@@ -1,0 +1,29 @@
+{
+  "poc_version": "2.0.0",
+  "taxonomy_version": "v1",
+  "pipeline_version": {
+    "extractor": "1.0.0",
+    "relations": "1.1.0",
+    "strategy": "1.0.0"
+  },
+  "provisional_representative_tau": 0.35,
+  "label_mode": "strict_human",
+  "provisional_assumption": null,
+  "human_review_round": "human_review_round_1",
+  "human_review_verification_passed": true,
+  "artifacts": {
+    "before_after.json": "eb2dff2e10076b4bdb2380042c94a5ac1939f2277524deadff916836b43a2276",
+    "derivation_outcomes.json": "7465e16fa1f99d1c8cbd23ffe5f21dcff2f72abb909145a173cc054fe8766a66",
+    "families.json": "48e477c178b232a01e6105f6e077f7a3a2fe67c2bba2d8eaae616a1d463b22cd",
+    "family_labels_post_review.json": "c547e71892f5a662e4d77d209bbab93dcbb2e956d80f81bf8a560c763115b7d9",
+    "human_review.md": "9e1cf157726c0f56f7ddb58ccdef6073baf6eba60a29d1133dc3849f39c3a5b8",
+    "human_review_audit.json": "32736c59833f5e4f6d4f8720729f0536b70bc9b65c73ba3b2415d79c660352c4",
+    "human_review_verification.json": "0fdddf64d4f72414fddc65de513788a26b30eba33d1464c5f1bca071c076320b",
+    "label_comparison.json": "f385d04b98db969937e6dcb39bd3f71050290317327df3d0693dbdaa78fc7506",
+    "negative_controls.json": "8d9f351a70700296dbdb4564f4be6d5467083c6c98b382249434f9d130c32760",
+    "normalized_solutions.json": "853bc911c068e48eb834d78ef913b7fa4d2596a3ec9c7574d928ff6c85ca7eab",
+    "reference_solutions.json": "630309294b744136d89357f3acbe00fc0e861a41572cb558404361c9e51aeded",
+    "validation.json": "f7c3146e3f2a832e26d4a1258d8ea23d620a69b27f69e95a5de02c8056c14fca",
+    "vocabulary_gaps.json": "6316d5c0a76fb2f22f386efe1abc38d3abbfffd5167fc12cf79f1dbac3331904"
+  }
+}
