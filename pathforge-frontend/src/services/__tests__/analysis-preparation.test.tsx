@@ -9,6 +9,7 @@ const fixture = vi.hoisted(() => ({
 vi.mock('react', async importOriginal => ({
   ...await importOriginal<typeof import('react')>(),
   useState: () => [fixture.stateIndex++ === 0 ? 'def solve(): return 1' : fixture.input, vi.fn()],
+  useRef: (current: unknown) => ({ current }),
   useEffect: (callback: () => void) => { fixture.effects.push(callback) },
 }))
 vi.mock('@/auth/AuthProvider', () => ({ useAuth: () => ({ profile: { user_id: 7 } }) }))

@@ -41,7 +41,7 @@ export function ApproachComparison({ groups, legacyPatterns }: {
           !!group.alternative_group_id && group.alternative_group_id === aligned.alternative_group_id
         const full = reviewedAlignment(group)
         return (
-          <div key={`${group.id}-${index}`} className="border-t border-border py-5">
+          <div key={`${group.id}-${index}`} className="detail-enter border-t border-border py-4">
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <p className="text-sm font-medium">{group.name || `Stored group ${index + 1}`}</p>
               <Badge variant={full ? 'success' : 'outline'}>

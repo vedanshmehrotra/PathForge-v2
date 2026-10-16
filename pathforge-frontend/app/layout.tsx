@@ -1,13 +1,13 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Manrope, Geist_Mono } from 'next/font/google'
 import { AppShell } from '@/components/app-shell'
 import { AuthProvider } from '@/auth/AuthProvider'
 import './globals.css'
 
-const geistSans = Geist({
+const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-geist-sans',
+  variable: '--font-manrope',
 })
 
 const geistMono = Geist_Mono({
@@ -19,11 +19,12 @@ export const metadata: Metadata = {
   title: 'PathForge \u2014 Practice workspace',
   description:
     'Explore patterns in Python solutions, compare available approaches, and choose what to practise next.',
+  icons: { icon: '/pathforge-mark.svg', shortcut: '/pathforge-mark.svg' },
 }
 
 export const viewport: Viewport = {
   colorScheme: 'dark',
-  themeColor: '#0b0d12',
+  themeColor: '#0b0c0e',
 }
 
 export default function RootLayout({
@@ -32,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`dark ${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`dark ${manrope.variable} ${geistMono.variable}`}>
       <body className="bg-background text-foreground font-sans antialiased">
         <AuthProvider>
           <AppShell>{children}</AppShell>

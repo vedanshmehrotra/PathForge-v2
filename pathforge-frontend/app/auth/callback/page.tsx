@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/auth/supabase'
+import { BrandMark } from '@/components/brand-mark'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
@@ -73,23 +74,25 @@ export default function AuthCallbackPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-svh items-center justify-center">
-        <div className="text-center">
-          <p className="text-destructive mb-2 text-sm">{error}</p>
+      <main className="flex min-h-svh items-center justify-center px-6">
+        <div className="flex w-full max-w-md flex-col items-center text-center">
+          <BrandMark className="mb-6 size-11" />
+          <p role="alert" className="mb-2 text-sm text-destructive">{error}</p>
           <button
             onClick={() => router.push('/')}
-            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+            className="action-primary mt-4"
           >
             Go Home
           </button>
         </div>
-      </div>
+      </main>
     )
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
-      <p className="text-sm text-muted-foreground">Completing sign in...</p>
-    </div>
+    <main className="flex min-h-svh flex-col items-center justify-center gap-6 px-6">
+      <BrandMark className="size-11" />
+      <p role="status" className="text-sm text-muted-foreground">Completing sign in...</p>
+    </main>
   )
 }

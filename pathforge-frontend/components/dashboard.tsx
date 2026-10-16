@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Braces, Compass, Layers2, Route } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useAuthProfile, useRecommendations } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
@@ -25,38 +25,35 @@ export function DashboardView() {
   return (
     <div className="workspace-page">
       <header className="page-intro">
-        <p className="workspace-kicker">Your practice workspace</p>
+        <p className="workspace-kicker flex items-center gap-2"><Route className="size-4 text-mint" />Your practice workspace</p>
         <h1 className="page-heading">Dashboard</h1>
         <p className="page-description">A place to understand an approach and choose what to explore next.</p>
       </header>
 
-      <section className="grid gap-8 border-y border-border py-8 lg:grid-cols-[1.5fr_1fr] lg:gap-12" aria-labelledby="start-heading">
+      <section className="grid gap-7 border-y border-border py-7 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-10" aria-labelledby="start-heading">
         <div>
           <h2 id="start-heading" className="text-2xl font-medium tracking-tight sm:text-3xl">
             {hasHistory ? 'Take another look at how you solve.' : 'Start with a solution you know.'}
           </h2>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
             Paste a Python solution to inspect its patterns. Add a problem when you want to compare
             the evidence with available approaches.
           </p>
-          <Link href="/analysis" className="action-primary mt-6">Analyze a solution <ArrowRight className="size-4" /></Link>
+          <Link href="/analysis" className="action-primary mt-5">Analyze a solution <ArrowRight className="size-4" /></Link>
         </div>
-        <div className="lg:border-l lg:border-border lg:pl-8">
-          <h3 className="section-title">What you will get</h3>
-          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-            <li>Patterns supported by evidence in your code.</li>
-            <li>A comparison with available solution approaches.</li>
-            <li>A clear explanation when the evidence is inconclusive.</li>
-          </ul>
-          <p className="mt-4 text-sm text-muted-foreground">Pattern analysis does not run your code or verify correctness.</p>
+        <div className="min-w-0 lg:border-l lg:border-border lg:pl-8">
+          <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground"><Braces className="size-4 text-mint" />A closer look at your solution<span className="ml-auto font-mono text-[10px]">.py</span></div>
+          <div className="space-y-2 border-l border-mint/30 pl-4 font-mono text-xs leading-relaxed" aria-hidden="true"><p className="text-muted-foreground">for index in range(width, len(values)):</p><p className="text-mint">&nbsp; window += values[index]</p><p className="text-amber">&nbsp; window -= values[index - width]</p></div>
+          <div className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4 text-[11px] text-muted-foreground"><span className="flex items-center gap-1.5"><Braces className="size-3.5 text-mint" />Inspect</span><span className="flex items-center gap-1.5"><Layers2 className="size-3.5 text-sky" />Compare</span><span className="flex items-center gap-1.5"><Compass className="size-3.5 text-amber" />Practise</span></div>
+          <p className="mt-3 text-[11px] text-muted-foreground">Illustrative structure. Pattern analysis does not run your code or verify correctness.</p>
         </div>
       </section>
 
-      <div className="grid gap-10 xl:grid-cols-[1.3fr_1fr] xl:gap-12">
+      <div className="grid gap-8 xl:grid-cols-[1.2fr_1fr] xl:gap-10">
         <RecommendedPreview />
-        <section aria-labelledby="recent-heading">
+        <section className="min-w-0" aria-labelledby="recent-heading">
           <div className="flex items-center justify-between gap-4">
-            <h2 id="recent-heading" className="section-title">Recently practised patterns</h2>
+            <h2 id="recent-heading" className="section-title flex items-center gap-2"><Route className="size-4 text-mint" />Recently practised patterns</h2>
             <Link href="/progress" className="text-link">View history</Link>
           </div>
           {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading your practice history...</p> : error ? (
@@ -69,10 +66,10 @@ export function DashboardView() {
               Your recorded patterns will appear here after analysis. You can begin without a rating or a practice history.
             </p>
           ) : (
-            <ul className="mt-4 divide-y divide-border">
+            <ul className="mt-4">
               {activity.map(p => (
-                <li key={p.topic} className="flex flex-wrap items-baseline justify-between gap-2 py-4">
-                  <span className="text-sm capitalize">{p.topic.replace(/_/g, ' ')}</span>
+                <li key={p.topic} className="relative ml-1 flex flex-wrap items-baseline justify-between gap-2 border-l border-border py-3 pl-5 last:border-transparent">
+                  <span className="absolute -left-[4px] top-[19px] size-[7px] rounded-full bg-mint ring-4 ring-background" aria-hidden="true" /><span className="text-sm capitalize">{p.topic.replace(/_/g, ' ')}</span>
                   <span className="text-xs text-muted-foreground">{p.last_attempt_at ? relativeTime(p.last_attempt_at) : 'Recorded previously'}</span>
                 </li>
               ))}
@@ -90,12 +87,12 @@ export function RecommendedPreview() {
   const items = uniqueRecommendations(data?.recommendations ?? []).slice(0, 2)
 
   return (
-    <section aria-labelledby="practice-heading">
+    <section className="min-w-0" aria-labelledby="practice-heading">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="practice-heading" className="section-title">Find your next problem</h2>
+        <h2 id="practice-heading" className="section-title flex items-center gap-2"><Compass className="size-4 text-amber" />Find your next problem</h2>
         <Link href="/recommendations" className="text-link">Browse practice <ArrowRight className="size-3.5" /></Link>
       </div>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Choices from the current problem bank, informed by recorded practice when available. These are not a diagnosis of your skills.</p>
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">A mix from your recorded practice and the current bank, without a skill diagnosis.</p>
       {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading practice suggestions...</p> : error ? (
         <div className="mt-5">
           <p role="alert" className="text-sm">Could not load practice suggestions. {error}</p>
@@ -108,8 +105,8 @@ export function RecommendedPreview() {
           {items.map(r => (
             <div key={r.problem_id} className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center">
               <div className="min-w-0 flex-1">
-                <p className="text-base font-medium">{r.title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{r.difficulty || 'Difficulty not listed'}</p>
+                <p className="text-sm font-semibold">{r.title}</p>
+                <div className="mt-2">{r.difficulty ? <DifficultyBadge difficulty={r.difficulty as 'Easy' | 'Medium' | 'Hard'} /> : <span className="text-xs text-muted-foreground">Difficulty not listed</span>}</div>
                 {practiceReason(data, r) && <p className="mt-2 text-sm text-muted-foreground">{practiceReason(data, r)}</p>}
               </div>
               <RecommendationLink url={r.problem_url} title={r.title} />

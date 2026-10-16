@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Check, Cpu, Play, ScanLine, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowRight, Braces, Check, Cpu, Layers2, Play, Route, ScanLine, X } from 'lucide-react'
 import { useAnalyzeCode, usePrepareProblem, useGapData } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { ExperimentalPanel } from '@/components/experimental-panel'
@@ -12,6 +12,7 @@ export function AnalysisView() {
   const { profile } = useAuth()
   const [code, setCode] = useState('')
   const [problemInput, setProblemInput] = useState('')
+  const lineNumbers = useRef<HTMLPreElement>(null)
   const [submittedInput, setSubmittedInput] = useState<{ code: string; problem: string; problemId: number | null } | null>(null)
   const { result: analysisResult, loading, error, errorCode, run } = useAnalyzeCode()
   const prep = usePrepareProblem()
@@ -52,21 +53,22 @@ export function AnalysisView() {
     <div className="workspace-page">
       <header className="flex flex-wrap items-end justify-between gap-5">
         <div className="page-intro">
-          <p className="workspace-kicker">Look at the structure</p>
+          <p className="workspace-kicker flex items-center gap-2"><ScanLine className="size-4 text-mint" />Your analysis workbench</p>
           <h1 className="page-heading">Code Analysis</h1>
           <p className="page-description">Explore what your Python code expresses, and where the evidence stops.</p>
         </div>
-        <button type="button" onClick={handleRun}
-          disabled={loading || !profile || !code.trim() || prep.loading || needsPreparation}
-          className="action-primary">
-          {loading ? <Cpu className="size-4 animate-pulse" /> : <Play className="size-4" />}
-          {loading ? 'Analyzing…' : 'Run Analysis'}
-        </button>
+        <span className="text-xs text-muted-foreground">Python · structural analysis</span>
       </header>
 
-      <section aria-labelledby="problem-label" className="border-y border-border py-5">
+      <div aria-label="Analysis workflow" className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <span className={`inline-flex items-center gap-2 ${prep.result ? 'text-mint' : ''}`}><span className={`size-1.5 rounded-full ${prep.result ? 'bg-mint' : 'bg-muted-foreground/40'}`} />{prep.result ? 'Problem prepared' : 'Problem optional'}</span><ArrowRight className="size-3" />
+        <span className={`inline-flex items-center gap-2 ${code.trim() ? 'text-sky' : ''}`}><span className={`size-1.5 rounded-full ${code.trim() ? 'bg-sky' : 'bg-muted-foreground/40'}`} />Your code</span><ArrowRight className="size-3" />
+        <span className={`inline-flex items-center gap-2 ${result ? 'text-mint' : ''}`}><span className={`size-1.5 rounded-full ${result ? 'bg-mint' : 'bg-muted-foreground/40'}`} />{loading ? 'Inspecting…' : 'Observations'}</span>
+      </div>
+
+      <section aria-labelledby="problem-label" className="border-y border-border py-4">
         <label id="problem-label" htmlFor="problem-id" className="text-sm font-medium">LeetCode problem <span className="font-normal text-muted-foreground">(optional)</span></label>
-        <p id="problem-help" className="mt-1 text-sm text-muted-foreground">Prepare a problem to compare approaches. Leave this empty to inspect code patterns on their own.</p>
+        <p id="problem-help" className="mt-1 text-xs text-muted-foreground">Prepare a problem to compare approaches. Leave this empty to inspect code patterns on their own.</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <input id="problem-id" aria-describedby="problem-help preparation-status" value={problemInput}
             onChange={event => handleProblemInputChange(event.target.value)}
@@ -95,9 +97,9 @@ export function AnalysisView() {
       {analysisResult && !resultIsCurrent && <p role="status" className="text-sm text-muted-foreground">Your inputs changed. Run analysis again to see observations for the current code and problem.</p>}
 
       {result && (
-        <section id="analysis-summary" aria-labelledby="summary-heading" className="border-l-2 border-primary pl-5">
+        <section id="analysis-summary" aria-labelledby="summary-heading" className="detail-enter border-l-2 border-l-mint pl-5">
           <h2 id="summary-heading" className="text-xl font-medium">What this analysis tells you</h2>
-          <dl className="mt-4 space-y-3 text-sm leading-relaxed">
+          <dl className="mt-4 grid gap-5 text-sm leading-relaxed md:grid-cols-3">
             <div><dt className="font-medium">Observed Code Patterns</dt><dd className="mt-1 text-muted-foreground">{detectedPatterns?.length ? detectedPatterns.map(p => p.name || p.pattern_id?.replace(/_/g, ' ')).filter(Boolean).join(', ') : 'No supported code patterns were observed. This may reflect detector coverage.'}</dd></div>
             <div><dt className="font-medium">Approach Comparison</dt><dd className="mt-1 text-muted-foreground">{comparisonHeading}. {result.problem_info ? 'Review the approach definitions and their limits below.' : 'No problem context was supplied.'}</dd></div>
             {shadow.visible && <div><dt className="font-medium">Experimental strategy evidence</dt><dd className="mt-1 text-muted-foreground">{shadow.status === 'likely_match' ? 'Observed strategy: ' + shadow.approaches.join(', ') + '.' : shadow.explanation}</dd></div>}
@@ -107,29 +109,49 @@ export function AnalysisView() {
         </section>
       )}
 
-      <div className="grid min-w-0 gap-8 lg:grid-cols-[1.4fr_1fr]">
-        <section className="min-w-0" aria-labelledby="code-label">
-          <div className="mb-3 flex items-baseline justify-between gap-3">
-            <label id="code-label" htmlFor="solution-code" className="section-title">Python solution</label>
-            <span className="text-xs text-muted-foreground">Code is inspected, not executed</span>
+      <div className="grid min-w-0 items-start gap-5 lg:grid-cols-[1.2fr_1fr]">
+        <section className="surface-panel overflow-hidden" aria-labelledby="code-label">
+          <div className="panel-heading">
+            <label id="code-label" htmlFor="solution-code" className="flex items-center gap-2 text-sm font-semibold"><Braces className="size-4 text-mint" />Python solution</label>
+            <span className="font-mono text-[11px] text-muted-foreground">solution.py</span>
           </div>
-          <textarea id="solution-code" value={code} onChange={event => setCode(event.target.value)}
-            spellCheck={false} placeholder="Paste your Python solution here…"
-            className="min-h-[300px] w-full min-w-0 resize-y rounded-md border border-input bg-card p-4 font-mono text-sm leading-relaxed lg:min-h-[380px]" />
+          <div className="flex min-w-0 bg-background/40">
+            <pre ref={lineNumbers} aria-hidden="true" className="max-h-[330px] w-11 shrink-0 overflow-hidden border-r border-border/60 py-5 pr-3 text-right font-mono text-[13px] leading-6 text-muted-foreground/50 lg:max-h-[400px]">{code.split('\n').map((_, index) => index + 1).join('\n')}</pre>
+            <textarea id="solution-code" value={code} onChange={event => setCode(event.target.value)}
+              onScroll={event => { if (lineNumbers.current) lineNumbers.current.scrollTop = event.currentTarget.scrollTop }}
+              aria-describedby="editor-help" spellCheck={false} wrap="off" placeholder="Paste your Python solution here…"
+              className="editor-input h-[330px] w-full min-w-0 resize-none overflow-auto bg-transparent px-4 py-5 font-mono text-[13px] leading-6 lg:h-[400px]" />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3">
+            <span id="editor-help" className="text-[11px] text-muted-foreground">Code is inspected, not executed</span>
+            <button type="button" onClick={handleRun}
+              disabled={loading || !profile || !code.trim() || prep.loading || needsPreparation}
+              className="action-primary">
+              {loading ? <Cpu className="size-4 animate-pulse" /> : <Play className="size-4" />}
+              {loading ? 'Analyzing…' : 'Run Analysis'}
+            </button>
+          </div>
         </section>
-        <section id="approach-details" className="min-w-0 scroll-mt-20" aria-labelledby="comparison-heading">
-          <h2 id="comparison-heading" className="section-title mb-4">Approach Comparison</h2>
+        <section id="approach-details" className="min-w-0 min-h-[420px] scroll-mt-20" aria-labelledby="comparison-heading" aria-busy={loading}>
+          <div className="flex min-h-14 items-center justify-between gap-3 border-b border-border py-3"><h2 id="comparison-heading" className="section-title flex items-center gap-2"><Layers2 className="size-4 text-sky" />Approach Comparison</h2><span className="text-[11px] text-muted-foreground">{result ? 'Evidence ready' : loading ? 'Inspecting' : 'Awaiting code'}</span></div>
+          <div className="py-5">
           {result ? (
             <>
               {result.problem_info?.title && <p className="mb-4 text-sm text-muted-foreground">{result.problem_info.title}</p>}
+              {!!detectedPatterns?.length && <div className="mb-5"><p className="eyebrow mb-3 text-mint"><ScanLine className="size-3.5" />Observed in your code</p><div className="flex flex-wrap gap-2">{detectedPatterns.map((pattern, index) => <span key={pattern.pattern_id ?? index} className="rounded-md border border-mint/20 bg-mint/5 px-2.5 py-1.5 text-xs text-mint">{pattern.name || pattern.pattern_id?.replace(/_/g, ' ')}</span>)}</div></div>}
               <ApproachComparison groups={result.problem_info?.solution_groups} legacyPatterns={result.problem_info?.canonical_patterns} />
             </>
+          ) : loading ? (
+            <div role="status" className="flex min-h-72 flex-col items-center justify-center gap-4 text-center"><ScanLine className="size-9 animate-pulse text-mint" /><p className="text-sm font-medium">Inspecting the structure of your code…</p><p className="max-w-xs text-xs text-muted-foreground">Observations will appear when analysis completes.</p></div>
           ) : (
-            <div className="border-t border-border pt-5">
-              <p className="text-base leading-relaxed text-muted-foreground">Run analysis to see what the code expresses.</p>
-              <p className="mt-3 text-sm text-muted-foreground">A prepared problem adds an approach comparison. Alternative approaches are not a checklist you must satisfy.</p>
+            <div className="py-3">
+              <div className="mb-6 flex items-center justify-center gap-3 py-7 text-muted-foreground" aria-hidden="true"><Braces className="size-7 text-mint" /><span className="h-px w-8 bg-border" /><ScanLine className="size-7 text-sky" /><span className="h-px w-8 bg-border" /><Route className="size-7 text-amber" /></div>
+              <p className="text-base font-medium">Run analysis to see what the code expresses.</p>
+              <div className="mt-5 space-y-4 text-xs text-muted-foreground"><p className="flex items-center gap-3"><span className="size-1.5 rounded-full bg-mint" />Observed patterns from your code</p><p className="flex items-center gap-3"><span className="size-1.5 rounded-full bg-sky" />Approach alignment with a prepared problem</p><p className="flex items-center gap-3"><span className="size-1.5 rounded-full bg-amber" />Clear limits when evidence is inconclusive</p></div>
+              <p className="mt-6 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">Alternative approaches are not a checklist you must satisfy.</p>
             </div>
           )}
+          </div>
         </section>
       </div>
 

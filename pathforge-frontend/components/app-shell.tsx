@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Activity,
-  GitBranch,
   LayoutDashboard,
   LogOut,
   ScanLine,
@@ -15,6 +14,7 @@ import {
 import { cn, getInitials } from '@/lib/utils'
 import { useAuth } from '@/auth/AuthProvider'
 import { LoginScreen } from '@/components/login-screen'
+import { BrandMark } from '@/components/brand-mark'
 
 const NAV = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard, section: 'Overview' },
@@ -70,9 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-svh w-full">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-sidebar md:flex">
         <div className="flex h-14 items-center gap-2 border-b border-border px-4">
-          <div className="flex size-7 items-center justify-center rounded-md bg-primary/15 text-primary">
-            <GitBranch className="size-4" strokeWidth={2.25} />
-          </div>
+          <BrandMark className="size-9" />
           <div className="flex flex-col leading-none">
             <span className="text-sm font-semibold tracking-tight">PathForge</span>
             <span className="text-xs text-muted-foreground">practice workspace</span>
@@ -82,7 +80,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {SECTIONS.map((section) => (
             <div key={section} className="mb-5">
-              <p className="px-2 pb-2 text-xs font-medium text-muted-foreground">
+              <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">
                 {section}
               </p>
               <ul className="flex flex-col gap-0.5">

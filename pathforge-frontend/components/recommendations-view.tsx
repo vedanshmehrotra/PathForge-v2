@@ -57,17 +57,17 @@ function PracticeSuggestions({ userId }: { userId: number }) {
       {loading ? <p role="status" className="text-sm text-muted-foreground">Loading practice suggestions...</p> : error ? (
         <Panel><PanelBody>
           <p role="alert" className="text-sm">Could not load practice suggestions. {error}</p>
-          <button type="button" onClick={refresh} className="mt-3 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground">Retry</button>
+          <button type="button" onClick={refresh} className="action-primary mt-3">Retry</button>
         </PanelBody></Panel>
       ) : items.length === 0 ? (
         <Panel><PanelBody>
           <p role="status" className="text-sm text-muted-foreground">{practiceEmptyMessage(recData?.state)}</p>
-          <button type="button" onClick={refresh} className="mt-3 text-sm text-primary underline">Refresh suggestions</button>
+          <button type="button" onClick={refresh} className="text-link mt-3">Refresh suggestions</button>
         </PanelBody></Panel>
       ) : list.length === 0 ? (
         <Panel><PanelBody>
           <p className="text-sm text-muted-foreground">No {filter} suggestions are in this list. Choose another difficulty.</p>
-          <button type="button" onClick={() => setFilter('All')} className="mt-3 text-sm text-primary underline">Clear difficulty filter</button>
+          <button type="button" onClick={() => setFilter('All')} className="text-link mt-3">Clear difficulty filter</button>
         </PanelBody></Panel>
       ) : (
         <div className="divide-y divide-border border-y border-border">

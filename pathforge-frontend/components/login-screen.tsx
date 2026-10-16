@@ -1,8 +1,9 @@
 'use client'
 
-import { GitBranch } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { ArrowRight, Braces, Compass, Layers2 } from 'lucide-react'
 import { signInWithGoogle } from '@/auth/authService'
+import { BrandMark } from '@/components/brand-mark'
+import { ProductTour } from '@/components/product-tour'
 
 function GoogleMark({ className }: { className?: string }) {
   return (
@@ -27,54 +28,22 @@ function GoogleMark({ className }: { className?: string }) {
   )
 }
 
-function Brand({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div
-        className={cn(
-          'flex items-center justify-center rounded-md bg-primary/15 text-primary',
-          compact ? 'size-7' : 'size-8',
-        )}
-      >
-        <GitBranch className={compact ? 'size-4' : 'size-5'} strokeWidth={2.25} />
-      </div>
-      <div className="flex flex-col leading-none">
-        <span className={cn('font-semibold tracking-tight', compact ? 'text-sm' : 'text-base')}>
-          PathForge
-        </span>
-        <span className="font-mono text-[10px] text-muted-foreground">practice workspace</span>
-      </div>
-    </div>
-  )
-}
-
-const EXAMPLE = [
-  'window = sum(values[:width])',
-  'for index in range(width, len(values)):',
-  '    window += values[index]',
-  '    window -= values[index - width]',
-].join('\n')
-
 export function LoginScreen() {
   return (
     <div className="mx-auto flex min-h-svh max-w-[1440px] flex-col px-6 py-8 sm:px-12">
-      <header><Brand /></header>
-      <main className="grid flex-1 items-center gap-12 py-14 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
+      <header className="flex items-center justify-between"><div className="flex items-center gap-3"><BrandMark className="size-11" /><span className="text-lg font-bold tracking-tight">PathForge</span></div><span className="hidden text-xs text-muted-foreground sm:block">A workspace for deliberate practice</span></header>
+      <main className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
         <div className="max-w-xl">
-          <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">See the approach behind your code.</h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">Bring a Python solution. Explore the patterns in its structure, compare available approaches, and choose what to practise next.</p>
-          <button type="button" onClick={signInWithGoogle} className="action-primary mt-8 gap-3 px-6"><GoogleMark className="size-4" />Sign in with Google</button>
+          <p className="eyebrow mb-5 text-mint"><span className="h-px w-7 bg-mint" />See the structure. Find your next step.</p>
+          <h1 className="text-4xl font-semibold leading-[1.12] tracking-[-0.05em] sm:text-5xl lg:text-6xl">See the approach <span>behind your code.</span></h1>
+          <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">Bring a Python solution. Explore the patterns in its structure, compare available approaches, and choose what to practise next.</p>
+          <button type="button" onClick={signInWithGoogle} className="action-primary mt-7 gap-3 px-5"><GoogleMark className="size-4" />Sign in with Google<ArrowRight className="ml-2 size-4" /></button>
           <p className="mt-3 text-sm text-muted-foreground">Keep your practice record in one place.</p>
+          <div className="mt-9 flex flex-wrap gap-5 border-t border-border pt-5 text-xs text-muted-foreground"><span className="inline-flex items-center gap-2"><Braces className="size-4 text-mint" />Code evidence</span><span className="inline-flex items-center gap-2"><Layers2 className="size-4 text-sky" />Approach comparison</span><span className="inline-flex items-center gap-2"><Compass className="size-4 text-amber" />Next practice</span></div>
         </div>
-        <section className="min-w-0 border-y border-border py-6 lg:border-y-0 lg:border-l lg:py-2 lg:pl-10" aria-labelledby="example-heading">
-          <p className="workspace-kicker">An example of what to look for</p>
-          <h2 id="example-heading" className="mt-3 text-xl font-medium">The window moves. Its width stays fixed.</h2>
-          <pre className="my-6 overflow-x-auto rounded-md bg-card p-4 font-mono text-xs leading-loose sm:text-sm"><code>{EXAMPLE}</code></pre>
-          <p className="text-base leading-relaxed text-muted-foreground">An incoming element is added and the outgoing element is removed from the same running total. That relationship is more useful than a variable name alone.</p>
-          <p className="mt-5 text-sm text-muted-foreground">Illustrative Python snippet. PathForge inspects patterns; it does not execute code or prove that a solution is correct.</p>
-        </section>
+        <ProductTour />
       </main>
-      <footer className="border-t border-border pt-5 text-xs text-muted-foreground">PathForge · A clearer view of your practice.</footer>
+      <footer className="flex flex-wrap justify-between gap-3 border-t border-border pt-5 text-xs text-muted-foreground"><span>PathForge · A clearer view of your practice.</span><span>Inspects patterns; does not execute code or prove correctness.</span></footer>
     </div>
   )
 }

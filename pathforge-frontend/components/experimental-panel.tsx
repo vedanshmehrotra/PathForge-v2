@@ -35,10 +35,11 @@ function DeveloperDetails({ data }: { data: ShadowDisplayData['developerDetails'
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="mt-3 rounded-md border border-border bg-muted/20">
+    <div className="mt-3 border-t border-border">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] font-medium text-muted-foreground hover:text-foreground"
+        aria-expanded={open}
+        className="flex min-h-11 w-full items-center gap-2 py-2 text-left text-[11px] font-medium text-muted-foreground hover:text-foreground"
       >
         {open ? (
           <ChevronDown className="size-3" />
@@ -48,7 +49,7 @@ function DeveloperDetails({ data }: { data: ShadowDisplayData['developerDetails'
         Developer details
       </button>
       {open && (
-        <div className="space-y-2 border-t border-border px-3 py-2.5 font-mono text-[10px] text-muted-foreground">
+        <div className="space-y-2 border-t border-border py-2.5 font-mono text-[10px] text-muted-foreground">
           <Row label="Legacy outcome" value={data.outcome || '—'} />
           <Row label="Legacy authority" value={data.authorityTier || '—'} />
           <Row label="Canonical primary" value={data.canonicalPrimary || '—'} />
@@ -124,13 +125,13 @@ export function ExperimentalPanel({ shadowAnalysis }: ExperimentalPanelProps) {
   const config = STATUS_CONFIG[data.status]
 
   return (
-    <Panel className="border-dashed border-accent/30 bg-accent/5">
+    <Panel>
       <PanelHeader>
         <PanelTitle>
-          <FlaskConical className="size-4 text-accent" />
+          <FlaskConical className="size-4 text-muted-foreground" />
           Experimental Analysis
         </PanelTitle>
-        <Badge variant="outline" className="text-accent">
+        <Badge variant="outline">
           Beta
         </Badge>
       </PanelHeader>
