@@ -162,9 +162,10 @@ def resolve_problem(
         find_ground_truth_disagreements,
     )
 
-    consistency = find_ground_truth_disagreements(
-        _parse_curated_patterns(row.get("pattern")) or [], groups
-    )
+    curated_patterns = _parse_curated_patterns(row.get("pattern")) or []
+    # No curated declaration is available to compare in this context. An absent
+    # label list is not evidence that every explicit approach is inconsistent.
+    consistency = find_ground_truth_disagreements(curated_patterns, groups) if curated_patterns else []
 
     topics = _parse_topics(row.get("topics") or "")
     description = row.get("description") or ""
@@ -441,9 +442,9 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                 # fallback already derives. A single-family group keeps the
                 # existing construction unchanged.
                 has_v1_required = "required" in g and g["required"]
-                if has_v1_required:
+                if has_v1_required or g.get("approach_definition") == "EXPLICIT":
                     variants = [{
-                        "required": list(g["required"]),
+                        "required": list(g.get("required") or []),
                         "optional": list(g.get("optional", [])),
                         "excluded": list(g.get("excluded", [])),
                         "patterns": None,
@@ -495,7 +496,13 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                 # (patterns, evidence) untouched.
                 b8_reconciled = rec_marker in set(provenance)
 
-                if csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
+                explicit_approach = g.get("approach_definition") == "EXPLICIT"
+                if explicit_approach:
+                    # Flat CSV labels cannot redefine an explicit approach or
+                    # promote its authority. Keep its own declared components.
+                    if csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
+                        logger.info("Flat labels differ from explicit approach %s for problem %d", g.get("id"), problem_id)
+                elif csv_patterns and sorted(csv_patterns) != sorted(legacy_patterns):
                     logger.warning(
                         "Ground truth conflict for problem %d: "
                         "CSV=%s, LLM=%s. Using CSV for production matcher.",
@@ -546,11 +553,21 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                         "evidence": g.get("evidence", g.get("authority_tier", "unobserved")),
                         "confidence": g.get("confidence", {}),
                     })
+                    for field in ("approach_name", "approach_definition", "unmapped_patterns"):
+                        if field in g:
+                            groups[-1][field] = g[field]
+                    if "approach_definition" not in g and not g.get("family_relation"):
+                        # Relations inferred during this load are not explicit
+                        # source declarations. Preserve comparisons, flag limits.
+                        groups[-1]["approach_definition"] = "UNSPECIFIED"
                     if variant.get("family_relation"):
                         groups[-1]["family_relation"] = variant["family_relation"]
                         groups[-1]["alternative_group_id"] = variant.get(
                             "alternative_group_id"
                         )
+                    elif g.get("family_relation"):
+                        groups[-1]["family_relation"] = g["family_relation"]
+                        groups[-1]["alternative_group_id"] = g.get("alternative_group_id")
                 all_confidence.update(g.get("confidence", {}))
             if groups:
                 # B5.5: mark explicitly-declared alternative (ONE_OF) families
@@ -607,6 +624,7 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
         # groups path attaches, so the fallback corpus is normalized as well.
         for group in groups:
             if isinstance(group, dict):
+                group["approach_definition"] = "UNSPECIFIED"
                 group["authority_normalization"] = (
                     authority_vocab.normalize_group_authority(group)
                 )

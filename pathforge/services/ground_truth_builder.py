@@ -348,16 +348,11 @@ def _derive_concepts_from_patterns(patterns) -> tuple:
 
 
 def pattern_family(pattern: str):
-    """The solution family a legacy pattern belongs to, or None if unmapped.
+    """Historical taxonomy bucket for compatibility with cached derivation.
 
-    This is the single definition of "these two patterns are the same approach
-    vs. different approaches" used by both the flat-pattern derivation
-    (``_split_csv_patterns_to_groups``) and the stored-group vocabulary refresh.
-
-    The family is the pattern's primary concept: the first strategy it maps to,
-    or its first required concept when no strategy applies. Patterns sharing a
-    family are merged into one solution group; patterns in different families
-    are ALTERNATIVE approaches, never one conjunctive requirement.
+    This does not establish whether patterns are complementary or alternative.
+    New generation uses explicit approach definitions. The retained legacy
+    loader still uses these buckets; its relationships are exposed as diagnostic.
     """
     mapping = PATTERN_TO_V1_MAPPING.get(pattern)
     if not mapping or not mapping.get("required"):
@@ -369,12 +364,10 @@ def pattern_family(pattern: str):
 
 
 def patterns_span_multiple_families(patterns) -> bool:
-    """True when a pattern list contains more than one solution family.
+    """Whether patterns span historical taxonomy buckets.
 
-    Such a list describes alternative approaches (approach A OR approach B).
-    Collapsing it into a single group's ``required`` list makes a conjunction
-    that no single implementation can satisfy, so callers must keep them as
-    separate alternative groups.
+    Retained for the cached compatibility path, not as proof of alternatives.
+    Explicit combined approaches may legitimately span several buckets.
     """
     families = {pattern_family(p) for p in (patterns or [])}
     families.discard(None)
@@ -453,6 +446,11 @@ def refresh_group_vocabulary(group: dict, sibling_requirements: dict) -> bool:
     if not patterns:
         return False
     if any(pattern not in PATTERN_TO_V1_MAPPING for pattern in patterns):
+        return False
+
+    # Explicit approaches retain their declared component concepts. Historical
+    # taxonomy refresh must not reinterpret a declared combined approach.
+    if group.get("approach_definition") == "EXPLICIT":
         return False
 
     # Alternative approaches must never be collapsed into one conjunctive
@@ -759,6 +757,10 @@ def build_ground_truth(problem_id: int, problem_description: str, connection) ->
     if not canonical:
         raise GroundTruthError("Ground truth generation failed: no recognized patterns remain after normalization")
 
+    approaches = _normalize_approaches(approaches, filtered_confidence)
+    if approaches and set(canonical) != {p for a in approaches for p in a["patterns"]}:
+        raise GroundTruthError("Ground truth generation failed: flat patterns disagree with explicit approaches")
+
     _store_ground_truth(connection, problem_id, canonical, filtered_confidence, approaches)
 
     return canonical
@@ -796,6 +798,21 @@ def _clamp_confidence(value) -> float:
 # Multi-group generation
 # ============================================================
 
+def _normalize_approaches(approaches, confidence) -> list:
+    """Normalize explicit components without silently dropping requirements."""
+    normalized = []
+    for approach in approaches or []:
+        patterns, scores = _normalize_patterns(
+            approach.get("patterns", []), approach.get("confidence", confidence),
+        )
+        declared = {p.lower().replace("-", "_").replace(" ", "_")
+                    for p in approach.get("patterns", [])}
+        if not patterns or declared != set(patterns):
+            raise GroundTruthError("Ground truth generation failed: approach has empty or unsupported components")
+        normalized.append({**approach, "patterns": patterns, "confidence": scores})
+    return normalized
+
+
 def _build_solution_groups(
     patterns: list[str],
     confidence: dict,
@@ -819,7 +836,8 @@ def _build_solution_groups(
     groups = []
 
     # If LLM provided distinct approaches, use them for multi-group generation
-    if approaches and len(approaches) > 1:
+    if approaches:
+        approaches = _normalize_approaches(approaches, confidence)
         for i, approach in enumerate(approaches):
             approach_patterns = approach.get("patterns", [])
             approach_name = approach.get("name", f"approach_{i}")
@@ -832,11 +850,19 @@ def _build_solution_groups(
                 approach_name=approach_name,
             )
             if group is not None:
+                group["approach_definition"] = "EXPLICIT"
                 groups.append(group)
+        if len(groups) > 1:
+            alternative_id = alternative_group_id_for(tuple(sorted(patterns)))
+            for group in groups:
+                group["family_relation"] = ONE_OF
+                group["alternative_group_id"] = alternative_id
     else:
-        # Single approach: group all patterns together
-        # But also check if patterns can be split into distinct strategy groups
-        groups = _split_patterns_into_groups(patterns, confidence)
+        # Flat model responses stay diagnostic: categories cannot define OR.
+        group = _build_single_group("group_0", patterns, confidence)
+        if group is not None:
+            group["approach_definition"] = "UNSPECIFIED"
+            groups = [group]
 
     # Validate all groups
     validated_groups = []
@@ -893,6 +919,9 @@ def _build_single_group(
     optional -= excluded
     # Remove required from optional (required takes priority)
     optional -= required
+    # Registered legacy components can still lack canonical requirements.
+    # Keep that coverage limitation visible inside a combined approach.
+    unmapped_patterns = sorted(set(unmapped_patterns) | set(missing_vocabulary_for_patterns(patterns)))
 
     return {
         "id": group_id,
@@ -1107,12 +1136,13 @@ def _store_ground_truth(
     # Phase 4A: multi-group structured solution groups with V1 vocabulary
     solution_groups = _build_solution_groups(patterns, confidence, approaches)
 
-    # Batch 2A: never persist an unsatisfiable group. Groups whose legacy
-    # patterns have no concept in the current vocabulary are dropped here and
-    # the missing vocabulary is named, so the gap is visible instead of being
-    # stored as a matchable requirement that can never be satisfied.
-    persistable_groups = [g for g in solution_groups if g.get("matchable", True)]
-    unmatchable_groups = [g for g in solution_groups if not g.get("matchable", True)]
+    # Keep the historical flat fallback unchanged. Explicit approaches retain
+    # their structure even without canonical coverage, marked unmatchable;
+    # missing vocabulary cannot silently erase a declared legacy approach.
+    persistable_groups = [g for g in solution_groups
+                          if g.get("matchable", True) or g.get("approach_definition") == "EXPLICIT"]
+    unmatchable_groups = [g for g in solution_groups
+                         if not g.get("matchable", True) and g.get("approach_definition") != "EXPLICIT"]
     if unmatchable_groups:
         missing_vocabulary = sorted({
             p

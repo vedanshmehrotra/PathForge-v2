@@ -11,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from pathforge.api.services.analysis import run_analysis
+from pathforge.api.services.approaches import SolutionApproach, describe_approaches
 from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
 from pathforge.services.persistence import run_persistence
@@ -57,6 +58,7 @@ class ProblemInfo(BaseModel):
     # Batch 2A: disagreements between the flat pattern label and the
     # structured solution groups (empty when the two representations agree).
     ground_truth_consistency: list[dict] = []
+    solution_groups: list[SolutionApproach] = []
 
 
 class EloUpdate(BaseModel):
@@ -156,6 +158,7 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 ground_truth_consistency=getattr(
                     ctx, "ground_truth_consistency", []
                 ) or [],
+                solution_groups=describe_approaches(groups, result["ast"]),
             )
 
         try:

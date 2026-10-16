@@ -8,6 +8,7 @@ import urllib.request
 API_KEY_ENV = "OPENROUTER_API_KEY"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "openai/gpt-4o-mini"
+MAX_TOKENS = 1000
 TIMEOUT = 30
 MAX_RETRIES = 2
 RETRY_DELAY = 1.0
@@ -18,11 +19,19 @@ def call_llm(problem_text: str) -> dict | None:
     if not api_key:
         return None
 
+    model = os.getenv("OPENROUTER_MODEL", MODEL).strip()
+    try:
+        max_tokens = int(os.getenv("OPENROUTER_MAX_TOKENS", str(MAX_TOKENS)))
+    except ValueError:
+        return None
+    if not model or max_tokens <= 0:
+        return None
+
     prompt = _build_prompt(problem_text)
 
     for attempt in range(MAX_RETRIES + 1):
         try:
-            raw_body = _post_request(prompt, api_key)
+            raw_body = _post_request(prompt, api_key, model=model, max_tokens=max_tokens)
             payload = json.loads(raw_body)
         except (json.JSONDecodeError, urllib.error.URLError, urllib.error.HTTPError, OSError) as e:
             if attempt < MAX_RETRIES:
@@ -48,11 +57,20 @@ def call_llm(problem_text: str) -> dict | None:
 def _build_prompt(problem_text: str) -> str:
     return (
         "You are a precise algorithm classification assistant. "
-        "Given a programming problem description, identify the algorithmic patterns "
-        "required to solve it. Return ONLY valid JSON with no markdown, no explanation.\n\n"
+        "Given a programming problem description, propose distinct solution approaches. "
+        "An approach may combine several required patterns; different technique categories "
+        "do not make them alternative solutions. List alternatives explicitly. "
+        "Do not force an unsupported approach into the vocabulary or claim exhaustive coverage. "
+        "Return ONLY valid JSON with no markdown, no explanation.\n\n"
         "Output format:\n"
-        '{"patterns": ["pattern_1", "pattern_2"], "confidence": {"pattern_1": 0.9}}\n\n'
-        "Use exactly one of these canonical pattern names (all lowercase, snake_case):\n"
+        '{"patterns": ["pattern_1", "pattern_2"], "confidence": {"pattern_1": 0.9}, '
+        '"approaches": [{"name": "One combined approach", "patterns": ["pattern_1", "pattern_2"], '
+        '"confidence": {"pattern_1": 0.9, "pattern_2": 0.8}}]}\n\n'
+        "The top-level patterns must be the union of all approach patterns. "
+        "Include one or more approaches; retain all required components within each. "
+        "If no approach can be represented, return empty patterns and approaches, "
+        "rather than inventing labels. Use only these canonical pattern names "
+        "(all lowercase, snake_case):\n"
         "hash_map_lookup, hash_map_frequency, prefix_sum, sliding_window_fixed, "
         "sliding_window_variable, two_pointers_opposite, two_pointers_same, "
         "dfs_recursive, dfs_iterative, bfs_level_order, bfs_shortest_path, "
@@ -68,12 +86,12 @@ def _build_prompt(problem_text: str) -> str:
     )
 
 
-def _post_request(prompt: str, api_key: str) -> bytes:
+def _post_request(prompt: str, api_key: str, *, model: str = MODEL, max_tokens: int = MAX_TOKENS) -> bytes:
     data = json.dumps({
-        "model": MODEL,
+        "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
-        "max_tokens": 500,
+        "max_tokens": max_tokens,
     }).encode("utf-8")
 
     req = urllib.request.Request(OPENROUTER_URL, data=data, method="POST")
@@ -87,7 +105,16 @@ def _post_request(prompt: str, api_key: str) -> bytes:
 
 def _extract_content(payload: dict) -> str | None:
     try:
-        return payload["choices"][0]["message"]["content"]
+        choice = payload["choices"][0]
+        if not isinstance(choice, dict):
+            return None
+        # An explicitly truncated/failed result is not a complete expectation,
+        # even if the partial content happens to parse as valid JSON.
+        # Missing finish metadata remains compatible with older fixtures.
+        if choice.get("finish_reason") not in (None, "stop"):
+            return None
+        content = choice["message"]["content"]
+        return content if isinstance(content, str) and content.strip() else None
     except (KeyError, IndexError, TypeError):
         return None
 

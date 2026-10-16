@@ -48,12 +48,16 @@ def test_call_llm_no_key():
         os.environ["OPENROUTER_API_KEY"] = key
 
 
-def test_call_llm_bad_key():
-    import os
-    key = os.environ.get("OPENROUTER_API_KEY")
-    if not key:
-        os.environ["OPENROUTER_API_KEY"] = "sk-or-v-bad-key"
-    result = call_llm("test problem")
-    assert result is None or isinstance(result, dict)
-    if not key:
-        del os.environ["OPENROUTER_API_KEY"]
+def test_call_llm_request_failure(monkeypatch):
+    from unittest.mock import Mock
+    from urllib.error import URLError
+    from pathforge.llm import openrouter_client as client
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "isolated-fixture-key")
+    monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
+    monkeypatch.delenv("OPENROUTER_MAX_TOKENS", raising=False)
+    request = Mock(side_effect=URLError("Fixture request failure"))
+    monkeypatch.setattr(client, "_post_request", request)
+    monkeypatch.setattr(client.time, "sleep", lambda _delay: None)
+    assert call_llm("test problem") is None
+    assert request.call_count == client.MAX_RETRIES + 1

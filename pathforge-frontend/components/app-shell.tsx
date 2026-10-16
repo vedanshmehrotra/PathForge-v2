@@ -21,7 +21,7 @@ const NAV = [
   { href: '/analysis', label: 'Code Analysis', icon: ScanLine, section: 'Overview' },
   { href: '/progress', label: 'Learning Progress', icon: TrendingUp, section: 'Insights' },
   { href: '/recommendations', label: 'Recommendations', icon: Target, section: 'Insights' },
-  { href: '/profile', label: 'Profile & Settings', icon: Settings, section: 'Account' },
+  { href: '/profile', label: 'Account', icon: Settings, section: 'Account' },
 ]
 
 const SECTIONS = ['Overview', 'Insights', 'Account'] as const
@@ -31,7 +31,7 @@ const TITLES: Record<string, string> = {
   '/analysis': 'Code Analysis',
   '/progress': 'Learning Progress',
   '/recommendations': 'Recommendations',
-  '/profile': 'Profile & Settings',
+  '/profile': 'Account',
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -75,14 +75,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex flex-col leading-none">
             <span className="text-sm font-semibold tracking-tight">PathForge</span>
-            <span className="font-mono text-[10px] text-muted-foreground">skill intelligence</span>
+            <span className="text-xs text-muted-foreground">practice workspace</span>
           </div>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {SECTIONS.map((section) => (
             <div key={section} className="mb-5">
-              <p className="px-2 pb-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70">
+              <p className="px-2 pb-2 text-xs font-medium text-muted-foreground">
                 {section}
               </p>
               <ul className="flex flex-col gap-0.5">
@@ -93,8 +93,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        aria-current={active ? 'page' : undefined}
                         className={cn(
-                          'group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors',
+                          'group flex min-h-11 items-center gap-2.5 rounded-md px-2 py-2 text-sm transition-colors',
                           active
                             ? 'bg-sidebar-accent text-foreground'
                             : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground',
@@ -141,14 +142,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col md:pl-60">
         <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b border-border bg-background/80 px-4 backdrop-blur md:px-6">
           <div className="flex items-center gap-2 text-sm">
+            <details className="relative md:hidden">
+              <summary className="cursor-pointer rounded border border-border px-2 py-1 text-xs">Menu</summary>
+              <nav aria-label="Mobile navigation" className="absolute left-0 top-full z-40 mt-2 w-56 rounded-md border border-border bg-card p-2 shadow-lg">
+                {NAV.map(item => (
+                  <Link key={item.href} href={item.href} aria-current={pathname === item.href ? 'page' : undefined}
+                    onClick={event => event.currentTarget.closest('details')?.removeAttribute('open')}
+                    className="block rounded px-3 py-2 text-sm hover:bg-secondary focus-visible:outline-2 focus-visible:outline-primary">
+                    {item.label}
+                  </Link>
+                ))}
+                <button type="button" onClick={signOut} className="w-full rounded px-3 py-2 text-left text-sm hover:bg-secondary">Sign out</button>
+              </nav>
+            </details>
             <span className="font-mono text-xs text-muted-foreground">pathforge /</span>
             <span className="font-medium">{title}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-2 py-1.5 font-mono text-[11px] text-success">
-              <Activity className="size-3" />
-              engine live
-            </div>
           </div>
         </header>
 

@@ -62,7 +62,7 @@
   --secondary: oklch(0.25 0.008 264);
   --secondary-foreground: oklch(0.96 0.003 264);
   --muted: oklch(0.24 0.007 264);
-  --muted-foreground: oklch(0.66 0.01 264);
+  --muted-foreground: oklch(0.73 0.008 264);
   --accent: oklch(0.27 0.02 254);
   --accent-foreground: oklch(0.9 0.05 254);
   --destructive: oklch(0.62 0.2 25);
@@ -93,5 +93,41 @@
   }
   body {
     @apply bg-background text-foreground;
+    line-height: 1.6;
+  }
+  :is(a, button, input, textarea, summary):focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+  }
+}
+
+@layer components {
+  .workspace-page {
+    @apply mx-auto flex w-full max-w-6xl flex-col gap-9 py-3 md:py-6;
+  }
+  .page-intro {
+    @apply max-w-3xl;
+  }
+  .workspace-kicker {
+    @apply text-xs font-medium tracking-wide text-muted-foreground;
+  }
+  .page-heading {
+    @apply mt-2 text-3xl font-semibold tracking-tight md:text-4xl;
+  }
+  .page-description {
+    @apply mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground;
+  }
+  .section-title {
+    @apply text-base font-semibold tracking-tight;
+  }
+  .action-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+    background-color: color-mix(in oklch, var(--primary) 80%, black);
+  }
+  .action-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-border bg-secondary px-4 py-2 text-sm font-medium transition-colors hover:bg-accent;
+  }
+  .text-link {
+    @apply inline-flex min-h-8 items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline;
   }
 }

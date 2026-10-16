@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { GitBranch } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { signInWithGoogle } from '@/auth/authService'
 
@@ -44,216 +42,39 @@ function Brand({ compact = false }: { compact?: boolean }) {
         <span className={cn('font-semibold tracking-tight', compact ? 'text-sm' : 'text-base')}>
           PathForge
         </span>
-        <span className="font-mono text-[10px] text-muted-foreground">skill intelligence</span>
+        <span className="font-mono text-[10px] text-muted-foreground">practice workspace</span>
       </div>
     </div>
   )
 }
 
-// The preview is a small, quiet depiction of the actual product so a first-time
-// visitor can see what PathForge does. It is illustrative only — never the
-// signed-in user's data — and cycles slowly in the background.
-const PREVIEW_TABS = ['Dashboard', 'Analysis', 'Progress', 'Practice'] as const
-
-function PreviewDashboard() {
-  return (
-    <>
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">Recent submissions</span>
-        <span className="font-mono text-[10px] text-muted-foreground">today</span>
-      </div>
-      <div className="divide-y divide-border">
-        <div className="flex items-center justify-between py-2.5">
-          <div className="min-w-0">
-            <p className="truncate text-xs text-foreground">Two Sum</p>
-            <p className="font-mono text-[10px] text-muted-foreground">hash_map_lookup</p>
-          </div>
-          <Badge variant="success">confirmed</Badge>
-        </div>
-        <div className="flex items-center justify-between py-2.5">
-          <div className="min-w-0">
-            <p className="truncate text-xs text-foreground">Valid Palindrome</p>
-            <p className="font-mono text-[10px] text-muted-foreground">two_pointers_same</p>
-          </div>
-          <Badge variant="warning">unresolved</Badge>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function PreviewAnalysis() {
-  return (
-    <>
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">Analysis result</span>
-        <Badge variant="success">confirmed</Badge>
-      </div>
-      <div className="rounded-md border border-border bg-secondary/30 p-3">
-        <p className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-          approach identified
-        </p>
-        <p className="mt-1.5 text-sm font-medium text-foreground">Hash Map Lookup</p>
-        <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-          Store previously seen values and look up the complement in constant time.
-        </p>
-      </div>
-    </>
-  )
-}
-
-function PreviewProgress() {
-  return (
-    <>
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">Skill progress</span>
-        <span className="font-mono text-[10px] text-muted-foreground">updated now</span>
-      </div>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-foreground">Sliding Window</span>
-          <span className="font-mono text-xs tabular-nums text-foreground">1244</span>
-        </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-          <div className="h-full rounded-full bg-primary" style={{ width: '62%' }} />
-        </div>
-        <p className="font-mono text-[10px] text-success">+18 on last confirmed solve</p>
-      </div>
-      <div className="mt-3 flex items-center gap-2 rounded-md border border-primary/20 bg-primary/5 px-2.5 py-2 text-[11px] text-muted-foreground">
-        <span className="text-primary">next</span>
-        <span>Practice Sliding Window with a window-shrink problem</span>
-      </div>
-    </>
-  )
-}
-
-function PreviewRecommendation() {
-  return (
-    <>
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">Recommended next</span>
-        <span className="font-mono text-[10px] text-muted-foreground">queue</span>
-      </div>
-      <div className="divide-y divide-border">
-        <div className="flex items-center justify-between py-2.5">
-          <div className="min-w-0">
-            <p className="truncate text-xs text-foreground">Flood Fill</p>
-            <p className="font-mono text-[10px] text-muted-foreground">bfs_level_order</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="success">Easy</Badge>
-            <span className="font-mono text-[10px] text-success">+25</span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between py-2.5">
-          <div className="min-w-0">
-            <p className="truncate text-xs text-foreground">Number of Good Pairs</p>
-            <p className="font-mono text-[10px] text-muted-foreground">hash_map_frequency</p>
-          </div>
-          <span className="font-mono text-[10px] text-success">+24</span>
-        </div>
-      </div>
-    </>
-  )
-}
-
-const PREVIEW_PANELS = [
-  PreviewDashboard,
-  PreviewAnalysis,
-  PreviewProgress,
-  PreviewRecommendation,
-]
-
-function ProductPreview() {
-  const [step, setStep] = useState(0)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = window.setInterval(() => {
-      setStep((current) => (current + 1) % PREVIEW_PANELS.length)
-    }, 4300)
-    return () => window.clearInterval(id)
-  }, [])
-
-  return (
-    <div className="w-full max-w-md" aria-hidden="true">
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="flex h-10 items-center justify-between border-b border-border px-3">
-          <Brand compact />
-          <span className="font-mono text-[10px] text-muted-foreground">workspace</span>
-        </div>
-        <div className="flex items-center gap-4 border-b border-border px-3 py-2">
-          {PREVIEW_TABS.map((tab, i) => (
-            <span
-              key={tab}
-              className={cn(
-                'font-mono text-[10px] uppercase tracking-wide transition-colors duration-700',
-                i === step ? 'text-foreground' : 'text-muted-foreground/50',
-              )}
-            >
-              {tab}
-            </span>
-          ))}
-        </div>
-        <div className="relative min-h-[200px] p-4">
-          {PREVIEW_PANELS.map((PanelContent, i) => (
-            <div
-              key={i}
-              className={cn(
-                'transition-opacity duration-1000 ease-out',
-                i === step ? 'opacity-100' : 'pointer-events-none absolute inset-0 p-4 opacity-0',
-              )}
-            >
-              <PanelContent />
-            </div>
-          ))}
-        </div>
-      </div>
-      <p className="mt-3 text-center font-mono text-[10px] text-muted-foreground/60">
-        a look at the PathForge workspace
-      </p>
-    </div>
-  )
-}
+const EXAMPLE = [
+  'window = sum(values[:width])',
+  'for index in range(width, len(values)):',
+  '    window += values[index]',
+  '    window -= values[index - width]',
+].join('\n')
 
 export function LoginScreen() {
   return (
-    <div className="grid min-h-svh grid-cols-1 lg:grid-cols-[1fr_minmax(380px,44%)]">
-      <div className="flex flex-col justify-between gap-10 border-border p-8 sm:p-12 lg:border-r">
-        <Brand />
-
-        <div className="w-full max-w-sm self-center lg:mx-auto">
-          <p className="font-mono text-[11px] uppercase tracking-wider text-primary">
-            developer skill intelligence
-          </p>
-          <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-            Understand the way you solve.
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            PathForge analyzes your solutions, detects the patterns behind them, and tracks how your
-            problem-solving develops over time.
-          </p>
-          <button
-            onClick={signInWithGoogle}
-            className="mt-7 inline-flex w-full items-center justify-center gap-2.5 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            <GoogleMark className="size-4" />
-            Sign in with Google
-          </button>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Use your Google account to keep your practice history in one place.
-          </p>
+    <div className="mx-auto flex min-h-svh max-w-[1440px] flex-col px-6 py-8 sm:px-12">
+      <header><Brand /></header>
+      <main className="grid flex-1 items-center gap-12 py-14 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
+        <div className="max-w-xl">
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">See the approach behind your code.</h1>
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">Bring a Python solution. Explore the patterns in its structure, compare available approaches, and choose what to practise next.</p>
+          <button type="button" onClick={signInWithGoogle} className="action-primary mt-8 gap-3 px-6"><GoogleMark className="size-4" />Sign in with Google</button>
+          <p className="mt-3 text-sm text-muted-foreground">Keep your practice record in one place.</p>
         </div>
-
-        <p className="font-mono text-[10px] text-muted-foreground/60">
-          &copy; 2026 PathForge &middot; built for deliberate practice
-        </p>
-      </div>
-
-      <div className="hidden items-center justify-center border-border bg-sidebar/40 p-8 lg:flex">
-        <ProductPreview />
-      </div>
+        <section className="min-w-0 border-y border-border py-6 lg:border-y-0 lg:border-l lg:py-2 lg:pl-10" aria-labelledby="example-heading">
+          <p className="workspace-kicker">An example of what to look for</p>
+          <h2 id="example-heading" className="mt-3 text-xl font-medium">The window moves. Its width stays fixed.</h2>
+          <pre className="my-6 overflow-x-auto rounded-md bg-card p-4 font-mono text-xs leading-loose sm:text-sm"><code>{EXAMPLE}</code></pre>
+          <p className="text-base leading-relaxed text-muted-foreground">An incoming element is added and the outgoing element is removed from the same running total. That relationship is more useful than a variable name alone.</p>
+          <p className="mt-5 text-sm text-muted-foreground">Illustrative Python snippet. PathForge inspects patterns; it does not execute code or prove that a solution is correct.</p>
+        </section>
+      </main>
+      <footer className="border-t border-border pt-5 text-xs text-muted-foreground">PathForge · A clearer view of your practice.</footer>
     </div>
   )
 }

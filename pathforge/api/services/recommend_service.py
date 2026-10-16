@@ -10,6 +10,8 @@ from pathforge.api.services.loader import (
     load_user_info,
 )
 from pathforge.recommendation_engine import RecommendationEngine
+from pathforge.recommendation_links import problem_url
+from pathforge.practice_recommendations import HISTORY_LIMIT, recommend_practice
 import config
 
 
@@ -24,6 +26,7 @@ def _build_problem_lookup(problems):
             lookup[pid] = {
                 "title": p.get("title", ""),
                 "difficulty": p.get("difficulty", "Easy"),
+                "problem_url": problem_url(p.get("link")),
             }
     return lookup
 
@@ -34,7 +37,8 @@ def _difficulty_to_label(difficulty_score: float) -> str:
     return DIFFICULTY_ORDER[min(idx, len(DIFFICULTY_ORDER) - 1)]
 
 
-def get_recommendations(user_id: int, db_path: Optional[str] = None) -> Dict[str, Any]:
+def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
+                        mode: str = "legacy", difficulty=None, excluded_ids=()) -> Dict[str, Any]:
     connection = get_connection(db_path or config.DATABASE_PATH)
     try:
         user = load_user_info(connection, user_id)
@@ -42,6 +46,18 @@ def get_recommendations(user_id: int, db_path: Optional[str] = None) -> Dict[str
             return {"error": f"User {user_id} not found", "stage": "RECOMMENDATION"}
 
         problems = load_problem_bank(connection)
+        if mode == "practice":
+            history = connection.execute(
+                """SELECT problem_id FROM submissions
+                   WHERE user_id = %s AND problem_id IS NOT NULL
+                   ORDER BY id DESC LIMIT %s""", (user_id, HISTORY_LIMIT + 1),
+            ).fetchall()
+            return {"user_id": user_id, **recommend_practice(
+                problems, [dict(row) for row in history],
+                difficulty=difficulty, excluded_ids=excluded_ids,
+            )}
+        if mode != "legacy":
+            return {"error": "Unsupported recommendation mode", "stage": "RECOMMENDATION"}
         if not problems:
             return {"error": "No problems in bank", "stage": "RECOMMENDATION"}
 
@@ -81,6 +97,7 @@ def get_recommendations(user_id: int, db_path: Optional[str] = None) -> Dict[str
                 "pattern": target_patterns[0] if target_patterns else "",
                 "reason": r.get("reason", ""),
                 "score": round(r.get("expected_learning_gain", 0.0) * 100, 1),
+                "problem_url": pdata.get("problem_url"),
             })
 
         return {

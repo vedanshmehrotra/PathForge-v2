@@ -60,12 +60,29 @@ export function useGapData(userId: number) {
   )
 }
 
-export function useRecommendations(userId: number) {
-  return useApiData<RecommendResponse>(
-    () => fetchRecommendations({ user_id: userId }),
-    [userId],
-    !userId || userId <= 0,
-  )
+export function useRecommendations(userId: number, difficulty?: 'Easy' | 'Medium' | 'Hard', excludedIds: string[] = []) {
+  const [revision, setRevision] = useState(0)
+  const exclusions = JSON.stringify(excludedIds)
+  const key = JSON.stringify([userId, difficulty, exclusions, revision])
+  const [state, setState] = useState<{
+    key: string; data: RecommendResponse | null; error: string | null
+  } | null>(null)
+  const refresh = useCallback(() => setRevision(value => value + 1), [])
+
+  useEffect(() => {
+    if (userId <= 0) return
+    let active = true
+    fetchRecommendations({ user_id: userId, mode: 'practice', difficulty, excluded_ids: JSON.parse(exclusions) })
+      .then(data => { if (active) setState({ key, data, error: null }) })
+      .catch(e => { if (active) setState({ key, data: null, error: e instanceof Error ? e.message : 'Request failed' }) })
+    return () => { active = false }
+  }, [userId, difficulty, exclusions, key])
+
+  // Never render another account/filter's data while its request is in flight.
+  const current = state?.key === key ? state : null
+  return { data: userId > 0 ? current?.data ?? null : null,
+    error: userId > 0 ? current?.error ?? null : null,
+    loading: userId > 0 && current === null, refresh }
 }
 
 // Topic profiles (attempts, pass counts, accuracy, last attempt) from the

@@ -1,446 +1,165 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  Check,
-  ChevronRight,
-  Cpu,
-  GitCompare,
-  Play,
-  ScanLine,
-  TriangleAlert,
-  X,
-  Zap,
-} from 'lucide-react'
-import { Panel, PanelBody, PanelHeader, PanelTitle } from '@/components/ui/panel'
-import { Badge } from '@/components/ui/badge'
-import { Meter } from '@/components/charts'
-import { cn } from '@/lib/utils'
-import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
+import { Check, Cpu, Play, ScanLine, X } from 'lucide-react'
+import { useAnalyzeCode, usePrepareProblem, useGapData } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
-import { useGapData } from '@/hooks/useApi'
 import { ExperimentalPanel } from '@/components/experimental-panel'
-
-const SEVERITY = {
-  high: { variant: 'danger' as const, label: 'HIGH' },
-  medium: { variant: 'warning' as const, label: 'MED' },
-  low: { variant: 'default' as const, label: 'LOW' },
-} as const
-
-const DIFFICULTY_VARIANT: Record<string, 'success' | 'warning' | 'danger'> = {
-  Easy: 'success',
-  Medium: 'warning',
-  Hard: 'danger',
-}
-
-function pct(confidence: number): number {
-  return Math.round(confidence * 100)
-}
+import { ApproachComparison, approachComparisonHeading } from '@/components/approach-comparison'
+import { mapShadowToDisplay } from '@/services/shadow-mapper'
 
 export function AnalysisView() {
   const { profile } = useAuth()
   const [code, setCode] = useState('')
   const [problemInput, setProblemInput] = useState('')
-
-  const { result, loading, error, errorCode, run } = useAnalyzeCode()
+  const [submittedInput, setSubmittedInput] = useState<{ code: string; problem: string; problemId: number | null } | null>(null)
+  const { result: analysisResult, loading, error, errorCode, run } = useAnalyzeCode()
   const prep = usePrepareProblem()
   const { data: gapData } = useGapData(profile?.user_id ?? 0)
   const needsPreparation = !!problemInput.trim() && !prep.result
+  const resultIsCurrent = !submittedInput || (code === submittedInput.code &&
+    problemInput.trim() === submittedInput.problem && (prep.result?.leetcode_id ?? null) === submittedInput.problemId)
+  const result = resultIsCurrent ? analysisResult : null
 
   useEffect(() => {
-    if (errorCode === 'PREPARATION_REQUIRED' || errorCode === 'GROUND_TRUTH_UNAVAILABLE') {
-      prep.clear()
-    }
+    if (errorCode === 'PREPARATION_REQUIRED' || errorCode === 'GROUND_TRUTH_UNAVAILABLE') prep.clear()
   }, [errorCode, prep.clear])
 
   const handleRun = () => {
-    if (profile && !needsPreparation && !prep.loading && !loading) {
-      const req: Parameters<typeof run>[0] = {
-        user_id: profile.user_id,
-        code,
-        language: 'python',
-      }
-      if (prep.result) {
-        req.problem = { leetcode_id: prep.result.leetcode_id }
-      }
+    if (profile && code.trim() && !needsPreparation && !prep.loading && !loading) {
+      const req: Parameters<typeof run>[0] = { user_id: profile.user_id, code, language: 'python' }
+      if (prep.result) req.problem = { leetcode_id: prep.result.leetcode_id }
+      setSubmittedInput({ code, problem: problemInput.trim(), problemId: prep.result?.leetcode_id ?? null })
       run(req)
     }
   }
-
-  // Clear stale prepare result when user edits the input after a prepare
   const handleProblemInputChange = (val: string) => {
-    if (val.trim() !== problemInput.trim()) {
-      prep.clear()
-    }
+    if (val.trim() !== problemInput.trim()) prep.clear()
     setProblemInput(val)
   }
-
   const handlePrepare = () => {
     const val = problemInput.trim()
-    if (val) {
-      prep.run(val)
-    }
+    if (val) prep.run(val)
   }
-
   const detectedPatterns = result?.ast?.detected_patterns as Array<{
-    pattern_id?: string
-    name?: string
-    category?: string
-    confidence?: number
-    nodes?: number
-    expected?: boolean
+    pattern_id?: string; name?: string; category?: string; confidence?: number; nodes?: number
   }> | undefined
-
-  const matchResult = result?.match_result as (Record<string, unknown> & { match_result?: string; reasoning_signals?: string[] }) | undefined
-  const canonicalPatterns = result?.problem_info?.canonical_patterns
-  const eloUpdates = result?.elo_updates
-  const matchScore = (matchResult?.confidence_score as number) ?? 0
-  const matchedCount = (matchResult?.matched_groups as unknown[])?.length ?? 0
-  const unmatchedCount = (matchResult?.unmatched_patterns as unknown[])?.length ?? 0
-  const totalCount = matchedCount + unmatchedCount
+  const matchResult = result?.match_result as (Record<string, unknown> & { reasoning_signals?: string[] }) | undefined
+  const shadow = mapShadowToDisplay(result?.shadow_analysis)
+  const comparisonHeading = approachComparisonHeading(result?.problem_info?.solution_groups)
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold tracking-tight">Code Analysis</h1>
-          <p className="text-sm text-muted-foreground">
-            Submit a solution to run the AST detector, matching engine, and gap analysis.
-          </p>
+    <div className="workspace-page">
+      <header className="flex flex-wrap items-end justify-between gap-5">
+        <div className="page-intro">
+          <p className="workspace-kicker">Look at the structure</p>
+          <h1 className="page-heading">Code Analysis</h1>
+          <p className="page-description">Explore what your Python code expresses, and where the evidence stops.</p>
         </div>
-        <button
-          onClick={handleRun}
-          disabled={loading || !profile || prep.loading || needsPreparation}
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
-        >
+        <button type="button" onClick={handleRun}
+          disabled={loading || !profile || !code.trim() || prep.loading || needsPreparation}
+          className="action-primary">
           {loading ? <Cpu className="size-4 animate-pulse" /> : <Play className="size-4" />}
-          {loading ? 'Analyzing\u2026' : 'Run Analysis'}
+          {loading ? 'Analyzing…' : 'Run Analysis'}
         </button>
-      </div>
+      </header>
 
-      <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-secondary/20 px-3 py-2">
-        <input
-          value={problemInput}
-          onChange={(e) => handleProblemInputChange(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') handlePrepare() }}
-          placeholder="Enter a LeetCode Problem ID (e.g. 1, 3, 121) and click Prepare."
-          spellCheck={false}
-          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
-        />
-        {prep.result ? (
-          <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-            <Check className="size-3 text-success" />
-            <span className="font-medium text-foreground">{prep.result.title}</span>
-            <Badge variant={DIFFICULTY_VARIANT[prep.result.difficulty] ?? 'default'}>
-              {prep.result.difficulty}
-            </Badge>
-            <button
-              onClick={prep.clear}
-              className="ml-1 rounded p-0.5 text-muted-foreground/50 hover:text-foreground"
-              title="Clear problem"
-            >
-              <X className="size-3" />
+      <section aria-labelledby="problem-label" className="border-y border-border py-5">
+        <label id="problem-label" htmlFor="problem-id" className="text-sm font-medium">LeetCode problem <span className="font-normal text-muted-foreground">(optional)</span></label>
+        <p id="problem-help" className="mt-1 text-sm text-muted-foreground">Prepare a problem to compare approaches. Leave this empty to inspect code patterns on their own.</p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <input id="problem-id" aria-describedby="problem-help preparation-status" value={problemInput}
+            onChange={event => handleProblemInputChange(event.target.value)}
+            onKeyDown={event => { if (event.key === 'Enter') handlePrepare() }}
+            placeholder="Enter a LeetCode problem ID, for example 1 or 209"
+            spellCheck={false} className="min-h-11 min-w-0 flex-1 rounded-md border border-input bg-card px-3 text-sm" />
+          {prep.result ? (
+            <div className="flex items-center gap-2 text-sm">
+              <Check className="size-4 text-success" /><span>{prep.result.title}</span>
+              <button type="button" onClick={prep.clear} aria-label="Clear prepared problem" className="inline-flex size-11 items-center justify-center rounded-md hover:bg-secondary"><X className="size-4" /></button>
+            </div>
+          ) : (
+            <button type="button" onClick={handlePrepare} disabled={!problemInput.trim() || prep.loading} className="action-secondary disabled:opacity-50">
+              {prep.loading ? <Cpu className="size-4 animate-pulse" /> : <ScanLine className="size-4" />}
+              {prep.loading ? 'Preparing…' : 'Prepare'}
             </button>
-          </span>
-        ) : (
-          <button
-            onClick={handlePrepare}
-            disabled={!problemInput.trim() || prep.loading}
-            className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 font-mono text-[11px] font-medium text-secondary-foreground transition-opacity hover:opacity-80 disabled:opacity-50"
-          >
-            {prep.loading ? <Cpu className="size-3 animate-pulse" /> : <ScanLine className="size-3" />}
-            {prep.loading ? 'Preparing\u2026' : 'Prepare'}
-          </button>
-        )}
-      </div>
-
-      {needsPreparation && !prep.loading && (
-        <p className="text-xs text-muted-foreground">
-          Prepare the entered problem before running analysis, or clear it for analysis without a problem.
+          )}
+        </div>
+        <p id="preparation-status" role="status" className="mt-2 text-sm text-muted-foreground">
+          {needsPreparation && !prep.loading ? 'Prepare the entered problem before running analysis, or clear it for analysis without a problem.' : prep.result ? 'Problem prepared. You can now compare approach evidence.' : ''}
         </p>
+        {prep.error && <p role="alert" className="mt-3 text-sm text-destructive">{prep.error} Review the problem ID and prepare again explicitly.</p>}
+        {error && <p role="alert" className="mt-3 text-sm text-destructive">{error} Review the message before retrying.</p>}
+      </section>
+
+      {analysisResult && !resultIsCurrent && <p role="status" className="text-sm text-muted-foreground">Your inputs changed. Run analysis again to see observations for the current code and problem.</p>}
+
+      {result && (
+        <section id="analysis-summary" aria-labelledby="summary-heading" className="border-l-2 border-primary pl-5">
+          <h2 id="summary-heading" className="text-xl font-medium">What this analysis tells you</h2>
+          <dl className="mt-4 space-y-3 text-sm leading-relaxed">
+            <div><dt className="font-medium">Observed Code Patterns</dt><dd className="mt-1 text-muted-foreground">{detectedPatterns?.length ? detectedPatterns.map(p => p.name || p.pattern_id?.replace(/_/g, ' ')).filter(Boolean).join(', ') : 'No supported code patterns were observed. This may reflect detector coverage.'}</dd></div>
+            <div><dt className="font-medium">Approach Comparison</dt><dd className="mt-1 text-muted-foreground">{comparisonHeading}. {result.problem_info ? 'Review the approach definitions and their limits below.' : 'No problem context was supplied.'}</dd></div>
+            {shadow.visible && <div><dt className="font-medium">Experimental strategy evidence</dt><dd className="mt-1 text-muted-foreground">{shadow.status === 'likely_match' ? 'Observed strategy: ' + shadow.approaches.join(', ') + '.' : shadow.explanation}</dd></div>}
+          </dl>
+          <p className="mt-4 text-sm text-muted-foreground">These observations do not establish solution correctness, optimality, or a skill deficit.</p>
+          <a href="#approach-details" className="text-link mt-3">Read the approach comparison</a>
+        </section>
       )}
 
-      {prep.error && (
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          {prep.error}
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          {error}
-        </div>
-      )}
-
-      {result?.problem_info && (
-        <Panel>
-          <PanelHeader>
-            <PanelTitle>
-              <ScanLine className="size-4 text-primary" />
-              Problem Info
-            </PanelTitle>
-            <Badge variant={DIFFICULTY_VARIANT[result.problem_info.difficulty ?? ''] ?? 'default'}>
-              {result.problem_info.difficulty}
-            </Badge>
-          </PanelHeader>
-          <PanelBody className="flex flex-col gap-3">
-            <p className="text-sm font-medium">{result.problem_info.title}</p>
-            {result.problem_info.canonical_patterns?.length > 0 && (
-              <div>
-                <p className="mb-1.5 font-mono text-[10px] uppercase text-muted-foreground">
-                  Expected Patterns
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {result.problem_info.canonical_patterns.map((p) => (
-                    <Badge key={p.name} variant="outline" className="font-mono text-[11px]">
-                      {p.name.replace(/_/g, ' ')}
-                      <span className="ml-1 text-muted-foreground">{pct(p.confidence)}%</span>
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </PanelBody>
-        </Panel>
-      )}
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
-        <div className="lg:col-span-3">
-          <Panel>
-            <PanelHeader>
-              <PanelTitle>
-                <ScanLine className="size-4 text-primary" />
-                Solution Input
-              </PanelTitle>
-              <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
-                <span>python</span>
-                <span>·</span>
-                <span>{code.split('\n').length} lines</span>
-              </div>
-            </PanelHeader>
-            <div className="flex">
-              <div className="select-none border-r border-border bg-secondary/40 px-2 py-3 text-right font-mono text-xs leading-[1.6] text-muted-foreground/60">
-                {code.split('\n').map((_, i) => (
-                  <div key={i}>{i + 1}</div>
-                ))}
-              </div>
-              <textarea
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                spellCheck={false}
-                placeholder={'Paste your Python solution here\u2026'}
-                className="min-h-[360px] flex-1 resize-none bg-transparent px-3 py-3 font-mono text-xs leading-[1.6] text-foreground outline-none placeholder:text-muted-foreground/50"
-              />
+      <div className="grid min-w-0 gap-8 lg:grid-cols-[1.4fr_1fr]">
+        <section className="min-w-0" aria-labelledby="code-label">
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <label id="code-label" htmlFor="solution-code" className="section-title">Python solution</label>
+            <span className="text-xs text-muted-foreground">Code is inspected, not executed</span>
+          </div>
+          <textarea id="solution-code" value={code} onChange={event => setCode(event.target.value)}
+            spellCheck={false} placeholder="Paste your Python solution here…"
+            className="min-h-[300px] w-full min-w-0 resize-y rounded-md border border-input bg-card p-4 font-mono text-sm leading-relaxed lg:min-h-[380px]" />
+        </section>
+        <section id="approach-details" className="min-w-0 scroll-mt-20" aria-labelledby="comparison-heading">
+          <h2 id="comparison-heading" className="section-title mb-4">Approach Comparison</h2>
+          {result ? (
+            <>
+              {result.problem_info?.title && <p className="mb-4 text-sm text-muted-foreground">{result.problem_info.title}</p>}
+              <ApproachComparison groups={result.problem_info?.solution_groups} legacyPatterns={result.problem_info?.canonical_patterns} />
+            </>
+          ) : (
+            <div className="border-t border-border pt-5">
+              <p className="text-base leading-relaxed text-muted-foreground">Run analysis to see what the code expresses.</p>
+              <p className="mt-3 text-sm text-muted-foreground">A prepared problem adds an approach comparison. Alternative approaches are not a checklist you must satisfy.</p>
             </div>
-          </Panel>
-        </div>
+          )}
+        </section>
+      </div>
 
-        <div className="flex flex-col gap-4 lg:col-span-2">
-          <Panel>
-            <PanelHeader>
-              <PanelTitle>
-                <Cpu className="size-4 text-primary" />
-                AST Detected Patterns
-              </PanelTitle>
-              <span className="font-mono text-[10px] text-muted-foreground">
-                {detectedPatterns?.length ?? 0} found
-              </span>
-            </PanelHeader>
-            <div className={cn('divide-y divide-border transition-opacity', loading && 'opacity-40')}>
-              {!detectedPatterns && (
-                <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                  Run analysis to detect patterns.
-                </div>
-              )}
-              {detectedPatterns?.map((d) => (
-                <div key={d.pattern_id ?? d.name} className="flex items-center gap-3 px-4 py-2.5">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <p className="truncate text-sm">{d.name ?? d.pattern_id?.replace(/_/g, ' ')}</p>
-                      {d.expected ? (
-                        <Check className="size-3 text-success" />
-                      ) : (
-                        <X className="size-3 text-muted-foreground" />
-                      )}
-                    </div>
-                    <p className="font-mono text-[10px] text-muted-foreground">
-                      {d.category ?? ''} · {d.nodes ?? 0} nodes
-                    </p>
-                  </div>
-                  <div className="w-16">
-                    <Meter value={pct(d.confidence ?? 0)} />
-                  </div>
-                  <span className="w-9 text-right font-mono text-xs tabular-nums">{pct(d.confidence ?? 0)}%</span>
-                </div>
+      {result && (
+        <div className="space-y-5 border-t border-border pt-6">
+          <details>
+            <summary className="cursor-pointer text-sm font-medium">Detection evidence and recorded updates</summary>
+            <p className="mt-3 text-sm text-muted-foreground">Confidence describes detector evidence, not the chance that your solution is correct.</p>
+            <ul className="mt-4 divide-y divide-border text-sm">
+              {detectedPatterns?.map((p, i) => (
+                <li key={p.pattern_id ?? i} className="py-3">
+                  <span>{p.name || p.pattern_id?.replace(/_/g, ' ')}</span>
+                  {typeof p.confidence === 'number' && <span className="ml-3 text-muted-foreground">Detector confidence {Math.round(p.confidence * 100)}%</span>}
+                  {typeof p.nodes === 'number' && <span className="ml-3 text-muted-foreground">{p.nodes} nodes</span>}
+                </li>
               ))}
-            </div>
-          </Panel>
-
-          <Panel>
-            <PanelHeader>
-              <PanelTitle>
-                <GitCompare className="size-4 text-primary" />
-                Matching Engine
-              </PanelTitle>
-              <Badge variant={matchScore >= 0.8 ? 'success' : 'warning'}>{pct(matchScore)}% match</Badge>
-            </PanelHeader>
-            <PanelBody className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Expected pattern alignment</span>
-                <span className="font-mono text-sm tabular-nums">{pct(matchScore)}%</span>
-              </div>
-              <Meter value={pct(matchScore)} />
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <div className="rounded-md border border-border bg-secondary/40 p-2">
-                  <p className="font-mono text-[10px] uppercase text-muted-foreground">matched</p>
-                  <p className="font-mono text-lg tabular-nums text-success">{matchedCount}/{totalCount || 1}</p>
-                </div>
-                <div className="rounded-md border border-border bg-secondary/40 p-2">
-                  <p className="font-mono text-[10px] uppercase text-muted-foreground">unmatched</p>
-                  <p className="font-mono text-lg tabular-nums text-warning">{unmatchedCount}</p>
-                </div>
-              </div>
-              {canonicalPatterns && canonicalPatterns.length > 0 && (
-                <div className="rounded-md border border-border bg-secondary/20 p-3">
-                  <p className="mb-1.5 font-mono text-[10px] uppercase text-muted-foreground">
-                    Expected by Problem
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {canonicalPatterns.map((p) => (
-                      <Badge key={p.name} variant="outline" className="font-mono text-[10px]">
-                        {p.name.replace(/_/g, ' ')}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {matchResult?.match_result && (
-                <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
-                  <p className="mb-0.5 font-mono text-[10px] uppercase text-muted-foreground">Verdict</p>
-                  <p className="text-xs font-medium text-foreground">
-                    {matchResult.match_result === 'FULL_MATCH' && '✅ All expected patterns detected'}
-                    {matchResult.match_result === 'PARTIAL_MATCH' && '⚠️ Some expected patterns missing'}
-                    {matchResult.match_result === 'NO_MATCH' && '❌ No expected patterns detected'}
-                    {matchResult.match_result === 'NO_GROUND_TRUTH' && 'ℹ️ No verified ground truth available'}
-                  </p>
-                  {Array.isArray(matchResult.reasoning_signals) &&
-                    matchResult.reasoning_signals.length > 0 && (
-                      <details className="group mt-2">
-                        <summary className="flex cursor-pointer items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
-                          Detection reasoning
-                          <ChevronRight className="size-3 transition-transform group-open:rotate-90" />
-                        </summary>
-                        <ul className="mt-1.5 list-inside list-disc space-y-0.5">
-                          {matchResult.reasoning_signals.slice(0, 6).map((s: string, i: number) => (
-                            <li key={i} className="text-[11px] text-muted-foreground">
-                              {s}
-                            </li>
-                          ))}
-                        </ul>
-                      </details>
-                    )}
-                </div>
-              )}
-            </PanelBody>
-          </Panel>
+            </ul>
+            {matchResult?.reasoning_signals?.length ? <ul className="mt-4 list-inside list-disc text-sm text-muted-foreground">{matchResult.reasoning_signals.map((signal, i) => <li key={i}>{signal}</li>)}</ul> : null}
+            <h3 className="section-title mt-5">Recorded rating updates</h3>
+            {!result.elo_updates?.length ? <p className="mt-2 text-sm text-muted-foreground">No skill updates were recorded for this analysis.</p> : result.elo_updates.map(update => (
+              <p key={update.pattern_id} className="mt-2 text-sm">{update.pattern_id.replace(/_/g, ' ')}: {Math.round(update.elo_before)} → {Math.round(update.elo_after)}</p>
+            ))}
+            {!!gapData?.gap_signals?.length && <p className="mt-4 text-sm text-muted-foreground">Stored history signals: {gapData.gap_signals.map(signal => signal.pattern_id.replace(/_/g, ' ')).join(', ')}. These signals are separate from the current code observations.</p>}
+          </details>
+          <details>
+            <summary className="cursor-pointer text-sm font-medium">Experimental evidence and developer details</summary>
+            <div className="mt-4"><ExperimentalPanel shadowAnalysis={result.shadow_analysis} /></div>
+          </details>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Panel className="lg:col-span-2">
-          <PanelHeader>
-            <PanelTitle>
-              <Zap className="size-4 text-primary" />
-              Skill Changes
-            </PanelTitle>
-            <span className="font-mono text-[10px] text-muted-foreground">
-              {eloUpdates?.length ?? 0} patterns updated
-            </span>
-          </PanelHeader>
-          <PanelBody className="flex flex-col gap-3">
-            {!eloUpdates?.length && (
-              <p className="text-xs text-muted-foreground">
-                Run analysis to see how your Elo ratings would change.
-              </p>
-            )}
-            {eloUpdates && eloUpdates.length > 0 && (
-              <div className="divide-y divide-border">
-                {eloUpdates.map((u) => (
-                  <div key={u.pattern_id} className="flex items-center gap-3 px-1 py-2">
-                    <p className="min-w-0 flex-1 truncate text-sm">
-                      {u.pattern_id.replace(/_/g, ' ')}
-                    </p>
-                    <div className="text-right">
-                      <p className="font-mono text-xs tabular-nums text-muted-foreground">
-                        {u.elo_before.toFixed(0)} → {u.elo_after.toFixed(0)}
-                      </p>
-                      <p
-                        className={cn(
-                          'font-mono text-xs tabular-nums',
-                          u.delta >= 0 ? 'text-success' : 'text-destructive',
-                        )}
-                      >
-                        {u.delta >= 0 ? '+' : ''}
-                        {u.delta.toFixed(0)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </PanelBody>
-        </Panel>
-
-        <Panel>
-          <PanelHeader>
-            <PanelTitle>
-              <TriangleAlert className="size-4 text-warning" />
-              Gaps
-            </PanelTitle>
-          </PanelHeader>
-          <PanelBody className="flex flex-col gap-3">
-            {result?.submission_gap?.gap_identified && (
-              <div className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2">
-                <p className="mb-1 font-mono text-[10px] uppercase text-warning">Submission Gap</p>
-                <p className="mb-1.5 text-xs text-foreground/80">
-                  Missing {result.submission_gap.missing_pattern_ids.length} expected pattern
-                 {result.submission_gap.missing_pattern_ids.length > 1 ? 's' : ''}:
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.submission_gap.missing_pattern_ids.map((id) => (
-                    <Badge key={id} variant="danger" className="font-mono text-[10px]">
-                      {id.replace(/_/g, ' ')}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            <div>
-              <p className="mb-1.5 font-mono text-[10px] uppercase text-muted-foreground">
-                Long-Term Signals
-              </p>
-              {!gapData?.gap_signals?.length && (
-                <p className="text-xs text-muted-foreground">No gap signals yet.</p>
-              )}
-              {gapData?.gap_signals?.map((g) => {
-                const severity = g.gap_strength >= 0.7 ? 'high' : g.gap_strength >= 0.4 ? 'medium' : 'low'
-                const meta = SEVERITY[severity]
-                return (
-                  <div key={g.pattern_id} className="flex items-center gap-2 py-1.5">
-                    <Badge variant={meta.variant}>{meta.label}</Badge>
-                    <p className="flex-1 truncate text-xs">{g.pattern_id.replace(/_/g, ' ')}</p>
-                    <div className="w-16">
-                      <Meter value={Math.round(g.gap_strength * 100)} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </PanelBody>
-        </Panel>
-      </div>
-
-      <ExperimentalPanel shadowAnalysis={result?.shadow_analysis} />
+      )}
     </div>
   )
 }

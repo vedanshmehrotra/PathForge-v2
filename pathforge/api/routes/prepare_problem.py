@@ -15,6 +15,7 @@ from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.ground_truth_builder import GroundTruthError
 from pathforge.llm.graphql_client import GraphQLUnavailableError
 from pathforge.db.db import get_connection
+from pathforge.api.services.approaches import SolutionApproach, describe_approaches
 import config
 
 router = APIRouter()
@@ -35,6 +36,7 @@ class PrepareResponse(BaseModel):
     title: str
     difficulty: str
     topics: list
+    solution_groups: list[SolutionApproach] = []
 
 
 @router.post("/prepare-problem", response_model=PrepareResponse)
@@ -68,6 +70,7 @@ def prepare_problem_endpoint(req: PrepareRequest, request: Request):
             title=ctx.title,
             difficulty=ctx.difficulty,
             topics=ctx.topics,
+            solution_groups=describe_approaches(ctx.accepted_solution_groups),
         )
     finally:
         conn.close()
