@@ -11,6 +11,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
+from pathforge.services.approach_descriptions import RECORD_TYPE, validate_description_record, public_description
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,7 @@ class ProblemContext:
     accepted_solution_groups: list = field(default_factory=list)
     ground_truth_confidence: dict = field(default_factory=dict)
     ground_truth_consistency: list = field(default_factory=list)
+    unscored_approaches: list = field(default_factory=list)
 
 
 class ProblemReadinessError(Exception):
@@ -55,7 +57,7 @@ def _has_usable_solution_groups(groups: list) -> bool:
 
 
 def _validate_stored_ground_truth_shapes(
-    patterns_raw, confidence_raw, solution_groups_raw, curated_patterns,
+    patterns_raw, confidence_raw, solution_groups_raw, curated_patterns, validation_status=None,
 ):
     """Check consumed list shapes before derivation; never infer label validity."""
     def unavailable():
@@ -81,11 +83,27 @@ def _validate_stored_ground_truth_shapes(
         ):
             raise unavailable()
 
+    def normalized_number(value):
+        # Stored confidence/threshold values follow the existing 0-1 contract.
+        # This also rejects booleans, NaN/infinity and nonnumeric JSON values.
+        return type(value) in (int, float) and 0 <= value <= 1
+
+    def confidence_map(value):
+        if not isinstance(value, dict) or not all(
+            isinstance(key, str) and normalized_number(score) for key, score in value.items()
+        ):
+            raise unavailable()
+
+    def authority_text(value):
+        if value is not None and not isinstance(value, str):
+            raise unavailable()
+
     string_list(decode(patterns_raw), nullable=True, patterns=True)
     string_list(curated_patterns, nullable=True, patterns=True)
     confidence = decode(confidence_raw)
-    if confidence is not None and not isinstance(confidence, dict):
-        raise unavailable()
+    if confidence is not None:
+        confidence_map(confidence)
+    authority_text(validation_status)
     groups = decode(solution_groups_raw)
     if groups is None:
         return
@@ -94,7 +112,17 @@ def _validate_stored_ground_truth_shapes(
     for group in groups:
         if not isinstance(group, dict):
             raise unavailable()
-        if "confidence" in group and not isinstance(group["confidence"], dict):
+        if "record_type" in group:
+            try:
+                validate_description_record(group)
+            except ValueError as exc:
+                raise unavailable() from exc
+            continue
+        if "confidence" in group:
+            confidence_map(group["confidence"])
+        for field in ("authority_tier", "evidence"):
+            authority_text(group.get(field))
+        if "threshold" in group and not normalized_number(group["threshold"]):
             raise unavailable()
         for field in ("patterns", "required", "optional", "excluded", "provenance"):
             string_list(
@@ -151,7 +179,18 @@ def resolve_problem(
         )
 
     groups, confidence = _load_ground_truth(connection, pid, row)
+    descriptions = [public_description(g) for g in groups if g.get("record_type") == RECORD_TYPE]
+    groups = [g for g in groups if g.get("record_type") != RECORD_TYPE]
     if not _has_usable_solution_groups(groups):
+        if descriptions:
+            error = ProblemReadinessError(
+                "COMPARISON_UNSUPPORTED", "NO_MATCHABLE_APPROACH",
+                "Approach descriptions are saved, but this problem has no supported approach comparison. "
+                "You can explicitly inspect code patterns without a problem comparison; skills will not change.",
+            )
+            error.detail["approaches"] = descriptions
+            error.detail["problem"] = {"leetcode_id": pid, "title": row["title"]}
+            raise error
         raise ProblemReadinessError(
             "GROUND_TRUTH_UNAVAILABLE", "UNUSABLE_GROUND_TRUTH",
             "Analysis is unavailable for this problem because its preparation is unusable. "
@@ -180,6 +219,7 @@ def resolve_problem(
         accepted_solution_groups=groups,
         ground_truth_confidence=confidence,
         ground_truth_consistency=consistency,
+        unscored_approaches=descriptions,
     )
 
 
@@ -394,7 +434,7 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
     # Load CSV-curated patterns from problems.pattern
     csv_patterns = _load_csv_patterns(connection, problem_id)
     _validate_stored_ground_truth_shapes(
-        patterns_raw, confidence_raw, solution_groups_raw, csv_patterns,
+        patterns_raw, confidence_raw, solution_groups_raw, csv_patterns, validation_status,
     )
 
     # Phase 3B: if solution_groups column exists and has data, use it directly
@@ -410,7 +450,8 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                 refresh_groups_vocabulary,
             )
 
-            raw_groups = [g for g in sg if isinstance(g, dict)]
+            descriptions = [g for g in sg if g.get("record_type") == RECORD_TYPE]
+            raw_groups = [g for g in sg if g.get("record_type") != RECORD_TYPE]
             refreshed = refresh_groups_vocabulary(raw_groups)
             if refreshed:
                 logger.info(
@@ -569,7 +610,7 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                         groups[-1]["family_relation"] = g["family_relation"]
                         groups[-1]["alternative_group_id"] = g.get("alternative_group_id")
                 all_confidence.update(g.get("confidence", {}))
-            if groups:
+            if groups or descriptions:
                 # B5.5: mark explicitly-declared alternative (ONE_OF) families
                 # before returning. Ordinary problems are untouched.
                 mark_family_relations(groups)
@@ -588,7 +629,7 @@ def _load_ground_truth(connection, problem_id, problem_row=None):
                 _log_ground_truth_disagreements(
                     problem_id, csv_patterns or _parse_json_list(patterns_raw), groups
                 )
-                return groups, all_confidence
+                return groups + descriptions, all_confidence
 
     # Fallback: legacy flat patterns column
     patterns: list = []

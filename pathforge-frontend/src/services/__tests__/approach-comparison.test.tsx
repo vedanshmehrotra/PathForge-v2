@@ -35,6 +35,15 @@ function render(name: string): string {
 }
 
 describe('consistent approach presentation using real engine/API results', () => {
+  it('explains a proposed approach with all listed patterns observed without promoting it', () => {
+    const html = render('tentative')
+    expect(html).toContain('Listed patterns observed — proposed approach')
+    expect(html).toContain('Tentative comparison')
+    expect(html).not.toContain('Pattern alignment observed')
+    expect(html).not.toContain('Inconclusive comparison')
+    expect(html).toContain('does not establish a confirmed strategy')
+  })
+
   it('shows a reviewed alignment without claiming all alternatives are required', () => {
     const html = render('fixed_alternative')
     expect(html).toContain('Pattern alignment observed')
@@ -55,7 +64,7 @@ describe('consistent approach presentation using real engine/API results', () =>
     expect(html).not.toContain('Pattern alignment observed')
   })
 
-  it.each(['tentative', 'legacy_ambiguous', 'nesting_depth', 'malformed_relation', 'incomplete_relation'])('keeps %s tentative regardless of legacy verdict', name => {
+  it.each(['legacy_ambiguous', 'nesting_depth', 'malformed_relation', 'incomplete_relation'])('keeps %s tentative regardless of legacy verdict', name => {
     const html = render(name)
     expect(html).toContain('Tentative comparison')
     expect(html).toContain('Inconclusive comparison')
@@ -69,6 +78,30 @@ describe('consistent approach presentation using real engine/API results', () =>
     expect(html).toContain('Comparison unavailable')
     expect(html).toContain('relationship unverified')
     expect(html).not.toContain('95%')
+  })
+
+  it('does not elevate old, contradictory or conflicting proposed payloads', () => {
+    const source = cases.tentative.response.problem_info!.solution_groups![0]
+    for (const change of [
+      { pattern_evidence_state: undefined },
+      { observed_patterns: [] },
+      { review_state: 'CONFLICT' as const },
+      { pattern_evidence_state: 'UNAVAILABLE' as const },
+    ]) {
+      const html = renderToStaticMarkup(createElement(ApproachComparison, { groups: [{ ...source, ...change }] }))
+      expect(html).toContain('Inconclusive comparison')
+      expect(html).not.toContain('Listed patterns observed — proposed approach')
+    }
+  })
+
+  it('keeps an unmatched proposed alternative out of a universal checklist', () => {
+    const groups = structuredClone(cases.fixed_alternative.response.problem_info!.solution_groups!)
+    groups.forEach(group => { group.review_state = 'UNREVIEWED'; group.authority_tier = 'llm_proposed' })
+    const html = renderToStaticMarkup(createElement(ApproachComparison, { groups }))
+    expect(html).toContain('Other proposed alternative')
+    expect(html).toContain('Other proposed option')
+    expect(html).not.toContain('Not required')
+    expect(html).not.toContain('Pattern alignment observed')
   })
 
   it('does not promote technique alignment into a canonical strategy', () => {

@@ -5,13 +5,14 @@ import { ArrowRight, Braces, Check, Cpu, Layers2, Play, Route, ScanLine, X } fro
 import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { ExperimentalPanel } from '@/components/experimental-panel'
-import { ApproachComparison, approachComparisonHeading } from '@/components/approach-comparison'
+import { ApproachComparison, ApproachDescriptions, approachComparisonHeading } from '@/components/approach-comparison'
 import { AnalysisEffects } from '@/components/analysis-effects'
 
 export function AnalysisView() {
   const { profile } = useAuth()
   const [code, setCode] = useState('')
   const [problemInput, setProblemInput] = useState('')
+  const [codeOnlyRequested, setCodeOnlyRequested] = useState(false)
   const lineNumbers = useRef<HTMLPreElement>(null)
   const [submittedInput, setSubmittedInput] = useState<{ code: string; problem: string; problemId: number | null } | null>(null)
   const { result: analysisResult, loading, error, errorCode, run } = useAnalyzeCode()
@@ -19,11 +20,17 @@ export function AnalysisView() {
   const needsPreparation = !!problemInput.trim() && !prep.result
   const resultIsCurrent = !submittedInput || (code === submittedInput.code &&
     problemInput.trim() === submittedInput.problem && (prep.result?.leetcode_id ?? null) === submittedInput.problemId)
+  // Clearing readiness after an error must retain that error, but an edited
+  // source/problem must not inherit feedback or invalidate its new preparation.
+  const errorIsCurrent = !submittedInput || (code === submittedInput.code && problemInput.trim() === submittedInput.problem)
+  const currentErrorCode = errorIsCurrent ? errorCode : null
+  const currentError = errorIsCurrent ? error : null
+  const comparisonUnsupported = !!problemInput.trim() && (prep.unsupported != null || currentErrorCode === 'COMPARISON_UNSUPPORTED')
   const result = resultIsCurrent ? analysisResult : null
 
   useEffect(() => {
-    if (errorCode === 'PREPARATION_REQUIRED' || errorCode === 'GROUND_TRUTH_UNAVAILABLE') prep.clear()
-  }, [errorCode, prep.clear])
+    if (currentErrorCode === 'PREPARATION_REQUIRED' || currentErrorCode === 'GROUND_TRUTH_UNAVAILABLE' || currentErrorCode === 'COMPARISON_UNSUPPORTED') prep.clear()
+  }, [currentErrorCode, prep.clear])
 
   const handleRun = () => {
     if (profile && code.trim() && !needsPreparation && !prep.loading && !loading) {
@@ -34,10 +41,12 @@ export function AnalysisView() {
     }
   }
   const handleProblemInputChange = (val: string) => {
+    setCodeOnlyRequested(false)
     if (val.trim() !== problemInput.trim()) prep.clear()
     setProblemInput(val)
   }
   const handlePrepare = () => {
+    setCodeOnlyRequested(false)
     const val = problemInput.trim()
     if (val) prep.run(val)
   }
@@ -86,10 +95,20 @@ export function AnalysisView() {
           )}
         </div>
         <p id="preparation-status" role="status" className="mt-2 text-sm text-muted-foreground">
-          {needsPreparation && !prep.loading ? 'Prepare the entered problem before running analysis, or clear it for analysis without a problem.' : prep.result ? 'Problem prepared. You can now compare approach evidence.' : ''}
+          {comparisonUnsupported ? 'Approach comparison is not supported for this problem. Choose code-only inspection to continue without comparison or skill updates.' : needsPreparation && !prep.loading ? 'Prepare the entered problem before running analysis, or clear it for analysis without a problem.' : prep.result ? 'Problem prepared. You can now compare approach evidence.' : ''}
         </p>
-        {prep.error && <p role="alert" className="mt-3 text-sm text-destructive">{prep.error} Review the problem ID and prepare again explicitly.</p>}
-        {error && <p role="alert" className="mt-3 text-sm text-destructive">{error} Review the message before retrying.</p>}
+        {prep.error && !comparisonUnsupported && <p role="alert" className="mt-3 text-sm text-destructive">{prep.error} Review the problem ID and prepare again explicitly.</p>}
+        {currentError && !codeOnlyRequested && <p role="alert" className="mt-3 text-sm text-destructive">{currentError} Review the message before retrying.</p>}
+        {comparisonUnsupported && <div className="mt-3 space-y-3">
+          <ApproachDescriptions approaches={prep.unsupported ?? undefined} />
+          <button type="button" className="action-secondary" onClick={() => {
+            prep.clear()
+            setProblemInput('')
+            setCodeOnlyRequested(true)
+          }}>Inspect code only</button>
+        </div>}
+        {codeOnlyRequested && <p role="status" className="mt-3 text-sm text-muted-foreground">Code-only mode. No problem comparison or skill updates. Your code is unchanged.</p>}
+        {prep.result?.unscored_approaches?.length && !result ? <ApproachDescriptions approaches={prep.result.unscored_approaches} /> : null}
       </section>
 
       {analysisResult && !resultIsCurrent && <p role="status" className="text-sm text-muted-foreground">Your inputs changed. Run analysis again to see observations for the current code and problem.</p>}
@@ -134,6 +153,7 @@ export function AnalysisView() {
               {result.problem_info?.title && <p className="mb-4 text-sm text-muted-foreground">{result.problem_info.title}</p>}
               <div className="mb-5"><h3 className="eyebrow mb-3 text-mint"><ScanLine className="size-3.5" />Detected in your code</h3><div className="flex flex-wrap gap-2">{detectedPatterns?.length ? detectedPatterns.map((pattern, index) => <span key={pattern.pattern_id ?? index} className="rounded-md border border-mint/20 bg-mint/5 px-2.5 py-1.5 text-xs text-mint">{pattern.name || pattern.pattern_id?.replace(/_/g, ' ')}</span>) : <p className="text-sm text-muted-foreground">No supported patterns observed.</p>}</div></div>
               <ApproachComparison groups={result.problem_info?.solution_groups} legacyPatterns={result.problem_info?.canonical_patterns} showSummary={false} />
+              <ApproachDescriptions approaches={result.problem_info?.unscored_approaches} />
             </>
           ) : loading ? (
             <div role="status" className="flex min-h-72 flex-col items-center justify-center gap-4 text-center"><ScanLine className="size-9 animate-pulse text-mint" /><p className="text-sm font-medium">Inspecting the structure of your code…</p><p className="max-w-xs text-xs text-muted-foreground">Observations will appear when analysis completes.</p></div>

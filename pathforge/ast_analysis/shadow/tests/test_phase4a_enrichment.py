@@ -204,14 +204,16 @@ class TestMultiGroupGeneration:
         required = groups[0].get("required", [])
         assert "dp_bottom_up" in required
 
-    def test_different_strategies_produce_multiple_groups(self):
-        """Patterns mapping to different strategies produce multiple groups."""
+    def test_different_strategy_labels_do_not_invent_alternative_approaches(self):
+        """Taxonomy alone cannot decide whether components are alternatives."""
         groups = _build_solution_groups(
             ["binary_search_standard", "two_pointers_opposite"],
             {"binary_search_standard": 0.8, "two_pointers_opposite": 0.7},
         )
-        # These map to different strategies → multiple groups
-        assert len(groups) >= 2
+        assert len(groups) == 1
+        assert set(groups[0]["patterns"]) == {"binary_search_standard", "two_pointers_opposite"}
+        assert groups[0]["approach_definition"] == "UNSPECIFIED"
+        assert groups[0].get("family_relation") != "ONE_OF"
 
     def test_approaches_parameter_enables_multi_group(self):
         """LLM-provided approaches enable multi-group generation."""
@@ -596,14 +598,18 @@ class TestMultiGroupBehavior:
         assert result is not None
         assert result["match_outcome"]["outcome"] == "CONFIRMED"
 
-    def test_multi_group_from_patterns(self):
-        """Multi-group generation from split patterns."""
+    def test_multi_group_from_explicit_alternative_approaches(self):
+        """Only explicitly declared alternatives establish separate groups."""
         groups = _build_solution_groups(
             ["binary_search_standard", "two_pointers_opposite"],
             {"binary_search_standard": 0.8, "two_pointers_opposite": 0.7},
+            approaches=[
+                {"name": "Ordered search", "patterns": ["binary_search_standard"]},
+                {"name": "Opposite pointers", "patterns": ["two_pointers_opposite"]},
+            ],
         )
-        # These map to different strategies → multiple groups
-        assert len(groups) >= 2
+        assert len(groups) == 2
+        assert all(group["approach_definition"] == "EXPLICIT" and group["family_relation"] == "ONE_OF" for group in groups)
         # Each group is valid
         for group in groups:
             result = _validate_group(group)

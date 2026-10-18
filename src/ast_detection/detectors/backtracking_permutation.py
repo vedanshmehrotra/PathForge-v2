@@ -11,6 +11,7 @@ Does NOT detect:
 """
 
 import ast
+from src.ast_detection.python_structure import recursive_calls, scope_nodes
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
 
@@ -45,13 +46,14 @@ class BacktrackingPermutationDetector(BaseDetector):
 
             func_name = node.name
 
-            if not self._has_recursive_call(node, func_name):
+            calls = recursive_calls(ast_root, node)
+            if not calls:
                 continue
 
-            has_swap = self._find_swap_recurse_swap(node, func_name)
+            has_swap = self._find_swap_recurse_swap(node, calls)
             has_visited = self._find_visited_array(node)
             has_perm = self._find_permutation_generation(node)
-            has_explore = self._find_recursive_exploration(node, func_name)
+            has_explore = self._find_recursive_exploration(calls)
 
             if not (has_swap or has_visited):
                 continue
@@ -96,53 +98,68 @@ class BacktrackingPermutationDetector(BaseDetector):
                     )
                 )
 
-    def _has_recursive_call(self, func_def: ast.FunctionDef, func_name: str) -> bool:
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Name) and child.func.id == func_name:
-                    return True
-        return False
+    def _find_swap_recurse_swap(self, func_def, calls) -> bool:
+        # Reversible swaps and the bound recursive call must occur in order in
+        # one range-driven branch, not in disconnected functions or loops.
+        def swap(statement):
+            if not (isinstance(statement, ast.Assign) and len(statement.targets) == 1
+                    and isinstance(statement.targets[0], (ast.Tuple, ast.List))
+                    and isinstance(statement.value, (ast.Tuple, ast.List))):
+                return None
+            targets, values = statement.targets[0].elts, statement.value.elts
+            if not (len(targets) == len(values) == 2
+                    and all(isinstance(t, ast.Subscript) and isinstance(t.value, ast.Name) for t in targets)
+                    and targets[0].value.id == targets[1].value.id):
+                return None
+            shape = lambda n: ast.dump(n, include_attributes=False).replace("ctx=Store()", "ctx=Load()")
+            if shape(targets[0]) == shape(targets[1]):
+                return None
+            if [shape(t) for t in targets] == [shape(v) for v in reversed(values)]:
+                return ast.dump(statement, include_attributes=False)
+            return None
 
-    def _find_swap_recurse_swap(self, func_def: ast.FunctionDef, func_name: str) -> bool:
-        swaps = []
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Assign):
-                if len(child.targets) >= 1 and len(child.targets) <= 2:
-                    for target in child.targets:
-                        if isinstance(target, ast.Tuple) or isinstance(target, ast.List):
-                            for elt in target.elts:
-                                if isinstance(elt, ast.Subscript):
-                                    swaps.append(child)
-                        if isinstance(target, ast.Subscript):
-                            swaps.append(child)
-        has_swap_before = False
-        has_swap_after = False
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Name) and child.func.id == func_name:
-                    for sibling in ast.walk(func_def):
-                        if isinstance(sibling, ast.Assign) and sibling is not child:
-                            for target in sibling.targets if hasattr(sibling, 'targets') else []:
-                                if isinstance(target, (ast.Tuple, ast.List)):
-                                    for elt in target.elts:
-                                        if isinstance(elt, ast.Subscript):
-                                            has_swap_before = True
-                                if isinstance(target, ast.Subscript):
-                                    has_swap_before = True
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.For):
-                if isinstance(child.iter, ast.Call):
-                    if isinstance(child.iter.func, ast.Name) and child.iter.func.id == "range":
-                        for stmt in child.body:
-                            if isinstance(stmt, ast.Assign):
-                                if len(stmt.targets) == 1 and isinstance(stmt.targets[0], (ast.Tuple, ast.List)):
-                                    for elt in stmt.targets[0].elts:
-                                        if isinstance(elt, ast.Subscript):
-                                            return True
+        for loop in scope_nodes(func_def.body):
+            if not (isinstance(loop, ast.For) and isinstance(loop.iter, ast.Call)
+                    and isinstance(loop.iter.func, ast.Name) and loop.iter.func.id == "range"
+                    and isinstance(loop.target, ast.Name) and len(loop.iter.args) == 2
+                    and isinstance(loop.iter.args[0], ast.Name)):
+                continue
+            first = loop.iter.args[0].id
+            def advances(call):
+                parameters = [*func_def.args.posonlyargs, *func_def.args.args]
+                if isinstance(call.func, ast.Attribute):
+                    parameters = parameters[1:]
+                names = [p.arg for p in parameters]
+                if any(isinstance(a, ast.Starred) for a in call.args) or len(call.args) > len(names):
+                    return False
+                arguments = dict(zip(names, call.args))
+                for keyword in call.keywords:
+                    if keyword.arg not in names or keyword.arg in arguments:
+                        return False
+                    arguments[keyword.arg] = keyword.value
+                value = arguments.get(first)
+                return (isinstance(value, ast.BinOp) and isinstance(value.op, ast.Add)
+                        and any(isinstance(a, ast.Name) and a.id == first
+                                and isinstance(b, ast.Constant) and type(b.value) is int and b.value == 1
+                                for a, b in ((value.left, value.right), (value.right, value.left))))
+            for i, statement in enumerate(loop.body):
+                before = swap(statement)
+                if before is None:
+                    continue
+                indices = statement.targets[0].elts
+                if not all(isinstance(t.slice, ast.Name) for t in indices) or {
+                    t.slice.id for t in indices
+                } != {first, loop.target.id}:
+                    continue
+                for j in range(i + 2, len(loop.body)):
+                    if swap(loop.body[j]) == before and any(
+                        advances(call) and call in scope_nodes(loop.body[i+1:j]) for call in calls
+                    ):
+                        return True
         return False
 
     def _find_visited_array(self, func_def: ast.FunctionDef) -> bool:
-        for child in ast.walk(func_def):
+        for child in scope_nodes(func_def.body):
             if isinstance(child, ast.Assign):
                 for target in child.targets:
                     if isinstance(target, ast.Name):
@@ -168,7 +185,7 @@ class BacktrackingPermutationDetector(BaseDetector):
         return False
 
     def _find_permutation_generation(self, func_def: ast.FunctionDef) -> bool:
-        for child in ast.walk(func_def):
+        for child in scope_nodes(func_def.body):
             if isinstance(child, ast.Call):
                 if isinstance(child.func, ast.Attribute) and child.func.attr == "append":
                     if isinstance(child.func.value, ast.Name):
@@ -177,17 +194,10 @@ class BacktrackingPermutationDetector(BaseDetector):
                             return True
         return False
 
-    def _find_recursive_exploration(self, func_def: ast.FunctionDef, func_name: str) -> bool:
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Name) and child.func.id == func_name:
-                    for arg in child.args:
-                        if isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Add):
-                            if isinstance(arg.right, ast.Constant) and arg.right.value == 1:
-                                return True
-                            if isinstance(arg.left, ast.Constant) and arg.left.value == 1:
-                                return True
-        return False
+    def _find_recursive_exploration(self, calls) -> bool:
+        return any(isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Add)
+                   and any(isinstance(v, ast.Constant) and v.value == 1 for v in (arg.left, arg.right))
+                   for call in calls for arg in call.args)
 
     def _calculate_confidence(self, evidence: list) -> float:
         if not evidence:

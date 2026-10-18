@@ -5,8 +5,9 @@ Covers:
 * the single product-eligibility decision over the canonical authority policy;
 * the explicit ``ONE_OF`` semantics (B5.5, explicit metadata only);
 * ``db-254`` remains independent;
-* the feature flag (default OFF) preserves legacy behavior;
+* the feature flag (default OFF) does not consult canonical gating;
 * flag ON gates ELO / gaps / recommendations fail-closed;
+* the independent comparison safeguard can restrict legacy-authoritative input;
 * the legacy/shadow comparison is pure (mutates neither result);
 * B1–B5.5 invariants are unchanged.
 
@@ -311,13 +312,14 @@ class TestFlagOff:
         assert decision["eligibility"] is None
 
     @pytest.mark.parametrize("evidence,scoring_allowed", [
-        ("structurally_observed", True),
+        ("structurally_observed", False),
+        ("externally_listed", True),
         ("llm_proposed", False),
     ])
     def test_flag_off_run_persistence_has_no_b6_effect(
         self, monkeypatch, persistence_case, evidence, scoring_allowed,
     ):
-        """Flag OFF uses the real legacy gate without consulting B6."""
+        """Flag OFF retains legacy authority plus comparison safety, without B6."""
         monkeypatch.setenv(b6.FLAG_ENV_VAR, "")
         groups = [_persistence_group(evidence)]
         result = persistence_case.run(groups)
@@ -325,7 +327,7 @@ class TestFlagOff:
         persistence_case.gate.assert_not_called()
         assert result["b6_gate"]["source"] == "legacy"
         assert result["verdict_type"] == (
-            "authoritative" if scoring_allowed else "analysis_only"
+            "authoritative" if evidence in persistence._AUTHORITATIVE_STATES else "analysis_only"
         )
         _assert_product_consequences(persistence_case, result, scoring_allowed)
 
@@ -374,7 +376,7 @@ class _FakeConn:
 
 def _persistence_group(evidence, required=None):
     group = family("g0", required or ["sliding_window"], authority=evidence)
-    group.update(patterns=["sliding_window_variable"], evidence=evidence)
+    group.update(patterns=["sliding_window_variable"], evidence=evidence, approach_definition="EXPLICIT")
     return group
 
 

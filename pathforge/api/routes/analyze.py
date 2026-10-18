@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from pathforge.api.services.analysis import run_analysis
-from pathforge.api.services.approaches import SolutionApproach, describe_approaches
+from pathforge.api.services.approaches import SolutionApproach, UnscoredApproach, describe_approaches
 from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
 from pathforge.services.persistence import run_persistence
@@ -60,6 +60,7 @@ class ProblemInfo(BaseModel):
     # structured solution groups (empty when the two representations agree).
     ground_truth_consistency: list[dict] = []
     solution_groups: list[SolutionApproach] = []
+    unscored_approaches: list[UnscoredApproach] = []
 
 
 class EloUpdate(BaseModel):
@@ -160,6 +161,7 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                     ctx, "ground_truth_consistency", []
                 ) or [],
                 solution_groups=describe_approaches(groups, result["ast"]),
+                unscored_approaches=getattr(ctx, "unscored_approaches", []),
             )
 
         try:

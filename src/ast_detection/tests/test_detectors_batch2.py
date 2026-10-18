@@ -469,7 +469,8 @@ class NumArray:
         assert result.detected == True
         assert result.confidence > 0.0
 
-    def test_detected_product_except_self(self):
+    def test_not_detected_product_except_self_as_additive_prefix_sum(self):
+        """A valid prefix/suffix product approach is not additive sum evidence."""
         code = """
 n = len(nums)
 result = [1] * n
@@ -484,7 +485,7 @@ for i in range(n - 1, -1, -1):
 return result
 """
         result = self.detector.detect(ast.parse(code))
-        assert result.detected == True
+        assert result.detected == False
 
     def test_not_detected_plain_loop(self):
         code = """

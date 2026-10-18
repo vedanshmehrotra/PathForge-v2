@@ -3,6 +3,10 @@
 Detects running cumulative sums, prefix array construction,
 and hash-map-based prefix sum lookups (subarray sum patterns).
 
+Prefix products are a different operation; their suitability is independent of
+this detector's additive evidence. Multiplication inside an incoming term may
+still form a weighted sum, but multiplying the accumulated prefix does not.
+
 Does NOT detect sliding window or other non-cumulative patterns.
 """
 
@@ -78,7 +82,7 @@ class PrefixSumDetector(BaseDetector):
                             target_var = target.value.id if isinstance(target.value, ast.Name) else None
                             if target_var and (target_var in prefix_names or has_append):
                                 value = stmt.value
-                                if isinstance(value, ast.BinOp) and isinstance(value.op, (ast.Add, ast.Mult, ast.Sub)):
+                                if isinstance(value, ast.BinOp) and isinstance(value.op, (ast.Add, ast.Sub)):
                                     left = value.left
                                     if isinstance(left, ast.Subscript):
                                         # Check that the BinOp references a DIFFERENT subscripted variable
@@ -99,7 +103,7 @@ class PrefixSumDetector(BaseDetector):
                 if isinstance(call_node, ast.Call):
                     if isinstance(call_node.func, ast.Attribute) and call_node.func.attr == "append":
                         for arg in call_node.args:
-                            if isinstance(arg, ast.BinOp) and isinstance(arg.op, (ast.Add, ast.Mult, ast.Sub)):
+                            if isinstance(arg, ast.BinOp) and isinstance(arg.op, (ast.Add, ast.Sub)):
                                 for sub in ast.walk(arg):
                                     if isinstance(sub, ast.Subscript) and self._is_prefix_name(sub.value):
                                         has_prefix_formula = True
@@ -108,7 +112,7 @@ class PrefixSumDetector(BaseDetector):
             # prefix-like variable (not just any += in the loop body)
             for stmt in node.body:
                 if isinstance(stmt, ast.AugAssign):
-                    if isinstance(stmt.op, (ast.Add, ast.Mult, ast.Sub)):
+                    if isinstance(stmt.op, (ast.Add, ast.Sub)):
                         if isinstance(stmt.target, ast.Name) and stmt.target.id in prefix_names:
                             has_accumulator = True
                         elif isinstance(stmt.target, ast.Subscript):

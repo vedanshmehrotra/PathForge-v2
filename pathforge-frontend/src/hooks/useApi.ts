@@ -12,6 +12,7 @@ import type {
   EloResponse,
   RecommendResponse,
   AuthProfile,
+  UnscoredApproach,
 } from '@/types/api'
 
 function useApiData<T>(
@@ -120,6 +121,7 @@ export function usePrepareProblem() {
   const [result, setResult] = useState<PrepareResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [unsupported, setUnsupported] = useState<UnscoredApproach[] | null>(null)
   const requestId = useRef(0)
 
   const run = useCallback(async (problem: string) => {
@@ -127,6 +129,7 @@ export function usePrepareProblem() {
     setLoading(true)
     setError(null)
     setResult(null)
+    setUnsupported(null)
     const slug = problem.includes('/') ? problem.split('/').filter(Boolean).pop() : problem
     try {
       const res = await prepareProblem({
@@ -138,6 +141,16 @@ export function usePrepareProblem() {
     } catch (e) {
       if (id === requestId.current) {
         setError(e instanceof Error ? e.message : 'Preparation failed')
+        if (e instanceof ApiError && e.status === 409 && e.code === 'COMPARISON_UNSUPPORTED') {
+          const detail = (e.body as { detail?: { approaches?: unknown } } | null)?.detail
+          const proposals = detail?.approaches
+          // A malformed/older diagnostic still cannot unlock prepared analysis.
+          setUnsupported(Array.isArray(proposals) ? proposals.filter((item): item is UnscoredApproach =>
+            item && item.comparison_support === 'UNSUPPORTED' && item.contract_version === 2 &&
+            typeof item.id === 'string' && typeof item.name === 'string' &&
+            typeof item.description === 'string' && typeof item.coverage_limit === 'string' &&
+            Array.isArray(item.patterns) && item.patterns.length === 0) : [])
+        }
       }
     } finally {
       if (id === requestId.current) setLoading(false)
@@ -148,8 +161,9 @@ export function usePrepareProblem() {
     ++requestId.current
     setResult(null)
     setError(null)
+    setUnsupported(null)
     setLoading(false)
   }, [])
 
-  return { result, loading, error, run, clear }
+  return { result, loading, error, unsupported, run, clear }
 }

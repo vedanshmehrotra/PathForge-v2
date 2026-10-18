@@ -5,13 +5,14 @@ context to identify hash map lookup patterns.
 
 Requires ALL THREE core signals before detection:
 1. Dict/set creation
-2. Membership check (in / not in)
+2. Membership check (in / not in), or a linked dictionary read guarded by KeyError
 3. Loop structure providing lookup context
 
 A dict used for configuration or membership check without a loop does NOT fire.
 """
 
 import ast
+from src.ast_detection.python_structure import assignment_values, bindings, parameter_names, scope_nodes
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
 
@@ -26,6 +27,11 @@ class HashMapLookupDetector(BaseDetector):
         has_loop = self._detect_loop_structure(ast_root, evidence)
 
         has_required_signals = has_dict and has_membership and has_loop
+        if not has_required_signals:
+            exception_evidence = self._exception_lookup(ast_root)
+            if exception_evidence:
+                evidence = exception_evidence
+                has_required_signals = True
         confidence = self._calculate_confidence(evidence, has_required_signals)
         return DetectionResult(
             pattern_id=self.pattern_id,
@@ -33,6 +39,58 @@ class HashMapLookupDetector(BaseDetector):
             evidence=evidence if has_required_signals else [],
             detected=confidence > 0.0,
         )
+
+    def _exception_lookup(self, root):
+        """Only extend lookup syntax when dictionary, read and handler are linked."""
+        parents = {child: parent for parent in ast.walk(root) for child in ast.iter_child_nodes(parent)}
+        def shadowed(scope, identifier):
+            while scope is not None:
+                if isinstance(scope, (ast.Module, ast.FunctionDef)) and (
+                    bindings(scope.body, identifier)
+                    or isinstance(scope, ast.FunctionDef) and identifier in parameter_names(scope)
+                ):
+                    return True
+                scope = parents.get(scope)
+            return False
+
+        for scope in ast.walk(root):
+            if not isinstance(scope, (ast.Module, ast.FunctionDef)):
+                continue
+            if shadowed(scope, 'KeyError'):
+                continue
+            dictionaries = {}
+            for statement in scope.body:
+                if isinstance(statement, (ast.For, ast.While)):
+                    for handler_owner in scope_nodes(statement.body):
+                        if not isinstance(handler_owner, ast.Try) or not any(
+                            isinstance(h.type, ast.Name) and h.type.id == 'KeyError'
+                            for h in handler_owner.handlers
+                        ):
+                            continue
+                        for read in scope_nodes(handler_owner.body):
+                            if not (isinstance(read, ast.Subscript) and isinstance(read.ctx, ast.Load)
+                                    and isinstance(read.value, ast.Name) and read.value.id in dictionaries
+                                    and not bindings([statement], read.value.id)):
+                                continue
+                            creation = dictionaries[read.value.id]
+                            return [
+                                EvidenceItem(type='dict_creation', description='Dictionary bound before lookup loop',
+                                             location=f'{creation.lineno}:{creation.col_offset}', weight=0.25),
+                                EvidenceItem(type='exception_lookup', description='Same dictionary read guarded by KeyError',
+                                             location=f'{read.lineno}:{read.col_offset}', weight=0.35),
+                                EvidenceItem(type='loop_structure', description='Loop providing lookup context',
+                                             location=f'{statement.lineno}:{statement.col_offset}', weight=0.20),
+                            ]
+                # Unknown rebindings invalidate the local dictionary type link.
+                for identifier in list(dictionaries):
+                    if bindings([statement], identifier):
+                        dictionaries.pop(identifier)
+                for identifier, value in assignment_values(statement).items():
+                    if (isinstance(value, (ast.Dict, ast.DictComp))
+                            or isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+                            and value.func.id == 'dict' and not shadowed(scope, 'dict')):
+                        dictionaries[identifier] = statement
+        return []
 
     def _detect_dict_creation(self, ast_root: ast.AST, evidence: list) -> bool:
         found = False

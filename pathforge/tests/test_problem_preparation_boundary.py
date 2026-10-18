@@ -389,3 +389,75 @@ def test_database_failures_are_not_ground_truth_shape_errors(boundary, monkeypat
     boundary.engine.assert_not_called()
     boundary.persist.assert_not_called()
     assert_no_preparation(boundary, connection)
+
+
+@pytest.mark.parametrize("prepare", [False, True], ids=["analyze", "prepare"])
+@pytest.mark.parametrize("field,value", [
+    ("authority_tier", ["HUMAN_APPROVED"]), ("authority_tier", {"tier": "EXTERNAL_VERIFIED"}),
+    ("evidence", 7), ("evidence", ["externally_listed"]),
+    ("threshold", []), ("threshold", "high"), ("threshold", float("nan")),
+    ("confidence", {"sliding_window_variable": "high"}),
+    ("confidence", {"a": 0.9, "b": {}}),
+    ("confidence", {"sliding_window_variable": float("inf")}),
+])
+def test_malformed_consumed_metadata_is_unavailable_without_writes(boundary, prepare, field, value):
+    stored = copy.deepcopy(GROUND_TRUTH)
+    stored["solution_groups"][0][field] = value
+    connection = MemoryConnection(ground_truth=stored)
+    with pytest.raises(HTTPException) as raised:
+        boundary.prepare(connection) if prepare else boundary.analyze(connection, {"leetcode_id": 209})
+    assert raised.value.status_code == 409
+    assert raised.value.detail["code"] == "GROUND_TRUTH_UNAVAILABLE"
+    boundary.engine.assert_not_called()
+    boundary.persist.assert_not_called()
+    assert_no_preparation(boundary, connection)
+    # NaN is intentionally rejected too; compare stable representations.
+    assert repr(connection.ground_truth) == repr(stored)
+
+
+@pytest.mark.parametrize("value", [["externally_listed"], {"state": "llm_proposed"}, 9])
+def test_malformed_row_authority_cannot_enter_legacy_fallback(boundary, value):
+    connection = MemoryConnection(ground_truth={**GROUND_TRUTH, "solution_groups": None, "validation_status": value})
+    with pytest.raises(HTTPException) as raised:
+        boundary.analyze(connection, {"leetcode_id": 209})
+    assert raised.value.detail["code"] == "GROUND_TRUTH_UNAVAILABLE"
+    boundary.engine.assert_not_called()
+    assert_no_preparation(boundary, connection)
+
+
+@pytest.mark.parametrize("field", ["authority_tier", "evidence"])
+@pytest.mark.parametrize("value", [None, "", "unrecognized_proposed_source"])
+def test_absent_and_unknown_text_authority_stays_compatible(boundary, field, value):
+    stored = copy.deepcopy(GROUND_TRUTH)
+    stored["solution_groups"][0][field] = value
+    connection = MemoryConnection(ground_truth=stored)
+    boundary.analyze(connection, {"leetcode_id": 209})
+    assert_no_preparation(boundary, connection)
+
+
+@pytest.mark.parametrize("winner", [GROUND_TRUTH, EMPTY_GROUND_TRUTH])
+def test_preparation_cannot_replace_a_row_created_after_the_cache_check(boundary, winner):
+    class CompetingPreparationConnection(MemoryConnection):
+        def execute(self, sql, params):
+            normalized = " ".join(sql.split())
+            if normalized.startswith("SELECT 1 FROM problem_ground_truth") and self.ground_truth is None:
+                self.ground_truth = copy.deepcopy(winner)
+                return SimpleNamespace(fetchone=lambda: None)
+            if normalized.startswith("INSERT INTO problem_ground_truth") and 'DO NOTHING' in normalized:
+                self.writes.append('ignored_ground_truth_insert')
+                return SimpleNamespace(fetchone=lambda: None)
+            return super().execute(sql, params)
+
+    connection = CompetingPreparationConnection(ground_truth=None)
+    boundary.llm.side_effect = None
+    boundary.llm.return_value = {"patterns": ["prefix_sum"], "approaches": [{"patterns": ["prefix_sum"]}]}
+    if winner["patterns"]:
+        result = boundary.prepare(connection)
+        assert result.solution_groups[0].patterns == winner["patterns"]
+    else:
+        with pytest.raises(HTTPException) as raised:
+            boundary.prepare(connection)
+        assert raised.value.detail["code"] == "GROUND_TRUTH_UNAVAILABLE"
+    assert connection.ground_truth == winner
+    assert connection.writes == ['ignored_ground_truth_insert']
+    boundary.llm.assert_called_once()  # Does not claim exactly-once generation across requests.

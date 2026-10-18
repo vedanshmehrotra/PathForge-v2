@@ -41,6 +41,39 @@ beforeEach(() => {
 })
 
 describe('explicit preparation and analysis retry', () => {
+  it('keeps unsupported descriptions separate from successful preparation', async () => {
+    const approach = { id: 'description_0', name: 'Depth counter', description: 'Track nesting depth.',
+      coverage_limit: 'No matching skill requirements.', comparison_support: 'UNSUPPORTED', contract_version: 2, patterns: [] }
+    vi.mocked(prepareProblem).mockRejectedValue(new ApiError(409, 'Comparison unsupported.', {
+      detail: { code: 'COMPARISON_UNSUPPORTED', approaches: [approach] },
+    }))
+    await render(usePrepareProblem).run('1021')
+    expect(render(usePrepareProblem)).toMatchObject({ result: null, loading: false, unsupported: [approach] })
+    expect(prepareProblem).toHaveBeenCalledTimes(1)
+    expect(analyzeCode).not.toHaveBeenCalled()
+    render(usePrepareProblem).clear()
+    expect(render(usePrepareProblem)).toMatchObject({ unsupported: null, error: null, result: null })
+  })
+
+  it('ignores an unsupported response invalidated by editing or choosing code-only mode', async () => {
+    let reject!: (reason: Error) => void
+    vi.mocked(prepareProblem).mockReturnValue(new Promise((_, fail) => { reject = fail }))
+    const hook = render(usePrepareProblem)
+    const request = hook.run('78')
+    hook.clear()
+    reject(new ApiError(409, 'Unsupported.', { detail: { code: 'COMPARISON_UNSUPPORTED', approaches: [] } }))
+    await request
+    expect(render(usePrepareProblem)).toMatchObject({ result: null, unsupported: null, error: null, loading: false })
+  })
+
+  it('does not accept malformed unsupported diagnostics as prepared context', async () => {
+    vi.mocked(prepareProblem).mockRejectedValue(new ApiError(409, 'Unsupported.', {
+      detail: { code: 'COMPARISON_UNSUPPORTED', approaches: [null, {}, { patterns: ['prefix_sum'] }] },
+    }))
+    await render(usePrepareProblem).run('78')
+    expect(render(usePrepareProblem)).toMatchObject({ result: null, unsupported: [], loading: false })
+  })
+
   it('preserves the preparation-required message/code without automatically preparing', async () => {
     vi.mocked(analyzeCode).mockRejectedValue(new ApiError(409, 'Prepare first.', { detail: { code: 'PREPARATION_REQUIRED' } }))
     await render(useAnalyzeCode).run({ user_id: 7, code: 'pass', problem: { leetcode_id: 209 } })

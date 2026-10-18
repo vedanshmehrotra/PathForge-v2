@@ -1,5 +1,6 @@
 """Shared AST-only checks for linked window maintenance, with no diagnoses or authority."""
 import ast
+from src.ast_detection.python_structure import assignment_values
 
 
 def scope_nodes(body):
@@ -305,11 +306,13 @@ def has_offset_window_update(loop: ast.For, preceding: list) -> bool:
 def has_initial_sum(preceding: list, accumulator: str, sequence: str, width: ast.AST) -> bool:
     for statement in reversed(preceding):
         if writes_name(statement, accumulator):
-            if not (isinstance(statement, ast.Assign) and len(statement.targets) == 1
-                    and isinstance(statement.targets[0], ast.Name)
-                    and statement.targets[0].id == accumulator):
+            # The initialization must not simultaneously replace the sequence
+            # or width used to read the slice (unpacking evaluates RHS first).
+            if writes_name(statement, sequence) or (
+                isinstance(width, ast.Name) and writes_name(statement, width.id)
+            ):
                 return False
-            value = statement.value
+            value = assignment_values(statement).get(accumulator)
             if not (isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
                     and value.func.id == "sum" and len(value.args) == 1 and not value.keywords):
                 return False

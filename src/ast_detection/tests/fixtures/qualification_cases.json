@@ -1,0 +1,302 @@
+[
+  {
+    "id": "brute_force_test_detected_nested_loops",
+    "code": "\nfor i in range(n):\n    for j in range(n):\n        print(i, j)\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors.py::TestBruteForceDetector::test_detected_nested_loops",
+    "code_sha256": "814f6cce843bfaec9ffd744a70bd061507c15ced697fdc8aa010d9bff16d8651"
+  },
+  {
+    "id": "brute_force_test_detected_nested_with_pair_check",
+    "code": "\nfor i in range(n):\n    for j in range(i + 1, n):\n        if arr[i] == arr[j]:\n            print(i, j)\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors.py::TestBruteForceDetector::test_detected_nested_with_pair_check",
+    "code_sha256": "6d6a8ec9f83dc8c95e35b82fce879d51ef3ebdcecc9b2e6760b8415ff68bf8a6"
+  },
+  {
+    "id": "brute_force_test_detected_recursive_branching",
+    "code": "\ndef solve(arr):\n    if len(arr) == 1:\n        return arr\n    results = []\n    for i in range(len(arr)):\n        sub = solve(arr[:i] + arr[i+1:])\n        for s in sub:\n            results.append([arr[i]] + s)\n    return results\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors.py::TestBruteForceDetector::test_detected_recursive_branching",
+    "code_sha256": "5aa53dacd546da32b8ab67bf3d18052a1407f42185ec3fb8592bc105f12d8aac"
+  },
+  {
+    "id": "brute_force_test_detected_recursive_with_loop",
+    "code": "\ndef solve(n):\n    if n <= 1:\n        return n\n    total = 0\n    for i in range(n):\n        total += solve(i)\n    return total\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors.py::TestBruteForceDetector::test_detected_recursive_with_loop",
+    "code_sha256": "c5a17831e0582561f4d71c78a04f8a3e48d580f859b9fab31cbf669c8ceb809e"
+  },
+  {
+    "id": "brute_force_test_detected_recursive_nested_function",
+    "code": "\ndef outer():\n    def backtrack(start, path):\n        result.append(path[:])\n        for i in range(start, len(nums)):\n            path.append(nums[i])\n            backtrack(i + 1, path)\n            path.pop()\n    backtrack(0, [])\n    return result\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors.py::TestBruteForceDetector::test_detected_recursive_nested_function",
+    "code_sha256": "c0aef35e66ef4ccae5cfeb8eaa491907d39eef66092deff88be1ae231f8336d5"
+  },
+  {
+    "id": "greedy_local_test_detected_max_subarray_kadane",
+    "code": "\ndef maxSubArray(nums):\n    max_sum = nums[0]\n    curr_sum = nums[0]\n    for i in range(1, len(nums)):\n        curr_sum = max(nums[i], curr_sum + nums[i])\n        max_sum = max(max_sum, curr_sum)\n    return max_sum\n",
+    "pattern": "greedy_local",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch7.py::TestGreedyLocalDetector::test_detected_max_subarray_kadane",
+    "code_sha256": "d71d7b052ec45abf17bed50cceba15fdf41e67f75f7f18eccd02547a7c5c9fcb"
+  },
+  {
+    "id": "greedy_local_test_detected_best_time_to_buy_sell",
+    "code": "\ndef maxProfit(prices):\n    min_price = float('inf')\n    max_profit = 0\n    for price in prices:\n        if price < min_price:\n            min_price = price\n        elif price - min_price > max_profit:\n            max_profit = price - min_price\n    return max_profit\n",
+    "pattern": "greedy_local",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch7.py::TestGreedyLocalDetector::test_detected_best_time_to_buy_sell",
+    "code_sha256": "d62dae61f6eabf3319effa4de7bd9bcdfa359afd227400ac32c76f7a527089ff"
+  },
+  {
+    "id": "greedy_local_test_detected_jump_game",
+    "code": "\ndef canJump(nums):\n    max_reach = 0\n    for i in range(len(nums)):\n        if i > max_reach:\n            return False\n        max_reach = max(max_reach, i + nums[i])\n    return True\n",
+    "pattern": "greedy_local",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch7.py::TestGreedyLocalDetector::test_detected_jump_game",
+    "code_sha256": "b6066133df09a1f452ef4937318f8da78ae5ac96bd697972945eafbc94da3e2d"
+  },
+  {
+    "id": "greedy_local_test_detected_greedy_candy",
+    "code": "\ndef candy(ratings):\n    n = len(ratings)\n    candies = [1] * n\n    for i in range(1, n):\n        if ratings[i] > ratings[i - 1]:\n            candies[i] = candies[i - 1] + 1\n    for i in range(n - 2, -1, -1):\n        if ratings[i] > ratings[i + 1]:\n            candies[i] = max(candies[i], candies[i + 1] + 1)\n    return sum(candies)\n",
+    "pattern": "greedy_local",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch7.py::TestGreedyLocalDetector::test_detected_greedy_candy",
+    "code_sha256": "3c89f45fc730b119bba510c32ea94c76811fc7468c5a6130886b5372a6dbb92f"
+  },
+  {
+    "id": "dp_state_machine_test_detected_stock_with_cooldown",
+    "code": "\ndef maxProfit(prices):\n    if not prices:\n        return 0\n    n = len(prices)\n    hold = [0] * n\n    sold = [0] * n\n    rest = [0] * n\n    hold[0] = -prices[0]\n    sold[0] = 0\n    rest[0] = 0\n    for i in range(1, n):\n        hold[i] = max(hold[i - 1], rest[i - 1] - prices[i])\n        sold[i] = hold[i - 1] + prices[i]\n        rest[i] = max(rest[i - 1], sold[i - 1])\n    return max(hold[n - 1], sold[n - 1], rest[n - 1])\n",
+    "pattern": "dp_state_machine",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch8.py::TestDPStateMachineDetector::test_detected_stock_with_cooldown",
+    "code_sha256": "ba4f2977bb9345cd40e962a25bb25fae46281673531a9c6dc06287d64d0b4f17"
+  },
+  {
+    "id": "dp_state_machine_test_detected_house_robber_state",
+    "code": "\ndef rob(nums):\n    prev0 = 0\n    prev1 = 0\n    for num in nums:\n        curr0 = max(prev0, prev1)\n        curr1 = prev0 + num\n        prev0, prev1 = curr0, curr1\n    return max(prev0, prev1)\n",
+    "pattern": "dp_state_machine",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch8.py::TestDPStateMachineDetector::test_detected_house_robber_state",
+    "code_sha256": "97b6fa7a5b57ed23ec988593cb04e816dffe00965ffad2e2c951ce1fd489c736"
+  },
+  {
+    "id": "dp_state_machine_test_detected_house_robber_optimized",
+    "code": "\ndef rob(nums):\n    prev_max = 0\n    curr_max = 0\n    for num in nums:\n        temp = curr_max\n        curr_max = max(prev_max + num, curr_max)\n        prev_max = temp\n    return curr_max\n",
+    "pattern": "dp_state_machine",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch8.py::TestDPStateMachineDetector::test_detected_house_robber_optimized",
+    "code_sha256": "3bcc0c3609a4588f4cadfc49cb0512c52ac05bcc7951ed795f93baba5ad46cc9"
+  },
+  {
+    "id": "dp_state_machine_test_detected_paint_house",
+    "code": "\ndef minCost(costs):\n    n = len(costs)\n    dp = [[0] * 3 for _ in range(n)]\n    dp[0] = costs[0]\n    for i in range(1, n):\n        dp[i][0] = costs[i][0] + min(dp[i - 1][1], dp[i - 1][2])\n        dp[i][1] = costs[i][1] + min(dp[i - 1][0], dp[i - 1][2])\n        dp[i][2] = costs[i][2] + min(dp[i - 1][0], dp[i - 1][1])\n    return min(dp[n - 1])\n",
+    "pattern": "dp_state_machine",
+    "expected": true,
+    "provenance": "Existing reviewed structural fixture: test_detectors_batch8.py::TestDPStateMachineDetector::test_detected_paint_house",
+    "code_sha256": "e37f4a9c8b2422c12796ea49466ee3a8880e12297eb11fc6b307bf17663e25e1"
+  },
+  {
+    "id": "published_human_levels_append_brute_force",
+    "code": "# Definition for a binary tree node.\n# class TreeNode(object):\n#     def __init__(self, x):\n#         self.val = x\n#         self.left = None\n#         self.right = None\n\nclass Solution(object):\n    # def levelOrder(self, root):\n    #     \"\"\"\n    #     :type root: TreeNode\n    #     :rtype: List[List[int]]\n    #     \"\"\"\n    #     res = []\n    #     if root is None:\n    #         return []\n    #     self.get_level(res, root, 0)\n    #     return res\n    #\n    # def get_level(self, res, root, depth):\n    #     if root is None:\n    #         return\n    #     if depth == len(res):\n    #         res.append([])\n    #     res[depth].append(root.val)\n    #     self.get_level(res, root.left, depth + 1)\n    #     self.get_level(res, root.right, depth + 1)\n\n    def levelOrder(self, root):\n        # https://leetcode.com/discuss/90680/9-lines-python-code\n        if root is None:\n            return []\n        q = [[root]]\n        for level in q:\n            record = []\n            for node in level:\n                if node.left:\n                    record.append(node.left)\n                if node.right:\n                    record.append(node.right)\n            if record:\n                q.append(record)\n        return [[x.val for x in level] for level in q]\n\n",
+    "pattern": "brute_force",
+    "expected": false,
+    "provenance": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/102_Binary_Tree_Level_Order_Traversal.py",
+    "reason": "Queue-of-levels traversal is not candidate enumeration.",
+    "code_sha256": "0a6c3b60c9ec2c077b3facad2e9dcd04b195ed1b2f51af79bc3e48c047e82178",
+    "adaptations": [],
+    "published_file_sha256": "0a6c3b60c9ec2c077b3facad2e9dcd04b195ed1b2f51af79bc3e48c047e82178"
+  },
+  {
+    "id": "published_human_minimum_window_py3_brute_force",
+    "code": "class Solution(object):\n    # @param {integer} s\n    # @param {integer[]} nums\n    # @return {integer}\n    def minSubArrayLen(self, s, nums):\n        start = 0\n        sum = 0\n        min_size = float(\"inf\")\n        for i in range(len(nums)):\n            sum += nums[i]\n            while sum >= s:\n                min_size = min(min_size, i - start + 1)\n                sum -= nums[start]\n                start += 1\n\n        return min_size if min_size != float(\"inf\") else 0\n",
+    "pattern": "brute_force",
+    "expected": false,
+    "provenance": "https://github.com/kamyu104/LeetCode-Solutions/blob/2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e/Python/minimum-size-subarray-sum.py",
+    "reason": "The trailing pointer consumes content monotonically; it is not reset for each candidate.",
+    "code_sha256": "3c21450552c1048417ddc3d95eabdca83f03b459905673c75fb70bfd424a6f77",
+    "adaptations": [
+      "Extracted one class",
+      "Changed xrange to range and integer midpoint / to // for Python 3"
+    ],
+    "published_file_sha256": "c9f70ad45cf78b600c960aa823df069d2620dec6bde1a26559f41aadcf55ae2f"
+  },
+  {
+    "id": "published_human_container_skipping_brute_force",
+    "code": "# class Solution(object):\n#     def maxArea(self, height):\n#         \"\"\"\n#         :type height: List[int]\n#         :rtype: int\n#         \"\"\"\nclass Solution(object):\n#     def maxArea(self, height):\n#         # brute force\n#         ls = len(height)\n#         left, right = 0, ls - 1\n#         result = 0\n#         while left < right:\n#             result = max(min(height[left], height[right]) * (right - left), result)\n#             if height[left] > height[right]:\n#                 right -= 1\n#             else:\n#                 left += 1\n#         return result\n\n    def maxArea(self, height):\n        # skip some choices\n        ls = len(height)\n        lm = min(height[0], height[ls - 1])\n        max_v = lm * (ls - 1)\n        low = 0\n        high = ls - 1\n        while low < high:\n            while height[low] < lm and low < ls:\n                low += 1\n            while height[high] < lm and high < ls:\n                high -= 1\n            if low > high:\n                break\n            m = min(height[low], height[high])\n            if m * (high - low) > max_v:\n                max_v = m * (high - low)\n                lm = m\n            if height[low] < height[high]:\n                low += 1\n            else:\n                high -= 1\n        return max_v",
+    "pattern": "brute_force",
+    "expected": false,
+    "provenance": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/011_Container_With_Most_Water.py",
+    "reason": "Monotone opposing pointers skip content; nested loops alone do not establish exhaustive search.",
+    "code_sha256": "534a0bd27aeb831f47f828aef888d43753842584c6b25b2136d1bf3a3040bfb0",
+    "adaptations": [],
+    "published_file_sha256": "534a0bd27aeb831f47f828aef888d43753842584c6b25b2136d1bf3a3040bfb0"
+  },
+  {
+    "id": "published_human_islands_recursive_brute_force",
+    "code": "class Solution(object):\n    def numIslands(self, grid):\n        \"\"\"\n        :type grid: List[List[str]]\n        :rtype: int\n        \"\"\"\n        # BFS with marks\n        if grid is None or len(grid) == 0:\n            return 0\n        islands = 0\n        for i in range(len(grid)):\n            for j in range(len(grid[i])):\n                if grid[i][j] == '1':\n                    self.explore(grid, i, j)\n                    islands += 1\n        return islands\n\n    def explore(self, grid, i, j):\n        grid[i][j] = 'X'\n        if i - 1 >= 0 and grid[i - 1][j] == '1':\n            self.explore(grid, i - 1, j)\n        if j - 1 >= 0 and grid[i][j - 1] == '1':\n            self.explore(grid, i, j - 1)\n        if i + 1 < len(grid) and grid[i + 1][j] == '1':\n            self.explore(grid, i + 1, j)\n        if j + 1 < len(grid[i]) and grid[i][j + 1] == '1':\n            self.explore(grid, i, j + 1)",
+    "pattern": "brute_force",
+    "expected": false,
+    "provenance": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/200_Number_of_Islands.py",
+    "reason": "Grid visitation/component expansion is traversal, not enumerating solution candidates.",
+    "code_sha256": "55c3e8d6da362bc50f89f1f983a3d6cdbd9e6852404b2cedcf9c579983969c4a",
+    "adaptations": [],
+    "published_file_sha256": "55c3e8d6da362bc50f89f1f983a3d6cdbd9e6852404b2cedcf9c579983969c4a"
+  },
+  {
+    "id": "published_human_minimum_binary_py3_dp_state_machine",
+    "code": "class Solution2(object):\n    # @param {integer} s\n    # @param {integer[]} nums\n    # @return {integer}\n    def minSubArrayLen(self, s, nums):\n        min_size = float(\"inf\")\n        sum_from_start = [n for n in nums]\n        for i in range(len(sum_from_start) - 1):\n            sum_from_start[i + 1] += sum_from_start[i]\n        for i in range(len(sum_from_start)):\n            end = self.binarySearch(lambda x, y: x <= y, sum_from_start, \\\n                                    i, len(sum_from_start), \\\n                                    sum_from_start[i] - nums[i] + s)\n            if end < len(sum_from_start):\n                min_size = min(min_size, end - i + 1)\n\n        return min_size if min_size != float(\"inf\") else 0\n\n    def binarySearch(self, compare, A, start, end, target):\n        while start < end:\n            mid = start + (end - start) // 2\n            if compare(target, A[mid]):\n                end = mid\n            else:\n                start = mid + 1\n        return start\n",
+    "pattern": "dp_state_machine",
+    "expected": false,
+    "provenance": "https://github.com/kamyu104/LeetCode-Solutions/blob/2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e/Python/minimum-size-subarray-sum.py",
+    "reason": "Binary-search bounds and a reporting minimum do not form recurrent alternative states.",
+    "code_sha256": "88c31aa8100fdad29211f6cb0dd2af894b681a64da6c024d7187287a402b3779",
+    "adaptations": [
+      "Extracted one class",
+      "Changed xrange to range and integer midpoint / to // for Python 3"
+    ],
+    "published_file_sha256": "c9f70ad45cf78b600c960aa823df069d2620dec6bde1a26559f41aadcf55ae2f"
+  },
+  {
+    "id": "published_human_fixed_window_py3_greedy_local",
+    "code": "# Time:  O(n)\n# Space: O(1)\n\nclass Solution(object):\n    def findMaxAverage(self, nums, k):\n        \"\"\"\n        :type nums: List[int]\n        :type k: int\n        :rtype: float\n        \"\"\"\n        result = total = sum(nums[:k])\n        for i in range(k, len(nums)):\n            total += nums[i] - nums[i-k]\n            result = max(result, total)\n        return float(result) / k\n\n",
+    "pattern": "greedy_local",
+    "expected": false,
+    "provenance": "https://github.com/kamyu104/LeetCode-Solutions/blob/2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e/Python/maximum-average-subarray-i.py",
+    "reason": "A reporting maximum of maintained windows does not establish a local-choice algorithm.",
+    "code_sha256": "4c192f3cc34a93dd85e2d8f87548f052aa70a6d894619c3e4ebfcdab4571a7e3",
+    "adaptations": [
+      "Changed xrange to range for Python 3"
+    ],
+    "published_file_sha256": "02fc0a52ee8ade88057bd279205dfe1580024485aeea4d2049decd8390bea537"
+  },
+  {
+    "id": "published_human_dsu_map_py3_greedy_local",
+    "code": "# Time:  O(nlog*n) ~= O(n), n is the length of the positions\n# Space: O(n)\n\nclass UnionFind(object):\n    def __init__(self, n):\n        self.set = list(range(n))\n        self.count = n\n\n    def find_set(self, x):\n       if self.set[x] != x:\n           self.set[x] = self.find_set(self.set[x])  # path compression.\n       return self.set[x]\n\n    def union_set(self, x, y):\n        x_root, y_root = map(self.find_set, (x, y))\n        if x_root != y_root:\n            self.set[min(x_root, y_root)] = max(x_root, y_root)\n            self.count -= 1\n\n\nclass Solution(object):\n    def countComponents(self, n, edges):\n        \"\"\"\n        :type n: int\n        :type edges: List[List[int]]\n        :rtype: int\n        \"\"\"\n        union_find = UnionFind(n)\n        for i, j in edges:\n            union_find.union_set(i, j)\n        return union_find.count\n\n",
+    "pattern": "greedy_local",
+    "expected": false,
+    "provenance": "https://github.com/kamyu104/LeetCode-Solutions/blob/2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e/Python/number-of-connected-components-in-an-undirected-graph.py",
+    "reason": "Representative/root maintenance is not established as greedy by a running best.",
+    "code_sha256": "e4818c84324312691dc1f41777236de9d6b8200f27dba6b096d1c5d2d0755e41",
+    "adaptations": [
+      "Converted parent range to a mutable list for Python 3"
+    ],
+    "published_file_sha256": "154927b5c36e3a7b979d3a7deec9c1f366f7ccd4520e58dec130dd1cb3693feb"
+  },
+  {
+    "id": "published_human_two_sum_quadratic_brute_force",
+    "code": "class Solution:\n    def twoSum(self, nums, target):\n        \"\"\"\n        :type nums: List[int]\n        :type target: int\n        :rtype: List[int]\n        \"\"\"\n        #n^2\n        ls = len(nums)\n        for i in range(ls):\n            for j in range(i + 1, ls):\n                if nums[i] + nums[j] == target:\n                    return [i, j]\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/001_Two_Sum.py",
+    "reason": "The source enumerates candidate pairs and accepts a pair using its values.",
+    "code_sha256": "a5e5d3f24596da0974aa519ccaa43528acc9bb01a8547d9e2779b613cd3b4dfd",
+    "adaptations": [
+      "Uncommented author alternative; prepended class wrapper"
+    ],
+    "published_file_sha256": "b5ac3363ddf49df41b4de5f1ab7b3795191456b2a7810dcd26799a564a80385d"
+  },
+  {
+    "id": "reporting_maximum",
+    "code": "def f(values):\n    best = 0\n    for value in values:\n        best = max(best, value)\n    return best\n",
+    "pattern": "greedy_local",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "a1fa3ae9071b26b861f44541ce85c9c1b3882cb9af305fc4b08f3ef501c73613"
+  },
+  {
+    "id": "unrelated_max",
+    "code": "def f(values):\n    return max(values)\n",
+    "pattern": "greedy_local",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "eee9b60d956469d4a93bb12641436f62c77e9585a8edd301b0ba40bbaff40bbf"
+  },
+  {
+    "id": "running_total_report",
+    "code": "def f(values):\n    total = best = 0\n    for value in values:\n        total += value\n        best = max(best, total)\n    return best\n",
+    "pattern": "dp_state_machine",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "454865e577c4be4d8f7e07d119c30c4568a4a72f69332796b779e31457db5607"
+  },
+  {
+    "id": "independent_states",
+    "code": "def f(values):\n    a = b = 0\n    for value in values:\n        a = max(a, value)\n        b = max(b, value + 1)\n    return max(a, b)\n",
+    "pattern": "dp_state_machine",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "4a5a247d55b0d138f6cf719e7a4032c894fa7382d19d786989902a898c4e78e3"
+  },
+  {
+    "id": "reset_states",
+    "code": "def f(values):\n    a = b = 0\n    for value in values:\n        a = b = 0\n        a, b = max(a, b + value), max(b, a - value)\n    return a\n",
+    "pattern": "dp_state_machine",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "2e9b47dd865d5a0fcf0ceea8f13ebc4eac4d1f3334004e1df9afb9f0f04c20c2"
+  },
+  {
+    "id": "swap_only_states",
+    "code": "def f(values):\n    a = b = 0\n    for value in values:\n        a, b = b, a\n    return max(a, b)\n",
+    "pattern": "dp_state_machine",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "291f347bb32c975c8375edaf09033b120f50aba71b4080807ef0e868d406c477"
+  },
+  {
+    "id": "grid_sum",
+    "code": "def f(grid):\n    total = 0\n    for row in range(len(grid)):\n        for col in range(len(grid[row])):\n            total += grid[row][col]\n    return total\n",
+    "pattern": "brute_force",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "5bed837737007fd6f570f3fcf8781868646884b3ebb0b0ddc7f446fbc2142819"
+  },
+  {
+    "id": "tree_recursion",
+    "code": "def f(node):\n    if node is None:\n        return 0\n    return 1 + max(f(node.left), f(node.right))\n",
+    "pattern": "brute_force",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "e13b97348defac098dd4dd056eddc3b60c1bf41844f565c3da5ad0da4f2cd5f5"
+  },
+  {
+    "id": "separate_scopes",
+    "code": "def f(values):\n    a = b = 0\n    for value in values:\n        a += value\n    def unrelated():\n        return max(a, b)\n    return a\n",
+    "pattern": "dp_state_machine",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "3446577e42d44ef47c4f6fe4e8316310232405a5a45720b23ecc847d22eb81df"
+  },
+  {
+    "id": "window_boundary_jump",
+    "code": "def f(values):\n    left = best = 0\n    last = {}\n    for right in range(len(values)):\n        if values[right] in last:\n            left = max(left, last[values[right]] + 1)\n        last[values[right]] = right\n        best = max(best, right - left + 1)\n    return best\n",
+    "pattern": "greedy_local",
+    "expected": false,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "26498dd6bc696e4fcf8b1eaac085fd6f2a396f98888b2b4ea7a341e7441f56e9"
+  },
+  {
+    "id": "two_state_tuple",
+    "code": "def f(values):\n    a = b = 0\n    for value in values:\n        a, b = b, max(b, a + value)\n    return b\n",
+    "pattern": "dp_state_machine",
+    "expected": true,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "254ae39ae8a87d7063ad008ad532032c41e2ab937fe45c4113769112600009a8"
+  },
+  {
+    "id": "subset_output",
+    "code": "def f(values):\n    out = []\n    for mask in range(1 << len(values)):\n        part = []\n        for bit in range(len(values)):\n            if mask & (1 << bit):\n                part.append(values[bit])\n        out.append(part)\n    return out\n",
+    "pattern": "brute_force",
+    "expected": true,
+    "provenance": "Source-reviewed adversarial/generalization fixture, not a published submission",
+    "code_sha256": "2e39261aa388fa98b9bdf186f08bd7249673a316549e0c2a7a44438b9cbf0ad9"
+  }
+]

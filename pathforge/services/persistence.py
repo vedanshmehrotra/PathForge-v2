@@ -17,6 +17,7 @@ from pathforge.elo_engine import EloEngine
 from pathforge.recommender import get_recommendation
 from pathforge.pipeline import _log_recommendation, _mark_last_recommendation_acted_on
 from pathforge.api.services.loader import load_submissions, load_user_pattern_elo
+from pathforge.services.approach_policy import skill_comparison_gate
 
 # Evidence states that grant authority (authoritative downstream behavior)
 _AUTHORITATIVE_STATES = {"structurally_observed", "externally_listed"}
@@ -130,16 +131,16 @@ def run_persistence(
     )
     submission_id = cursor.fetchone()["id"]
 
-    # Phase 2: Evidence authority gating
-    # If verdict_type is analysis_only, skip ALL downstream scoring systems.
-    # The submission is stored (for future clustering) but does not affect user skill models.
-    is_authoritative = verdict_type == "authoritative"
+    # Practice is retained even when the approach comparison cannot support a
+    # skill inference. This additional gate only restricts legacy authority;
+    # the stored legacy verdict_type remains diagnostic metadata.
+    comparison_gate = skill_comparison_gate(groups, ast_output, match_result)
+    is_authoritative = verdict_type == "authoritative" and comparison_gate["eligible"]
 
     # --- B6: controlled canonical-authority gating (flag OFF by default) ---
     #
-    # Flag OFF (default): b6_enabled is False and EVERYTHING below behaves
-    # exactly as before B6 — the legacy evidence-based gate above remains the
-    # only decision, and no shadow analysis runs here.
+    # Flag OFF (default): legacy authority and the comparison safeguard above
+    # still apply, and no shadow analysis runs here.
     #
     # Flag ON: the canonical B5/B5.5 authority model decides whether product
     # consequences (ELO / gaps / recommendations) may run. The decision is
@@ -269,8 +270,9 @@ def run_persistence(
     return {
         "submission_id": submission_id,
         "verdict_type": verdict_type,
-        # Report the existing gate's effect; this does not change eligibility.
+        # Actual combined effect of comparison, legacy authority and optional B6.
         "skill_updates_skipped": not is_authoritative,
+        "comparison_gate": comparison_gate,
         "profile_update": profile_update,
         "gap_signals_count": len(gap_output.get("gap_signals", [])),
         "gap_output": gap_output,

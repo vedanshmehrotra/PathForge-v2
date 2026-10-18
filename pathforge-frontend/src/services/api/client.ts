@@ -50,9 +50,11 @@ export async function apiRequest<T>(
       ? body.detail
       : typeof body?.detail?.message === 'string'
         ? body.detail.message
-        : typeof body?.error === 'string'
-          ? body.error
-          : `Request failed with status ${res.status}`
+        : typeof body?.detail?.error === 'string'
+          ? body.detail.error
+          : typeof body?.error === 'string'
+            ? body.error
+            : `Request failed with status ${res.status}`
     throw new ApiError(
       res.status,
       message,

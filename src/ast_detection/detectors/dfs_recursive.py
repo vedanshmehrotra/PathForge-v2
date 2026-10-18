@@ -12,6 +12,7 @@ Does NOT detect:
 """
 
 import ast
+from src.ast_detection.python_structure import recursive_calls, scope_nodes
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
 
@@ -49,15 +50,27 @@ class DFSRecursiveDetector(BaseDetector):
 
             func_name = node.name
 
-            if not self._find_recursive_call(node, func_name):
+            calls = recursive_calls(ast_root, node)
+            if not calls:
                 continue
 
             has_recursive_call = True
-            has_graph_traversal = self._find_graph_traversal(node)
-            has_child_recursion = self._find_child_recursion(node, func_name)
-            has_grid_expansion = self._find_grid_expansion(node, func_name)
+            has_graph_traversal = self._find_graph_traversal(node, calls)
+            has_child_recursion = self._find_child_recursion(calls)
+            has_grid_expansion = self._find_grid_expansion(calls)
             has_visited_tracking = self._find_visited_tracking(node)
             has_base_case = self._find_base_case(node)
+
+            method_calls = any(isinstance(c.func, ast.Attribute) for c in calls)
+            if method_calls and has_grid_expansion:
+                grids = {n.value.value.id for n in scope_nodes(node.body)
+                         if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Subscript)
+                         and isinstance(n.value.value, ast.Name)}
+                has_grid_expansion = any(isinstance(a, ast.Name) and a.id in grids
+                                         for c in calls for a in c.args)
+            if not (has_graph_traversal or has_child_recursion or has_grid_expansion
+                    or has_visited_tracking and not method_calls):
+                continue
 
             if has_recursive_call:
                 evidence.append(
@@ -119,17 +132,22 @@ class DFSRecursiveDetector(BaseDetector):
                     )
                 )
 
-    def _find_recursive_call(self, func_def: ast.FunctionDef, func_name: str) -> bool:
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Name) and child.func.id == func_name:
-                    return True
-        return False
-
-    def _find_graph_traversal(self, func_def: ast.FunctionDef) -> bool:
+    def _find_graph_traversal(self, func_def: ast.FunctionDef, calls) -> bool:
         neighbor_keywords = {"neighbor", "neighbors", "adjacent", "adj", "children", "child", "nbr"}
-        for child in ast.walk(func_def):
+        for child in scope_nodes(func_def.body):
             if isinstance(child, ast.For):
+                if any(isinstance(c.func, ast.Attribute) for c in calls) and not (
+                    isinstance(child.target, ast.Name) and any(
+                        c in scope_nodes(child.body)
+                        and any(isinstance(a, ast.Name) and a.id == child.target.id for a in c.args)
+                        for c in calls
+                    )
+                ):
+                    continue
+                if (any(isinstance(c.func, ast.Attribute) for c in calls)
+                        and isinstance(child.iter, ast.Subscript) and isinstance(child.iter.slice, ast.Name)
+                        and child.iter.slice.id in {a.arg for a in func_def.args.args}):
+                    return True
                 if isinstance(child.target, ast.Name):
                     target_name = child.target.id.lower()
                     for kw in neighbor_keywords:
@@ -151,38 +169,26 @@ class DFSRecursiveDetector(BaseDetector):
                             return True
         return False
 
-    def _find_child_recursion(self, func_def: ast.FunctionDef, func_name: str) -> bool:
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Name) and child.func.id == func_name:
-                    for arg in child.args:
-                        if isinstance(arg, ast.Attribute) and arg.attr in ("left", "right"):
-                            return True
-                        if isinstance(arg, ast.Call):
-                            if isinstance(arg.func, ast.Attribute) and arg.func.attr in ("left", "right"):
-                                return True
+    def _find_child_recursion(self, calls) -> bool:
+        for call in calls:
+            for arg in call.args:
+                if isinstance(arg, ast.Attribute) and arg.attr in ("left", "right"):
+                    return True
+                if isinstance(arg, ast.Call) and isinstance(arg.func, ast.Attribute) and arg.func.attr in ("left", "right"):
+                    return True
         return False
 
-    def _find_grid_expansion(self, func_def: ast.FunctionDef, func_name: str) -> bool:
+    def _find_grid_expansion(self, calls) -> bool:
         direction_count = 0
-        for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Name) and child.func.id == func_name:
-                    for arg in child.args:
-                        if isinstance(arg, ast.BinOp):
-                            if isinstance(arg.op, (ast.Add, ast.Sub)):
-                                right_one = (
-                                    isinstance(arg.right, ast.Constant) and arg.right.value == 1
-                                )
-                                left_one = (
-                                    isinstance(arg.left, ast.Constant) and arg.left.value == 1
-                                )
-                                if right_one or left_one:
-                                    direction_count += 1
+        for call in calls:
+            for arg in call.args:
+                if isinstance(arg, ast.BinOp) and isinstance(arg.op, (ast.Add, ast.Sub)):
+                    if any(isinstance(v, ast.Constant) and v.value == 1 for v in (arg.left, arg.right)):
+                        direction_count += 1
         return direction_count >= 3
 
     def _find_visited_tracking(self, func_def: ast.FunctionDef) -> bool:
-        for child in ast.walk(func_def):
+        for child in scope_nodes(func_def.body):
             if isinstance(child, ast.Call):
                 if isinstance(child.func, ast.Attribute):
                     if isinstance(child.func.value, ast.Name):
@@ -214,7 +220,7 @@ class DFSRecursiveDetector(BaseDetector):
         return False
 
     def _find_base_case(self, func_def: ast.FunctionDef) -> bool:
-        for child in ast.walk(func_def):
+        for child in scope_nodes(func_def.body):
             if isinstance(child, ast.If):
                 test = child.test
                 if isinstance(test, ast.Compare):

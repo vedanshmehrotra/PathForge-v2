@@ -27,9 +27,23 @@ export interface SolutionApproach {
   definition_state: 'EXPLICIT' | 'LEGACY_UNSPECIFIED'
   review_state: 'REVIEWED' | 'UNREVIEWED' | 'CONFLICT'
   comparison_state: 'FULL_MATCH' | 'PARTIAL_MATCH' | 'NO_MATCH' | 'NOT_EVALUATED'
+  pattern_evidence_state?: 'NOT_EVALUATED' | 'ALL_OBSERVED' | 'SOME_OBSERVED' | 'NONE_OBSERVED' | 'UNAVAILABLE'
   observed_patterns: string[]
   unobserved_patterns: string[]
   limitations: string[]
+}
+
+export interface UnscoredApproach {
+  id: string
+  name: string
+  description: string
+  coverage_limit: string
+  comparison_support: 'UNSUPPORTED'
+  patterns: string[]
+  contract_version: 2
+  source_sha256: string
+  provenance: string[]
+  authority_tier: 'llm_proposed'
 }
 
 export interface ProblemInfo {
@@ -38,6 +52,7 @@ export interface ProblemInfo {
   difficulty?: string | null
   canonical_patterns: CanonicalPattern[]
   solution_groups?: SolutionApproach[]
+  unscored_approaches?: UnscoredApproach[]
   ground_truth_consistency?: Record<string, unknown>[]
 }
 
@@ -146,6 +161,7 @@ export interface PrepareResponse {
   difficulty: string
   topics: string[]
   solution_groups?: SolutionApproach[]
+  unscored_approaches?: UnscoredApproach[]
 }
 
 export interface GapRequest {

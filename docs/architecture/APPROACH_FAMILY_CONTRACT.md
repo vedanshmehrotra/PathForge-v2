@@ -16,6 +16,11 @@ Release target: a reviewed core set, with observational analysis outside it.
 - A reviewed approach is not necessarily detectable by the current engine.
   Record coverage limitations separately from ground-truth validity.
 - Pattern alignment does not establish functional correctness or optimality.
+- Brute force is not inherently an unsuitable approach. Exhaustive enumeration
+  may be appropriate or output-size optimal; suitability depends on the problem,
+  constraints and required output, not the technique's name. The supported core
+  need not cover every valid implementation. Missing coverage is not a negative
+  judgment of solution quality, and the detector must not invent optimality.
 
 ## Proposed behavior
 

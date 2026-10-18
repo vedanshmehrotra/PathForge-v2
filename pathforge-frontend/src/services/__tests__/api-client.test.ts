@@ -18,6 +18,14 @@ describe('API error contract', () => {
     await expect(apiRequest('/prepare-problem')).rejects.toMatchObject({ status: 502, message: 'Preparation failed' })
   })
 
+  it('shows the analysis error supplied inside FastAPI detail', async () => {
+    const detail = { error: 'Syntax error in code: invalid syntax (<unknown>, line 1)', stage: 'AST' }
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 400, json: async () => ({ detail }) }))
+    await expect(apiRequest('/analyze')).rejects.toMatchObject({
+      status: 400, message: detail.error, body: { detail },
+    })
+  })
+
   it('uses a readable fallback for malformed errors', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({ detail: {} }) }))
     await expect(apiRequest('/analyze')).rejects.toThrow('Request failed with status 500')

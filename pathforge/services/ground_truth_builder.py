@@ -14,6 +14,7 @@ from pathforge.ast_analysis import authority_vocabulary as authority
 logger = logging.getLogger(__name__)
 from pathforge.db.profile_manager import iso_now
 from pathforge.llm.openrouter_client import call_llm
+from pathforge.services.approach_descriptions import normalize_description, description_record
 
 
 class GroundTruthError(Exception):
@@ -712,6 +713,9 @@ def _validate_generated_response(raw: dict) -> None:
     if "patterns" not in raw:
         raise GroundTruthError("Ground truth generation failed: patterns are missing")
     validate_fields(raw, {})
+    version = raw.get("approach_contract_version", 1)
+    if type(version) is not int or version not in (1, 2):
+        raise GroundTruthError("Ground truth generation failed: unsupported approach contract version")
     approaches = raw.get("approaches")
     if approaches is not None:
         if not isinstance(approaches, list):
@@ -720,6 +724,9 @@ def _validate_generated_response(raw: dict) -> None:
             if not isinstance(approach, dict):
                 raise GroundTruthError("Ground truth generation failed: each approach must be an object")
             validate_fields(approach, raw.get("confidence", {}))
+            support = approach.get("comparison_support")
+            if support is not None and (version != 2 or support not in ("SUPPORTED", "UNSUPPORTED")):
+                raise GroundTruthError("Ground truth generation failed: unsupported comparison declaration")
             # Explicit approach scores bypass _normalize_patterns. Require
             # numeric scores here; inherited scores retain its existing clamp.
             if "confidence" in approach and not all(
@@ -742,6 +749,14 @@ def build_ground_truth(problem_id: int, problem_description: str, connection) ->
     Also stores structured solution groups in the database.
     """
     raw = call_llm(problem_description)
+    canonical, filtered_confidence, approaches = normalize_ground_truth_response(raw)
+    _store_ground_truth(connection, problem_id, canonical, filtered_confidence, approaches,
+                        source_sha256=hashlib.sha256(problem_description.encode("utf-8")).hexdigest())
+    return canonical
+
+
+def normalize_ground_truth_response(raw) -> tuple[list[str], dict, list]:
+    """Use the generation contract without invoking a provider or writing data."""
 
     if raw is None:
         raise GroundTruthError(
@@ -754,16 +769,16 @@ def build_ground_truth(problem_id: int, problem_description: str, connection) ->
     approaches = raw.get("approaches", [])  # Optional: LLM may propose multiple approaches
 
     canonical, filtered_confidence = _normalize_patterns(patterns, confidence)
-    if not canonical:
-        raise GroundTruthError("Ground truth generation failed: no recognized patterns remain after normalization")
-
     approaches = _normalize_approaches(approaches, filtered_confidence)
+    if not canonical and not any(a.get("comparison_support") == "UNSUPPORTED" for a in approaches):
+        raise GroundTruthError("Ground truth generation failed: no recognized patterns remain after normalization")
+    if raw.get("approach_contract_version") == 2 and (
+            not approaches or {p.lower().replace("-", "_").replace(" ", "_") for p in patterns} != set(canonical)):
+        raise GroundTruthError("Ground truth generation failed: versioned approaches require complete recognized requirements")
     if approaches and set(canonical) != {p for a in approaches for p in a["patterns"]}:
         raise GroundTruthError("Ground truth generation failed: flat patterns disagree with explicit approaches")
 
-    _store_ground_truth(connection, problem_id, canonical, filtered_confidence, approaches)
-
-    return canonical
+    return canonical, filtered_confidence, approaches
 
 
 def _normalize_patterns(
@@ -802,6 +817,12 @@ def _normalize_approaches(approaches, confidence) -> list:
     """Normalize explicit components without silently dropping requirements."""
     normalized = []
     for approach in approaches or []:
+        if approach.get("comparison_support") == "UNSUPPORTED":
+            try:
+                normalized.append(normalize_description(approach))
+            except ValueError as exc:
+                raise GroundTruthError(f"Ground truth generation failed: {exc}") from exc
+            continue
         patterns, scores = _normalize_patterns(
             approach.get("patterns", []), approach.get("confidence", confidence),
         )
@@ -1119,22 +1140,13 @@ def validate_solution_groups(groups: list[dict]) -> list[dict]:
 # Storage
 # ============================================================
 
-def _store_ground_truth(
-    connection,
-    problem_id: int,
-    patterns: list[str],
-    confidence: dict,
-    approaches: list = None,
-):
-    """Store ground truth with both legacy flat columns and new solution_groups."""
-    if not patterns:
-        raise GroundTruthError("Ground truth generation failed: cannot store empty patterns")
-    now = iso_now()
-    patterns_json = json.dumps(patterns)
-    confidence_json = json.dumps(confidence) if confidence else "{}"
-
+def solution_groups_for_storage(problem_id, patterns, confidence, approaches=None, *, source_sha256=None):
+    """Build the same proposed groups for storage and offline correction drafts."""
     # Phase 4A: multi-group structured solution groups with V1 vocabulary
-    solution_groups = _build_solution_groups(patterns, confidence, approaches)
+    approaches = _normalize_approaches(approaches, confidence)
+    descriptions = [a for a in approaches if a.get("comparison_support") == "UNSUPPORTED"]
+    supported = [a for a in approaches if a.get("comparison_support") != "UNSUPPORTED"]
+    solution_groups = _build_solution_groups(patterns, confidence, supported)
 
     # Keep the historical flat fallback unchanged. Explicit approaches retain
     # their structure even without canonical coverage, marked unmatchable;
@@ -1160,17 +1172,32 @@ def _store_ground_truth(
             patterns,
         )
 
-    solution_groups_json = json.dumps(persistable_groups)
+    return persistable_groups + [description_record(a, index, source_sha256) for index, a in enumerate(descriptions)]
+
+
+def _store_ground_truth(
+    connection,
+    problem_id: int,
+    patterns: list[str],
+    confidence: dict,
+    approaches: list = None,
+    *,
+    source_sha256=None,
+):
+    """Insert newly prepared ground truth; never replace an existing artifact."""
+    records = solution_groups_for_storage(problem_id, patterns, confidence, approaches, source_sha256=source_sha256)
+    if not patterns and not records:
+        raise GroundTruthError("Ground truth generation failed: cannot store empty patterns")
+    now = iso_now()
+    patterns_json = json.dumps(patterns)
+    confidence_json = json.dumps(confidence) if confidence else "{}"
+    solution_groups_json = json.dumps(records)
 
     connection.execute(
         """
         INSERT INTO problem_ground_truth (problem_id, patterns, confidence, solution_groups, validation_status, created_at, updated_at)
         VALUES (%s, %s, %s, %s, 'llm_proposed', COALESCE((SELECT created_at FROM problem_ground_truth WHERE problem_id = %s), %s), %s)
-        ON CONFLICT(problem_id) DO UPDATE SET
-            patterns = EXCLUDED.patterns,
-            confidence = EXCLUDED.confidence,
-            solution_groups = EXCLUDED.solution_groups,
-            updated_at = EXCLUDED.updated_at
+        ON CONFLICT(problem_id) DO NOTHING
         """,
         (problem_id, patterns_json, confidence_json, solution_groups_json, problem_id, now, now),
     )

@@ -63,13 +63,22 @@ def _build_prompt(problem_text: str) -> str:
         "Do not force an unsupported approach into the vocabulary or claim exhaustive coverage. "
         "Return ONLY valid JSON with no markdown, no explanation.\n\n"
         "Output format:\n"
-        '{"patterns": ["pattern_1", "pattern_2"], "confidence": {"pattern_1": 0.9}, '
+        '{"approach_contract_version": 2, "patterns": ["pattern_1", "pattern_2"], "confidence": {"pattern_1": 0.9}, '
         '"approaches": [{"name": "One combined approach", "patterns": ["pattern_1", "pattern_2"], '
         '"confidence": {"pattern_1": 0.9, "pattern_2": 0.8}}]}\n\n'
         "The top-level patterns must be the union of all approach patterns. "
         "Include one or more approaches; retain all required components within each. "
-        "If no approach can be represented, return empty patterns and approaches, "
-        "rather than inventing labels. Use only these canonical pattern names "
+        "For an approach that cannot be COMPLETELY represented by these pattern names, retain it as "
+        '{"name": "Approach name", "description": "How this approach works", "patterns": [], '
+        '"comparison_support": "UNSUPPORTED", "coverage_limit": "Which essential components cannot be represented"}. '
+        "Keep these descriptive alternatives alongside supported approaches. Do not drop unsupported components "
+        "to make a partly representable approach appear complete. If all approaches are descriptive, top-level "
+        "patterns and confidence are empty but approaches is nonempty. Empty or malformed output is a failure. "
+        "These are unverified proposals, not correctness, optimality or skill judgments. Exhaustive enumeration "
+        "can be appropriate when all combinations are the required output. Ordinary bracket stacks are not "
+        "monotonic stacks, and nesting-depth counters are not fixed windows. Prefix products are not additive "
+        "prefix sums; preserve them as descriptive approaches when no complete supported definition fits. Do not force missing vocabulary "
+        "into a nearby pattern. Use only these canonical pattern names "
         "(all lowercase, snake_case):\n"
         "hash_map_lookup, hash_map_frequency, prefix_sum, sliding_window_fixed, "
         "sliding_window_variable, two_pointers_opposite, two_pointers_same, "

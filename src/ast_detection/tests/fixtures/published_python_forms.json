@@ -1,0 +1,99 @@
+[
+  {
+    "adaptations": [
+      "Uncommented author alternative; prepended class wrapper"
+    ],
+    "code": "class Solution:\n    def twoSum(self, nums, target):\n        # hash 1\n        hash_nums = {}\n        for index, num in enumerate(nums):\n            try:\n                hash_nums[num].append(index)\n            except KeyError:\n                hash_nums[num] = [index]\n        for index, num in enumerate(nums):\n            another = target - num\n            try:\n                candicate = hash_nums[another]\n                if another == num:\n                    if len(candicate) > 1:\n                        return candicate\n                    else:\n                        continue\n                else:\n                    return [index, candicate[0]]\n            except KeyError:\n                pass\n",
+    "expected_absent": [
+      "binary_search_standard",
+      "sliding_window_fixed"
+    ],
+    "expected_present": [
+      "hash_map_lookup"
+    ],
+    "id": "human_two_sum_try_except",
+    "source": {
+      "bytes": 2023,
+      "commit": "172fd36c3c464613d9191ab8496454fd6742d262",
+      "path": "python/001_Two_Sum.py",
+      "raw_url": "https://raw.githubusercontent.com/qiyuangong/leetcode/172fd36c3c464613d9191ab8496454fd6742d262/python/001_Two_Sum.py",
+      "repository": "qiyuangong/leetcode",
+      "sha256": "b5ac3363ddf49df41b4de5f1ab7b3795191456b2a7810dcd26799a564a80385d",
+      "snapshot_date": "2019-10-28T15:21:11Z",
+      "url": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/001_Two_Sum.py"
+    },
+    "source_reason": "Dictionary stores index lists; key lookup and KeyError handling implement complement lookup without an in predicate.",
+    "source_sha256": "4a8f10eb868f059b767374249770aee07c39852ff0b8c5b6a99f38ea08ecc8d3"
+  },
+  {
+    "adaptations": [],
+    "code": "class Solution:\n    # import itertools\n    # def permute(self, nums):\n    #     \"\"\"\n    #     :type nums: List[int]\n    #     :rtype: List[List[int]]\n    #     \"\"\"\n    #     result = itertools.permutations(nums)\n    #     result = [list(t) for t in result]\n    #     return result\n\n    def permute(self, nums):\n        # DPS with swapping\n        res = []\n        if len(nums) == 0:\n            return res\n        self.get_permute(res, nums, 0)\n        return res\n\n    def get_permute(self, res, nums, index):\n        if index == len(nums):\n            res.append(list(nums))\n            return\n        for i in range(index, len(nums)):\n            nums[i], nums[index] = nums[index], nums[i]\n            # s(n) = 1 + s(n-1)\n            self.get_permute(res, nums, index + 1)\n            nums[i], nums[index] = nums[index], nums[i]\n\n    # def permute(self, nums):\n    #     # iterative solution\n    #     res = [[]]\n    #     for i in range(len(nums)):\n    #         cache = set()\n    #         while len(res[0]) == i:\n    #             curr = res.pop(0)\n    #             for j in range(len(curr) + 1):\n    #                 # generate new n permutations from n -1 permutations\n    #                 new_perm = curr[:j] + [nums[i]] + curr[j:]\n    #                 stemp = ''.join(map(str, new_perm))\n    #                 if stemp not in cache:\n    #                     cache.add(stemp)\n    #                     res.append(new_perm)\n    #     return res\n",
+    "expected_absent": [
+      "backtracking_subset"
+    ],
+    "expected_present": [
+      "backtracking_permutation"
+    ],
+    "id": "human_permutations_swap",
+    "source": {
+      "bytes": 1458,
+      "commit": "172fd36c3c464613d9191ab8496454fd6742d262",
+      "path": "python/046_Permutations.py",
+      "raw_url": "https://raw.githubusercontent.com/qiyuangong/leetcode/172fd36c3c464613d9191ab8496454fd6742d262/python/046_Permutations.py",
+      "repository": "qiyuangong/leetcode",
+      "sha256": "8b128d87d9d597259dfc204cb6bdb1b964cc9044da2946f314d727024bfad4b9",
+      "snapshot_date": "2019-10-28T15:21:11Z",
+      "url": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/046_Permutations.py"
+    },
+    "source_reason": "Swaps choices into the current position, recursively fills every position, restores swaps and emits only full permutations.",
+    "source_sha256": "8b128d87d9d597259dfc204cb6bdb1b964cc9044da2946f314d727024bfad4b9"
+  },
+  {
+    "adaptations": [],
+    "code": "class Solution(object):\n    def numIslands(self, grid):\n        \"\"\"\n        :type grid: List[List[str]]\n        :rtype: int\n        \"\"\"\n        # BFS with marks\n        if grid is None or len(grid) == 0:\n            return 0\n        islands = 0\n        for i in range(len(grid)):\n            for j in range(len(grid[i])):\n                if grid[i][j] == '1':\n                    self.explore(grid, i, j)\n                    islands += 1\n        return islands\n\n    def explore(self, grid, i, j):\n        grid[i][j] = 'X'\n        if i - 1 >= 0 and grid[i - 1][j] == '1':\n            self.explore(grid, i - 1, j)\n        if j - 1 >= 0 and grid[i][j - 1] == '1':\n            self.explore(grid, i, j - 1)\n        if i + 1 < len(grid) and grid[i + 1][j] == '1':\n            self.explore(grid, i + 1, j)\n        if j + 1 < len(grid[i]) and grid[i][j + 1] == '1':\n            self.explore(grid, i, j + 1)",
+    "expected_absent": [
+      "bfs_level_order"
+    ],
+    "expected_present": [
+      "dfs_recursive"
+    ],
+    "id": "human_islands_recursive",
+    "source": {
+      "bytes": 898,
+      "commit": "172fd36c3c464613d9191ab8496454fd6742d262",
+      "path": "python/200_Number_of_Islands.py",
+      "raw_url": "https://raw.githubusercontent.com/qiyuangong/leetcode/172fd36c3c464613d9191ab8496454fd6742d262/python/200_Number_of_Islands.py",
+      "repository": "qiyuangong/leetcode",
+      "sha256": "55c3e8d6da362bc50f89f1f983a3d6cdbd9e6852404b2cedcf9c579983969c4a",
+      "snapshot_date": "2019-10-28T15:21:11Z",
+      "url": "https://github.com/qiyuangong/leetcode/blob/172fd36c3c464613d9191ab8496454fd6742d262/python/200_Number_of_Islands.py"
+    },
+    "source_reason": "Marks a cell then recursively explores adjacent land in self.explore; despite its BFS comment this is depth-first recursion.",
+    "source_sha256": "55c3e8d6da362bc50f89f1f983a3d6cdbd9e6852404b2cedcf9c579983969c4a"
+  },
+  {
+    "adaptations": [
+      "Changed xrange to range for Python 3"
+    ],
+    "code": "# Time:  O(n)\n# Space: O(1)\n\nclass Solution(object):\n    def findMaxAverage(self, nums, k):\n        \"\"\"\n        :type nums: List[int]\n        :type k: int\n        :rtype: float\n        \"\"\"\n        result = total = sum(nums[:k])\n        for i in range(k, len(nums)):\n            total += nums[i] - nums[i-k]\n            result = max(result, total)\n        return float(result) / k\n\n",
+    "expected_absent": [
+      "sliding_window_variable"
+    ],
+    "expected_present": [
+      "sliding_window_fixed"
+    ],
+    "id": "human_fixed_window_py3",
+    "source": {
+      "bytes": 382,
+      "commit": "2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e",
+      "path": "Python/maximum-average-subarray-i.py",
+      "raw_url": "https://raw.githubusercontent.com/kamyu104/LeetCode-Solutions/2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e/Python/maximum-average-subarray-i.py",
+      "repository": "kamyu104/LeetCode-Solutions",
+      "sha256": "02fc0a52ee8ade88057bd279205dfe1580024485aeea4d2049decd8390bea537",
+      "snapshot_date": "2019-12-29T21:16:26Z",
+      "url": "https://github.com/kamyu104/LeetCode-Solutions/blob/2a6e43c9f89c2673ca2f69277d564c4b6fcbe90e/Python/maximum-average-subarray-i.py"
+    },
+    "source_reason": "Combined incoming/outgoing update maintains the same fixed-width sum; only xrange is ported.",
+    "source_sha256": "4c192f3cc34a93dd85e2d8f87548f052aa70a6d894619c3e4ebfcdab4571a7e3"
+  }
+]
