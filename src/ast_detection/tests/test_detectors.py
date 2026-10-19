@@ -188,10 +188,11 @@ while i < len(arr):
         result = self.detector.detect(ast.parse(code))
         assert result.detected == False
 
-    def test_not_detected_enumerate_no_subscript(self):
+    def test_detected_enumerate_with_used_element(self):
+        # Like direct iteration, enumerate supplies an actual collection element.
         code = "for i, x in enumerate(arr):\n    print(x)"
         result = self.detector.detect(ast.parse(code))
-        assert result.detected == False
+        assert result.detected == True
 
     def test_not_detected_subscript_no_loop(self):
         code = "x = arr[0]"

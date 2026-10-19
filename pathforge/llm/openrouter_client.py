@@ -4,6 +4,8 @@ import time
 import urllib.error
 import urllib.request
 
+from pathforge.analysis_capabilities import prompt_pattern_vocabulary
+
 
 API_KEY_ENV = "OPENROUTER_API_KEY"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -78,18 +80,12 @@ def _build_prompt(problem_text: str) -> str:
         "can be appropriate when all combinations are the required output. Ordinary bracket stacks are not "
         "monotonic stacks, and nesting-depth counters are not fixed windows. Prefix products are not additive "
         "prefix sums; preserve them as descriptive approaches when no complete supported definition fits. Do not force missing vocabulary "
-        "into a nearby pattern. Use only these canonical pattern names "
-        "(all lowercase, snake_case):\n"
-        "hash_map_lookup, hash_map_frequency, prefix_sum, sliding_window_fixed, "
-        "sliding_window_variable, two_pointers_opposite, two_pointers_same, "
-        "dfs_recursive, dfs_iterative, bfs_level_order, bfs_shortest_path, "
-        "topological_sort, union_find, binary_search_tree, "
-        "dp_1d_forward, dp_1d_sequence, dp_2d_grid, dp_2d_string, dp_knapsack, "
-        "dp_interval, dp_state_machine, "
-        "fast_slow_pointers, linked_list_reversal, monotonic_stack, monotonic_deque, "
-        "binary_search_standard, binary_search_rotated, binary_search_answer, "
-        "heap_top_k, greedy_local, greedy_interval, "
-        "backtracking_permutation, backtracking_subset\n\n"
+        "into a nearby pattern. Use only the component IDs and definitions below. "
+        "Observations such as sorting and array_traversal may be combined in an explicitly named "
+        "approach, but do not establish a confirmed strategy, correctness, optimality or a rated skill. "
+        "Describe a genuinely different unsupported mechanism as an unsupported alternative, "
+        "even when a supported alternative also exists. Do not present the list as exhaustive.\n"
+        f"{prompt_pattern_vocabulary()}\n\n"
         "Problem:\n"
         f"{problem_text}"
     )

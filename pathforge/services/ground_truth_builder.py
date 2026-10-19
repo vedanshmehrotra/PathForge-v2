@@ -8,7 +8,7 @@ import hashlib
 import json
 import logging
 
-from pathforge.ast_engine.patterns import ALL_PATTERNS
+from pathforge.analysis_capabilities import PREPARATION_PATTERN_IDS, PATTERN_TO_V1_MAPPING
 from pathforge.ast_analysis import authority_vocabulary as authority
 
 logger = logging.getLogger(__name__)
@@ -65,246 +65,6 @@ VALID_V1_CONCEPTS = VALID_TECHNIQUES | VALID_STRATEGIES
 # `shadow/authority.py`), so the most human-trusted label was not a valid tier.
 # The single source of truth is now `pathforge.ast_analysis.authority_vocabulary`.
 VALID_AUTHORITY_TIERS = set(authority.VALID_GT_TIERS)
-
-# ============================================================
-# Old pattern → V1 vocabulary mapping
-# ============================================================
-
-# Maps legacy flat pattern IDs to V1 technique/strategy concepts.
-# Each mapping produces required/optional/excluded lists.
-# If a pattern cannot be mapped, it is preserved in diagnostic metadata.
-PATTERN_TO_V1_MAPPING = {
-    # Arrays & Hashing
-    "hash_map_lookup": {
-        "required": ["hash_lookup"],
-        "optional": [],
-        "excluded": ["recursive_branching"],
-        "note": (
-            "Key->value mapping lookup maps to hash_lookup. recursion is "
-            "excluded: a dict used as a recursion memo has the same "
-            "construction + membership shape but belongs to "
-            "recursive_branching, not lookup."
-        ),
-    },
-    "hash_map_frequency": {
-        "required": ["frequency_counting"],
-        "optional": ["hash_lookup"],
-        "excluded": ["recursive_branching"],
-        "note": (
-            "Occurrence tallying maps to frequency_counting, with a mapping "
-            "lookup as optional support. recursion is excluded: a dict used as "
-            "a memo has the same construction shape but is not a tally."
-        ),
-    },
-    "prefix_sum": {
-        "required": ["sequential_accumulation"],
-        "optional": ["iterative_table_filling"],
-        "excluded": [],
-        "note": "Prefix sum maps to sequential accumulation + optional table filling",
-    },
-    "sliding_window_fixed": {
-        "required": ["sliding_window"],
-        "optional": ["loop_state_tracking"],
-        "excluded": ["two_pointers_opposite"],
-        "note": "Fixed sliding window maps to sliding_window strategy",
-    },
-    "sliding_window_variable": {
-        "required": ["sliding_window"],
-        "optional": ["loop_state_tracking"],
-        "excluded": ["two_pointers_opposite"],
-        "note": "Variable sliding window maps to sliding_window strategy",
-    },
-    "two_pointers_opposite": {
-        "required": ["two_pointers_opposite"],
-        "optional": ["bidirectional_index_scan"],
-        "excluded": ["binary_search"],
-        "note": "Maps directly to two_pointers_opposite strategy",
-    },
-    "two_pointers_same": {
-        "required": ["forward_pointer_advance"],
-        "optional": [],
-        "excluded": ["two_pointers_opposite"],
-        "note": (
-            "Same-direction two pointers map to forward_pointer_advance. "
-            "bidirectional_index_scan is reserved for opposite-direction scans "
-            "(it requires opposite_direction_updates) and cannot be produced "
-            "by a same-direction implementation."
-        ),
-    },
-    # Graphs & Trees
-    "dfs_recursive": {
-        "required": ["recursive_branching"],
-        "optional": ["dfs_backtracking"],
-        "excluded": ["bfs_shortest_path"],
-        "note": "Recursive DFS maps to recursive_branching technique",
-    },
-    "dfs_iterative": {
-        "required": [],
-        "optional": [],
-        "excluded": ["recursive_branching"],
-        "note": "Iterative DFS has no direct V1 technique equivalent",
-    },
-    "bfs_level_order": {
-        "required": ["bfs_shortest_path"],
-        "optional": ["loop_state_tracking"],
-        "excluded": ["recursive_branching"],
-        "note": "Level-order BFS maps to bfs_shortest_path strategy",
-    },
-    "bfs_shortest_path": {
-        "required": ["bfs_shortest_path"],
-        "optional": [],
-        "excluded": ["recursive_branching"],
-        "note": "Maps directly to bfs_shortest_path strategy",
-    },
-    "topological_sort": {
-        "required": [],
-        "optional": ["bfs_shortest_path"],
-        "excluded": [],
-        "note": "No direct V1 technique; uses BFS-like traversal",
-    },
-    "union_find": {
-        "required": ["union_find"],
-        "optional": [],
-        "excluded": [],
-        "note": "Maps directly to union_find strategy",
-    },
-    "binary_search_tree": {
-        "required": ["binary_search"],
-        "optional": [],
-        "excluded": ["two_pointers_opposite"],
-        "note": "BST operations map to binary_search strategy",
-    },
-    # Dynamic Programming
-    "dp_1d_forward": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "1D forward DP maps to dp_bottom_up strategy",
-    },
-    "dp_1d_sequence": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "1D sequence DP maps to dp_bottom_up strategy",
-    },
-    "dp_2d_grid": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "2D grid DP maps to dp_bottom_up strategy",
-    },
-    "dp_2d_string": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "2D string DP maps to dp_bottom_up strategy",
-    },
-    "dp_knapsack": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "Knapsack DP maps to dp_bottom_up strategy",
-    },
-    "dp_interval": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "Interval DP maps to dp_bottom_up strategy",
-    },
-    "dp_state_machine": {
-        "required": ["dp_bottom_up"],
-        "optional": ["iterative_table_filling"],
-        "excluded": ["recursive_branching"],
-        "note": "State machine DP maps to dp_bottom_up strategy",
-    },
-    # Linked Lists & Stack
-    "fast_slow_pointers": {
-        "required": ["forward_pointer_advance"],
-        "optional": [],
-        "excluded": [],
-        "note": (
-            "Fast/slow pointers are same-direction progression and map to "
-            "forward_pointer_advance (multiple_pointer_traversal evidence)."
-        ),
-    },
-    "linked_list_reversal": {
-        "required": ["linked_list_traversal"],
-        "optional": [],
-        "excluded": ["two_pointers_opposite"],
-        "note": "Linked-list reversal maps to linked_list_traversal technique (requires pointer manipulation)",
-    },
-    "monotonic_stack": {
-        "required": ["monotonic_stack_maintenance"],
-        "optional": [],
-        "excluded": [],
-        "note": "Monotonic stack maps to monotonic_stack_maintenance technique",
-    },
-    "monotonic_deque": {
-        "required": ["monotonic_stack_maintenance"],
-        "optional": [],
-        "excluded": [],
-        "note": "Monotonic deque maps to monotonic_stack_maintenance technique (deque = stack variant)",
-    },
-    # Binary Search
-    "binary_search_standard": {
-        "required": ["binary_search"],
-        "optional": ["bidirectional_index_scan"],
-        "excluded": ["two_pointers_opposite"],
-        "note": "Maps directly to binary_search strategy",
-    },
-    "binary_search_rotated": {
-        "required": ["binary_search"],
-        "optional": ["bidirectional_index_scan"],
-        "excluded": ["two_pointers_opposite"],
-        "note": "Maps to binary_search strategy (rotated variant)",
-    },
-    "binary_search_answer": {
-        "required": ["binary_search"],
-        "optional": ["bidirectional_index_scan"],
-        "excluded": ["two_pointers_opposite"],
-        "note": "Maps to binary_search strategy (answer-space variant)",
-    },
-    # Heap / Greedy / Backtracking
-    "heap_top_k": {
-        "required": [],
-        "optional": [],
-        "excluded": [],
-        "note": "No direct V1 technique for heap operations",
-    },
-    "greedy_local": {
-        "required": ["candidate_selection"],
-        "optional": ["sequential_accumulation"],
-        "excluded": ["sliding_window"],
-        "note": (
-            "Vocabulary Layer 2: greedy local decisions map to the "
-            "candidate_selection technique, which has two structural forms: "
-            "(1) loop + conditional branch + scalar candidate replacement, "
-            "non-index participating; (2) sorting_operation + bounded read "
-            "of the same sequence (extremum_access). sliding_window is "
-            "excluded: conditionally-updated window state participates as a "
-            "subscript index and is not candidate selection."
-        ),
-    },
-    "greedy_interval": {
-        "required": [],
-        "optional": [],
-        "excluded": [],
-        "note": "No direct V1 technique for interval greedy",
-    },
-    "backtracking_permutation": {
-        "required": ["dfs_backtracking"],
-        "optional": ["recursive_branching"],
-        "excluded": ["dp_top_down"],
-        "note": "Maps to dfs_backtracking strategy",
-    },
-    "backtracking_subset": {
-        "required": ["dfs_backtracking"],
-        "optional": ["recursive_branching"],
-        "excluded": ["dp_top_down"],
-        "note": "Maps to dfs_backtracking strategy",
-    },
-}
-
 
 # ============================================================
 # Batch 2A: matchability, vocabulary refresh and consistency
@@ -407,11 +167,12 @@ def group_matchability(group: dict) -> tuple:
 
 
 def mark_group_matchability(group: dict) -> dict:
-    """Annotate a group with its matchability, in place.
+    """Annotate canonical matchability, independently of pattern comparison.
 
     Unmatchable groups keep their legacy patterns so the missing vocabulary is
-    visible to callers, but are explicitly flagged so they are never persisted
-    or emitted as a satisifiable requirement.
+    visible to callers, but are explicitly flagged as canonically unmatchable.
+    Explicit proposals may still be stored and compared at the pattern level;
+    this does not make their canonical requirements satisfiable.
     """
     matchable, reason = group_matchability(group)
     group["matchable"] = matchable
@@ -790,7 +551,7 @@ def _normalize_patterns(
     canonical = []
     filtered_confidence = {}
     for p in canonical_set:
-        if p in ALL_PATTERNS:
+        if p in PREPARATION_PATTERN_IDS:
             canonical.append(p)
             if p in confidence:
                 filtered_confidence[p] = _clamp_confidence(confidence[p])

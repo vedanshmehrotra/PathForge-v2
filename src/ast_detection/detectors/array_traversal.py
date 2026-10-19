@@ -1,14 +1,13 @@
 """Detector for array_traversal pattern.
 
 Detects sequential element-by-element processing of array-like structures.
-Requires BOTH a loop over a collection AND subscript access or element update.
-
-A for loop over a collection alone does NOT trigger this detector (that is
-just iteration, not array traversal with indexed access).
+Requires a collection loop and linked use of its elements or indexed accesses.
+Annotations, unused targets and evidence from separate scopes do not qualify.
 """
 
 import ast
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
+from src.ast_detection.python_structure import bindings, parameter_names, scope_nodes
 
 
 @register_detector
@@ -17,24 +16,36 @@ class ArrayTraversalDetector(BaseDetector):
 
     def detect(self, ast_root: ast.AST) -> DetectionResult:
         evidence = []
-        has_loop = self._detect_traversal_loop(ast_root, evidence)
-        has_subscript = self._detect_subscript_access(ast_root, evidence)
-        has_update = self._detect_element_update(ast_root, evidence)
-        has_elem_use = self._detect_element_usage(ast_root, evidence)
-
-        has_element_access = has_subscript or has_update or has_elem_use
-        has_required_signals = has_loop and has_element_access
-        confidence = self._calculate_confidence(evidence, has_required_signals)
+        parents = {child: parent for parent in ast.walk(ast_root) for child in ast.iter_child_nodes(parent)}
+        for loop in ast.walk(ast_root):
+            if not isinstance(loop, ast.For):
+                continue
+            iterator = loop.iter
+            if isinstance(iterator, ast.Call):
+                if (not isinstance(iterator.func, ast.Name) or not iterator.args
+                        or iterator.func.id not in ("range", "enumerate")
+                        or self._shadowed_iterator(loop, iterator.func.id, parents)):
+                    continue
+            elif not isinstance(iterator, ast.Name):
+                continue
+            local = []
+            self._detect_traversal_loop(loop, local)
+            accessed = self._detect_subscript_access(loop, local)
+            updated = self._detect_element_update(loop, local)
+            used = self._detect_element_usage(loop, local)
+            if accessed or updated or used:
+                evidence.extend(local)
+        confidence = self._calculate_confidence(evidence, bool(evidence))
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
-            evidence=evidence if has_required_signals else [],
+            evidence=evidence,
             detected=confidence > 0.0,
         )
 
     def _detect_traversal_loop(self, ast_root: ast.AST, evidence: list) -> bool:
         found = False
-        for node in ast.walk(ast_root):
+        for node in [ast_root]:
             if isinstance(node, ast.For):
                 if isinstance(node.iter, ast.Name):
                     evidence.append(
@@ -61,13 +72,13 @@ class ArrayTraversalDetector(BaseDetector):
 
     def _detect_element_usage(self, ast_root: ast.AST, evidence: list) -> bool:
         found = False
-        for node in ast.walk(ast_root):
-            if isinstance(node, ast.For) and isinstance(node.iter, ast.Name):
+        for node in [ast_root]:
+            if isinstance(node, ast.For):
                 loop_var_names = self._get_loop_var_names(node)
                 if loop_var_names:
                     body_names = {
-                        n.id for stmt in node.body for n in ast.walk(stmt)
-                        if isinstance(n, ast.Name) and n.id in loop_var_names
+                        n.id for n in self._body_nodes(node)
+                        if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load) and n.id in loop_var_names
                     }
                     if body_names:
                         evidence.append(
@@ -85,6 +96,11 @@ class ArrayTraversalDetector(BaseDetector):
     def _get_loop_var_names(self, for_node: ast.For) -> set:
         names = set()
         target = for_node.target
+        if isinstance(for_node.iter, ast.Call):
+            if for_node.iter.func.id != "enumerate" or not isinstance(target, (ast.Tuple, ast.List)) or len(target.elts) != 2:
+                return names
+            # The index is not the sequence element. Do not count its use alone.
+            target = target.elts[1]
         if isinstance(target, ast.Name):
             names.add(target.id)
         elif isinstance(target, ast.Tuple):
@@ -95,8 +111,8 @@ class ArrayTraversalDetector(BaseDetector):
 
     def _detect_subscript_access(self, ast_root: ast.AST, evidence: list) -> bool:
         found = False
-        for node in ast.walk(ast_root):
-            if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
+        for node in self._body_nodes(ast_root):
+            if self._linked_access(ast_root, node):
                 evidence.append(
                     EvidenceItem(
                         type="subscript_access",
@@ -111,10 +127,10 @@ class ArrayTraversalDetector(BaseDetector):
 
     def _detect_element_update(self, ast_root: ast.AST, evidence: list) -> bool:
         found = False
-        for node in ast.walk(ast_root):
+        for node in self._body_nodes(ast_root):
             if isinstance(node, ast.Assign):
                 for target in node.targets:
-                    if isinstance(target, ast.Subscript) and isinstance(target.value, ast.Name):
+                    if self._linked_access(ast_root, target):
                         evidence.append(
                             EvidenceItem(
                                 type="element_update",
@@ -126,6 +142,40 @@ class ArrayTraversalDetector(BaseDetector):
                         found = True
                         break
         return found
+
+    @staticmethod
+    def _body_nodes(loop):
+        nodes = list(scope_nodes(loop.body))
+        annotations = {id(child) for node in nodes if isinstance(node, ast.AnnAssign)
+                       for child in ast.walk(node.annotation)}
+        return [node for node in nodes if id(node) not in annotations]
+
+    def _linked_access(self, loop, node):
+        if not isinstance(node, ast.Subscript) or not isinstance(node.value, ast.Name):
+            return False
+        elements = self._get_loop_var_names(loop)
+        if node.value.id in elements:
+            return True
+        target = loop.target
+        if isinstance(loop.iter, ast.Call) and loop.iter.func.id == "enumerate":
+            if not isinstance(target, (ast.Tuple, ast.List)) or len(target.elts) != 2:
+                return False
+            target = target.elts[0]
+        indices = {n.id for n in ast.walk(target) if isinstance(n, ast.Name)}
+        return any(isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load) and n.id in indices
+                   for n in ast.walk(node.slice))
+
+    @staticmethod
+    def _shadowed_iterator(loop, name, parents):
+        ancestor = parents.get(loop)
+        while ancestor is not None:
+            if isinstance(ancestor, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if name in parameter_names(ancestor) or bindings(ancestor.body, name):
+                    return True
+            elif isinstance(ancestor, ast.Module) and bindings(ancestor.body, name):
+                return True
+            ancestor = parents.get(ancestor)
+        return False
 
     def _calculate_confidence(self, evidence: list, has_required: bool) -> float:
         if not evidence or not has_required:

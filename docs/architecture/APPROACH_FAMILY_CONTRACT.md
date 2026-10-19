@@ -79,6 +79,18 @@ authorize changing legacy scoring, canonical authority, flag defaults, stored
 ground truth, migrations or production state. The first implementation should
 preserve those boundaries and surface honest comparison limitations.
 
+## Component capability alignment
+
+`pathforge/analysis_capabilities.py` supplies generation and normalization with
+the same component IDs, definitions and unchanged legacy-to-canonical mapping.
+It includes the existing `sorting`, `array_traversal` and `brute_force`
+observations for listed-pattern comparisons in explicit proposals. These do not
+extend the rated `ALL_PATTERNS` taxonomy or canonical family requirements.
+Known canonical gaps can retain observational pattern comparisons; unknown or
+inconsistent components remain unavailable. Canonical coverage, authority and
+skill eligibility stay separate. This does not correct cached proposals or
+guarantee that a generated approach describes the problem accurately.
+
 ## Verification and stopping conditions
 
 Freeze source-based expectations before engine execution. Verify builder and

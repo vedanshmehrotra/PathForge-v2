@@ -69,11 +69,13 @@ def describe_approaches(groups, ast_output=None) -> list[SolutionApproach]:
             limitations.append("Legacy labels and canonical component definitions differ.")
         if group.get("matchable") is False or group.get("unmapped_patterns"):
             limitations.append("Some components lack canonical vocabulary coverage.")
+            if qualification["pattern_comparable"]:
+                limitations.append("Listed patterns can be compared; canonical strategy coverage is incomplete and does not grant skill eligibility.")
         limitations.append("Unobserved evidence may reflect detector coverage; pattern alignment does not verify correctness or optimality.")
         compared = engine.match({"accepted_solution_groups": [patterns]}, detections) if ast_output is not None else None
         observed = sorted(set(patterns) & detected.keys()) if compared else []
         unobserved = compared["unmatched_patterns"] if compared else []
-        usable = qualification["usable"]
+        usable = qualification["pattern_comparable"]
         evidence_state = "NOT_EVALUATED"
         if not usable:
             evidence_state = "UNAVAILABLE"

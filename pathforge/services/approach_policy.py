@@ -7,6 +7,7 @@ from pathforge.ast_analysis.authority_vocabulary import (
     FAMILY_RELATION_INDEPENDENT, FAMILY_RELATION_ONE_OF, normalize_group_authority,
 )
 from src.matching_engine.matching_engine import MatchingEngine
+from pathforge.analysis_capabilities import OBSERVATION_PATTERN_IDS, has_pattern_only_coverage
 
 
 def qualify_approach(group):
@@ -30,9 +31,12 @@ def qualify_approach(group):
         "REVIEWED" if authority["authorizing"] else "UNREVIEWED")
     usable = (explicit and review != "CONFLICT" and bool(patterns)
               and group.get("matchable", True) is True and not group.get("unmapped_patterns"))
+    pattern_comparable = usable or (
+        explicit and review != "CONFLICT" and has_pattern_only_coverage(group))
     return {"relation": relation, "alternative_id": alternative_id,
             "invalid_relationship": invalid_relationship, "components_differ": components_differ,
-            "explicit": explicit, "review": review, "usable": usable}
+            "explicit": explicit, "review": review, "usable": usable,
+            "pattern_comparable": pattern_comparable}
 
 
 def skill_comparison_gate(groups, ast_output, match_result):
@@ -54,6 +58,8 @@ def skill_comparison_gate(groups, ast_output, match_result):
     group = groups[indices[0]]
     if not isinstance(group, dict):
         return {"eligible": False, "reason": "comparison_unavailable"}
+    if OBSERVATION_PATTERN_IDS.intersection(group.get("patterns") or []):
+        return {"eligible": False, "reason": "observational_components_not_scoring"}
     qualification = qualify_approach(group)
     if not qualification["usable"]:
         return {"eligible": False, "reason": "approach_unsupported_or_ambiguous"}

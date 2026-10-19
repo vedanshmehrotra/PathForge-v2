@@ -143,6 +143,9 @@ def main():
         from pathforge.tests.test_unscored_approaches import build_contract_cases
         approach_cases = build_contract_cases()
         (output / 'approach-contract.json').write_text(json.dumps(approach_cases, indent=2), encoding='utf-8')
+        from pathforge.tests.test_analysis_capabilities import build_capability_cases
+        capability_cases = build_capability_cases()
+        (output / 'capability-cases.json').write_text(json.dumps(capability_cases, indent=2), encoding='utf-8')
         summary = {'cases': len(rows), 'problem_families': len({s['problem'] for s in specifications if s['split'] != 'negative'}),
                    'expectations_sha256': digest,
                    'legacy_expected_pattern_misses': [r['id'] for r in rows if r['missing_expected_patterns']],
@@ -152,6 +155,7 @@ def main():
                    'proposed_cases_with_skill_updates': 0,
                    'practice_service_scenarios': len(practice),
                    'approach_contract_scenarios': len(approach_cases),
+                   'capability_scenarios': len(capability_cases),
                    'scope': 'Synthetic expectations, actual builder/resolver/engines/persistence/API; no code execution or external services.'}
         (output / 'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
         print(json.dumps(summary, indent=2))
@@ -170,7 +174,8 @@ def main():
                 'pathforge/tests/test_practice_recommendations.py', 'pathforge/tests/test_problem_preparation_boundary.py',
                 'pathforge/tests/test_approach_evidence.py', 'pathforge/tests/test_skill_comparison_policy.py',
                 'pathforge/tests/test_ground_truth_correction.py', 'pathforge/tests/test_ground_truth_builder.py',
-                'pathforge/tests/test_unscored_approaches.py', 'pathforge/tests/test_llm_request_contract.py'])
+                'pathforge/tests/test_unscored_approaches.py', 'pathforge/tests/test_llm_request_contract.py',
+                'pathforge/tests/test_analysis_capabilities.py'])
             if result:
                 return int(result)
     return 1 if summary['targeted_false_positive_cases'] or summary['unsafe_strategy_cases'] else 0
