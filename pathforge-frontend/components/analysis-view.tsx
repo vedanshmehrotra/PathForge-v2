@@ -54,7 +54,8 @@ export function AnalysisView() {
     pattern_id?: string; name?: string; category?: string; confidence?: number; nodes?: number
   }> | undefined
   const matchResult = result?.match_result as (Record<string, unknown> & { reasoning_signals?: string[] }) | undefined
-  const comparisonHeading = approachComparisonHeading(result?.problem_info?.solution_groups)
+  const comparisonHeading = result?.problem_info
+    ? approachComparisonHeading(result.problem_info.solution_groups) : 'Code-only inspection'
 
   return (
     <div className="workspace-page">
@@ -115,9 +116,9 @@ export function AnalysisView() {
 
       {result && (
         <section id="analysis-summary" aria-labelledby="summary-heading" className="detail-enter flex flex-wrap items-start justify-between gap-5 border-l-2 border-l-sky pl-5">
-          <div><h2 id="summary-heading" className="text-xl font-medium">Analysis result</h2>
+          <div><h2 id="summary-heading" className="text-xl font-medium">{detectedPatterns?.length ? 'Patterns detected' : 'No supported pattern detected'}</h2>
             <p className="mt-1 text-sm font-medium">{comparisonHeading}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Pattern comparison, not a code-correctness verdict.</p></div>
+            <p className="mt-1 text-xs text-muted-foreground">Patterns only — code correctness is not checked.</p></div>
           <AnalysisEffects result={result} />
         </section>
       )}
@@ -150,7 +151,6 @@ export function AnalysisView() {
           <div className="py-5">
           {result ? (
             <>
-              {result.problem_info?.title && <p className="mb-4 text-sm text-muted-foreground">{result.problem_info.title}</p>}
               <div className="mb-5"><h3 className="eyebrow mb-3 text-mint"><ScanLine className="size-3.5" />Detected in your code</h3><div className="flex flex-wrap gap-2">{detectedPatterns?.length ? detectedPatterns.map((pattern, index) => <span key={pattern.pattern_id ?? index} className="rounded-md border border-mint/20 bg-mint/5 px-2.5 py-1.5 text-xs text-mint">{pattern.name || pattern.pattern_id?.replace(/_/g, ' ')}</span>) : <p className="text-sm text-muted-foreground">No supported patterns observed.</p>}</div></div>
               <ApproachComparison groups={result.problem_info?.solution_groups} legacyPatterns={result.problem_info?.canonical_patterns} showSummary={false} />
               <ApproachDescriptions approaches={result.problem_info?.unscored_approaches} />
@@ -160,9 +160,8 @@ export function AnalysisView() {
           ) : (
             <div className="py-3">
               <div className="mb-6 flex items-center justify-center gap-3 py-7 text-muted-foreground" aria-hidden="true"><Braces className="size-7 text-mint" /><span className="h-px w-8 bg-border" /><ScanLine className="size-7 text-sky" /><span className="h-px w-8 bg-border" /><Route className="size-7 text-amber" /></div>
-              <p className="text-base font-medium">Run analysis to see what the code expresses.</p>
-              <div className="mt-5 space-y-4 text-xs text-muted-foreground"><p className="flex items-center gap-3"><span className="size-1.5 rounded-full bg-mint" />Observed patterns from your code</p><p className="flex items-center gap-3"><span className="size-1.5 rounded-full bg-sky" />Approach alignment with a prepared problem</p><p className="flex items-center gap-3"><span className="size-1.5 rounded-full bg-amber" />Clear limits when evidence is inconclusive</p></div>
-              <p className="mt-6 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">Alternative approaches are not a checklist you must satisfy.</p>
+              <p className="text-base font-medium">Your detected patterns will appear here.</p>
+              <p className="mt-3 text-sm text-muted-foreground">Prepare a problem to compare approaches. Alternatives are not a checklist.</p>
             </div>
           )}
           </div>

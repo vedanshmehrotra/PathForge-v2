@@ -61,6 +61,7 @@ async page => {
       const codeOnly = page.getByRole('button', { name: 'Inspect code only', exact: true });
       await codeOnly.waitFor();
       const descriptions = page.getByRole('region', { name: 'Approaches outside comparison coverage', exact: true });
+      await descriptions.locator('summary').click();
       await descriptions.getByText(current.prepare.detail.approaches[0].name, { exact: true }).waitFor();
       assert(await descriptions.getByRole('table').count() === 0, 'Description became a comparison checklist');
       assert(await run.isDisabled(), name + ': unsupported preparation enabled problem-aware analysis');
@@ -78,13 +79,14 @@ async page => {
     await run.click();
     await page.locator('#analysis-summary').getByText('No Elo or gap changes', { exact: true }).waitFor();
     if (current.prepare_status === 409) {
-      await page.locator('#analysis-summary').getByText('Comparison unavailable', { exact: true }).waitFor();
+      await page.locator('#analysis-summary').getByText('Code-only inspection', { exact: true }).waitFor();
       assert(await page.getByRole('table').count() === 0, 'Code-only output contains a requirement checklist');
     } else {
       const observed = page.getByRole('table', { name: 'Pattern comparison 1', exact: true });
-      await observed.getByRole('cell', { name: 'Observed', exact: true }).first().waitFor();
+      await observed.getByRole('cell', { name: 'Detected', exact: true }).first().waitFor();
       if (name === 'mixed') {
         const descriptions = page.getByRole('region', { name: 'Approaches outside comparison coverage', exact: true });
+        await descriptions.locator('summary').click();
         await descriptions.getByText('Enumerate pairs', { exact: true }).waitFor();
         assert(!(await observed.innerText()).includes('Enumerate pairs'), 'Unsupported alternative entered requirements');
         await page.screenshot({ path: 'mixed-approaches.png', fullPage: true });

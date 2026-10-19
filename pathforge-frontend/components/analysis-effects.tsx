@@ -9,7 +9,7 @@ export function AnalysisEffects({ result }: { result: AnalyzeResponse }) {
   return (
     <section aria-label="Recorded effects" className="text-sm">
       {inconsistent ? <p className="text-warning">Update details are inconsistent. Review the recorded updates below.</p> : skipped ? (
-        <><p className="font-medium text-mint">No Elo or gap changes</p><p className="mt-1 text-xs text-muted-foreground">Saved as practice; skill updates were skipped.</p></>
+        <><p className="font-medium text-mint">No Elo or gap changes</p><p className="mt-1 text-xs text-muted-foreground">Saved as practice only.</p></>
       ) : <>
         <p className="font-medium">Recorded effects</p>
         {updates.length ? <ul className="mt-2 space-y-1.5">

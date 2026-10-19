@@ -88,7 +88,7 @@ async page => {
     await summary.getByText(headline, { exact: true }).waitFor();
     const text = await page.locator('main').innerText();
     assert(!/your code is incorrect|skill gap increased|Pattern alignment observed/i.test(text), 'Unsupported product claim for ' + current.id);
-    assert(await page.getByRole('columnheader', { name: 'Detected evidence', exact: true }).count() === 1, 'Comparison table absent');
+    assert(await page.getByRole('columnheader', { name: 'Your code', exact: true }).count() === 1, 'Comparison table absent');
     if (['fixed_maximum_sum', 'bracket_matching', 'permutations'].includes(current.id)) {
       await page.screenshot({ path: 'foundation-' + current.id + '.png', fullPage: true });
     }

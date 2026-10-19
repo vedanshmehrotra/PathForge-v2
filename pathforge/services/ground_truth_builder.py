@@ -550,7 +550,8 @@ def _normalize_patterns(
 
     canonical = []
     filtered_confidence = {}
-    for p in canonical_set:
+    # Stable ordering also makes independently prepared correction hashes stable.
+    for p in sorted(canonical_set):
         if p in PREPARATION_PATTERN_IDS:
             canonical.append(p)
             if p in confidence:

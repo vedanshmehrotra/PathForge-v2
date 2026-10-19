@@ -93,6 +93,18 @@ guarantee that a generated approach describes the problem accurately.
 
 ## Verification and stopping conditions
 
+Explicit cache corrections use an inactive package from
+`scripts/prepare_ground_truth_correction.py`. Preview it with
+`scripts/activate_ground_truth_correction.py --package <external-package>`;
+`--apply` is a separate, authorized maintenance operation, never a preparation
+or analysis fallback. Activation checks the package, current source and exact
+stored snapshot, locks the affected rows, and commits a batch atomically.
+The first ordinary group's `correction_revision` metadata retains the complete
+previous row and package/source hashes; group versions increase. New groups
+remain `llm_proposed`. No migration or historical skill update occurs. This
+path currently requires an ordinary group to carry revision metadata;
+descriptive-only corrections fail closed rather than changing record shapes.
+
 Freeze source-based expectations before engine execution. Verify builder and
 resolver behavior, real matching and Shadow output, API serialization, and the
 rendered UI with mocked transport. Use no configured database or external LLM.

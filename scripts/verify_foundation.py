@@ -175,7 +175,7 @@ def main():
                 'pathforge/tests/test_approach_evidence.py', 'pathforge/tests/test_skill_comparison_policy.py',
                 'pathforge/tests/test_ground_truth_correction.py', 'pathforge/tests/test_ground_truth_builder.py',
                 'pathforge/tests/test_unscored_approaches.py', 'pathforge/tests/test_llm_request_contract.py',
-                'pathforge/tests/test_analysis_capabilities.py'])
+                'pathforge/tests/test_analysis_capabilities.py', 'pathforge/tests/test_ground_truth_activation.py'])
             if result:
                 return int(result)
     return 1 if summary['targeted_false_positive_cases'] or summary['unsafe_strategy_cases'] else 0

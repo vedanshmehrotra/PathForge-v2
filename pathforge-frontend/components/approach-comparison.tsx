@@ -5,15 +5,15 @@ const label = (name: string) => name.replace(/_/g, ' ')
 
 export function ApproachDescriptions({ approaches }: { approaches?: UnscoredApproach[] }) {
   if (!approaches?.length) return null
-  return <section aria-label="Approaches outside comparison coverage" className="space-y-3 border-t border-border py-4">
-    <h3 className="text-sm font-medium">Proposed approaches · comparison unsupported</h3>
+  return <section aria-label="Approaches outside comparison coverage"><details className="space-y-3 border-t border-border py-4">
+    <summary className="cursor-pointer text-sm font-medium">Other proposed approaches · comparison unsupported</summary>
     {approaches.map(approach => <div key={approach.id} className="space-y-1 text-sm">
       <p className="font-medium">{approach.name}</p>
       <p className="text-muted-foreground">{approach.description}</p>
       <p className="text-xs text-muted-foreground">Coverage limit: {approach.coverage_limit}</p>
     </div>)}
     <p className="text-xs text-muted-foreground">Unverified descriptions, not missing skills or solution verdicts. These approaches are not compared or scored.</p>
-  </section>
+  </details></section>
 }
 
 function completeComparison(group: SolutionApproach): boolean {
@@ -35,9 +35,17 @@ function proposedOverlap(group: SolutionApproach): boolean {
     group.comparison_state === 'FULL_MATCH' && completeComparison(group)
 }
 
+function legacyOverlap(group: SolutionApproach): boolean {
+  // A complete listed-pattern overlap does not verify the stored relationship.
+  return group.definition_state === 'LEGACY_UNSPECIFIED' && group.review_state === 'UNREVIEWED' &&
+    group.pattern_evidence_state === 'UNAVAILABLE' &&
+    group.comparison_state === 'FULL_MATCH' && completeComparison(group)
+}
+
 export function approachComparisonHeading(groups?: SolutionApproach[]): string {
   return groups?.some(reviewedAlignment) ? 'Pattern alignment observed' :
     groups?.some(proposedOverlap) ? 'Listed patterns observed — proposed approach' :
+    groups?.some(legacyOverlap) ? 'Listed patterns detected — stored approach unverified' :
     groups?.length ? 'Inconclusive comparison' : 'Comparison unavailable'
 }
 
@@ -66,32 +74,31 @@ export function ApproachComparison({ groups, legacyPatterns, showSummary = true 
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <p className="text-sm font-medium">{group.definition_state === 'EXPLICIT' ? group.name || `Approach ${index + 1}` : `Stored expectation ${index + 1}`}</p>
               <Badge variant={full ? 'success' : 'outline'}>
-                {tentative ? 'Tentative comparison' : full ? 'Patterns aligned' : unused ? 'Unused alternative' : 'Evidence incomplete'}
+                {tentative ? 'Unverified approach' : full ? 'Patterns aligned' : unused ? 'Unused alternative' : 'Evidence incomplete'}
               </Badge>
               {group.family_relation === 'ONE_OF' && group.definition_state === 'EXPLICIT' && (
                 <span className="text-sm text-muted-foreground">Alternative approach</span>
               )}
             </div>
-            {unused && <p className="mb-2 text-sm text-muted-foreground">This alternative is not required when another accepted approach is aligned.</p>}
-            {otherProposed && <p className="mb-2 text-sm text-muted-foreground">Other proposed alternative. Another listed option has all its patterns observed; neither option is a verified solution requirement.</p>}
-            {group.pattern_evidence_state === 'ALL_OBSERVED' && proposedOverlap(group) && <p className="mb-2 text-sm text-muted-foreground">All listed patterns observed. The proposed approach remains unverified.</p>}
-            {group.pattern_evidence_state === 'SOME_OBSERVED' && <p className="mb-2 text-sm text-muted-foreground">Some listed patterns observed; this does not establish the complete approach.</p>}
-            <p className="mb-3 text-xs text-muted-foreground">{group.definition_state === 'EXPLICIT' ? 'Components are combined requirements.' : 'Unreviewed relationship between stored labels.'}</p>
+            {unused && <p className="mb-2 text-sm text-muted-foreground">This alternative is not required.</p>}
+            {otherProposed && <p className="mb-2 text-sm text-muted-foreground">Other proposed alternative; another option has all listed patterns observed.</p>}
+            {group.definition_state === 'EXPLICIT' && <p className="mb-3 text-xs text-muted-foreground">These patterns are used together.</p>}
             <table className="w-full table-fixed text-left text-sm" aria-label={`Pattern comparison ${index + 1}`}>
-              <thead className="text-xs text-muted-foreground"><tr><th scope="col" className="w-3/5 pb-2 pr-3 font-normal">Stored expectation</th><th scope="col" className="pb-2 font-normal">Detected evidence</th></tr></thead>
+              <thead className="text-xs text-muted-foreground"><tr><th scope="col" className="w-3/5 pb-2 pr-3 font-normal">Stored patterns</th><th scope="col" className="pb-2 font-normal">Your code</th></tr></thead>
               <tbody>{(group.patterns ?? []).map(pattern => {
                 const observed = (group.observed_patterns ?? []).includes(pattern)
                 const unobserved = (group.unobserved_patterns ?? []).includes(pattern)
                 return <tr key={pattern} className="border-t border-border/60">
                   <th scope="row" className="break-words py-2.5 pr-3 font-normal">{label(pattern)}</th>
                   <td className={`py-2.5 ${unused ? 'text-muted-foreground' : observed && !unobserved ? 'text-mint' : 'text-muted-foreground'}`}>
-                    {unused ? 'Not required' : otherProposed ? 'Other proposed option' : observed && !unobserved ? 'Observed' : unobserved && !observed ? 'Not observed' : 'Uncertain'}
+                    {unused ? 'Not required' : otherProposed ? 'Other proposed option' : observed && !unobserved ? 'Detected' : unobserved && !observed ? 'Not detected' : 'Uncertain'}
                   </td>
                 </tr>
               })}</tbody>
             </table>
             <details className="mt-2 text-sm text-muted-foreground">
-              <summary className="cursor-pointer">Source and comparison limits</summary>
+              <summary className="cursor-pointer">How this comparison was made</summary>
+              <p>{group.definition_state === 'EXPLICIT' ? 'Components are combined requirements.' : 'The relationship between these stored labels is unverified.'}</p>
               <p>Stored name: {group.name || 'Unspecified'}</p>
               <p>Expectation authority: {group.authority_tier || 'Unspecified'}</p>
               <p>Provenance: {group.provenance?.join(', ') || 'Not recorded'}</p>
@@ -111,7 +118,10 @@ export function ApproachComparison({ groups, legacyPatterns, showSummary = true 
           </div>
         </div>
       )}
-      <p className="text-xs leading-relaxed text-muted-foreground">Not observed can mean limited detector coverage or an unsuitable stored expectation. Pattern alignment does not prove correctness and does not establish a confirmed strategy. Listed options may not cover every valid approach.</p>
+      <details className="text-xs leading-relaxed text-muted-foreground">
+        <summary className="cursor-pointer">What does “not detected” mean?</summary>
+        <p className="mt-2">A detector may not support your implementation, or the stored approach may not fit. Listed approaches may be incomplete. Pattern alignment does not prove correctness and does not establish a confirmed strategy.</p>
+      </details>
     </div>
   )
 }
