@@ -11,6 +11,8 @@ Does NOT detect sliding window or other non-cumulative patterns.
 """
 
 import ast
+from src.ast_detection.python_structure import bindings, scope_nodes
+from src.ast_detection.window_structure import same
 from typing import Set
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
@@ -32,110 +34,62 @@ class PrefixSumDetector(BaseDetector):
             detected=confidence > 0.0,
         )
 
-    def _is_prefix_name(self, node: ast.AST) -> bool:
-        """Check if an AST node refers to a prefix-like variable.
 
-        Handles both bare names (prefix) and attribute accesses (self.prefix)."""
-        if isinstance(node, ast.Name):
-            return True
-        if isinstance(node, ast.Attribute):
-            # Check if the attribute name suggests a prefix/cumulative array
-            attr_lower = node.attr.lower()
-            return any(kw in attr_lower for kw in ("prefix", "pref", "cum", "accu", "running"))
-        return False
+    def _detect_prefix_array(self, ast_root, evidence):
+        """One destination extends its own previous prefix; another row cannot supply it."""
+        def offset(value, index):
+            if isinstance(value, ast.Name) and value.id == index:
+                return 0
+            if (isinstance(value, ast.BinOp) and isinstance(value.left, ast.Name)
+                    and value.left.id == index and isinstance(value.right, ast.Constant)
+                    and type(value.right.value) is int and isinstance(value.op, (ast.Add, ast.Sub))):
+                return value.right.value * (1 if isinstance(value.op, ast.Add) else -1)
+            return None
 
-    def _detect_prefix_array(self, ast_root: ast.AST, evidence: list) -> None:
-        """Signal: prefix array construction with cumulative formula or append pattern.
-
-        Matches:
-            prefix = [0] * (n + 1)
-            for i in range(1, n + 1):
-                prefix[i] = prefix[i - 1] + arr[i - 1]
-
-            prefix = [0]
-            for num in nums:
-                prefix.append(prefix[-1] + num)
-
-            self.prefix = [0]
-            for num in nums:
-                self.prefix.append(self.prefix[-1] + num)
-        """
-        for node in ast.walk(ast_root):
-            if not isinstance(node, ast.For):
+        for loop in ast.walk(ast_root):
+            if not isinstance(loop, ast.For) or not isinstance(loop.target, ast.Name):
                 continue
-
-            if not isinstance(node.target, ast.Name):
-                continue
-
-            prefix_names = self._find_prefix_array_targets(node.body)
-            has_append = self._find_append_to_list(node.body)
-
-            if not prefix_names and not has_append:
-                continue
-
-            has_prefix_formula = False
-            has_accumulator = False
-            for stmt in node.body:
-                if isinstance(stmt, ast.Assign):
-                    for target in stmt.targets:
-                        if isinstance(target, ast.Subscript):
-                            target_var = target.value.id if isinstance(target.value, ast.Name) else None
-                            if target_var and (target_var in prefix_names or has_append):
-                                value = stmt.value
-                                if isinstance(value, ast.BinOp) and isinstance(value.op, (ast.Add, ast.Sub)):
-                                    left = value.left
-                                    if isinstance(left, ast.Subscript):
-                                        # Check that the BinOp references a DIFFERENT subscripted variable
-                                        # (prefix[i] = prefix[i-1] + arr[i-1] is prefix sum;
-                                        #  dp[i] = dp[i-1] + dp[i-2] is DP, not prefix sum)
-                                        left_var = left.value.id if isinstance(left.value, ast.Name) else None
-                                        right_has_different_subscript = False
-                                        for n in ast.walk(value.right):
-                                            if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Name):
-                                                if n.value.id != target_var:
-                                                    right_has_different_subscript = True
-                                                    break
-                                        if right_has_different_subscript:
-                                            has_prefix_formula = True
-                call_node = stmt
-                if isinstance(stmt, ast.Expr):
-                    call_node = stmt.value
-                if isinstance(call_node, ast.Call):
-                    if isinstance(call_node.func, ast.Attribute) and call_node.func.attr == "append":
-                        for arg in call_node.args:
-                            if isinstance(arg, ast.BinOp) and isinstance(arg.op, (ast.Add, ast.Sub)):
-                                for sub in ast.walk(arg):
-                                    if isinstance(sub, ast.Subscript) and self._is_prefix_name(sub.value):
-                                        has_prefix_formula = True
-
-            # Only count as accumulator if the augmented assignment is on a
-            # prefix-like variable (not just any += in the loop body)
-            for stmt in node.body:
-                if isinstance(stmt, ast.AugAssign):
-                    if isinstance(stmt.op, (ast.Add, ast.Sub)):
-                        if isinstance(stmt.target, ast.Name) and stmt.target.id in prefix_names:
-                            has_accumulator = True
-                        elif isinstance(stmt.target, ast.Subscript):
-                            if self._is_prefix_name(stmt.target.value):
-                                has_accumulator = True
-
-            if has_prefix_formula or has_accumulator:
-                evidence.append(
-                    EvidenceItem(
-                        type="prefix_array_construction",
-                        description=f"Prefix array built in loop with cumulative formula",
-                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
-                        weight=0.40,
-                    )
-                )
-                evidence.append(
-                    EvidenceItem(
-                        type="prefix_accumulator",
-                        description="Cumulative accumulation in loop body",
-                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
-                        weight=0.30,
-                    )
-                )
+            for statement in loop.body:
+                destination = previous_index = value = None
+                if isinstance(statement, ast.Assign) and len(statement.targets) == 1:
+                    target = statement.targets[0]
+                    if isinstance(target, ast.Subscript):
+                        destination, value = target.value, statement.value
+                        previous_index = offset(target.slice, loop.target.id)
+                elif isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Call):
+                    call = statement.value
+                    if (isinstance(call.func, ast.Attribute) and call.func.attr == 'append'
+                            and len(call.args) == 1 and not call.keywords):
+                        destination, value = call.func.value, call.args[0]
+                if not (destination is not None and isinstance(value, ast.BinOp)
+                        and isinstance(value.op, (ast.Add, ast.Sub))
+                        and isinstance(value.left, ast.Subscript) and same(value.left.value, destination)):
+                    continue
+                if isinstance(destination, ast.Name) and bindings(loop.body, destination.id):
+                    continue
+                if isinstance(destination, ast.Attribute) and any(
+                    isinstance(n, ast.Attribute) and isinstance(n.ctx, (ast.Store, ast.Del))
+                    and ast.unparse(n) == ast.unparse(destination) for n in scope_nodes(loop.body)):
+                    continue
+                previous = value.left.slice
+                if previous_index is None:
+                    linked = (isinstance(statement, ast.Expr) and isinstance(previous, ast.UnaryOp)
+                              and isinstance(previous.op, ast.USub) and isinstance(previous.operand, ast.Constant)
+                              and previous.operand.value == 1)
+                else:
+                    old_index = offset(previous, loop.target.id)
+                    linked = old_index is not None and previous_index - old_index == 1
+                # A recurrence on the same state (Fibonacci/DP), or an append
+                # using somebody else's last item, does not construct a prefix.
+                if not linked or any(isinstance(n, ast.Subscript) and same(n.value, destination)
+                                     for n in ast.walk(value.right)):
+                    continue
+                evidence.extend([
+                    EvidenceItem(type='prefix_array_construction', description='Destination extends its own preceding additive prefix',
+                                 location=f'{statement.lineno}:{statement.col_offset}', weight=0.40),
+                    EvidenceItem(type='prefix_accumulator', description='Cumulative state and additive input are linked',
+                                 location=f'{statement.lineno}:{statement.col_offset}', weight=0.30)])
+                break
 
     def _detect_running_sum(self, ast_root: ast.AST, evidence: list) -> None:
         """Signal: running sum variable with dictionary lookup pattern.
@@ -179,24 +133,6 @@ class PrefixSumDetector(BaseDetector):
                         )
                     )
 
-    def _find_prefix_array_targets(self, body: list) -> Set[str]:
-        """Find variable names that have subscript assignments in loop body."""
-        names = set()
-        for stmt in body:
-            if isinstance(stmt, ast.Assign):
-                for target in stmt.targets:
-                    if isinstance(target, ast.Subscript):
-                        if isinstance(target.value, ast.Name):
-                            names.add(target.value.id)
-        return names
-
-    def _find_append_to_list(self, body: list) -> bool:
-        """Check if there's an .append() call in the loop body."""
-        for stmt in ast.walk(ast.Module(body=body)):
-            if isinstance(stmt, ast.Call):
-                if isinstance(stmt.func, ast.Attribute) and stmt.func.attr == "append":
-                    return True
-        return False
 
     def _find_running_sum_vars(self, for_node: ast.For) -> Set[str]:
         """Find variables being augmented with += in the loop body."""
@@ -214,10 +150,7 @@ class PrefixSumDetector(BaseDetector):
 
     def _walk_body(self, body: list):
         """Walk over all nodes in a body list safely."""
-        for stmt in body:
-            yield stmt
-            for subnode in ast.walk(stmt):
-                yield subnode
+        yield from scope_nodes(body)
 
     def _find_dict_store(self, body: list, running_vars: Set[str]) -> bool:
         """Check if running sum values are stored in a dictionary."""
@@ -244,15 +177,15 @@ class PrefixSumDetector(BaseDetector):
                 test = stmt.test
                 for subnode in ast.walk(test):
                     if isinstance(subnode, ast.Subscript):
-                        if isinstance(subnode.value, ast.Name) and subnode.value.id not in running_vars:
+                        if (isinstance(subnode.value, ast.Name) and subnode.value.id not in running_vars
+                                and any(self._contains_name(subnode.slice, var) for var in running_vars)):
                             return True
                     if isinstance(subnode, ast.BinOp) and isinstance(subnode.op, ast.Sub):
                         if isinstance(subnode.left, ast.Name) and subnode.left.id in running_vars:
                             return True
                     if isinstance(subnode, ast.Call):
-                        if isinstance(subnode.func, ast.Attribute) and subnode.func.attr == "get":
-                            return True
-                        if isinstance(subnode.func, ast.Name) and subnode.func.id == "get":
+                        if (isinstance(subnode.func, ast.Attribute) and subnode.func.attr == "get" and subnode.args
+                                and any(self._contains_name(subnode.args[0], var) for var in running_vars)):
                             return True
         return False
 

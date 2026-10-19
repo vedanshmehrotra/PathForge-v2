@@ -8,6 +8,7 @@ Does NOT detect same-direction (slow/fast) two-pointer patterns.
 """
 
 import ast
+from src.ast_detection.python_structure import assignment_values, bindings, scope_nodes
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
 
@@ -27,121 +28,51 @@ class TwoPointersOppositeDetector(BaseDetector):
             detected=confidence > 0.0,
         )
 
-    def _detect_convergence_loop(self, ast_root: ast.AST, evidence: list) -> None:
-        """Signal: while loop with bidirectional pointer convergence.
-
-        Core pattern:
-            left = 0
-            right = len(arr) - 1
-            while left < right:
-                if condition:
-                    left += 1
-                else:
-                    right -= 1
-        """
-        for node in ast.walk(ast_root):
-            if not isinstance(node, ast.While):
+    def _detect_convergence_loop(self, ast_root, evidence):
+        for loop in ast.walk(ast_root):
+            test = getattr(loop, 'test', None)
+            if not (isinstance(loop, ast.While) and isinstance(test, ast.Compare) and len(test.ops) == 1
+                    and isinstance(test.ops[0], (ast.Lt, ast.LtE)) and isinstance(test.left, ast.Name)
+                    and isinstance(test.comparators[0], ast.Name) and test.left.id != test.comparators[0].id):
                 continue
-
-            condition = node.test
-            if not isinstance(condition, ast.Compare):
+            lower, upper = test.left.id, test.comparators[0].id
+            updates = {lower: [], upper: []}
+            allowed = {lower: set(), upper: set()}
+            def scan(body):
+                for statement in body:
+                    if isinstance(statement, ast.If):
+                        scan(statement.body)
+                        scan(statement.orelse)
+                    elif isinstance(statement, ast.AugAssign) and isinstance(statement.target, ast.Name):
+                        if statement.target.id in updates:
+                            updates[statement.target.id].append((statement.op, statement.value))
+                            allowed[statement.target.id].add(statement.target)
+                    else:
+                        for key, value in assignment_values(statement).items():
+                            if key in updates:
+                                allowed[key].update(n for n in scope_nodes([statement]) if isinstance(n, ast.Name)
+                                                    and isinstance(n.ctx, ast.Store) and n.id == key)
+                                if (isinstance(value, ast.BinOp) and isinstance(value.left, ast.Name)
+                                        and value.left.id == key):
+                                    updates[key].append((value.op, value.right))
+                                else:
+                                    updates[key].append((None, None))
+            scan(loop.body)
+            def direction(key, operator):
+                return bool(updates[key]) and all(isinstance(op, operator) and isinstance(v, ast.Constant)
+                    and type(v.value) is int and v.value > 0 for op, v in updates[key])
+            if not (direction(lower, ast.Add) and direction(upper, ast.Sub)):
                 continue
-
-            if len(condition.ops) != 1:
+            if any(set(bindings(loop.body, key)) != allowed[key] for key in updates):
                 continue
+            for kind, description, weight in [
+                ('left_pointer_increment', f"Lower pointer '{lower}' advances", 0.25),
+                ('right_pointer_decrement', f"Upper pointer '{upper}' retreats", 0.25),
+                ('convergence_loop', f"Compared pointers '{lower}' and '{upper}' converge in this loop", 0.40),
+            ]:
+                evidence.append(EvidenceItem(type=kind, description=description,
+                    location=f'{loop.lineno}:{loop.col_offset}', weight=weight))
 
-            if not isinstance(condition.ops[0], (ast.Lt, ast.LtE)):
-                continue
-
-            left_name = None
-            right_name = None
-            if isinstance(condition.left, ast.Name) and isinstance(condition.comparators[0], ast.Name):
-                left_name = condition.left.id
-                right_name = condition.comparators[0].id
-            elif isinstance(condition.left, ast.Name) and isinstance(condition.comparators[0], ast.Call):
-                left_name = condition.left.id
-            else:
-                continue
-
-            if left_name is None:
-                continue
-
-            body_increments = self._collect_opposite_increments(node.body, evidence)
-            if not body_increments:
-                continue
-
-            left_increment = body_increments.get("left")
-            right_decrement = body_increments.get("right")
-
-            has_increment = left_increment == 1
-            has_decrement = right_decrement == -1
-
-            if has_increment and has_decrement:
-                if left_name:
-                    evidence.append(
-                        EvidenceItem(
-                            type="left_pointer_increment",
-                            description=f"Left pointer '{left_name}' increments toward center",
-                            location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
-                            weight=0.25,
-                        )
-                    )
-                if right_name:
-                    evidence.append(
-                        EvidenceItem(
-                            type="right_pointer_decrement",
-                            description=f"Right pointer '{right_name}' decrements toward center",
-                            location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
-                            weight=0.25,
-                        )
-                    )
-                evidence.append(
-                    EvidenceItem(
-                        type="convergence_loop",
-                        description=f"While loop converging {left_name} < {right_name}",
-                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
-                        weight=0.40,
-                    )
-                )
-
-    def _collect_opposite_increments(self, body: list, evidence: list) -> dict:
-        """Collect pointer increment directions from loop body.
-
-        Returns dict with optional 'left' and 'right' keys mapping to step values.
-        Looks for +=1 and -=1 patterns, typically in if/elif/else branches.
-        """
-        result = {}
-        for stmt in body:
-            if isinstance(stmt, ast.If):
-                for branch in self._flatten_branches(stmt):
-                    for s in branch:
-                        if isinstance(s, ast.AugAssign):
-                            if isinstance(s.target, ast.Name):
-                                if isinstance(s.op, ast.Add) and isinstance(s.value, ast.Constant) and s.value.value == 1:
-                                    result["left"] = 1
-                                elif isinstance(s.op, ast.Sub) and isinstance(s.value, ast.Constant) and s.value.value == 1:
-                                    result["right"] = -1
-            if isinstance(stmt, ast.AugAssign):
-                if isinstance(stmt.target, ast.Name):
-                    if isinstance(stmt.op, ast.Add) and isinstance(stmt.value, ast.Constant) and stmt.value.value == 1:
-                        result["left"] = 1
-                    elif isinstance(stmt.op, ast.Sub) and isinstance(stmt.value, ast.Constant) and stmt.value.value == 1:
-                        result["right"] = -1
-        return result
-
-    def _flatten_branches(self, if_node: ast.If) -> list:
-        """Flatten if/elif/else branches into a list of body lists.
-
-        Handles nested elif chains by recursively processing orelse.
-        """
-        branches = [if_node.body]
-        for stmt in if_node.orelse:
-            if isinstance(stmt, ast.If):
-                branches.extend(self._flatten_branches(stmt))
-            else:
-                branches.append(if_node.orelse)
-                break
-        return branches
 
     def _calculate_confidence(self, evidence: list) -> float:
         if not evidence:

@@ -114,25 +114,11 @@ class LinkedListReversalDetector(BaseDetector):
                     )
                 )
 
-            # Check for characteristic variable names
-            reversal_names = {"prev", "previous", "curr", "current", "next_node", "next_temp", "nxt", "nxt_temp"}
-            found_names = set()
-            for child in ast.walk(node):
-                if isinstance(child, ast.Name):
-                    name_lower = child.id.lower()
-                    for r in reversal_names:
-                        if r in name_lower:
-                            found_names.add(child.id)
-
-            if len(found_names) >= 2:
-                evidence.append(
-                    EvidenceItem(
-                        type="reversal_variable_names",
-                        description=f"Traditional linked list reversal variable names found: {sorted(list(found_names))}",
-                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, "lineno") else None,
-                        weight=0.20,
-                    )
-                )
+            if any(isinstance(child, ast.Attribute) and child.attr == 'next'
+                   and isinstance(child.ctx, ast.Load) for child in ast.walk(node)):
+                evidence.append(EvidenceItem(type='reversal_variable_names',
+                    description='Successor reads accompany local pointer rewiring; spelling is irrelevant',
+                    location=f'{node.lineno}:{node.col_offset}', weight=0.20))
 
     def _detect_recursive_reversal(self, ast_root: ast.AST, evidence: list) -> None:
         """Signal: recursive linked-list reversal with recursive rewiring.

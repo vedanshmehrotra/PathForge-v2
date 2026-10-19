@@ -7,6 +7,7 @@ Unique Paths, Maximal Square, Dungeon Game.
 """
 
 import ast
+from src.ast_detection.recurrence_links import grid_row_recurrences
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
@@ -17,6 +18,11 @@ class DP2DGridDetector(BaseDetector):
     def detect(self, ast_root: ast.AST) -> DetectionResult:
         evidence = []
         self._detect_2d_grid(ast_root, evidence)
+        linked_rows = grid_row_recurrences(ast_root)
+        for function, outer, statement in linked_rows:
+            for kind, weight in [('grid_lookback',0.30), ('nested_fill_loops',0.25), ('recurrence_expression',0.25)]:
+                evidence.append(EvidenceItem(type=kind, description='Repeated row recurrence links neighboring cells across two loop axes',
+                    location=f'{statement.lineno}:{statement.col_offset}',weight=weight))
 
         confidence = self._calculate_confidence(evidence)
 

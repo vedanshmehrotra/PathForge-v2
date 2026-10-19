@@ -169,8 +169,8 @@ def linked_trailing_advance(body, guard, trailing, outgoing):
 def _initial_zero(preceding, variable):
     for statement in reversed(preceding):
         if writes_name(statement, variable):
-            return (isinstance(statement, ast.Assign) and len(statement.targets) == 1 and name(statement.targets[0], variable)
-                    and isinstance(statement.value, ast.Constant) and type(statement.value.value) is int and statement.value.value == 0)
+            value = assignment_values(statement).get(variable)
+            return isinstance(value, ast.Constant) and type(value.value) is int and value.value == 0
     return False
 
 
@@ -263,12 +263,16 @@ def has_offset_window_update(loop: ast.For, preceding: list) -> bool:
     ):
         return False
     width = iterator.args[0]
-    if not (isinstance(width, ast.Name) or (
-        isinstance(width, ast.Constant) and type(width.value) is int and width.value > 0
-    )):
+    def fixed_expression(node):
+        return (isinstance(node, ast.Name)
+                or isinstance(node, ast.Constant) and type(node.value) is int
+                or isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Sub))
+                and fixed_expression(node.left) and fixed_expression(node.right))
+    if not fixed_expression(width):
         return False
     index_name = loop.target.id
-    if isinstance(width, ast.Name) and width.id == index_name:
+    if (any(name(n, index_name) for n in ast.walk(width))
+            or isinstance(width, ast.Constant) and width.value <= 0):
         return False
 
     for position, statement in enumerate(loop.body):
@@ -298,8 +302,7 @@ def has_offset_window_update(loop: ast.For, preceding: list) -> bool:
             continue
         sequence = incoming.value.id
         stable_names = {index_name, sequence}
-        if isinstance(width, ast.Name):
-            stable_names.add(width.id)
+        stable_names.update(n.id for n in ast.walk(width) if isinstance(n, ast.Name))
         if any(writes_name(s, name) for s in loop.body for name in stable_names):
             continue
         if any(writes_name(s, accumulator) for s in loop.body if s not in updates):

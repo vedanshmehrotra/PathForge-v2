@@ -1,0 +1,130 @@
+[
+  {
+    "id": "1036-rotting-oranges",
+    "code": "class Solution:\n    def orangesRotting(self, grid: list[list[int]]) -> int:\n        from collections import deque\n\n        m, n = len(grid), len(grid[0])\n        queue = deque()\n        fresh = 0\n\n        for r in range(m):\n            for c in range(n):\n                if grid[r][c] == 2:\n                    queue.append((r, c))\n                elif grid[r][c] == 1:\n                    fresh += 1\n\n        minutes = 0\n\n        while queue and fresh:\n            for _ in range(len(queue)):\n                r, c = queue.popleft()\n\n                for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nr, nc = r + dr, c + dc\n\n                    if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1:\n                        grid[nr][nc] = 2\n                        fresh -= 1\n                        queue.append((nr, nc))\n\n            minutes += 1\n\n        return minutes if fresh == 0 else -1",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/1036-rotting-oranges/rotting-oranges.py",
+    "sha256": "c78c4fc407a8720250009e0fba327c05885dc2cd96cafd2c46afc090e9d24ab5",
+    "expected_present": [
+      "bfs_shortest_path"
+    ],
+    "expected_absent": [
+      "bfs_level_order"
+    ]
+  },
+  {
+    "id": "118-pascals-triangle",
+    "code": "class Solution:\n    def generate(self, numRows):\n        result = []\n\n        for i in range(numRows):\n            row = [1] * (i + 1)\n\n            for j in range(1, i):\n                row[j] = result[i - 1][j - 1] + result[i - 1][j]\n\n            result.append(row)\n\n        return result",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/118-pascals-triangle/pascals-triangle.py",
+    "sha256": "adeedcb7532cbbebba334e19d49f9ab04bee9cf14247e3a6c666b5b4927d53de",
+    "expected_present": [
+      "dp_2d_grid"
+    ],
+    "expected_absent": [
+      "prefix_sum"
+    ]
+  },
+  {
+    "id": "1370-count-number-of-nice-subarrays",
+    "code": "class Solution:\n    def numberOfSubarrays(self, nums: list[int], k: int) -> int:\n        res = left = count = odds = 0\n        \n        for right in range(len(nums)):\n            if nums[right] % 2 == 1:\n                odds += 1\n                count = 0\n                \n            while odds == k:\n                if nums[left] % 2 == 1:\n                    odds -= 1\n                count += 1\n                left += 1\n                \n            res += count\n            \n        return res",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/1370-count-number-of-nice-subarrays/count-number-of-nice-subarrays.py",
+    "sha256": "36b6ac0d717ebde43ef75c389b12258fb1b5fc0cd9a1c5a0178d65b90e858e1f",
+    "expected_present": [],
+    "expected_absent": [
+      "fast_slow_pointers"
+    ]
+  },
+  {
+    "id": "160-intersection-of-two-linked-lists",
+    "code": "class Solution:\n    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:\n        a, b = headA, headB\n\n        while a != b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n\n        return a",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/160-intersection-of-two-linked-lists/intersection-of-two-linked-lists.py",
+    "sha256": "6a81c2f9e37616c23ed2952f5215620b180d8c14afe313b6649d3035ac2bb13d",
+    "expected_present": [
+      "two_pointers_same"
+    ],
+    "expected_absent": [
+      "fast_slow_pointers"
+    ]
+  },
+  {
+    "id": "206-reverse-linked-list",
+    "code": "class Solution:\n    def reverseList(self, head):\n        prev = None\n        current = head\n\n        while current:\n            next_node = current.next\n            current.next = prev\n            prev = current\n            current = next_node\n\n        return prev",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/206-reverse-linked-list/reverse-linked-list.py",
+    "sha256": "57085499790f2fa414442a911d6fbf1fd9e8b030e3f22aa83d6d73d393f68a8d",
+    "expected_present": [
+      "linked_list_reversal"
+    ],
+    "expected_absent": []
+  },
+  {
+    "id": "2488-divide-intervals-into-minimum-number-of-groups",
+    "code": "class Solution:\n    def minGroups(self, intervals: list[list[int]]) -> int:\n        starts = sorted(l for l, r in intervals)\n        ends = sorted(r for l, r in intervals)\n\n        i = j = 0\n        groups = 0\n        max_groups = 0\n\n        while i < len(intervals):\n            if starts[i] <= ends[j]:\n                groups += 1\n                max_groups = max(max_groups, groups)\n                i += 1\n            else:\n                groups -= 1\n                j += 1\n\n        return max_groups",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/2488-divide-intervals-into-minimum-number-of-groups/divide-intervals-into-minimum-number-of-groups.py",
+    "sha256": "43819b63150eca4d9bd57cd55afdbe946d805224b67b4ae95f4b628e980bda81",
+    "expected_present": [],
+    "expected_absent": [
+      "two_pointers_opposite"
+    ]
+  },
+  {
+    "id": "25-reverse-nodes-in-k-group",
+    "code": "class Solution:\n    def reverseKGroup(self, head, k):\n        dummy = ListNode(0, head)\n        prev = dummy\n\n        while True:\n            curr = prev\n            for _ in range(k):\n                curr = curr.next\n                if not curr:\n                    return dummy.next\n\n            tail = prev.next\n            curr = tail.next\n\n            for _ in range(k - 1):\n                tail.next = curr.next\n                curr.next = prev.next\n                prev.next = curr\n                curr = tail.next\n\n            prev = tail",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/25-reverse-nodes-in-k-group/reverse-nodes-in-k-group.py",
+    "sha256": "aac9ca005b9ff8ef353483a04d4fdcb4de8a7b830372a97ba245c81b5ea52fcd",
+    "expected_present": [
+      "linked_list_reversal"
+    ],
+    "expected_absent": []
+  },
+  {
+    "id": "493-reverse-pairs",
+    "code": "class Solution:\n    def reversePairs(self, nums):\n        def merge_sort(arr):\n            if len(arr) <= 1:\n                return 0\n\n            mid = len(arr) // 2\n            left = arr[:mid]\n            right = arr[mid:]\n\n            count = merge_sort(left) + merge_sort(right)\n\n            j = 0\n            for i in range(len(left)):\n                while j < len(right) and left[i] > 2 * right[j]:\n                    j += 1\n                count += j\n\n            arr[:] = sorted(left + right)\n\n            return count\n\n        return merge_sort(nums)",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/493-reverse-pairs/reverse-pairs.py",
+    "sha256": "4444a98b500d34c4599ee5daa7f7112a4c96210fd595810d753770a428d6181e",
+    "expected_present": [],
+    "expected_absent": [
+      "dfs_recursive"
+    ]
+  },
+  {
+    "id": "547-number-of-provinces",
+    "code": "class Solution:\n    def findCircleNum(self, isConnected: List[List[int]]) -> int:\n        n = len(isConnected)\n        visited = [False] * n\n        provinces = 0\n\n        def dfs(city):\n            visited[city] = True\n\n            for nei in range(n):\n                if isConnected[city][nei] == 1 and not visited[nei]:\n                    dfs(nei)\n\n        for i in range(n):\n            if not visited[i]:\n                provinces += 1\n                dfs(i)\n\n        return provinces",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/547-number-of-provinces/number-of-provinces.py",
+    "sha256": "a936d92e6748d756d40c52a8f7da585cf80381af89fa9c4064599fa03372c7ac",
+    "expected_present": [
+      "dfs_recursive"
+    ],
+    "expected_absent": []
+  },
+  {
+    "id": "62-unique-paths",
+    "code": "class Solution:\n    def uniquePaths(self, m, n):\n        dp = [1] * n\n\n        for i in range(1, m):\n            for j in range(1, n):\n                dp[j] = dp[j] + dp[j - 1]\n\n        return dp[n - 1]",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/62-unique-paths/unique-paths.py",
+    "sha256": "ec2098f7aa63a47e7000c1646a5572c1e7f0942a67109f6322079cb716eea739",
+    "expected_present": [
+      "dp_2d_grid"
+    ],
+    "expected_absent": [
+      "dp_1d_sequence"
+    ]
+  },
+  {
+    "id": "78-subsets",
+    "code": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        result = []\n\n        def backtrack(i, current):\n            if i == len(nums):\n                result.append(current[:])\n                return\n\n            backtrack(i + 1, current)\n\n            current.append(nums[i])\n            backtrack(i + 1, current)\n            current.pop()\n\n        backtrack(0, [])\n        return result",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/78-subsets/subsets.py",
+    "sha256": "dad4cd05b2f8af3f0d08abc3c99f5383f209855a5e6b069537d147f3c7d2960c",
+    "expected_present": [
+      "backtracking_subset"
+    ],
+    "expected_absent": []
+  },
+  {
+    "id": "81-search-in-rotated-sorted-array-ii",
+    "code": "class Solution:\n    def search(self, nums: list[int], target: int) -> bool:\n        left, right = 0, len(nums) - 1\n\n        while left <= right:\n            mid = (left + right) // 2\n\n            if nums[mid] == target:\n                return True\n\n            if nums[left] == nums[mid] == nums[right]:\n                left += 1\n                right -= 1\n                continue\n\n            if nums[left] <= nums[mid]:\n                if nums[left] <= target < nums[mid]:\n                    right = mid - 1\n                else:\n                    left = mid + 1\n            else:\n                if nums[mid] < target <= nums[right]:\n                    left = mid + 1\n                else:\n                    right = mid - 1\n\n        return False",
+    "source_url": "https://github.com/jeelsoni01/leetcode-solutions/blob/a8075ba1a73cb20e34f58ec27b5ce76c621d98d9/81-search-in-rotated-sorted-array-ii/search-in-rotated-sorted-array-ii.py",
+    "sha256": "cf550660f85f0541e728cf6015ed08849c3ecfe0a71635d6d814f5f599865948",
+    "expected_present": [
+      "binary_search_rotated"
+    ],
+    "expected_absent": []
+  }
+]

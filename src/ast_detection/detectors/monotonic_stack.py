@@ -8,6 +8,8 @@ Does NOT trigger on ordinary stack usage (push/pop without comparison).
 """
 
 import ast
+from src.ast_detection.python_structure import assignment_values, bindings, scope_nodes
+from src.ast_detection.structural_qualification import _unshadowed
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
 
@@ -84,23 +86,33 @@ class MonotonicStackDetector(BaseDetector):
                 )
 
     def _find_stack_initialized_before(self, root: ast.AST, target_for: ast.For) -> str | None:
-        """Find a list variable initialized with [] or list() before the for loop."""
-        for stmt in getattr(root, 'body', []):
-            if stmt is target_for:
-                break
-            if isinstance(stmt, ast.Assign):
-                for target in stmt.targets:
-                    if isinstance(target, ast.Name) and target.id != "self":
-                        val = stmt.value
-                        if isinstance(val, ast.List) and len(val.elts) == 0:
-                            return target.id
-                        if isinstance(val, ast.Call):
-                            if isinstance(val.func, ast.Name) and val.func.id == "list" and len(val.args) == 0:
-                                return target.id
-            elif isinstance(stmt, ast.FunctionDef):
-                result = self._find_stack_initialized_before(stmt, target_for)
-                if result:
-                    return result
+        """Resolve this loop's popped receiver among its lexical preceding bindings.
+
+        Another empty output list or a separate method cannot supply the stack.
+        A pop used as a subscript key is still a pop on that receiver.
+        """
+        for parent in ast.walk(root):
+            for _, body in ast.iter_fields(parent):
+                if not isinstance(body, list) or target_for not in body:
+                    continue
+                initial = {}
+                for statement in body[:body.index(target_for)]:
+                    for key in list(initial):
+                        if bindings([statement], key):
+                            initial.pop(key)
+                    initial.update(assignment_values(statement))
+                for node in scope_nodes(target_for.body):
+                    if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                            and node.func.attr == 'pop' and isinstance(node.func.value, ast.Name)):
+                        continue
+                    key = node.func.value.id
+                    value = initial.get(key)
+                    if ((isinstance(value, ast.List) and not value.elts
+                            or isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+                            and value.func.id == 'list' and not value.args and not value.keywords
+                            and _unshadowed(root, parent, 'list'))
+                            and not bindings(target_for.body, key)):
+                        return key
         return None
 
     def _find_inner_while(self, body: list) -> ast.While | None:

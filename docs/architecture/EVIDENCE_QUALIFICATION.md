@@ -80,3 +80,54 @@ and contradictory multiplication acceptance; no corpus or stored row is relabele
 Regression expectations use source-reviewed positives and near misses, paired
 identifier renaming and actual analysis/matching. Published examples retain their
 provenance and licence notices; submitted code is never executed as a test.
+
+## Identifier-independent relationships
+
+The independent friend-source assessment exposed additional name-based and
+borrowed-evidence errors. Qualification now uses these local relationships:
+
+- Prefix construction extends the **same destination's** preceding additive
+  prefix. A neighboring previous-row DP value, a different list's last item,
+  a reset destination, or an unrelated `get()` call is insufficient.
+- Opposite pointers must be the two identities compared by one loop and must
+  respectively advance and retreat. Changes to an unrelated scalar or a nested
+  function cannot stand in for either pointer.
+- Fast/slow requires unconditional local updates at different successor-hop
+  counts. It supports `.next` links and a common indexed successor table
+  (functional-graph Floyd). Equality alone and equal-speed intersection cursors
+  do not qualify. The existing `pointer_names` evidence key is retained for API
+  compatibility, but its description and weight now refer to structural pointer
+  identities, never their spelling.
+- Recursive DFS links an actual locally resolved recursive candidate to the
+  current parameter's adjacency row, child collection, child link or grid
+  expansion. An unrelated loop/visited-name cannot qualify array split recursion.
+  BFS layers and hop propagation share scoped FIFO/expansion observations across
+  the legacy level-order and shortest-path presentations. Named distance or
+  visited variables do not confer evidence. No shortest-path correctness proof
+  is claimed.
+- Rotated binary search links a stable midpoint to one interval, one sequence's
+  sorted-half decision, an ordered target-range predicate and its direct
+  corresponding narrowing assignments. All midpoint-based boundary assignments
+  must belong to supported range decisions. Unknown Boolean implications and
+  nested unrelated guards abstain.
+- Sequence DP links the outer table cell to earlier inner-loop positions through
+  a min/max recurrence. A repeated rolling-row grid recurrence is not sequence
+  DP merely because an index or table has a conventional name. Explicit row
+  construction from the same history's prior row and repeated in-place row
+  recurrences provide grid DP evidence. Normal platform builtin meanings,
+  non-aliased table storage, valid loop bounds and normal problem domains remain
+  assumptions; recognition does not prove them or functional correctness.
+- Fixed offsets may be stable additive/subtractive expressions, consistently
+  shared by initialization, loop start and outgoing index. This does not prove
+  that a runtime width is positive. Literal nonpositive widths and changing
+  offset operands abstain. Chained/unpacked zero initializers preserve actual
+  assignment links for window boundaries.
+- A monotonic stack is the popped receiver initialized in the same lexical
+  block before the loop, including a class method. Another empty output list or
+  a separate helper cannot supply its initialization; nested pop expressions
+  remain operations on that receiver.
+
+Legacy evidence keys `reversal_variable_names` and `pointer_names` are retained
+for compatibility. Their evidence is now structural and identifier independent.
+No ground truth, pattern taxonomy, matching threshold, authority, scoring policy
+or feature-flag default changes follow from these detector qualifications.

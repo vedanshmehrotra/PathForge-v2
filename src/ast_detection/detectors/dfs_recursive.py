@@ -69,7 +69,7 @@ class DFSRecursiveDetector(BaseDetector):
                 has_grid_expansion = any(isinstance(a, ast.Name) and a.id in grids
                                          for c in calls for a in c.args)
             if not (has_graph_traversal or has_child_recursion or has_grid_expansion
-                    or has_visited_tracking and not method_calls):
+                    ):
                 continue
 
             if has_recursive_call:
@@ -132,41 +132,34 @@ class DFSRecursiveDetector(BaseDetector):
                     )
                 )
 
-    def _find_graph_traversal(self, func_def: ast.FunctionDef, calls) -> bool:
-        neighbor_keywords = {"neighbor", "neighbors", "adjacent", "adj", "children", "child", "nbr"}
-        for child in scope_nodes(func_def.body):
-            if isinstance(child, ast.For):
-                if any(isinstance(c.func, ast.Attribute) for c in calls) and not (
-                    isinstance(child.target, ast.Name) and any(
-                        c in scope_nodes(child.body)
-                        and any(isinstance(a, ast.Name) and a.id == child.target.id for a in c.args)
-                        for c in calls
-                    )
-                ):
+    def _find_graph_traversal(self, func_def, calls):
+        parameters = {a.arg for a in func_def.args.args}
+        for loop in scope_nodes(func_def.body):
+            if not isinstance(loop, ast.For) or not isinstance(loop.target, ast.Name):
+                continue
+            inside = set(scope_nodes(loop.body))
+            linked = [c for c in calls if c in inside and any(
+                isinstance(a, ast.Name) and a.id == loop.target.id for a in c.args)]
+            if not linked:
+                continue
+            # Adjacency-list or child-collection iteration indexed by the
+            # current recursive parameter; no keyword or unrelated loop.
+            if (isinstance(loop.iter, ast.Subscript) and isinstance(loop.iter.slice, ast.Name)
+                    and loop.iter.slice.id in parameters):
+                return True
+            if (isinstance(loop.iter, ast.Attribute) and loop.iter.attr in ('neighbors', 'children', 'adjacent')
+                    and isinstance(loop.iter.value, ast.Name) and loop.iter.value.id in parameters):
+                return True
+            # Adjacency-matrix expansion: the guard must read the current
+            # parameter's row at the recursively visited candidate column.
+            for guard in scope_nodes(loop.body):
+                if not isinstance(guard, ast.If) or not any(c in scope_nodes(guard.body) for c in linked):
                     continue
-                if (any(isinstance(c.func, ast.Attribute) for c in calls)
-                        and isinstance(child.iter, ast.Subscript) and isinstance(child.iter.slice, ast.Name)
-                        and child.iter.slice.id in {a.arg for a in func_def.args.args}):
+                if any(isinstance(n, ast.Subscript) and isinstance(n.value, ast.Subscript)
+                       and isinstance(n.value.slice, ast.Name) and n.value.slice.id in parameters
+                       and isinstance(n.slice, ast.Name) and n.slice.id == loop.target.id
+                       for n in ast.walk(guard.test)):
                     return True
-                if isinstance(child.target, ast.Name):
-                    target_name = child.target.id.lower()
-                    for kw in neighbor_keywords:
-                        if kw in target_name or target_name in kw:
-                            return True
-                if isinstance(child.iter, ast.Attribute):
-                    attr_name = child.iter.attr.lower()
-                    for kw in neighbor_keywords:
-                        if kw in attr_name or attr_name in kw:
-                            return True
-                if isinstance(child.iter, ast.Subscript):
-                    if isinstance(child.iter.value, ast.Name):
-                        name = child.iter.value.id.lower()
-                        if any(gkw in name for gkw in ("graph", "adj", "tree", "node")):
-                            return True
-                    if isinstance(child.iter.slice, ast.Name):
-                        name = child.iter.slice.id.lower()
-                        if any(gkw in name for gkw in ("graph", "adj", "tree", "node")):
-                            return True
         return False
 
     def _find_child_recursion(self, calls) -> bool:
@@ -187,36 +180,17 @@ class DFSRecursiveDetector(BaseDetector):
                         direction_count += 1
         return direction_count >= 3
 
-    def _find_visited_tracking(self, func_def: ast.FunctionDef) -> bool:
+    def _find_visited_tracking(self, func_def):
+        parameters = {a.arg for a in func_def.args.args}
         for child in scope_nodes(func_def.body):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Attribute):
-                    if isinstance(child.func.value, ast.Name):
-                        name = child.func.value.id.lower()
-                        if "visited" in name or "seen" in name:
-                            if child.func.attr in ("add", "append", "discard"):
-                                return True
-            if isinstance(child, ast.Compare):
-                for comp in child.comparators:
-                    if isinstance(comp, ast.Name):
-                        name = comp.id.lower()
-                        if "visited" in name or "seen" in name:
-                            return True
-                if isinstance(child.left, ast.Name):
-                    name = child.left.id.lower()
-                    if "visited" in name or "seen" in name:
-                        return True
-            if isinstance(child, ast.BinOp):
-                if isinstance(child.op, (ast.In, ast.NotIn)):
-                    if isinstance(child.right, ast.Name):
-                        name = child.right.id.lower()
-                        if "visited" in name or "seen" in name:
-                            return True
-            if isinstance(child, ast.Subscript):
-                if isinstance(child.value, ast.Name):
-                    name = child.value.id.lower()
-                    if "visited" in name or "seen" in name:
-                        return True
+            if (isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
+                    and child.func.attr in ('add', 'append') and any(
+                        isinstance(a, ast.Name) and a.id in parameters for a in child.args)):
+                return True
+            if isinstance(child, ast.Assign) and any(
+                isinstance(t, ast.Subscript) and isinstance(t.slice, ast.Name)
+                and t.slice.id in parameters for t in child.targets):
+                return True
         return False
 
     def _find_base_case(self, func_def: ast.FunctionDef) -> bool:

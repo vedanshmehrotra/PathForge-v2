@@ -139,14 +139,19 @@ class BacktrackingSubsetDetector(BaseDetector):
                     return True
         return False
 
-    def _find_subset_building(self, func_def: ast.FunctionDef) -> bool:
+    def _find_subset_building(self, func_def):
+        parameters = {a.arg for a in func_def.args.args}
         for child in ast.walk(func_def):
-            if isinstance(child, ast.Call):
-                if isinstance(child.func, ast.Attribute) and child.func.attr == "append":
-                    if isinstance(child.func.value, ast.Name):
-                        name = child.func.value.id.lower()
-                        if any(kw in name for kw in ("res", "result", "subset", "path", "sol", "curr", "temp", "combo")):
-                            return True
+            if (isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
+                    and child.func.attr == 'append' and len(child.args) == 1):
+                value = child.args[0]
+                if (isinstance(value, ast.Subscript) and isinstance(value.value, ast.Name)
+                        and value.value.id in parameters and isinstance(value.slice, ast.Slice)):
+                    return True
+                if (isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+                        and value.func.id == 'list' and len(value.args) == 1
+                        and isinstance(value.args[0], ast.Name) and value.args[0].id in parameters):
+                    return True
         return False
 
     def _calculate_confidence(self, evidence: list) -> float:
