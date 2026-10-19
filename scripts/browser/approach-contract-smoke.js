@@ -77,7 +77,7 @@ async page => {
       await page.locator('#preparation-status').filter({ hasText: 'Problem prepared.' }).waitFor();
     }
     await run.click();
-    await page.locator('#analysis-summary').getByText('No Elo or gap changes', { exact: true }).waitFor();
+    await page.locator('#analysis-summary').getByText('Practice saved', { exact: true }).waitFor();
     if (current.prepare_status === 409) {
       await page.locator('#analysis-summary').getByText('Code-only inspection', { exact: true }).waitFor();
       assert(await page.getByRole('table').count() === 0, 'Code-only output contains a requirement checklist');

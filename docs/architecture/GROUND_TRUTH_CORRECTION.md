@@ -1,84 +1,66 @@
-# Ground-truth correction boundary
+# Explicit ground-truth maintenance
 
-## Implemented locally
+Normal generation is insert-only. Cached preparation and DB-only analysis do
+not regenerate, repair or replace existing rows. Maintenance is a separate,
+explicit operation, never an application endpoint or startup task.
 
-`scripts/prepare_ground_truth_correction.py` prepares an **inactive** JSON
-package from a supplied problem snapshot, previous ground-truth snapshot and
-saved proposed model response. It has no database connection, LLM call, API
-endpoint, activation command or automatic user-review workflow. Ordinary
-analysis/preparation behavior is unchanged.
+## Packages and operations
 
-The package retains the entire previous JSON artifact (including malformed
-historical fields), its fingerprint, the problem source fingerprint, raw
-proposal, normalized proposed groups, correction reason and preparation time.
-Unknown model, prompt version and generation time remain null; supplied
-generation metadata is explicitly unverified. These hashes provide integrity
-checks, not authenticity or algorithmic proof. Native JSON and JSON stored as
-text retain their supplied representation; do not silently convert old exports.
+`scripts/prepare_ground_truth_correction.py` prepares an inactive package from
+a problem snapshot, the complete previous ground-truth row and a reason.
+It has no database connection, provider call or product approval workflow.
 
-The shared builder normalizes and constructs the replacement. Explicit
-approaches are required for corrections; complementary components and declared
-alternatives retain their existing semantics. Malformed/empty/unsupported
-output is rejected. Missing canonical Shadow coverage remains a limitation,
-not proof of invalid ground truth. Every replacement stays `llm_proposed`;
-previous approval fields and claims inside model output cannot grant authority.
+- `REPLACE` (default, including older packages) requires explicit proposed
+  approaches. The existing builder validates complete component requirements,
+  alternative boundaries and descriptive unsupported mechanisms. Replacements
+  remain `llm_proposed`; previous authority is not inherited.
+- `RETIRE` must be explicit and must not supply a replacement response. It
+  removes active requirements, sets the row status to `unobserved` and retains
+  its entire previous artifact. It does not guess a new approach. Both endpoints
+  return the existing `409 GROUND_TRUTH_UNAVAILABLE`, without regeneration.
 
-This validates structure/vocabulary only. It cannot decide that a monotonic
-stack expectation is suitable for ordinary bracket matching, prove a complete
-set of solution families, or represent a currently unsupported depth approach.
-No example in this document is a proposed correction to a real cached row.
+Packages retain source/old/proposed hashes, the raw proposal, correction reason
+and caller-supplied generation metadata. Unknown provider/model details remain
+null. Integrity checks do not prove authenticity, algorithmic suitability or
+exhaustive approach coverage. Ground truth must not be relabeled to improve
+detector or evaluation results.
 
-## Local usage
+## Preview and application
 
-Keep request exports and output outside the repository. Input shape:
-
-```json
-{
-  "problem": {"id": 209, "title": "Synthetic fixture", "description": "Frozen problem description"},
-  "previous_ground_truth": {"problem_id": 209, "patterns": "[]", "solution_groups": []},
-  "proposed_response": {
-    "patterns": ["prefix_sum", "hash_map_lookup"],
-    "approaches": [{"name": "Combined synthetic approach", "patterns": ["prefix_sum", "hash_map_lookup"]}]
-  },
-  "correction_reason": "Synthetic validation example only",
-  "generation": {"provider": null, "model": null, "prompt_version": null, "generated_at": null, "finish_reason": null}
-}
-```
+Keep request, package and verification artifacts outside the checkout. Existing
+files are not overwritten by the preparation CLI.
 
 ```powershell
-python -B scripts/prepare_ground_truth_correction.py --input C:/external/request.json --output C:/external/candidate.json
+python -B scripts/prepare_ground_truth_correction.py --input C:/external/request.json --output C:/external/package.json
+python -B scripts/activate_ground_truth_correction.py --package C:/external/package.json
 ```
 
-The destination must be outside the checkout, its parent must exist, and an
-existing file is never overwritten. The package state is `PREPARED_NOT_ACTIVE`.
-Running this does not correct the website or claim a deployed data change.
+Preview is read-only. Only an explicitly authorized `--apply` stages updates
+and commits the supplied batch once. Repeated `--package` arguments form one
+transaction: any stale source/row, invalid package or failed write rolls back
+the whole batch. It locks/checks the exact current source and old artifact,
+then updates only the specified `problem_ground_truth` rows. No schema,
+problem, user, submission, skill, gap or recommendation updates are performed.
 
-## Activation: separate reviewed change
+## Revision storage and compatibility
 
-Repository schema inspection found only the current `problem_ground_truth`
-table and no revision archive. `_store_ground_truth` still has its existing
-upsert; it is **not** a correction interface and must not be invoked to replace
-cached data. Resolver cache-hit guards preserve existing rows in ordinary use.
-Race/overwrite protection is not established by that existence check.
+The existing JSONB column holds revision history; no migration is needed.
+The first ordinary group carries `correction_revision` with the complete old
+row, version, operation, source/package hashes, reason and generation metadata.
+Versions increase and later corrections retain the complete earlier history.
 
-Before implementing database activation:
+Descriptive-only replacements and retirements have no ordinary approach.
+Their history uses an explicitly nonmatchable `record_role=revision_archive`
+envelope with empty patterns and required concepts. Its `EXPLICIT` marker
+prevents existing readers from reviving curated CSV labels through fallback;
+it does not declare a solution approach. This envelope is maintenance-only,
+not generator output. Existing readiness checks reject it before analysis or
+skill persistence. With valid descriptions the result is the existing
+`409 COMPARISON_UNSUPPORTED`; retirement without descriptions remains
+`409 GROUND_TRUTH_UNAVAILABLE`. Descriptions retain their strict record shape,
+and public serialization never exposes the revision archive.
 
-1. Inspect only the target table/column/constraint metadata read-only under
-   explicit authorization; repository schema does not establish live schema.
-2. Review a migration that retains complete old/new artifacts and provenance
-   as append-only revisions. Do not put it into automatic startup execution.
-3. In one explicit transaction, lock/check the targeted current artifact and
-   supplied source fingerprints, archive the actual old row, record the
-   proposed replacement and switch the current revision. A stale package must
-   abort without replacing any row. Package hashes alone do not authorize it.
-4. Reset row-level and group-level authority to proposed for generated
-   replacements. Ordinary generation is now insert-only and cannot activate
-   corrections. Its former upsert retained `validation_status`; do not restore
-   that replacement path, which could preserve approval from another revision.
-5. Test transaction failure/rollback and stale-source behavior on isolated
-   PostgreSQL before any separately approved live correction. This package
-   tooling does not claim those guarantees are already implemented.
-
-Historical skill recalculation, automatic regeneration, external fetching,
-detector changes and deployment remain separate operations. No migration or
-live correction was executed for this local implementation.
+Tests exercise the actual cached resolver and both endpoints, including stale
+curated labels, no regeneration, no analysis/persistence, nested history,
+rollback and ordinary supported replacements. Runtime generation still
+rejects empty or malformed output before storing it.

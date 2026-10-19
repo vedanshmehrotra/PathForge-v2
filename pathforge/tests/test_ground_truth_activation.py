@@ -127,6 +127,121 @@ def test_next_revision_retains_the_complete_previous_revision(activation, reques
     assert revision["previous_artifact"]["solution_groups"][0]["correction_revision"]["previous_artifact"] == package["previous_artifact"]
 
 
+def test_descriptive_only_correction_archives_without_reviving_curated_labels(activation, request_data):
+    service, _package, connection = activation
+    from pathforge.services.ground_truth_correction import prepare_correction
+    from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
+    connection.problem["pattern"] = ["monotonic_stack"]
+    request_data["proposed_response"] = {"approach_contract_version": 2, "patterns": [], "approaches": [{
+        "name": "Ordinary bracket stack", "patterns": [], "comparison_support": "UNSUPPORTED",
+        "description": "Push opening brackets and check closing brackets against the last opening bracket.",
+        "coverage_limit": "An ordinary bracket stack is not a monotonic stack; this mechanism is not represented by the current pattern vocabulary.",
+    }]}
+    package = prepare_correction(request_data)
+    result = service.stage_correction(connection, package, apply=True)
+    assert result["artifact"]["patterns"] == []
+    records = connection.ground_truth["solution_groups"]
+    archive = next(record for record in records if record.get("record_role") == "revision_archive")
+    assert archive["patterns"] == archive["required"] == []
+    assert archive["matchable"] is False
+    assert archive["correction_revision"]["previous_artifact"] == package["previous_artifact"]
+    before = copy.deepcopy(connection.ground_truth)
+    for prepare in (False, True):
+        with pytest.raises(ProblemReadinessError) as error:
+            resolve_problem(connection, leetcode_id=209, allow_preparation=prepare)
+        assert error.value.detail["code"] == "COMPARISON_UNSUPPORTED"
+        assert error.value.detail["approaches"][0]["name"] == "Ordinary bracket stack"
+        assert "correction_revision" not in error.value.detail["approaches"][0]
+    assert connection.ground_truth == before and connection.writes == ["ground_truth"]
+
+
+def test_explicit_retirement_is_unavailable_without_regeneration_or_curated_fallback(activation, request_data):
+    service, _package, connection = activation
+    from pathforge.services.ground_truth_correction import prepare_correction
+    from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
+    connection.problem["pattern"] = ["monotonic_stack"]
+    request_data.update(operation="RETIRE", proposed_response=None,
+                        correction_reason="Source unavailable; do not infer a replacement approach.")
+    package = prepare_correction(request_data)
+    result = service.stage_correction(connection, package, apply=True)
+    assert result["artifact"]["validation_status"] == "unobserved"
+    archive = connection.ground_truth["solution_groups"][0]
+    assert archive["correction_revision"]["operation"] == "RETIRE"
+    assert archive["correction_revision"]["previous_artifact"] == package["previous_artifact"]
+    for prepare in (False, True):
+        with pytest.raises(ProblemReadinessError) as error:
+            resolve_problem(connection, leetcode_id=209, allow_preparation=prepare)
+        assert error.value.detail["code"] == "GROUND_TRUTH_UNAVAILABLE"
+    assert connection.writes == ["ground_truth"]
+
+
+def test_retired_revision_can_be_explicitly_replaced_with_history_preserved(activation, request_data):
+    service, _package, connection = activation
+    from pathforge.services.ground_truth_correction import prepare_correction
+    raw = copy.deepcopy(request_data["proposed_response"])
+    request_data.update(operation="RETIRE", proposed_response=None)
+    service.stage_correction(connection, prepare_correction(request_data), apply=True)
+    request_data.update(operation="REPLACE", proposed_response=raw,
+                        previous_ground_truth=copy.deepcopy(connection.ground_truth))
+    result = service.stage_correction(connection, prepare_correction(request_data), apply=True)
+    revision = result["artifact"]["solution_groups"][0]["correction_revision"]
+    assert revision["version"] == 3 and revision["operation"] == "REPLACE"
+    assert revision["previous_artifact"]["solution_groups"][0]["correction_revision"]["operation"] == "RETIRE"
+
+
+@pytest.mark.parametrize("change", [
+    {"operation": "unknown"},
+    {"operation": "RETIRE"},  # Cannot silently discard a supplied proposal.
+])
+def test_unknown_or_ambiguous_maintenance_operation_is_rejected(workflow, request_data, change):
+    from pathforge.services.ground_truth_correction import prepare_correction, CorrectionPreparationError
+    request_data.update(change)
+    with pytest.raises(CorrectionPreparationError):
+        prepare_correction(request_data)
+
+
+@pytest.mark.parametrize("operation", ["DESCRIBE", "RETIRE"])
+@pytest.mark.parametrize("endpoint", ["analyze", "prepare"])
+def test_unavailable_revisions_stop_actual_endpoints_before_engines_or_writes(
+        activation, request_data, operation, endpoint):
+    from fastapi import HTTPException
+    from pathforge.api.routes import analyze, prepare_problem
+    from pathforge.services import ground_truth_builder as builder, problem_resolver as resolver
+    from pathforge.services.ground_truth_correction import prepare_correction
+    service, _package, connection = activation
+    connection.problem["pattern"] = ["monotonic_stack"]
+    if operation == "RETIRE":
+        request_data.update(operation="RETIRE", proposed_response=None)
+        expected = "GROUND_TRUTH_UNAVAILABLE"
+    else:
+        request_data["proposed_response"] = {"approach_contract_version": 2, "patterns": [], "approaches": [{
+            "name": "Ordinary bracket matching", "patterns": [], "comparison_support": "UNSUPPORTED",
+            "description": "Match closing brackets against ordinary stack entries.",
+            "coverage_limit": "Ordinary stacks are not monotonic stacks.",
+        }]}
+        expected = "COMPARISON_UNSUPPORTED"
+    service.stage_correction(connection, prepare_correction(request_data), apply=True)
+    before = copy.deepcopy(connection.ground_truth)
+    connection.writes.clear()
+    forbidden = Mock(side_effect=AssertionError("No analysis, persistence, generation or GraphQL"))
+    route = analyze if endpoint == "analyze" else prepare_problem
+    with patch.object(route, "get_current_user", return_value=SimpleNamespace(user_id=7)), \
+         patch.object(route, "get_connection", return_value=connection), \
+         patch.object(analyze, "run_analysis", forbidden), \
+         patch.object(analyze, "run_persistence", forbidden), \
+         patch.object(builder, "call_llm", forbidden), \
+         patch.object(resolver, "fetch_problem_by_slug", forbidden), \
+         patch.object(resolver, "fetch_title_slug_by_id", forbidden):
+        with pytest.raises(HTTPException) as error:
+            if endpoint == "analyze":
+                route.analyze_endpoint(analyze.AnalyzeRequest(user_id=999, code="pass", problem={"leetcode_id": 209}), None)
+            else:
+                route.prepare_problem_endpoint(prepare_problem.PrepareRequest(problem={"leetcode_id": 209}), None)
+    assert error.value.status_code == 409 and error.value.detail["code"] == expected
+    forbidden.assert_not_called()
+    assert not connection.writes and connection.ground_truth == before
+
+
 def test_second_target_failure_rolls_back_the_whole_cli_batch(activation, request_data, tmp_path):
     _service, package, connection = activation
     from pathforge.services.ground_truth_correction import prepare_correction

@@ -33,6 +33,9 @@ def prepare_correction(request: dict) -> dict:
     artifact_sha256(request)
     if not isinstance(request, dict):
         raise CorrectionPreparationError("Correction request must be an object")
+    operation = request.get("operation", "REPLACE")
+    if operation not in ("REPLACE", "RETIRE"):
+        raise CorrectionPreparationError("Correction operation must be REPLACE or RETIRE")
     problem = request.get("problem")
     previous = request.get("previous_ground_truth")
     if (not isinstance(problem, dict) or type(problem.get("id")) is not int
@@ -61,18 +64,25 @@ def prepare_correction(request: dict) -> dict:
         raise CorrectionPreparationError("Incomplete or failed generation cannot prepare a correction")
 
     raw = request.get("proposed_response")
-    patterns, confidence, approaches = normalize_ground_truth_response(raw)
-    if not approaches:
-        raise CorrectionPreparationError("A correction must explicitly declare its proposed approaches")
-    groups = solution_groups_for_storage(problem["id"], patterns, confidence, approaches,
-                                        source_sha256=hashlib.sha256(source.encode("utf-8")).hexdigest())
-    if not groups:
-        raise GroundTruthError("Ground truth correction failed: no usable listed groups")
+    if operation == "RETIRE":
+        if raw is not None:
+            raise CorrectionPreparationError("Retirement must not contain a replacement proposal")
+        patterns, confidence, groups = [], {}, []
+    else:
+        patterns, confidence, approaches = normalize_ground_truth_response(raw)
+        if not approaches:
+            raise CorrectionPreparationError("A correction must explicitly declare its proposed approaches")
+        groups = solution_groups_for_storage(problem["id"], patterns, confidence, approaches,
+                                            source_sha256=hashlib.sha256(source.encode("utf-8")).hexdigest())
+        if not groups:
+            raise GroundTruthError("Ground truth correction failed: no usable listed groups")
     proposed = {"problem_id": problem["id"], "patterns": patterns, "confidence": confidence,
-                "solution_groups": groups, "validation_status": "llm_proposed"}
+                "solution_groups": groups,
+                "validation_status": "unobserved" if operation == "RETIRE" else "llm_proposed"}
     # Construct from builder output, never overlay the old row's approval fields.
     package = {
-        "package_version": 1, "state": "PREPARED_NOT_ACTIVE", "prepared_at": iso_now(),
+        "package_version": 1, "state": "PREPARED_NOT_ACTIVE", "operation": operation,
+        "prepared_at": iso_now(),
         "problem_snapshot": copy.deepcopy(problem),
         "source_sha256": hashlib.sha256(source.encode("utf-8")).hexdigest(),
         "previous_artifact": copy.deepcopy(previous), "previous_sha256": artifact_sha256(previous),

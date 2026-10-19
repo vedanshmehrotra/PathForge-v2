@@ -38,10 +38,11 @@ describe('consistent approach presentation using real engine/API results', () =>
   it('explains a proposed approach with all listed patterns observed without promoting it', () => {
     const html = render('tentative')
     expect(html).toContain('Listed patterns observed — proposed approach')
-    expect(html).toContain('Unverified approach')
+    expect(html).toContain('Proposed approach')
+    expect(html).toContain('All patterns detected')
     expect(html).not.toContain('Pattern alignment observed')
     expect(html).not.toContain('Inconclusive comparison')
-    expect(html).toContain('does not establish a confirmed strategy')
+    expect(html).not.toContain('Expectation authority')
   })
 
   it('shows a reviewed alignment without claiming all alternatives are required', () => {
@@ -59,14 +60,14 @@ describe('consistent approach presentation using real engine/API results', () =>
     expect(html).toContain('used together')
     expect(html).toContain('Stored patterns')
     expect(html).toContain('Your code')
-    expect(html).toMatch(/prefix sum<\/th><td[^>]*>Not detected/)
-    expect(html).toMatch(/hash map lookup<\/th><td[^>]*>Detected/)
+    expect(html).toMatch(/prefix sum<\/th><td[^>]*><span[^>]*>.*?Not detected/)
+    expect(html).toMatch(/hash map lookup<\/th><td[^>]*><span[^>]*>.*?Detected/)
     expect(html).not.toContain('Pattern alignment observed')
   })
 
   it.each(['legacy_ambiguous', 'nesting_depth', 'malformed_relation', 'incomplete_relation'])('keeps %s tentative regardless of legacy verdict', name => {
     const html = render(name)
-    expect(html).toContain('Unverified approach')
+    expect(html).toMatch(/Unverified comparison|Proposed approach/)
     expect(html).toContain(name === 'legacy_ambiguous' ? 'Listed patterns detected — stored approach unverified' : 'Inconclusive comparison')
     expect(html).not.toContain('Pattern alignment observed')
   })

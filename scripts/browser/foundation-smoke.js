@@ -82,10 +82,10 @@ async page => {
     await page.locator('#preparation-status').filter({ hasText: 'Problem prepared.' }).waitFor();
     await page.getByRole('button', { name: 'Run Analysis', exact: true }).click();
     const summary = page.locator('#analysis-summary');
-    await summary.getByText('No Elo or gap changes', { exact: true }).waitFor();
+    await summary.getByText('Practice saved', { exact: true }).waitFor();
     const state = current.response.problem_info.solution_groups[0].pattern_evidence_state;
-    const headline = state === 'ALL_OBSERVED' ? 'Listed patterns observed — proposed approach' : 'Inconclusive comparison';
-    await summary.getByText(headline, { exact: true }).waitFor();
+    const headline = state === 'ALL_OBSERVED' ? 'Patterns match' : current.response.ast.detected_patterns.length ? 'Patterns detected' : 'Pattern not recognized';
+    await summary.getByRole('heading', { name: headline, exact: true }).waitFor();
     const text = await page.locator('main').innerText();
     assert(!/your code is incorrect|skill gap increased|Pattern alignment observed/i.test(text), 'Unsupported product claim for ' + current.id);
     assert(await page.getByRole('columnheader', { name: 'Your code', exact: true }).count() === 1, 'Comparison table absent');
@@ -115,7 +115,7 @@ async page => {
   await page.getByRole('button', { name: 'Prepare', exact: true }).click();
   await page.locator('#preparation-status').filter({ hasText: 'Problem prepared.' }).waitFor();
   await page.getByRole('button', { name: 'Run Analysis', exact: true }).click();
-  await page.locator('#analysis-summary').getByText('Listed patterns observed — proposed approach', { exact: true }).waitFor();
+  await page.locator('#analysis-summary').getByRole('heading', { name: 'Patterns match', exact: true }).waitFor();
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Mobile page overflows');
   await page.screenshot({ path: 'foundation-mobile.png', fullPage: true });
   checks.push('mobile_proposed_comparison');

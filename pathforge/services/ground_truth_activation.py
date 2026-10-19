@@ -23,6 +23,7 @@ def validate_package(package):
     if artifact_sha256(contents) != package.get("package_sha256"):
         raise CorrectionActivationError("Correction package hash differs")
     rebuilt = prepare_correction({
+        "operation": package.get("operation", "REPLACE"),
         "problem": package.get("problem_snapshot"),
         "previous_ground_truth": package.get("previous_artifact"),
         "proposed_response": package.get("proposed_response"),
@@ -35,8 +36,6 @@ def validate_package(package):
             raise CorrectionActivationError("Correction inputs changed: " + field)
     if artifact_sha256(package.get("proposed_artifact")) != rebuilt["proposed_sha256"]:
         raise CorrectionActivationError("Proposed storage artifact differs")
-    if not any("record_type" not in g for g in rebuilt["proposed_artifact"]["solution_groups"]):
-        raise CorrectionActivationError("Revision metadata needs an ordinary solution group")
     return rebuilt
 
 
@@ -77,11 +76,24 @@ def stage_correction(connection, package, *, apply=False):
     now = iso_now()
     proposed = copy.deepcopy(checked["proposed_artifact"])
     ordinary = [g for g in proposed["solution_groups"] if "record_type" not in g]
+    if not ordinary:
+        # A history envelope, never a solution requirement. Existing readers
+        # already reject its empty patterns before engines/persistence. EXPLICIT
+        # prevents their CSV fallback from reviving the labels being retired.
+        # Descriptive records keep their strict shape and public serialization.
+        archive = {"id": "revision_archive", "record_role": "revision_archive",
+                   "approach_definition": "EXPLICIT", "patterns": [], "required": [],
+                   "optional": [], "excluded": [], "confidence": {}, "matchable": False,
+                   "authority_tier": "llm_proposed", "evidence": "llm_proposed",
+                   "provenance": [], "approach_name": "Revision history; not an approach"}
+        proposed["solution_groups"].append(archive)
+        ordinary = [archive]
     for group in ordinary:
         group["version"] = version
         group["provenance"].append("explicit_ground_truth_correction")
     ordinary[0]["correction_revision"] = {
         "format_version": 1, "version": version, "activated_at": now,
+        "operation": checked["operation"],
         "package_sha256": package["package_sha256"],
         "source_sha256": checked["source_sha256"],
         "previous_sha256": checked["previous_sha256"],
@@ -95,7 +107,7 @@ def stage_correction(connection, package, *, apply=False):
             "solution_groups = %s::jsonb, validation_status = %s, updated_at = %s "
             "WHERE problem_id = %s RETURNING problem_id",
             (json.dumps(proposed["patterns"]), json.dumps(proposed["confidence"]),
-             json.dumps(proposed["solution_groups"], allow_nan=False), "llm_proposed", now, pid),
+             json.dumps(proposed["solution_groups"], allow_nan=False), proposed["validation_status"], now, pid),
         ).fetchone()
         if updated is None or updated["problem_id"] != pid:
             raise CorrectionActivationError("Ground-truth update did not return its target")

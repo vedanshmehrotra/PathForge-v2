@@ -101,9 +101,12 @@ or analysis fallback. Activation checks the package, current source and exact
 stored snapshot, locks the affected rows, and commits a batch atomically.
 The first ordinary group's `correction_revision` metadata retains the complete
 previous row and package/source hashes; group versions increase. New groups
-remain `llm_proposed`. No migration or historical skill update occurs. This
-path currently requires an ordinary group to carry revision metadata;
-descriptive-only corrections fail closed rather than changing record shapes.
+remain `llm_proposed`. No migration or historical skill update occurs.
+An ordinary group normally carries revision metadata. Descriptive-only
+corrections retain history in a nonmatchable empty revision
+envelope; existing readiness checks return `COMPARISON_UNSUPPORTED` before
+analysis. Explicit retirement returns `GROUND_TRUTH_UNAVAILABLE` without
+regeneration. Descriptive record shapes and scoring rules remain unchanged.
 
 Freeze source-based expectations before engine execution. Verify builder and
 resolver behavior, real matching and Shadow output, API serialization, and the

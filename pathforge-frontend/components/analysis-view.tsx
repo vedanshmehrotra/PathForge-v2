@@ -5,7 +5,7 @@ import { ArrowRight, Braces, Check, Cpu, Layers2, Play, Route, ScanLine, X } fro
 import { useAnalyzeCode, usePrepareProblem } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { ExperimentalPanel } from '@/components/experimental-panel'
-import { ApproachComparison, ApproachDescriptions, approachComparisonHeading } from '@/components/approach-comparison'
+import { ApproachComparison, ApproachComparisonDetails, ApproachDescriptions, hasCompletePatternComparison } from '@/components/approach-comparison'
 import { AnalysisEffects } from '@/components/analysis-effects'
 
 export function AnalysisView() {
@@ -54,8 +54,8 @@ export function AnalysisView() {
     pattern_id?: string; name?: string; category?: string; confidence?: number; nodes?: number
   }> | undefined
   const matchResult = result?.match_result as (Record<string, unknown> & { reasoning_signals?: string[] }) | undefined
-  const comparisonHeading = result?.problem_info
-    ? approachComparisonHeading(result.problem_info.solution_groups) : 'Code-only inspection'
+  const patternsMatch = hasCompletePatternComparison(result?.problem_info?.solution_groups)
+  const resultState = patternsMatch ? 'match' : detectedPatterns?.length ? 'detected' : 'unresolved'
 
   return (
     <div className="workspace-page">
@@ -82,7 +82,7 @@ export function AnalysisView() {
             onChange={event => handleProblemInputChange(event.target.value)}
             onKeyDown={event => { if (event.key === 'Enter') handlePrepare() }}
             placeholder="Enter a LeetCode problem ID, for example 1 or 209"
-            spellCheck={false} className="min-h-11 min-w-0 flex-1 rounded-md border border-input bg-card px-3 text-sm" />
+            spellCheck={false} className="min-h-11 min-w-0 flex-1 basis-40 rounded-md border border-input bg-card px-3 text-sm" />
           {prep.result ? (
             <div className="flex items-center gap-2 text-sm">
               <Check className="size-4 text-success" /><span>{prep.result.title}</span>
@@ -115,10 +115,14 @@ export function AnalysisView() {
       {analysisResult && !resultIsCurrent && <p role="status" className="text-sm text-muted-foreground">Your inputs changed. Run analysis again to see observations for the current code and problem.</p>}
 
       {result && (
-        <section id="analysis-summary" aria-labelledby="summary-heading" className="detail-enter flex flex-wrap items-start justify-between gap-5 border-l-2 border-l-sky pl-5">
-          <div><h2 id="summary-heading" className="text-xl font-medium">{detectedPatterns?.length ? 'Patterns detected' : 'No supported pattern detected'}</h2>
-            <p className="mt-1 text-sm font-medium">{comparisonHeading}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Patterns only — code correctness is not checked.</p></div>
+        <section id="analysis-summary" aria-labelledby="summary-heading" data-result-state={resultState}
+          className={`detail-enter flex flex-wrap items-start justify-between gap-5 border-l-2 pl-5 ${resultState === 'unresolved' ? 'border-l-border' : 'border-l-mint'}`}>
+          <div className="flex items-start gap-3">
+            {resultState !== 'unresolved' && <Check aria-hidden="true" className="mt-1 size-6 shrink-0 text-mint" />}
+            <div><h2 id="summary-heading" className="text-xl font-medium">{patternsMatch ? 'Patterns match' : detectedPatterns?.length ? 'Patterns detected' : 'Pattern not recognized'}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{patternsMatch ? 'All listed patterns were found in your code.' : !result.problem_info ? 'Code-only inspection' : detectedPatterns?.length ? 'Approach comparison is limited.' : 'Your approach may be outside current coverage.'}</p>
+            </div>
+          </div>
           <AnalysisEffects result={result} />
         </section>
       )}
@@ -171,7 +175,10 @@ export function AnalysisView() {
       {result && (
         <div className="space-y-5 border-t border-border pt-6">
           <details>
-            <summary className="cursor-pointer text-sm font-medium">Detection evidence and recorded updates</summary>
+            <summary className="cursor-pointer text-sm font-medium">Analysis details</summary>
+            <p className="mt-3 text-sm text-muted-foreground">Patterns describe your approach; they do not check code correctness.</p>
+            {result.persisted?.skill_updates_skipped === true && <p className="mt-2 text-sm text-muted-foreground">This comparison was not used to update ratings or skill gaps.</p>}
+            <ApproachComparisonDetails groups={result.problem_info?.solution_groups} />
             <p className="mt-3 text-sm text-muted-foreground">Confidence describes detector evidence, not the chance that your solution is correct.</p>
             <ul className="mt-4 divide-y divide-border text-sm">
               {detectedPatterns?.map((p, i) => (
