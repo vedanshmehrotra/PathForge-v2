@@ -40,6 +40,35 @@ descriptive-approach contract retains such unscored proposals separately from
 matchable requirements. Context-free analysis exposes qualified observations
 without rating changes.
 
+The original-submission assessment additionally qualifies these bounded forms:
+
+- Hash lookup/counting links a locally created receiver to its loop operation.
+  Membership in a different object, borrowed scopes, rebinding and mutable
+  escapes cannot establish the link. A populated dictionary subsequently read
+  by index is a lookup; mapping ranks to values is not frequency counting.
+  Unit occurrence updates recognize `+= 1` and same-key assignment/get forms.
+  As with platform-provided builtins, LeetCode snippets may omit a standard
+  `Counter`/`defaultdict` import. An otherwise unbound standard constructor name
+  plus linked occurrence updates is supported under that environment assumption;
+  explicit nonstandard imports, local/outer bindings and shadowed factories
+  defeat it. This is structural evidence, not proof of the runtime binding.
+- Legacy variable windows use the shared boundary/content and guarded last-seen
+  links already used by Shadow. Indexed reassignment alone is insufficient.
+  Legacy recognition also retains `enumerate` element links and paired product
+  multiplication/division maintenance. Product domain/correctness assumptions
+  remain the solution's responsibility; these do not expand canonical strategy
+  families or establish functional correctness.
+- Rolling 1D recurrence supports two initialized scalar lanes, simultaneous
+  shift-plus-sum updates, and consumption of a resulting lane. Unrelated totals,
+  opaque calls, extra lane writes and unconsumed state do not qualify.
+- Exhaustive contiguous subarray enumeration may reset a local set per start,
+  extend it by the end-index element and aggregate its cardinality. A reset,
+  unused set or unrelated element cannot supply this stateful candidate link.
+- A local greedy choice may save an extremum's index during a scan and use that
+  saved index for subsequent unit mutation of an input involved in the candidate.
+  Rebinding the selected index or mutating an unrelated position abstains.
+  Rescanning can still be too slow: this is no efficiency/optimality verdict.
+
 The `prefix_sum` label requires additive accumulation (including subtraction
 or weighted incoming values). Multiplying the accumulated prefix is a product
 scan, not additive sum evidence. Valid or optimal product approaches must not

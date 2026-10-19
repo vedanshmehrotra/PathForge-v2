@@ -10,6 +10,8 @@ as valid DP even without explicit dp array creation.
 """
 
 import ast
+from src.ast_detection.python_structure import assignment_values, bindings, scope_nodes
+from src.ast_detection.structural_qualification import _unshadowed
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem, is_dp_name
 
 
@@ -42,12 +44,73 @@ class DP1DForwardDetector(BaseDetector):
         if self._has_anti_signals(evidence):
             detected = False
 
+        rolling = self._rolling_recurrences(ast_root)
+        if rolling:
+            detected = True
+            for node, kind, weight in rolling:
+                evidence.append(EvidenceItem(type=kind,
+                    description='Initialized two-state recurrence shifts and combines prior lanes; result is consumed',
+                    location=f'{node.lineno}:{node.col_offset}', weight=weight))
+            confidence = self._calculate_confidence(evidence)
+
         return DetectionResult(
             pattern_id=self.pattern_id,
             confidence=confidence,
             evidence=evidence,
             detected=detected,
         )
+
+    def _rolling_recurrences(self, root):
+        """Bounded Fibonacci-form recurrence, not arbitrary tuple assignment."""
+        for function in ast.walk(root):
+            if not isinstance(function, ast.FunctionDef) or not _unshadowed(root, function, 'range'):
+                continue
+            initial = {}
+            for index, loop in enumerate(function.body):
+                for key in list(initial):
+                    if bindings([loop], key) and not isinstance(loop, ast.For):
+                        initial.pop(key)
+                if not isinstance(loop, ast.For):
+                    initial.update(assignment_values(loop))
+                    continue
+                seeds = dict(initial)
+                for key in list(initial):
+                    if bindings([loop], key):
+                        initial.pop(key)
+                if (not isinstance(loop.iter, ast.Call) or not isinstance(loop.iter.func, ast.Name)
+                        or loop.iter.func.id != 'range' or loop.iter.keywords or len(loop.body) != 1 or loop.orelse):
+                    continue
+                update = loop.body[0]
+                pairs = assignment_values(update)
+                if len(pairs) != 2 or not all(
+                    isinstance(seeds.get(key), ast.Constant) and type(seeds[key].value) in (int, float)
+                    for key in pairs
+                ):
+                    continue
+                keys = set(pairs)
+                if any(isinstance(n, ast.Name) and n.id in keys for n in ast.walk(loop.target)):
+                    continue
+                for copied, previous in pairs.items():
+                    if not isinstance(previous, ast.Name) or previous.id not in keys or previous.id == copied:
+                        continue
+                    combined = pairs[previous.id]
+                    if not (isinstance(combined, ast.BinOp) and isinstance(combined.op, ast.Add)
+                            and isinstance(combined.left, ast.Name) and isinstance(combined.right, ast.Name)
+                            and {combined.left.id, combined.right.id} == keys):
+                        continue
+                    consumed = False
+                    for after in function.body[index+1:]:
+                        if any(bindings([after], key) for key in keys):
+                            break
+                        if isinstance(after, ast.Return):
+                            consumed = isinstance(after.value, ast.Name) and after.value.id in keys
+                            break
+                        if any(isinstance(n, ast.Call) for n in scope_nodes([after])):
+                            break
+                    if consumed:
+                        return [(loop, 'table_fill_loop', 0.20), (update, 'rolling_recurrence', 0.30),
+                                (seeds[copied], 'base_case_return', 0.25), (after, 'result_aggregation', 0.15)]
+        return []
 
     def _detect_1d_forward(self, ast_root: ast.AST, evidence: list) -> None:
         for node in ast.walk(ast_root):

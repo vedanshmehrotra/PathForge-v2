@@ -7,6 +7,7 @@ from src.ast_detection.window_structure import (
     boundary_window_link, has_offset_window_update, maintenance_events,
     range_driver, scope_nodes, same, name, unit_advance, index_read,
     state_updates_linked, linked_trailing_advance, writes_name,
+    variable_window_link as _variable_link, jump_window_link as _jump_link,
 )
 
 
@@ -21,89 +22,6 @@ def _initial_zero(preceding, variable):
             return (isinstance(statement, ast.Assign) and len(statement.targets) == 1 and name(statement.targets[0], variable)
                     and isinstance(statement.value, ast.Constant) and statement.value.value == 0)
     return False
-
-
-def _variable_link(loop, lead, preceding):
-    events = maintenance_events(loop.body)
-    for incoming in events:
-        if not name(incoming["index"], lead):
-            continue
-        if (not state_updates_linked(loop.body, incoming["state"], incoming["sequence"], events)
-                or any(writes_name(s, incoming["sequence"]) for s in loop.body)):
-            continue
-        for outgoing in events:
-            index = outgoing["index"]
-            if (incoming["direction"] != -outgoing["direction"] or incoming["state"] != outgoing["state"]
-                    or incoming["sequence"] != outgoing["sequence"]
-                    or not isinstance(index, ast.Name) or index.id == lead or not _initial_zero(preceding, index.id)):
-                continue
-            for guard in outgoing["controls"]:
-                if (not linked_trailing_advance(loop.body, guard, index.id, outgoing["node"])
-                        or not (any(name(n, incoming["state"]) for n in scope_nodes([guard.test]))
-                                or {lead, index.id} <= {n.id for n in scope_nodes([guard.test]) if isinstance(n, ast.Name)})):
-                    continue
-                return {"kind": "variable", "state": incoming["state"], "sequence": incoming["sequence"],
-                        "leading": lead, "trailing": index.id, "incoming_ref": _ref(incoming["node"]),
-                        "outgoing_ref": _ref(outgoing["node"]), "guard_ref": _ref(guard)}
-    return None
-
-
-def _jump_link(loop, lead, preceding):
-    aliases = {}
-    for position, statement in enumerate(loop.body):
-        if isinstance(statement, ast.Assign) and len(statement.targets) == 1 and isinstance(statement.targets[0], ast.Name):
-            aliases[statement.targets[0].id] = statement.value
-        if not isinstance(statement, ast.If):
-            continue
-        guards = statement.test.values if isinstance(statement.test, ast.BoolOp) and isinstance(statement.test.op, ast.And) else [statement.test]
-        for membership in guards:
-            if not (isinstance(membership, ast.Compare) and len(membership.ops) == 1 and isinstance(membership.ops[0], ast.In)
-                    and isinstance(membership.comparators[0], ast.Name)):
-                continue
-            item = membership.left
-            read = index_read(item, aliases)
-            if not read or not name(read[1], lead):
-                continue
-            if any(writes_name(s, read[0]) for s in loop.body):
-                continue
-            mapping = membership.comparators[0].id
-            for update in statement.body:
-                if not (isinstance(update, ast.Assign) and len(update.targets) == 1 and isinstance(update.targets[0], ast.Name)):
-                    continue
-                trailing = update.targets[0].id
-                if trailing == lead or not _initial_zero(preceding, trailing):
-                    continue
-                value = update.value
-                protected = False
-                if (isinstance(value, ast.Call) and name(value.func, "max") and len(value.args) == 2 and not value.keywords
-                        and name(value.args[0], trailing)):
-                    value = value.args[1]
-                    protected = True
-                if not (isinstance(value, ast.BinOp) and isinstance(value.op, ast.Add)
-                        and isinstance(value.right, ast.Constant) and type(value.right.value) is int and value.right.value == 1
-                        and isinstance(value.left, ast.Subscript) and name(value.left.value, mapping) and same(value.left.slice, item)):
-                    continue
-                if not protected:
-                    protected = any(isinstance(g, ast.Compare) and len(g.ops) == 1 and isinstance(g.ops[0], ast.GtE)
-                                    and same(g.left, value.left) and name(g.comparators[0], trailing) for g in guards)
-                if not protected:
-                    continue
-                writes = [s for s in loop.body[position + 1:] if isinstance(s, ast.Assign) and len(s.targets) == 1
-                          and isinstance(s.targets[0], ast.Subscript) and name(s.targets[0].value, mapping)
-                          and same(s.targets[0].slice, item) and name(s.value, lead)]
-                if not writes:
-                    continue
-                if (any(writes_name(s, trailing) or writes_name(s, mapping) for s in loop.body if s is not statement and s not in writes)
-                        or any(writes_name(s, trailing) or writes_name(s, mapping) for s in statement.body if s is not update)
-                        or any(writes_name(s, trailing) or writes_name(s, mapping) for s in statement.orelse)):
-                    continue
-                extent = any(isinstance(n, ast.BinOp) and isinstance(n.op, ast.Sub)
-                             and name(n.left, lead) and name(n.right, trailing) for n in scope_nodes(loop.body))
-                if extent:
-                    return {"kind": "jump", "sequence": read[0], "mapping": mapping, "leading": lead,
-                            "trailing": trailing, "guard_ref": _ref(statement), "update_ref": _ref(update),
-                            "mapping_write_ref": _ref(writes[0])}
-    return None
 
 
 def _offset_expression(value, lead, width, outgoing=False):

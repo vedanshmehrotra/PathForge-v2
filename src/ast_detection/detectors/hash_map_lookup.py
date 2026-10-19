@@ -1,17 +1,7 @@
-"""Detector for hash_map_lookup pattern.
-
-Detects dictionary/set creation combined with membership checking in a loop
-context to identify hash map lookup patterns.
-
-Requires ALL THREE core signals before detection:
-1. Dict/set creation
-2. Membership check (in / not in), or a linked dictionary read guarded by KeyError
-3. Loop structure providing lookup context
-
-A dict used for configuration or membership check without a loop does NOT fire.
-"""
+"""Lookup in a locally linked mapping/set, not pooled creation/membership flags."""
 
 import ast
+from src.ast_detection.collection_links import collection_events
 from src.ast_detection.python_structure import assignment_values, bindings, parameter_names, scope_nodes
 from src.ast_detection.detectors.base import BaseDetector, register_detector, DetectionResult, EvidenceItem
 
@@ -22,16 +12,20 @@ class HashMapLookupDetector(BaseDetector):
 
     def detect(self, ast_root: ast.AST) -> DetectionResult:
         evidence = []
-        has_dict = self._detect_dict_creation(ast_root, evidence)
-        has_membership = self._detect_membership_check(ast_root, evidence)
-        has_loop = self._detect_loop_structure(ast_root, evidence)
-
-        has_required_signals = has_dict and has_membership and has_loop
-        if not has_required_signals:
-            exception_evidence = self._exception_lookup(ast_root)
-            if exception_evidence:
-                evidence = exception_evidence
-                has_required_signals = True
+        lookups = [e for e in collection_events(ast_root) if e['kind'] == 'lookup']
+        if lookups:
+            event = lookups[0]
+            creation, operation, loop = event['collection'].creation, event['node'], event['loop']
+            for kind, node, weight, description in [
+                ('dict_creation', creation, 0.25, 'Local dictionary/set binding'),
+                ('membership_check', operation, 0.35, 'Membership or populated-map read on that same collection'),
+                ('loop_structure', loop, 0.20, 'Loop containing the linked lookup'),
+            ]:
+                evidence.append(EvidenceItem(type=kind, description=description,
+                    location=f'{node.lineno}:{node.col_offset}', weight=weight))
+        else:
+            evidence = self._exception_lookup(ast_root)
+        has_required_signals = bool(evidence)
         confidence = self._calculate_confidence(evidence, has_required_signals)
         return DetectionResult(
             pattern_id=self.pattern_id,
@@ -91,88 +85,6 @@ class HashMapLookupDetector(BaseDetector):
                             and value.func.id == 'dict' and not shadowed(scope, 'dict')):
                         dictionaries[identifier] = statement
         return []
-
-    def _detect_dict_creation(self, ast_root: ast.AST, evidence: list) -> bool:
-        found = False
-        for node in ast.walk(ast_root):
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        value = node.value
-                        if isinstance(value, ast.Dict) and len(value.keys) == 0:
-                            evidence.append(
-                                EvidenceItem(
-                                    type="dict_creation",
-                                    description=f"Empty dictionary creation: {target.id} = {{}}",
-                                    location=f"{node.lineno}:{node.col_offset}" if hasattr(node, 'lineno') else None,
-                                    weight=0.25,
-                                )
-                            )
-                            found = True
-                        elif isinstance(value, ast.Call):
-                            if isinstance(value.func, ast.Name) and value.func.id in ("dict", "set"):
-                                evidence.append(
-                                    EvidenceItem(
-                                        type=f"{value.func.id}_creation",
-                                        description=f"{value.func.id.capitalize()} creation: {ast.unparse(node)}",
-                                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, 'lineno') else None,
-                                        weight=0.25,
-                                    )
-                                )
-                                found = True
-                        elif isinstance(value, ast.DictComp):
-                            evidence.append(
-                                EvidenceItem(
-                                    type="dict_comp_creation",
-                                    description=f"Dict comprehension creation: {ast.unparse(node)}",
-                                    location=f"{node.lineno}:{node.col_offset}" if hasattr(node, 'lineno') else None,
-                                    weight=0.20,
-                                )
-                            )
-                            found = True
-        return found
-
-    def _detect_membership_check(self, ast_root: ast.AST, evidence: list) -> bool:
-        found = False
-        for node in ast.walk(ast_root):
-            if isinstance(node, ast.Compare):
-                has_in = any(isinstance(op, (ast.In, ast.NotIn)) for op in node.ops)
-                if has_in:
-                    evidence.append(
-                        EvidenceItem(
-                            type="membership_check",
-                            description=f"Membership check: {ast.unparse(node)}",
-                            location=f"{node.lineno}:{node.col_offset}" if hasattr(node, 'lineno') else None,
-                            weight=0.35,
-                        )
-                    )
-                    found = True
-        return found
-
-    def _detect_loop_structure(self, ast_root: ast.AST, evidence: list) -> bool:
-        found = False
-        for node in ast.walk(ast_root):
-            if isinstance(node, (ast.For, ast.While)):
-                evidence.append(
-                    EvidenceItem(
-                        type="loop_structure",
-                        description=f"Loop providing lookup context",
-                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, 'lineno') else None,
-                        weight=0.20,
-                    )
-                )
-                found = True
-            elif isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
-                evidence.append(
-                    EvidenceItem(
-                        type="comprehension_iteration",
-                        description=f"Comprehension providing lookup context",
-                        location=f"{node.lineno}:{node.col_offset}" if hasattr(node, 'lineno') else None,
-                        weight=0.15,
-                    )
-                )
-                found = True
-        return found
 
     def _calculate_confidence(self, evidence: list, has_required: bool) -> float:
         if not evidence or not has_required:

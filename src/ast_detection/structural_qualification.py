@@ -278,7 +278,8 @@ def exhaustive_regions(root):
                     continue
                 if isinstance(inner, ast.For) and isinstance(inner.iter, ast.Name) and inner.iter.id == a:
                     continue  # iterating cells of a row, not independent candidates
-                if _candidate_use(inner, a, b) or _constructed_candidate(inner, a, b):
+                if (_candidate_use(inner, a, b) or _constructed_candidate(inner, a, b)
+                        or _subarray_set_fold(root, scope, outer, inner, before_inner)):
                     regions.append(outer)
                     break
                 # Exhaustive subset output: a mask chooses which input elements
@@ -326,6 +327,61 @@ def exhaustive_regions(root):
         if any(x == y and a != b for x, a in offsets for y, b in offsets):
             regions.append(scope)
     return list(dict.fromkeys(regions))
+
+
+def _subarray_set_fold(root, scope, outer, inner, preceding):
+    """Fresh set per start, extended at each end and consumed by aggregation."""
+    if not (_unshadowed(root, scope, 'set', 'len') and _for_index(outer) and _for_index(inner)
+            and len(outer.iter.args) == 1 and len(inner.iter.args) == 2
+            and isinstance(inner.iter.args[0], ast.Name) and inner.iter.args[0].id == outer.target.id
+            and _same(outer.iter.args[0], inner.iter.args[1])):
+        return False
+    stop = outer.iter.args[0]
+    if not (isinstance(stop, ast.Call) and isinstance(stop.func, ast.Name) and stop.func.id == 'len'
+            and len(stop.args) == 1 and isinstance(stop.args[0], ast.Name)):
+        return False
+    sequence, index = stop.args[0].id, inner.target.id
+    if bindings(outer.body, sequence):
+        return False
+    for state, value in _initials(preceding).items():
+        if not (isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+                and value.func.id == 'set' and not value.args and not value.keywords):
+            continue
+        initialized = next((i for i, statement in reversed(list(enumerate(preceding)))
+                            if assignment_values(statement).get(state) is value), None)
+        if initialized is None or any(_invalidates_alias(s, state) for s in preceding[initialized+1:]):
+            continue
+        aliases, added = {}, False
+        for position, statement in enumerate(inner.body):
+            if bindings([statement], state) or isinstance(statement, (ast.If, ast.For, ast.While)):
+                break
+            if isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Call):
+                call = statement.value
+                if (not added and isinstance(call.func, ast.Attribute) and isinstance(call.func.value, ast.Name)
+                        and call.func.value.id == state and call.func.attr == 'add' and len(call.args) == 1
+                        and not call.keywords and isinstance(call.args[0], ast.Subscript)
+                        and isinstance(call.args[0].value, ast.Name) and call.args[0].value.id == sequence
+                        and isinstance(call.args[0].slice, ast.Name) and call.args[0].slice.id == index):
+                    added = True
+                    continue
+                break
+            value = getattr(statement, 'value', None)
+            if value is None:
+                break
+            expression = _expanded(value, aliases)
+            cardinalities = [n for n in ast.walk(expression) if isinstance(n, ast.Call)
+                             and isinstance(n.func, ast.Name) and n.func.id == 'len'
+                             and len(n.args) == 1 and isinstance(n.args[0], ast.Name) and n.args[0].id == state]
+            if any(isinstance(n, ast.Call) and n not in cardinalities for n in ast.walk(expression)):
+                break
+            if added and cardinalities and isinstance(statement, ast.AugAssign) and isinstance(statement.op, ast.Add):
+                if not any(state in _names(n) for n in inner.body[position+1:]):
+                    return True
+            for key, rhs in assignment_values(statement).items():
+                if isinstance(rhs, ast.Name) and rhs.id == state:
+                    return False
+                aliases[key] = _expanded(rhs, aliases)
+    return False
 
 
 def _cell(node, index):
@@ -521,6 +577,7 @@ def greedy_regions(root):
     for scope in _scopes(root):
         if not _unshadowed(root, scope, 'max', 'min', 'range'):
             continue
+        regions.extend(_scan_then_commit(root, scope, scope.body))
         for loop, preceding in _loops(scope.body):
             if not isinstance(loop, ast.For) or any(isinstance(n, (ast.For, ast.While))
                                                   for n in scope_nodes(loop.body)):
@@ -601,3 +658,70 @@ def greedy_regions(root):
                                     and type(b.right.value) is int and b.right.value > 0):
                                 regions.append((scope, loop, statement))
     return list(dict.fromkeys(regions))
+
+
+def _scan_then_commit(root, scope, body, inherited=()):
+    """A selected extremum's saved index controls subsequent input mutation.
+
+    This recognizes the local choice even when rescanning makes it too slow.
+    It grants no correctness, efficiency or global-optimality conclusion.
+    """
+    result = []
+    for position, loop in enumerate(body):
+        if isinstance(loop, (ast.While, ast.If)):
+            result.extend(_scan_then_commit(root, scope, loop.body, (*inherited, *body[:position])))
+            result.extend(_scan_then_commit(root, scope, loop.orelse, (*inherited, *body[:position])))
+        index = _for_index(loop)
+        if not index or not _known_numeric_calls(root, scope, loop):
+            continue
+        if any(isinstance(n, (ast.For, ast.While, ast.FunctionDef)) for n in scope_nodes(loop.body)):
+            continue
+        aliases = {}
+        initial = _initials([*inherited, *body[:position]])
+        for guard in loop.body:
+            if not isinstance(guard, ast.If):
+                for key, value in assignment_values(guard).items():
+                    aliases[key] = _expanded(value, aliases)
+                continue
+            test = _expanded(guard.test, aliases)
+            if not (isinstance(test, ast.Compare) and len(test.ops) == 1 and isinstance(test.ops[0], (ast.Gt, ast.Lt))
+                    and isinstance(test.comparators[0], ast.Name)):
+                continue
+            best, candidate = test.comparators[0].id, test.left
+            reads = [n for n in ast.walk(candidate) if isinstance(n, ast.Subscript)]
+            if (not reads or not all(isinstance(n.value, ast.Name) and isinstance(n.slice, ast.Name)
+                                    and n.slice.id == index for n in reads)
+                    or not isinstance(initial.get(best), ast.Constant)):
+                continue
+            sequences = {n.value.id for n in reads}
+            for update in guard.body:
+                for chosen, value in assignment_values(update).items():
+                    if not (isinstance(value, ast.Name) and value.id == index and chosen in initial):
+                        continue
+                    saved_best = [s for s in guard.body if best in assignment_values(s)
+                                  and _same(_expanded(assignment_values(s)[best], aliases), candidate)]
+                    if (len(saved_best) != 1 or len(bindings(loop.body, chosen)) != 1
+                            or len(bindings(loop.body, best)) != 1 or any(bindings(loop.body, s) for s in sequences)):
+                        continue
+                    # Only the guarded best-value and corresponding index may
+                    # be committed by this branch; no unrelated nested guard.
+                    if set(guard.body) != {update, saved_best[0]} or guard.orelse:
+                        continue
+                    after = body[position+1:]
+                    for following in after:
+                        if any(bindings([following], n) for n in {chosen, *sequences}):
+                            break
+                        if any(isinstance(n, ast.Call) and not (
+                            isinstance(n.func, ast.Name) and n.func.id in ('len', 'print')
+                        ) for n in scope_nodes([following])):
+                            break
+                        for mutation in scope_nodes([following]):
+                            if (isinstance(mutation, ast.AugAssign) and isinstance(mutation.op, (ast.Add, ast.Sub))
+                                    and isinstance(mutation.target, ast.Subscript)
+                                    and isinstance(mutation.target.value, ast.Name) and mutation.target.value.id in sequences
+                                    and isinstance(mutation.target.slice, ast.Name) and mutation.target.slice.id == chosen
+                                    and isinstance(mutation.value, ast.Constant) and type(mutation.value.value) is int
+                                    and mutation.value.value == 1):
+                                result.append((scope, loop, saved_best[0]))
+                                break
+    return result
