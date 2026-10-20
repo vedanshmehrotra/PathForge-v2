@@ -1,6 +1,7 @@
 """Recommendation orchestration — runs Recommendation Engine from stored data."""
 
 from typing import Dict, Any, Optional
+from datetime import datetime, timezone
 from pathforge.db.db import get_connection
 from pathforge.api.services.loader import (
     load_problem_bank,
@@ -12,6 +13,7 @@ from pathforge.api.services.loader import (
 from pathforge.recommendation_engine import RecommendationEngine
 from pathforge.recommendation_links import problem_url
 from pathforge.practice_recommendations import HISTORY_LIMIT, recommend_practice
+from pathforge.calendar_practice import POLICY as CALENDAR_POLICY, recommend_calendar_practice
 import config
 
 
@@ -38,7 +40,10 @@ def _difficulty_to_label(difficulty_score: float) -> str:
 
 
 def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
-                        mode: str = "legacy", difficulty=None, excluded_ids=()) -> Dict[str, Any]:
+                        mode: str = "legacy", difficulty=None, excluded_ids=(),
+                        policy: str = "recorded_practice_v1") -> Dict[str, Any]:
+    if policy not in ("recorded_practice_v1", CALENDAR_POLICY):
+        return {"error": "Unsupported practice policy", "stage": "RECOMMENDATION"}
     connection = get_connection(db_path or config.DATABASE_PATH)
     try:
         user = load_user_info(connection, user_id)
@@ -47,11 +52,17 @@ def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
 
         problems = load_problem_bank(connection)
         if mode == "practice":
+            columns = "problem_id, submitted_at" if policy == CALENDAR_POLICY else "problem_id"
             history = connection.execute(
-                """SELECT problem_id FROM submissions
+                f"""SELECT {columns} FROM submissions
                    WHERE user_id = %s AND problem_id IS NOT NULL
                    ORDER BY id DESC LIMIT %s""", (user_id, HISTORY_LIMIT + 1),
             ).fetchall()
+            if policy == CALENDAR_POLICY:
+                return {"user_id": user_id, **recommend_calendar_practice(
+                    problems, [dict(row) for row in history], now=datetime.now(timezone.utc),
+                    difficulty=difficulty, excluded_ids=excluded_ids,
+                )}
             return {"user_id": user_id, **recommend_practice(
                 problems, [dict(row) for row in history],
                 difficulty=difficulty, excluded_ids=excluded_ids,

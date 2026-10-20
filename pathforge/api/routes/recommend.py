@@ -13,6 +13,7 @@ router = APIRouter()
 class RecommendRequest(BaseModel):
     user_id: int
     mode: Literal["legacy", "practice"] = "legacy"
+    policy: Literal["recorded_practice_v1", "calendar_practice_v2"] = "recorded_practice_v1"
     difficulty: Optional[Literal["Easy", "Medium", "Hard"]] = None
     excluded_ids: list[str] = Field(default_factory=list, max_length=50)
 
@@ -21,8 +22,10 @@ class RecommendRequest(BaseModel):
 def recommend_endpoint(req: RecommendRequest, request: Request):
     user = get_current_user(request)
     if req.mode == "practice":
-        result = get_recommendations(user.user_id, mode="practice",
-                                     difficulty=req.difficulty, excluded_ids=req.excluded_ids)
+        options = {"mode": "practice", "difficulty": req.difficulty, "excluded_ids": req.excluded_ids}
+        if req.policy != "recorded_practice_v1":
+            options["policy"] = req.policy
+        result = get_recommendations(user.user_id, **options)
     else:
         result = get_recommendations(user.user_id)
     if "error" in result:

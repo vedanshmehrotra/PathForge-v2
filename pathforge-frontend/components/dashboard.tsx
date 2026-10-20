@@ -7,7 +7,7 @@ import { useAuthProfile, useRecommendations } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
 import { relativeTime } from '@/lib/utils'
 import { RecommendationLink } from '@/components/recommendation-link'
-import { practiceReason, uniqueRecommendations } from '@/services/recommendations'
+import { practiceKindLabel, practiceReason, uniqueRecommendations } from '@/services/recommendations'
 
 export function DifficultyBadge({ difficulty }: { difficulty: 'Easy' | 'Medium' | 'Hard' }) {
   const variant = difficulty === 'Easy' ? 'success' : difficulty === 'Medium' ? 'warning' : 'danger'
@@ -105,6 +105,7 @@ export function RecommendedPreview() {
           {items.map(r => (
             <div key={r.problem_id} className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center">
               <div className="min-w-0 flex-1">
+                {practiceKindLabel(data, r) && <p className="mb-2 text-xs font-medium text-mint">{practiceKindLabel(data, r)}</p>}
                 <p className="text-sm font-semibold">{r.title}</p>
                 <div className="mt-2">{r.difficulty ? <DifficultyBadge difficulty={r.difficulty as 'Easy' | 'Medium' | 'Hard'} /> : <span className="text-xs text-muted-foreground">Difficulty not listed</span>}</div>
                 {practiceReason(data, r) && <p className="mt-2 text-sm text-muted-foreground">{practiceReason(data, r)}</p>}

@@ -98,6 +98,26 @@ describe('recommendation usability without unsupported diagnosis claims', () => 
     expect(render()).toContain('could not be linked to the current bank')
   })
 
+  it('presents calendar roles and factual reasons without ability claims', () => {
+    fixture.data!.policy = 'calendar_practice_v2'
+    fixture.data!.recommendations[0] = {...fixture.data!.recommendations[0], practice_kind: 'related_return',
+      pattern: '', score: null, reason: 'Shares Hash Table with Two Sum, recorded on 2026-10-10.'}
+    const html = render()
+    expect(html).toContain('Return to a topic')
+    expect(html).toContain('recorded on 2026-10-10')
+    expect(html).toContain('No setup needed')
+    expect(html).toContain('aria-label="Skip Two Sum"')
+    expect(render(RecommendedPreview)).toContain('Return to a topic')
+    expect(html).not.toMatch(/Significant weakness|mastered|learning gain|role="progressbar"/i)
+  })
+
+  it('discloses missing dates without inventing a return schedule', () => {
+    fixture.data!.policy = 'calendar_practice_v2'
+    fixture.data!.history = {scope: 'latest_recorded_submissions', limit: 1000,
+      truncated: false, mapped_problems: 1, unmapped_submissions: 0, invalid_timestamps: 1}
+    expect(render()).toContain('Some practice dates are unavailable')
+  })
+
   it.each([
     ['session_exhausted', 'Reset skips'], ['caught_up', 'bring a problem of your own'],
     ['no_candidates', 'for this difficulty'],

@@ -73,7 +73,8 @@ export function useRecommendations(userId: number, difficulty?: 'Easy' | 'Medium
   useEffect(() => {
     if (userId <= 0) return
     let active = true
-    fetchRecommendations({ user_id: userId, mode: 'practice', difficulty, excluded_ids: JSON.parse(exclusions) })
+    fetchRecommendations({ user_id: userId, mode: 'practice', policy: 'calendar_practice_v2',
+      difficulty, excluded_ids: JSON.parse(exclusions) })
       .then(data => { if (active) setState({ key, data, error: null }) })
       .catch(e => { if (active) setState({ key, data: null, error: e instanceof Error ? e.message : 'Request failed' }) })
     return () => { active = false }

@@ -23,12 +23,26 @@ export function uniqueRecommendations(items: RecommendResponse['recommendations'
 }
 
 export function practiceReason(response: RecommendResponse | null, item: RecommendResponse['recommendations'][number]) {
-  return response?.policy === 'recorded_practice_v1'
-    && (item.practice_kind === 'explore' || item.practice_kind === 'revisit') ? item.reason : null
+  return practiceKindLabel(response, item) ? item.reason : null
+}
+
+export function isPracticePolicy(response: RecommendResponse | null) {
+  return response?.policy === 'recorded_practice_v1' || response?.policy === 'calendar_practice_v2'
+}
+
+export function practiceKindLabel(response: RecommendResponse | null, item: RecommendResponse['recommendations'][number]) {
+  if (!isPracticePolicy(response)) return null
+  if (item.practice_kind === 'revisit') return 'Revisit a problem'
+  if (item.practice_kind === 'explore') return 'Try something different'
+  if (response?.policy !== 'calendar_practice_v2') return null
+  if (item.practice_kind === 'related_return') return 'Return to a topic'
+  if (item.practice_kind === 'follow_up') return 'Continue a topic'
+  if (item.practice_kind === 'starter') return 'A place to start'
+  return null
 }
 
 export function practiceEmptyMessage(state: RecommendResponse['state']) {
   if (state === 'session_exhausted') return 'You have skipped the available choices for this session. Reset skips or try another difficulty.'
-  if (state === 'caught_up') return 'Only your latest recorded problem is available here. Try another difficulty or bring a problem of your own.'
+  if (state === 'caught_up') return 'No more eligible choices right now. Try another difficulty or bring a problem of your own.'
   return 'No practice suggestions are available from the current problem bank for this difficulty.'
 }

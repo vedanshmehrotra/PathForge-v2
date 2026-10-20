@@ -3,6 +3,11 @@
 Local implementation contract. Deployment, shared database access and migrations
 remain separately authorized operations.
 
+This document describes `recorded_practice_v1`, preserved for API compatibility.
+The frontend now explicitly requests the additive `calendar_practice_v2` policy;
+see [Calendar-aware practice POC](CALENDAR_PRACTICE_POC.md) for its dated return,
+follow-up, general-choice and evidence limitations. Neither policy infers skills.
+
 ## User experience
 
 The normal mixed/daily-problem workflow needs no topic selection. After a user

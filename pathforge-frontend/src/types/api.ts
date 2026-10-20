@@ -200,12 +200,13 @@ export interface EloResponse {
 export interface RecommendRequest {
   user_id: number
   mode?: 'legacy' | 'practice'
+  policy?: 'recorded_practice_v1' | 'calendar_practice_v2'
   difficulty?: 'Easy' | 'Medium' | 'Hard'
   excluded_ids?: string[]
 }
 
 export interface RecommendResponse {
-  policy?: 'recorded_practice_v1'
+  policy?: 'recorded_practice_v1' | 'calendar_practice_v2'
   state?: 'available' | 'no_candidates' | 'session_exhausted' | 'caught_up'
   history?: {
     scope: 'latest_recorded_submissions'
@@ -213,6 +214,9 @@ export interface RecommendResponse {
     truncated: boolean
     mapped_problems: number
     unmapped_submissions: number
+    invalid_timestamps?: number
+    dated_exposures?: number
+    calendar_timezone?: 'UTC'
   }
   limitations?: string[]
   recommendations: Array<{
@@ -223,7 +227,13 @@ export interface RecommendResponse {
     reason: string
     score: number | null
     topics?: string[]
-    practice_kind?: 'explore' | 'revisit'
+    practice_kind?: 'explore' | 'revisit' | 'related_return' | 'follow_up' | 'starter'
+    reason_evidence?: {
+      anchor_url: string
+      anchor_title: string
+      anchor_date: string
+      shared_topics: string[]
+    }
     /** Validated stored destination; absent in older API responses. */
     problem_url?: string | null
   }>
