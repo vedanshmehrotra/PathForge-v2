@@ -6,6 +6,8 @@ including comparisons that are ineligible for scoring. Secondary detected
 patterns are included. One problem counts as one practice session per UTC date
 for each observed pattern. Existing `profiles` retain their scoring semantics.
 The reader handles both PostgreSQL's decoded JSONB arrays and legacy JSON text.
+Native database timestamps and legacy ISO text are normalized to UTC before
+counting sessions or comparing recency; no database column conversion is needed.
 
 The website refreshes practice records and ratings on focus and every 30 seconds
 while visible. An old scoring-profile timestamp no longer hides recent practice.

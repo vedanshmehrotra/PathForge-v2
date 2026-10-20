@@ -1,6 +1,7 @@
 """Analysis deduplication and observed practice history, independent of skill authority."""
 import hashlib
 import json
+from datetime import datetime, timezone
 
 PRACTICE_POLICY_VERSION = 2
 
@@ -59,6 +60,23 @@ def scoring_limit(connection, user_id, problem_id, timestamp, practice_event=Non
     return "problem_already_scored_today" if previous else None
 
 
+def _practice_timestamp(value):
+    """Normalize native PostgreSQL timestamps and legacy text to UTC ISO text."""
+    if isinstance(value, datetime):
+        stamp = value
+    elif isinstance(value, str):
+        try:
+            stamp = datetime.fromisoformat(value)
+        except ValueError:
+            return None
+    else:
+        return None
+    # Legacy timestamps without an offset were recorded in UTC.
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=timezone.utc)
+    return stamp.astimezone(timezone.utc).isoformat()
+
+
 def get_pattern_practice(connection, user_id):
     """Read observed patterns from saved analyses, including unscored practice.
 
@@ -91,7 +109,7 @@ def get_pattern_practice(connection, user_id):
                 patterns.add(pattern)
         if not detections and row["detected_pattern"]:
             patterns.add(row["detected_pattern"])
-        stamp = row["submitted_at"]
+        stamp = _practice_timestamp(row["submitted_at"])
         if not stamp:
             continue
         identity = row["problem_id"] if row["problem_id"] is not None else row["code_hash"] or row["id"]

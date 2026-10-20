@@ -18,8 +18,8 @@ from pathforge.db.db import PgConnection
 from pathforge.services.practice_tracking import analysis_key, find_recorded_analysis, scoring_limit, get_pattern_practice
 
 
-@pytest.fixture
-def database():
+@pytest.fixture(params=["TEXT", "TIMESTAMPTZ"])
+def database(request):
     dsn = os.environ.get("PATHFORGE_TEST_DATABASE_URL")
     if not dsn:
         pytest.skip("Dedicated PostgreSQL test database not configured")
@@ -34,12 +34,12 @@ def database():
     with admin.cursor() as cursor:
         cursor.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
         cursor.execute(sql.SQL("SET search_path TO {}").format(sql.Identifier(schema)))
-        cursor.execute("""CREATE TABLE submissions (
+        cursor.execute(sql.SQL("""CREATE TABLE submissions (
             id BIGSERIAL PRIMARY KEY, user_id BIGINT, problem_id BIGINT,
             analysis_key TEXT, verdict_type TEXT DEFAULT 'analysis_only',
-            skill_updates_applied BOOLEAN DEFAULT FALSE, submitted_at TEXT,
+            skill_updates_applied BOOLEAN DEFAULT FALSE, submitted_at {},
             code_hash TEXT, detected_pattern TEXT, detected_patterns_json JSONB,
-            UNIQUE(user_id, analysis_key))""")
+            UNIQUE(user_id, analysis_key))""").format(sql.SQL(request.param)))
     def connection():
         raw = psycopg2.connect(dsn)
         with raw.cursor() as cursor:

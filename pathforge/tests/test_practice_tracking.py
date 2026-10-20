@@ -1,5 +1,6 @@
 """Isolated persistence orchestration; no configured or shared database access."""
 import json
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -155,6 +156,73 @@ def test_unscored_secondary_patterns_and_recent_practice_repair_history(jsonb):
 def test_unique_index_is_an_automatic_migration():
     from pathforge.db.db import _classify_statement
     assert _classify_statement("CREATE UNIQUE INDEX IF NOT EXISTS idx ON submissions(user_id, analysis_key)") == "migration"
+
+
+@pytest.mark.parametrize("stamp", [
+    datetime(2026, 10, 20, 12, tzinfo=timezone.utc),
+    datetime(2026, 10, 20, 12),
+    "2026-10-20T12:00:00Z",
+    "2026-10-20 12:00:00",
+])
+def test_practice_history_accepts_postgres_datetimes_and_legacy_text(stamp):
+    connection = Mock()
+    connection.execute.return_value.fetchall.return_value = [{
+        "id": 1, "problem_id": 1, "code_hash": "fixture", "detected_pattern": "hash_map_lookup",
+        "detected_patterns_json": [{"pattern_id": "hash_map_lookup"}, {"pattern_id": "array_traversal"}],
+        "submitted_at": stamp}]
+    records = get_pattern_practice(connection, 7)
+    assert records == [{"topic": pattern, "attempt_count": 1, "last_attempt_at": "2026-10-20T12:00:00+00:00"}
+                       for pattern in ["array_traversal", "hash_map_lookup"]]
+    json.dumps(records)  # API records contain serializable, normalized timestamps.
+
+
+def test_mixed_timestamp_types_count_sessions_by_utc_day_and_compare_instants():
+    def row(id, stamp):
+        return {"id": id, "problem_id": 1, "code_hash": "fixture", "detected_pattern": "array_traversal",
+                "detected_patterns_json": None, "submitted_at": stamp}
+    connection = Mock()
+    connection.execute.return_value.fetchall.return_value = [
+        row(1, "2026-10-20T00:30:00+02:00"),  # October 19 in UTC.
+        row(2, datetime(2026, 10, 19, 23, tzinfo=timezone.utc)),
+        row(3, datetime(2026, 10, 20, 0, 30, tzinfo=timezone(timedelta(hours=-2)))),
+        row(4, "2026-10-20T01:00:00+00:00"),
+        row(5, None), row(6, "invalid date"), row(7, 42),
+    ]
+    assert get_pattern_practice(connection, 7) == [{"topic": "array_traversal", "attempt_count": 2,
+                                                  "last_attempt_at": "2026-10-20T02:30:00+00:00"}]
+
+
+def test_profile_http_response_handles_native_database_timestamps_and_allowed_origin(monkeypatch):
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
+    from fastapi.testclient import TestClient
+    from pathforge.api import auth_routes
+
+    connection = Mock()
+    def execute(query, params):
+        assert params == (7,)
+        rows = ([{"topic": "hash_map_lookup", "elo_rating": 1208}]
+                if "FROM topic_profiles" in query else [{
+                    "id": 1, "problem_id": 1, "code_hash": "fixture", "detected_pattern": "hash_map_lookup",
+                    "detected_patterns_json": [{"pattern_id": "hash_map_lookup"}, {"pattern_id": "array_traversal"}],
+                    "submitted_at": datetime(2026, 10, 20, 12, tzinfo=timezone.utc)}])
+        return SimpleNamespace(fetchall=lambda: rows)
+    connection.execute.side_effect = execute
+    monkeypatch.setattr(auth_routes, "get_connection", lambda *_: connection)
+    app = FastAPI()  # Does not import the application or initialize its database.
+    origin = "https://path-forge-v2.vercel.app"
+    app.add_middleware(CORSMiddleware, allow_origins=[origin])
+    app.include_router(auth_routes.router)
+    app.dependency_overrides[auth_routes.get_current_user] = lambda: SimpleNamespace(user_id=7)
+    with TestClient(app, raise_server_exceptions=False) as client:
+        response = client.get("/auth/profile", headers={"Origin": origin})
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+    body = response.json()
+    assert body["overall_elo"] == 1208
+    assert body["practice_records"][0] == {"topic": "array_traversal", "attempt_count": 1,
+                                          "last_attempt_at": "2026-10-20T12:00:00+00:00"}
+    connection.close.assert_called_once()
 
 
 def test_profile_endpoint_reads_all_practice_for_the_authenticated_owner(monkeypatch):
