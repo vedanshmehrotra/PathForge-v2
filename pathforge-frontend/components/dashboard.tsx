@@ -21,7 +21,7 @@ export function DashboardView() {
     .filter(p => p.last_attempt_at || p.attempt_count > 0)
     .sort((a, b) => (b.last_attempt_at ?? '').localeCompare(a.last_attempt_at ?? ''))
     .slice(0, 5)
-  const hasHistory = activity.length > 0 && !error
+  const hasHistory = activity.length > 0
 
   return (
     <div className="workspace-page">
@@ -57,7 +57,11 @@ export function DashboardView() {
             <h2 id="recent-heading" className="section-title flex items-center gap-2"><Route className="size-4 text-mint" />Recently practised patterns</h2>
             <Link href="/progress" className="text-link">View history</Link>
           </div>
-          {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading your practice history...</p> : error ? (
+          {error && data && <p role="status" className="mt-4 text-sm text-muted-foreground">
+            Could not refresh practice history. Showing the last loaded data.{' '}
+            <button type="button" onClick={() => refresh()} className="text-link">Retry history</button>
+          </p>}
+          {loading && !data ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading your practice history...</p> : error && !data ? (
             <div className="mt-5">
               <p role="alert" className="text-sm">Could not load practice history. {error}</p>
               <button type="button" onClick={() => refresh()} className="text-link mt-3">Retry history</button>

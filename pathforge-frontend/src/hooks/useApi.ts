@@ -29,11 +29,16 @@ function useApiData<T>(
   const refresh = useCallback(async (background = false) => {
     if (skip) return
     const id = ++requestId.current
-    if (!background) setLoading(true)
-    setError(null)
+    if (!background) {
+      setLoading(true)
+      setError(null)
+    }
     try {
       const result = await fetcher()
-      if (id === requestId.current) setData(result)
+      if (id === requestId.current) {
+        setData(result)
+        setError(null)
+      }
     } catch (e) {
       if (id === requestId.current) setError(e instanceof Error ? e.message : 'Request failed')
     } finally {

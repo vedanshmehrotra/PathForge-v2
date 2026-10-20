@@ -12,14 +12,15 @@ const fixture = vi.hoisted(() => ({
   refresh: vi.fn(),
   practiceRecords: undefined as Array<Record<string, unknown>> | undefined,
   levels: {} as Record<string, Record<string, number>>,
+  loaded: true, loading: false,
 }))
 vi.mock('@/auth/AuthProvider', () => ({ useAuth: () => ({ profile: { user_id: 7, display_name: 'Learner' },
   user: { email: 'fixture@example.invalid', email_confirmed_at: fixture.confirmedAt, app_metadata: { provider: 'google' } }, signOut: vi.fn(),
 }) }))
 vi.mock('@/auth/authService', () => ({ signInWithGoogle: vi.fn() }))
 vi.mock('@/hooks/useApi', () => ({
-  useAuthProfile: () => ({ data: { profiles: fixture.profiles, practice_records: fixture.practiceRecords }, loading: false, error: fixture.error, refresh: fixture.refresh }),
-  useEloData: () => ({ data: { pattern_elo: fixture.ratings, pattern_levels: fixture.levels }, loading: false, error: fixture.error, refresh: fixture.refresh }),
+  useAuthProfile: () => ({ data: fixture.loaded ? { profiles: fixture.profiles, practice_records: fixture.practiceRecords } : null, loading: fixture.loading, error: fixture.error, refresh: fixture.refresh }),
+  useEloData: () => ({ data: fixture.loaded ? { pattern_elo: fixture.ratings, pattern_levels: fixture.levels } : null, loading: fixture.loading, error: fixture.error, refresh: fixture.refresh }),
   useRecommendations: () => ({ data: null, loading: false, error: null, refresh: fixture.refresh }),
 }))
 const render = (component: typeof DashboardView) => renderToStaticMarkup(createElement(component))
@@ -30,6 +31,8 @@ beforeEach(() => {
   fixture.confirmedAt = undefined
   fixture.practiceRecords = undefined
   fixture.levels = {}
+  fixture.loaded = true
+  fixture.loading = false
 })
 
 describe('a practice workspace without unsupported proficiency claims', () => {
@@ -69,11 +72,37 @@ describe('a practice workspace without unsupported proficiency claims', () => {
 
   it('does not disguise a history service failure as no practice', () => {
     fixture.error = 'Fixture unavailable'
+    fixture.loaded = false
     const html = render(DashboardView)
     expect(html).toContain('role="alert"')
     expect(html).toContain('Retry history')
     expect(html).not.toContain('Your recorded patterns will appear here')
     expect(render(ProgressView)).toContain('Retry history')
+  })
+
+  it('preserves loaded history and levels when a later refresh fails', () => {
+    fixture.profiles = [{ topic: 'array_traversal', attempt_count: 4, last_attempt_at: new Date().toISOString() }]
+    fixture.ratings = { array_traversal: 1232 }
+    fixture.levels = { array_traversal: { level: 5, experience: 832, into_level: 32, points_per_level: 200, progress_percent: 16 } }
+    fixture.error = 'Temporary network failure'
+    const dashboard = render(DashboardView)
+    expect(dashboard).toContain('Could not refresh practice history')
+    expect(dashboard).toContain('Take another look at how you solve.')
+    expect(dashboard).toContain('array traversal')
+    const progress = render(ProgressView)
+    expect(progress).toContain('Could not refresh progress')
+    expect(progress).toContain('Showing the last loaded data')
+    expect(progress).toContain('Level 5')
+    expect(progress).toContain('Recorded patterns')
+    expect(progress).not.toContain('Could not load your practice history')
+  })
+
+  it('keeps loaded progress visible while a deliberate retry is in flight', () => {
+    fixture.profiles = [{ topic: 'array_traversal', attempt_count: 4 }]
+    fixture.loading = true
+    expect(render(DashboardView)).toContain('array traversal')
+    expect(render(ProgressView)).toContain('Recorded patterns')
+    expect(render(ProgressView)).not.toContain('Loading your practice history')
   })
 
   it('lets learners choose a recorded focus without contradictory strength bands', () => {

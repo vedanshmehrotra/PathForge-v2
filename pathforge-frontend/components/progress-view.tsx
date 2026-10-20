@@ -26,7 +26,8 @@ export function ProgressView() {
   const rating = active ? elo.data?.pattern_elo[active] : undefined
   const level = active ? elo.data?.pattern_levels?.[active] : undefined
   const scoredRecord = active ? scoredTopics.get(active) : undefined
-  const loading = elo.loading || history.loading
+  const hasLoaded = Boolean(elo.data && history.data)
+  const loading = (elo.loading && !elo.data) || (history.loading && !history.data)
   const error = elo.error || history.error
   const toggle = (id: string) => {
     setSelected(id)
@@ -43,7 +44,11 @@ export function ProgressView() {
         <h1 className="page-heading">Learning Progress</h1>
         <p className="page-description">Choose the topics you want to see. Keep the next step in focus.</p>
       </header>
-      {loading ? <p role="status" className="text-muted-foreground">Loading your practice history...</p> : error ? (
+      {error && hasLoaded && <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-t border-border py-4 text-sm text-muted-foreground">
+        <p>Could not refresh progress. Showing the last loaded data.</p>
+        <button type="button" onClick={() => { elo.refresh(); history.refresh() }} className="text-link">Retry history</button>
+      </div>}
+      {loading ? <p role="status" className="text-muted-foreground">Loading your practice history...</p> : error && !hasLoaded ? (
         <div className="border-t border-border py-6">
           <p role="alert">Could not load your practice history. {error}</p>
           <button type="button" onClick={() => { elo.refresh(); history.refresh() }} className="action-secondary mt-4">Retry history</button>
