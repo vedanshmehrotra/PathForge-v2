@@ -16,6 +16,7 @@ from pathforge.auth.auth_middleware import (
 )
 from pathforge.db.db import get_connection
 from pathforge.db.profile_manager import get_user_profile
+from pathforge.services.practice_tracking import get_pattern_practice, PRACTICE_POLICY_VERSION
 import config
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -25,6 +26,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def verify_session(user: VerifiedUser = Depends(get_current_user)):
     return {
         "authenticated": True,
+        "practice_policy_version": PRACTICE_POLICY_VERSION,
         "user_id": user.user_id,
         "supabase_id": user.supabase_id,
         "email": user.email,
@@ -77,6 +79,7 @@ def get_profile(user: VerifiedUser = Depends(get_current_user)):
         )
         return {
             "profiles": profiles,
+            "practice_records": get_pattern_practice(connection, user.user_id),
             "overall_elo": overall,
         }
     finally:

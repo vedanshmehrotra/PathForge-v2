@@ -22,7 +22,7 @@ def execute(case, groups):
         problem_difficulty="Medium" if groups else None, code=WINDOW_209,
         ast_output=analysis["ast"], match_result=analysis["match_result"], groups=groups)
     assert (analysis, groups) == before
-    assert case.connection.queries[0][1][2] == WINDOW_209
+    assert next(params for sql, params in case.connection.queries if "INSERT INTO submissions" in sql)[2] == WINDOW_209
     return analysis, result
 
 
@@ -133,6 +133,8 @@ def test_cached_partial_comparison_reports_no_skill_consequences_through_actual_
 
     class Connection(MemoryConnection):
         def execute(self, sql, params):
+            if any(fragment in sql for fragment in ("pg_advisory_xact_lock", "analysis_key =", "skill_updates_applied =")):
+                return SimpleNamespace(fetchone=lambda: None)
             if "INSERT INTO submissions" in sql:
                 self.writes.append("submission")
                 return SimpleNamespace(fetchone=lambda: {"id": 123})

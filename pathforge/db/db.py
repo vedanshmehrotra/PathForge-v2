@@ -171,7 +171,7 @@ def _classify_statement(stmt: str) -> str:
     if not cleaned:
         return "skip"
     upper = cleaned.upper()
-    if upper.startswith("ALTER TABLE") or upper.startswith("CREATE INDEX"):
+    if upper.startswith(("ALTER TABLE", "CREATE INDEX", "CREATE UNIQUE INDEX")):
         return "migration"
     return "skip"
 

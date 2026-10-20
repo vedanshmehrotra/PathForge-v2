@@ -18,6 +18,7 @@ from pathforge.recommender import get_recommendation
 from pathforge.pipeline import _log_recommendation, _mark_last_recommendation_acted_on
 from pathforge.api.services.loader import load_submissions, load_user_pattern_elo
 from pathforge.services.approach_policy import skill_comparison_gate
+from pathforge.services.practice_tracking import analysis_key, find_recorded_analysis, scoring_limit
 
 # Evidence states that grant authority (authoritative downstream behavior)
 _AUTHORITATIVE_STATES = {"structurally_observed", "externally_listed"}
@@ -36,6 +37,7 @@ def run_persistence(
     ast_output: dict,
     match_result: dict,
     groups: Optional[list],
+    practice_event: Optional[dict] = None,
 ) -> dict:
     """Persist analysis results: submission, gap signals, Elo, streak, recommendation.
 
@@ -43,6 +45,14 @@ def run_persistence(
     responsible for connection.commit() on success and connection.rollback() on failure.
     """
     timestamp = iso_now()
+    key = analysis_key(problem_id, code, practice_event, timestamp[:10])
+    recorded = find_recorded_analysis(connection, user_id, key)
+    if recorded:
+        return {
+            "submission_id": recorded["id"], "verdict_type": recorded["verdict_type"],
+            "replayed": True, "skill_updates_skipped": True, "score_reason": "already_recorded",
+            "gap_signals_count": 0, "elo_updates_count": 0,
+        }
 
     detected_patterns = ast_output.get("detected_patterns", [])
     match_result_str = match_result.get("match_result", "NO_MATCH")
@@ -104,9 +114,9 @@ def run_persistence(
             user_id, problem_id, code_text, verdict, detected_pattern,
             detected_confidence, expected_pattern, target_pattern, gap_identified,
             diagnosis_confidence, time_taken_seconds, attempt_number, topic, submitted_at,
-            verdict_type, detected_patterns_json, code_hash
+            verdict_type, detected_patterns_json, code_hash, analysis_key, practice_event
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id
         """,
         (
@@ -127,6 +137,8 @@ def run_persistence(
             verdict_type,
             detected_patterns_json,
             code_hash,
+            key,
+            json.dumps(practice_event) if practice_event else None,
         ),
     )
     submission_id = cursor.fetchone()["id"]
@@ -193,6 +205,11 @@ def run_persistence(
     gap_output = {"gap_signals": [], "summary": {"strong_gaps": [], "moderate_gaps": [], "weak_gaps": []}}
     elo_output = {"user_id": str(user_id), "pattern_elo_updates": [], "global_summary": {}}
     recommendation_id = None
+    score_reason = scoring_limit(connection, user_id, problem_id, timestamp, practice_event)
+    if score_reason:
+        is_authoritative = False
+    elif not is_authoritative:
+        score_reason = comparison_gate["reason"] if not comparison_gate["eligible"] else "authority_required"
 
     if is_authoritative:
         # Derive evidence ceiling for both ELO systems.
@@ -263,12 +280,15 @@ def run_persistence(
             user_id, submission_result, problem_record, connection
         )
         recommendation_id = _log_recommendation(connection, user_id, recommendation)
+        connection.execute("UPDATE submissions SET skill_updates_applied = TRUE WHERE id = %s", (submission_id,))
 
     # Streak is always updated (independent of evidence authority)
     _update_user_streak(connection, user_id, timestamp)
 
     return {
         "submission_id": submission_id,
+        "replayed": False,
+        "score_reason": score_reason or "scored",
         "verdict_type": verdict_type,
         # Actual combined effect of comparison, legacy authority and optional B6.
         "skill_updates_skipped": not is_authoritative,

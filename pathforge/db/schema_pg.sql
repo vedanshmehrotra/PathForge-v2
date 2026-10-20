@@ -151,6 +151,11 @@ CREATE INDEX IF NOT EXISTS idx_problems_title_slug ON problems(title_slug);
 ALTER TABLE submissions ADD COLUMN IF NOT EXISTS verdict_type TEXT DEFAULT 'authoritative';
 ALTER TABLE submissions ADD COLUMN IF NOT EXISTS detected_patterns_json JSONB;
 ALTER TABLE submissions ADD COLUMN IF NOT EXISTS code_hash TEXT;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS analysis_key TEXT;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS practice_event JSONB;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS skill_updates_applied BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_submissions_analysis_key ON submissions(user_id, analysis_key) WHERE analysis_key IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_submissions_scored_problem ON submissions(user_id, problem_id, submitted_at) WHERE skill_updates_applied = TRUE;
 
 -- Phase 0C: ground truth solution groups
 ALTER TABLE problem_ground_truth ADD COLUMN IF NOT EXISTS solution_groups JSONB;

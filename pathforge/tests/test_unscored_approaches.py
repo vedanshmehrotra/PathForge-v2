@@ -212,6 +212,8 @@ def build_contract_cases():
 
     class Connection(MemoryConnection):
         def execute(self, sql, params):
+            if any(fragment in sql for fragment in ('pg_advisory_xact_lock', 'analysis_key =', 'skill_updates_applied =')):
+                return SimpleNamespace(fetchone=lambda: None)
             if 'INSERT INTO submissions' in sql:
                 self.writes.append('submission')
                 return SimpleNamespace(fetchone=lambda: {'id': 123})

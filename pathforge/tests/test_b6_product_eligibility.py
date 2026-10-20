@@ -371,6 +371,8 @@ class _FakeConn:
             return _FakeCursor({"id": 123, "user_id": 7})
         if "SELECT * FROM problems" in sql:
             return _FakeCursor({"id": 209, "difficulty": "Medium"})
+        if any(fragment in sql for fragment in ("pg_advisory_xact_lock", "analysis_key =", "skill_updates_applied =")):
+            return _FakeCursor(None)
         raise AssertionError(f"Unexpected SQL: {sql}")
 
 
@@ -443,7 +445,7 @@ def _assert_product_consequences(case, result, allowed):
         else:
             operation.assert_not_called()
     assert result["submission_id"] == 123
-    assert "INSERT INTO submissions" in case.connection.queries[0][0]
+    assert any("INSERT INTO submissions" in sql for sql, _ in case.connection.queries)
     assert result["gap_signals_count"] == int(allowed)
     assert result["elo_updates_count"] == int(allowed)
     assert result["recommendation_id"] == (456 if allowed else None)

@@ -5,16 +5,18 @@ submissions, gap_signals, user_pattern_elo, topic_profiles,
 recommendations, and user streak.
 """
 
-from typing import Optional
+from typing import Optional, Literal
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from pathforge.api.services.analysis import run_analysis
 from pathforge.api.services.approaches import SolutionApproach, UnscoredApproach, describe_approaches
 from pathforge.auth.auth_middleware import get_current_user
 from pathforge.services.problem_resolver import resolve_problem, ProblemReadinessError
 from pathforge.services.persistence import run_persistence
+from pathforge.services.pattern_levels import pattern_level
+from pathforge.services.practice_tracking import request_practice_event
 from pathforge.db.db import get_connection
 from pathforge.api.services.shadow_observability import (
     record_shadow_result, get_shadow_log_dict,
@@ -31,11 +33,19 @@ class ProblemIdentifier(BaseModel):
     title_slug: Optional[str] = None
 
 
+class PracticeEvent(BaseModel):
+    source: Literal["extension"]
+    submission_id: Optional[str] = Field(default=None, pattern=r"^[0-9]{1,30}$")
+    # Additional restriction only: a LeetCode verdict never grants pattern authority.
+    submission_status: Optional[Literal["accepted", "failed"]] = None
+
+
 class AnalyzeRequest(BaseModel):
     user_id: int
     code: str
     language: str = "python"
     problem: Optional[ProblemIdentifier] = None
+    practice_event: Optional[PracticeEvent] = None
 
 
 class PersistenceInfo(BaseModel):
@@ -44,6 +54,8 @@ class PersistenceInfo(BaseModel):
     elo_updates_count: int
     recommendation_id: Optional[int] = None
     skill_updates_skipped: Optional[bool] = None
+    replayed: bool = False
+    score_reason: Optional[str] = None
 
 
 class CanonicalPattern(BaseModel):
@@ -68,6 +80,8 @@ class EloUpdate(BaseModel):
     elo_before: float
     elo_after: float
     delta: float
+    level_before: dict = Field(default_factory=dict)
+    level_after: dict = Field(default_factory=dict)
 
 
 class SubmissionGap(BaseModel):
@@ -174,6 +188,10 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 ast_output=result["ast"],
                 match_result=result["match_result"],
                 groups=groups,
+                practice_event=request_practice_event(
+                    req.practice_event.model_dump() if req.practice_event else None,
+                    request.headers if request is not None else {},
+                ),
             )
             conn.commit()
         except Exception as e:
@@ -189,6 +207,8 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 elo_before=u["old_elo"],
                 elo_after=u["new_elo"],
                 delta=u["delta"],
+                level_before=pattern_level(u["old_elo"]),
+                level_after=pattern_level(u["new_elo"]),
             )
             for u in persisted.get("elo_output", {}).get("pattern_elo_updates", [])
         ]
@@ -259,7 +279,8 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 shadow_result = ShadowAnalysisResult(**shadow_raw)
                 # Persist shadow results to the submission row
                 code_hash = compute_code_hash(req.code)
-                persist_shadow_analysis(conn, submission_id, code_hash, shadow_raw)
+                if not persisted.get("replayed"):
+                    persist_shadow_analysis(conn, submission_id, code_hash, shadow_raw)
 
                 # --- Record pipeline observability (observational only) ---
                 _facts = shadow_raw.get("structural_facts", [])
@@ -319,6 +340,8 @@ def analyze_endpoint(req: AnalyzeRequest, request: Request):
                 elo_updates_count=persisted["elo_updates_count"],
                 recommendation_id=persisted.get("recommendation_id"),
                 skill_updates_skipped=persisted.get("skill_updates_skipped"),
+                replayed=persisted.get("replayed", False),
+                score_reason=persisted.get("score_reason"),
             ),
             hybrid_analysis=hybrid_analysis,
             shadow_analysis=shadow_result,

@@ -3,6 +3,7 @@
 from typing import Dict, Any, Optional
 from pathforge.db.db import get_connection
 from pathforge.api.services.loader import load_user_pattern_elo, load_user_info
+from pathforge.services.pattern_levels import pattern_level
 import config
 
 
@@ -15,7 +16,7 @@ def get_elo_ratings(user_id: int, db_path: Optional[str] = None) -> Dict[str, An
 
         elos = load_user_pattern_elo(connection, user_id)
         if not elos:
-            return {"pattern_elo": {}, "message": "No Elo ratings yet. Submit code to initialize."}
+            return {"pattern_elo": {}, "pattern_levels": {}, "message": "No Elo ratings yet. Submit code to initialize."}
 
         sorted_patterns = sorted(elos.items(), key=lambda x: x[1])
         weakest = [p for p, _ in sorted_patterns[:5]]
@@ -23,6 +24,7 @@ def get_elo_ratings(user_id: int, db_path: Optional[str] = None) -> Dict[str, An
 
         return {
             "pattern_elo": elos,
+            "pattern_levels": {pattern: pattern_level(value) for pattern, value in elos.items()},
             "summary": {
                 "average_elo": round(sum(elos.values()) / max(len(elos), 1), 2),
                 "weakest_patterns": weakest,
