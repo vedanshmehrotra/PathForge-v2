@@ -224,7 +224,8 @@ def test_unusable_generated_output_returns_502_without_ground_truth_write(bounda
     with pytest.raises(HTTPException) as raised:
         boundary.prepare(connection)
     assert raised.value.status_code == 502
-    assert "Ground truth generation failed" in raised.value.detail
+    assert raised.value.detail["code"] == "PREPARATION_INVALID_OUTPUT"
+    assert "could not be validated" in raised.value.detail["message"]
     assert connection.writes == []
     assert connection.ground_truth is None
     connection.commit.assert_not_called()

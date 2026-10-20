@@ -10,6 +10,9 @@ const fixture = vi.hoisted(() => ({
   data: null as RecommendResponse | null, loading: false, error: null as string | null, refresh: vi.fn(),
 }))
 vi.mock('@/hooks/useApi', () => ({ useRecommendations: () => fixture }))
+vi.mock('@/hooks/usePracticeSkips', () => ({ usePracticeSkips: () => ({
+  ready: true, excludedIds: [], skip: vi.fn(), reset: vi.fn(),
+}) }))
 vi.mock('@/auth/AuthProvider', () => ({ useAuth: () => ({
   user: { id: 'local-fixture' }, profile: { user_id: 7 }, loading: false, signOut: vi.fn(),
 }) }))
@@ -105,7 +108,7 @@ describe('recommendation usability without unsupported diagnosis claims', () => 
     const html = render()
     expect(html).toContain('Return to a topic')
     expect(html).toContain('recorded on 2026-10-10')
-    expect(html).toContain('No setup needed')
+    expect(html).toContain('practice saved with a problem selected')
     expect(html).toContain('aria-label="Skip Two Sum"')
     expect(render(RecommendedPreview)).toContain('Return to a topic')
     expect(html).not.toMatch(/Significant weakness|mastered|learning gain|role="progressbar"/i)

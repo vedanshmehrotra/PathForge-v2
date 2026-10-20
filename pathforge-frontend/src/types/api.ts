@@ -207,9 +207,10 @@ export interface RecommendRequest {
 
 export interface RecommendResponse {
   policy?: 'recorded_practice_v1' | 'calendar_practice_v2'
-  state?: 'available' | 'no_candidates' | 'session_exhausted' | 'caught_up'
+  state?: 'available' | 'no_candidates' | 'session_exhausted' | 'caught_up' | 'difficulty_limited'
+  context?: { latest_problem_id: string | null; default_max_difficulty: string | null }
   history?: {
-    scope: 'latest_recorded_submissions'
+    scope: 'latest_recorded_submissions' | 'latest_recorded_problems'
     limit: number
     truncated: boolean
     mapped_problems: number
@@ -217,6 +218,7 @@ export interface RecommendResponse {
     invalid_timestamps?: number
     dated_exposures?: number
     calendar_timezone?: 'UTC'
+    code_only_submissions?: number
   }
   limitations?: string[]
   recommendations: Array<{

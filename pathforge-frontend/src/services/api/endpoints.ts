@@ -22,6 +22,7 @@ export function analyzeCode(req: AnalyzeRequest): Promise<AnalyzeResponse> {
 export function prepareProblem(req: PrepareRequest): Promise<PrepareResponse> {
   return apiRequest<PrepareResponse>('/prepare-problem', {
     method: 'POST',
+    timeoutMs: 120000,
     body: JSON.stringify(req),
   })
 }
@@ -45,6 +46,7 @@ export function fetchRecommendations(
 ): Promise<RecommendResponse> {
   return apiRequest<RecommendResponse>('/recommend', {
     method: 'POST',
+    timeoutMs: 20000,
     body: JSON.stringify(req),
   })
 }

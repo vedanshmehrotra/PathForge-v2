@@ -57,13 +57,22 @@ def prepare_problem_endpoint(req: PrepareRequest, request: Request):
         except ValueError as e:
             raise HTTPException(
                 status_code=404,
-                detail=f"This problem could not be prepared. Very recent or contest problems may not yet be available through the LeetCode GraphQL API. ({e})",
+                detail={"code": "PROBLEM_NOT_FOUND", "message": "Problem not found. Check its LeetCode ID or link."},
             )
-        except (GraphQLUnavailableError, GroundTruthError) as e:
+        except GraphQLUnavailableError:
             raise HTTPException(
                 status_code=502,
-                detail=f"This problem could not be prepared. Very recent or contest problems may not yet be available through the LeetCode GraphQL API. ({e})",
+                detail={"code": "PROBLEM_SOURCE_UNAVAILABLE", "message": "LeetCode could not be reached. Try preparing the problem later, or inspect your code on its own."},
             )
+        except GroundTruthError as e:
+            message = ("The generated approach information could not be validated. Nothing was saved for comparison. You can retry preparation or inspect your code on its own."
+                       if e.code == "PREPARATION_INVALID_OUTPUT" else str(e))
+            detail = {"code": e.code, "message": message}
+            headers = None
+            if e.retry_after is not None:
+                detail["retry_after"] = e.retry_after
+                headers = {"Retry-After": str(e.retry_after)}
+            raise HTTPException(status_code=502, detail=detail, headers=headers)
 
         return PrepareResponse(
             leetcode_id=ctx.leetcode_id,

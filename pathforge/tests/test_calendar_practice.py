@@ -53,7 +53,7 @@ def test_specific_return_follow_up_and_variety_have_factual_anchors():
 
 
 def test_broad_array_overlap_cannot_be_a_targeted_follow_up():
-    out = plan([event(1)], bank=BANK[:2])
+    out = plan([event(1)], bank=BANK[:2], difficulty="Medium")
     assert out["recommendations"][0]["problem_id"] == "198"
     assert out["recommendations"][0]["practice_kind"] == "explore"
     assert "reason_evidence" not in out["recommendations"][0]
@@ -113,7 +113,7 @@ def test_empty_saturated_skipped_and_filter_states_are_distinct():
     assert plan([event(1)], bank=BANK[:1])["state"] == "caught_up"
     assert plan(difficulty="Hard")["state"] == "no_candidates"
     out = plan([event(p["id"], i * 10) for i, p in enumerate(BANK)])
-    assert len(out["recommendations"]) == 3
+    assert len(out["recommendations"]) == 1  # At most one old problem per slate.
     assert all(r["practice_kind"] == "revisit" for r in out["recommendations"])
     assert "1" not in {r["problem_id"] for r in out["recommendations"]}
 
@@ -151,7 +151,7 @@ def test_calendar_service_reads_dates_only_for_verified_owner_and_never_writes()
             out = service.get_recommendations(7, mode="practice", policy=POLICY)
         assert out["recommendations"][0]["problem_id"] == "35"
         assert out["recommendations"][1]["problem_id"] == "567"
-        sql, params = connection.execute.call_args.args
+        sql, params = connection.execute.call_args_list[0].args
         assert "submitted_at" in sql and "WHERE user_id = %s" in sql
         assert params == (7, 1001)
         connection.close.assert_called_once()
@@ -165,7 +165,7 @@ def test_calendar_route_preserves_identity_and_serializes_actual_service_result(
             out = route.recommend_endpoint(route.RecommendRequest(user_id=999, mode="practice", policy=POLICY), Mock())
     wire = json.loads(json.dumps(out))
     assert wire["policy"] == POLICY and wire["user_id"] == 7
-    sql, params = connection.execute.call_args.args
+    sql, params = connection.execute.call_args_list[0].args
     assert "submitted_at" in sql and params == (7, 1001)
     assert "verdict" not in sql and "elo" not in sql
     assert wire["summary"]["primary_weak_patterns"] == []
@@ -201,7 +201,7 @@ def test_date_deduplication_uses_utc_and_revisit_cites_last_attempt():
 
 
 def test_unknown_time_for_a_url_prevents_borrowing_its_older_valid_date():
-    out = plan([{**event(1), "submitted_at": None}, event(1, 30)], bank=BANK[:2])
+    out = plan([{**event(1), "submitted_at": None}, event(1, 30)], bank=BANK[:2], difficulty="Medium")
     assert out["recommendations"][0]["practice_kind"] == "explore"
 
 
@@ -258,6 +258,9 @@ def test_actual_catalog_loader_needs_no_ground_truth_and_never_invents_absent_pr
             if "from problems" in normalized:
                 return SimpleNamespace(fetchall=lambda: deepcopy(bank))
             if "from submissions" in normalized:
+                if "count(*)" in normalized:
+                    assert params == (7,)
+                    return SimpleNamespace(fetchone=lambda: {"code_only_submissions": 0})
                 assert params == (7, 1001) and "submitted_at" in normalized
                 return SimpleNamespace(fetchall=lambda: [event(704)])
             raise AssertionError(f"Unexpected query: {normalized}")
@@ -284,7 +287,7 @@ def test_actual_catalog_loader_needs_no_ground_truth_and_never_invents_absent_pr
             assert len(targets) == 1 and targets[0]["practice_kind"] == "follow_up"
         else:
             assert targets == []
-        assert len(queries) == 3  # user + catalog + history, with no ground-truth lookup
+        assert len(queries) == 4  # user + catalog + distinct history + code-only count; no GT lookup
         connection.commit.assert_not_called()
         connection.close.assert_called_once()
         forbidden.assert_not_called()

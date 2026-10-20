@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
@@ -18,6 +19,9 @@ interface AuthContextValue {
   session: Session | null
   profile: UserProfile | null
   loading: boolean
+  profileLoading?: boolean
+  profileError?: string | null
+  retryProfile?: () => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -34,59 +38,88 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const profileRequest = useRef(0)
+  const currentSession = useRef<Session | null>(null)
 
   const syncToken = useCallback((accessToken: string | null) => {
     setAccessToken(accessToken)
   }, [])
 
   const loadProfile = useCallback(async () => {
+    if (!currentSession.current) return
+    const request = ++profileRequest.current
+    setProfileLoading(true)
+    setProfileError(null)
     try {
       const p = await fetchMe()
-      setProfile(p)
-    } catch (err) {
-      console.error('[AuthProvider] loadProfile failed:', err)
-      setProfile(null)
+      if (request === profileRequest.current) setProfile(p)
+    } catch {
+      if (request === profileRequest.current) {
+        setProfile(null)
+        setProfileError('Your account could not be loaded. Please retry.')
+      }
+    } finally {
+      if (request === profileRequest.current) setProfileLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s)
-      setUser(s?.user ?? null)
-      syncToken(s?.access_token ?? null)
-      if (s?.access_token) {
-        loadProfile()
+    let active = true
+    let receivedAuthEvent = false
+    const applySession = (s: Session | null) => {
+      if (!active) return
+      if (currentSession.current?.user.id !== s?.user.id) {
+        ++profileRequest.current
+        setProfile(null)
+        setProfileError(null)
       }
-      setLoading(false)
-    })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, s) => {
+      currentSession.current = s
       setSession(s)
       setUser(s?.user ?? null)
       syncToken(s?.access_token ?? null)
       if (s?.access_token) {
         loadProfile()
       } else {
+        ++profileRequest.current
         setProfile(null)
+        setProfileLoading(false)
+        setProfileError(null)
       }
+      setLoading(false)
+    }
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      if (!receivedAuthEvent) applySession(s)
+    }).catch(() => {
+      if (active && !receivedAuthEvent) setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, s) => {
+      receivedAuthEvent = true
+      applySession(s)
+    })
+
+    return () => { active = false; ++profileRequest.current; subscription.unsubscribe() }
   }, [syncToken, loadProfile])
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
+    ++profileRequest.current
+    currentSession.current = null
     setUser(null)
     setSession(null)
     setProfile(null)
+    setProfileLoading(false)
+    setProfileError(null)
     syncToken(null)
   }, [syncToken])
 
   return (
     <AuthContext.Provider
-      value={{ user, session, profile, loading, signOut }}
+      value={{ user, session, profile, loading, profileLoading, profileError, retryProfile: loadProfile, signOut }}
     >
       {children}
     </AuthContext.Provider>

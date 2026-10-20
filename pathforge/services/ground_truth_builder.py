@@ -13,12 +13,17 @@ from pathforge.ast_analysis import authority_vocabulary as authority
 
 logger = logging.getLogger(__name__)
 from pathforge.db.profile_manager import iso_now
-from pathforge.llm.openrouter_client import call_llm
+from pathforge.llm.openrouter_client import generate_ground_truth as call_llm, LLMPreparationError
 from pathforge.services.approach_descriptions import normalize_description, description_record
 
 
 class GroundTruthError(Exception):
     """Raised when ground truth generation fails (LLM unavailable, bad response, etc.)."""
+
+    def __init__(self, message, *, code="PREPARATION_INVALID_OUTPUT", retry_after=None):
+        super().__init__(message)
+        self.code = code
+        self.retry_after = retry_after
 
 
 # ============================================================
@@ -509,7 +514,10 @@ def build_ground_truth(problem_id: int, problem_description: str, connection) ->
     Returns the canonical pattern list (legacy format) for backward compatibility.
     Also stores structured solution groups in the database.
     """
-    raw = call_llm(problem_description)
+    try:
+        raw = call_llm(problem_description)
+    except LLMPreparationError as exc:
+        raise GroundTruthError(str(exc), code=exc.code, retry_after=exc.retry_after) from exc
     canonical, filtered_confidence, approaches = normalize_ground_truth_response(raw)
     _store_ground_truth(connection, problem_id, canonical, filtered_confidence, approaches,
                         source_sha256=hashlib.sha256(problem_description.encode("utf-8")).hexdigest())
@@ -523,6 +531,25 @@ def normalize_ground_truth_response(raw) -> tuple[list[str], dict, list]:
         raise GroundTruthError(
             "Ground truth generation failed: OpenRouter/LLM unavailable or returned no valid output"
         )
+
+    # Generation v3 has one source of requirements. Storage and cached v1/v2
+    # contracts stay unchanged; contradictory old envelopes still fail below.
+    if isinstance(raw, dict) and type(raw.get("approach_contract_version")) is int and raw["approach_contract_version"] == 3:
+        if "patterns" in raw or "confidence" in raw:
+            raise GroundTruthError("Ground truth generation failed: v3 requirements belong inside approaches only")
+        envelope = {**raw, "approach_contract_version": 2, "patterns": [], "confidence": {}}
+        _validate_generated_response(envelope)
+        if not envelope.get("approaches"):
+            raise GroundTruthError("Ground truth generation failed: approaches are missing")
+        approaches = _normalize_approaches(envelope["approaches"], {})
+        canonical = sorted({p for a in approaches for p in a["patterns"]})
+        # Confidence is observational. A compatibility summary cannot exceed
+        # any explicitly supplied score for the same component.
+        scores = {}
+        for approach in approaches:
+            for pattern, score in approach.get("confidence", {}).items():
+                scores[pattern] = min(score, scores.get(pattern, score))
+        return canonical, scores, approaches
 
     _validate_generated_response(raw)
     patterns = raw.get("patterns", [])

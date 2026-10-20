@@ -27,6 +27,7 @@ def practice_service(history=(), problems=PROBLEMS):
         from pathforge.api.services import recommend_service as service
         connection = Mock()
         connection.execute.return_value.fetchall.return_value = list(history)
+        connection.execute.return_value.fetchone.return_value = {"code_only_submissions": 0}
         stack.enter_context(patch.object(service, "get_connection", return_value=connection))
         stack.enter_context(patch.object(service, "load_user_info", return_value={"id": 7}))
         stack.enter_context(patch.object(service, "load_problem_bank", return_value=problems))

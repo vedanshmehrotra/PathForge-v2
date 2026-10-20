@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional
 def load_problem_bank(connection) -> List[Dict[str, Any]]:
     rows = connection.execute(
         """
-        SELECT id, title, difficulty, topics, pattern, link, acceptance_rate, category
+        SELECT id, title, difficulty, topics, pattern, link, acceptance_rate, category, premium_only
         FROM problems
         ORDER BY id ASC
         """

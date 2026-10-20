@@ -36,13 +36,14 @@ export function practiceKindLabel(response: RecommendResponse | null, item: Reco
   if (item.practice_kind === 'explore') return 'Try something different'
   if (response?.policy !== 'calendar_practice_v2') return null
   if (item.practice_kind === 'related_return') return 'Return to a topic'
-  if (item.practice_kind === 'follow_up') return 'Continue a topic'
+  if (item.practice_kind === 'follow_up') return 'A related topic'
   if (item.practice_kind === 'starter') return 'A place to start'
   return null
 }
 
 export function practiceEmptyMessage(state: RecommendResponse['state']) {
-  if (state === 'session_exhausted') return 'You have skipped the available choices for this session. Reset skips or try another difficulty.'
+  if (state === 'session_exhausted') return 'You have skipped the available choices. Reset skips or try another difficulty.'
+  if (state === 'difficulty_limited') return 'No choices at your current difficulty are available. Choose another difficulty or bring a problem of your own.'
   if (state === 'caught_up') return 'No more eligible choices right now. Try another difficulty or bring a problem of your own.'
   return 'No practice suggestions are available from the current problem bank for this difficulty.'
 }

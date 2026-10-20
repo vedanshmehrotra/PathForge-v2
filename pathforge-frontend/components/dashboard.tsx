@@ -5,6 +5,7 @@ import { ArrowRight, Braces, Compass, Layers2, Route } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useAuthProfile, useRecommendations } from '@/hooks/useApi'
 import { useAuth } from '@/auth/AuthProvider'
+import { usePracticeSkips } from '@/hooks/usePracticeSkips'
 import { relativeTime } from '@/lib/utils'
 import { RecommendationLink } from '@/components/recommendation-link'
 import { practiceKindLabel, practiceReason, uniqueRecommendations } from '@/services/recommendations'
@@ -82,9 +83,10 @@ export function DashboardView() {
 }
 
 export function RecommendedPreview() {
-  const { profile } = useAuth()
-  const { data, loading, error, refresh } = useRecommendations(profile?.user_id ?? 0)
-  const items = uniqueRecommendations(data?.recommendations ?? []).slice(0, 2)
+  const { profile, loading: authLoading, profileLoading, profileError, retryProfile } = useAuth()
+  const skips = usePracticeSkips(profile?.user_id ?? 0)
+  const { data, loading, error, refresh } = useRecommendations(skips.ready ? profile?.user_id ?? 0 : 0, undefined, skips.excludedIds)
+  const items = uniqueRecommendations(data?.recommendations ?? [])
 
   return (
     <section className="min-w-0" aria-labelledby="practice-heading">
@@ -93,7 +95,10 @@ export function RecommendedPreview() {
         <Link href="/recommendations" className="text-link">Browse practice <ArrowRight className="size-3.5" /></Link>
       </div>
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">A mix from your recorded practice and the current bank, without a skill diagnosis.</p>
-      {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading practice suggestions...</p> : error ? (
+      {authLoading || profileLoading || !skips.ready ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading your account...</p> : !profile ? (
+        <div className="mt-5"><p role="alert">{profileError ?? 'Your account is unavailable.'}</p>
+          <button type="button" onClick={retryProfile} className="text-link mt-3">Retry account</button></div>
+      ) : loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading practice suggestions...</p> : error ? (
         <div className="mt-5">
           <p role="alert" className="text-sm">Could not load practice suggestions. {error}</p>
           <button type="button" onClick={refresh} className="text-link mt-3">Retry</button>

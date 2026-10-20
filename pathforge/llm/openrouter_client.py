@@ -16,18 +16,36 @@ MAX_RETRIES = 2
 RETRY_DELAY = 1.0
 
 
-def call_llm(problem_text: str) -> dict | None:
+class LLMPreparationError(Exception):
+    """Sanitized provider failure; never expose response bodies or credentials."""
+
+    def __init__(self, message, code="PREPARATION_UNAVAILABLE", retry_after=None):
+        super().__init__(message)
+        self.code, self.retry_after = code, retry_after
+
+
+def generate_ground_truth(problem_text: str) -> dict:
+    """Strict preparation entry point; legacy call_llm keeps its None fallback."""
+    return call_llm(problem_text, raise_on_error=True)
+
+
+def call_llm(problem_text: str, *, raise_on_error=False) -> dict | None:
+    def fail(message, code="PREPARATION_UNAVAILABLE", retry_after=None):
+        if raise_on_error:
+            raise LLMPreparationError(message, code, retry_after)
+        return None
+
     api_key = os.getenv(API_KEY_ENV)
     if not api_key:
-        return None
+        return fail("Problem preparation is unavailable because its provider is not configured.")
 
     model = os.getenv("OPENROUTER_MODEL", MODEL).strip()
     try:
         max_tokens = int(os.getenv("OPENROUTER_MAX_TOKENS", str(MAX_TOKENS)))
     except ValueError:
-        return None
+        return fail("Problem preparation has an invalid provider configuration.")
     if not model or max_tokens <= 0:
-        return None
+        return fail("Problem preparation has an invalid provider configuration.")
 
     prompt = _build_prompt(problem_text)
 
@@ -35,23 +53,36 @@ def call_llm(problem_text: str) -> dict | None:
         try:
             raw_body = _post_request(prompt, api_key, model=model, max_tokens=max_tokens)
             payload = json.loads(raw_body)
-        except (json.JSONDecodeError, urllib.error.URLError, urllib.error.HTTPError, OSError) as e:
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429:
+                value = exc.headers.get("Retry-After", "") if exc.headers else ""
+                retry_after = min(int(value), 3600) if value.isdigit() else None
+                return fail("Problem preparation is temporarily rate limited. Please try again later.",
+                            "PREPARATION_RATE_LIMITED", retry_after)
+            if exc.code not in (408, 500, 502, 503, 504):
+                return fail("The preparation provider could not accept the request.")
             if attempt < MAX_RETRIES:
                 time.sleep(RETRY_DELAY * (attempt + 1))
                 continue
-            return None
+            return fail("The preparation provider is temporarily unavailable. Please try again later.")
+        except (urllib.error.URLError, OSError):
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY * (attempt + 1))
+                continue
+            return fail("The preparation provider could not be reached. Please try again later.")
+        except json.JSONDecodeError:
+            return fail("The preparation provider returned an unreadable response.", "PREPARATION_INVALID_OUTPUT")
 
         content = _extract_content(payload)
         if content is None:
-            return None
+            return fail("The preparation provider did not return a complete answer.", "PREPARATION_INVALID_OUTPUT")
 
         parsed = _parse_llm_json(content)
         if parsed is not None:
             return parsed
 
-        if attempt < MAX_RETRIES:
-            time.sleep(RETRY_DELAY * (attempt + 1))
-            continue
+        # Repeating an invalid paid completion is not a recovery strategy.
+        return fail("The preparation provider returned an invalid answer.", "PREPARATION_INVALID_OUTPUT")
 
     return None
 
@@ -65,17 +96,16 @@ def _build_prompt(problem_text: str) -> str:
         "Do not force an unsupported approach into the vocabulary or claim exhaustive coverage. "
         "Return ONLY valid JSON with no markdown, no explanation.\n\n"
         "Output format:\n"
-        '{"approach_contract_version": 2, "patterns": ["pattern_1", "pattern_2"], "confidence": {"pattern_1": 0.9}, '
-        '"approaches": [{"name": "One combined approach", "patterns": ["pattern_1", "pattern_2"], '
+        '{"approach_contract_version": 3, "approaches": [{"name": "One combined approach", "patterns": ["pattern_1", "pattern_2"], '
         '"confidence": {"pattern_1": 0.9, "pattern_2": 0.8}}]}\n\n'
-        "The top-level patterns must be the union of all approach patterns. "
+        "Put patterns and confidence inside approaches only; do not repeat them at the top level. "
         "Include one or more approaches; retain all required components within each. "
         "For an approach that cannot be COMPLETELY represented by these pattern names, retain it as "
         '{"name": "Approach name", "description": "How this approach works", "patterns": [], '
         '"comparison_support": "UNSUPPORTED", "coverage_limit": "Which essential components cannot be represented"}. '
         "Keep these descriptive alternatives alongside supported approaches. Do not drop unsupported components "
-        "to make a partly representable approach appear complete. If all approaches are descriptive, top-level "
-        "patterns and confidence are empty but approaches is nonempty. Empty or malformed output is a failure. "
+        "to make a partly representable approach appear complete. Approaches must be nonempty even when all "
+        "are descriptive. Empty or malformed output is a failure. "
         "These are unverified proposals, not correctness, optimality or skill judgments. Exhaustive enumeration "
         "can be appropriate when all combinations are the required output. Ordinary bracket stacks are not "
         "monotonic stacks, and nesting-depth counters are not fixed windows. Prefix products are not additive "
@@ -141,9 +171,10 @@ def _parse_llm_json(content: str) -> dict | None:
 
     if not isinstance(data, dict):
         return None
-    if "patterns" not in data or not isinstance(data["patterns"], list):
+    if data.get("approach_contract_version") == 3:
+        if not isinstance(data.get("approaches"), list):
+            return None
+    elif "patterns" not in data or not isinstance(data["patterns"], list):
         return None
-    if "confidence" in data and not isinstance(data["confidence"], dict):
-        data["confidence"] = {}
 
     return data

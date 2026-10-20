@@ -52,17 +52,31 @@ def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
 
         problems = load_problem_bank(connection)
         if mode == "practice":
-            columns = "problem_id, submitted_at" if policy == CALENDAR_POLICY else "problem_id"
+            if policy == CALENDAR_POLICY:
+                # Deduplicate BEFORE limiting. Repeated analyses of one problem
+                # must not evict another recently recorded problem from history.
+                history = connection.execute(
+                    """SELECT problem_id, submitted_at FROM (
+                       SELECT DISTINCT ON (problem_id) problem_id, submitted_at, id
+                       FROM submissions WHERE user_id = %s AND problem_id IS NOT NULL
+                       ORDER BY problem_id, id DESC
+                       ) recent ORDER BY id DESC LIMIT %s""", (user_id, HISTORY_LIMIT + 1),
+                ).fetchall()
+                code_only = connection.execute(
+                    """SELECT COUNT(*) AS code_only_submissions FROM submissions
+                       WHERE user_id = %s AND problem_id IS NULL""", (user_id,),
+                ).fetchone()
+                result = recommend_calendar_practice(
+                    problems, [dict(row) for row in history], now=datetime.now(timezone.utc),
+                    difficulty=difficulty, excluded_ids=excluded_ids)
+                result["history"]["scope"] = "latest_recorded_problems"
+                result["history"]["code_only_submissions"] = int(code_only["code_only_submissions"])
+                return {"user_id": user_id, **result}
             history = connection.execute(
-                f"""SELECT {columns} FROM submissions
+                """SELECT problem_id FROM submissions
                    WHERE user_id = %s AND problem_id IS NOT NULL
                    ORDER BY id DESC LIMIT %s""", (user_id, HISTORY_LIMIT + 1),
             ).fetchall()
-            if policy == CALENDAR_POLICY:
-                return {"user_id": user_id, **recommend_calendar_practice(
-                    problems, [dict(row) for row in history], now=datetime.now(timezone.utc),
-                    difficulty=difficulty, excluded_ids=excluded_ids,
-                )}
             return {"user_id": user_id, **recommend_practice(
                 problems, [dict(row) for row in history],
                 difficulty=difficulty, excluded_ids=excluded_ids,

@@ -48,7 +48,7 @@ export function AnalysisView() {
   const handlePrepare = () => {
     setCodeOnlyRequested(false)
     const val = problemInput.trim()
-    if (val) prep.run(val)
+    if (val && !prep.loading) prep.run(val)
   }
   const detectedPatterns = result?.ast?.detected_patterns as Array<{
     pattern_id?: string; name?: string; category?: string; confidence?: number; nodes?: number
@@ -98,9 +98,9 @@ export function AnalysisView() {
         <p id="preparation-status" role="status" className="mt-2 text-sm text-muted-foreground">
           {comparisonUnsupported ? 'Approach comparison is not supported for this problem. Choose code-only inspection to continue without comparison or skill updates.' : needsPreparation && !prep.loading ? 'Prepare the entered problem before running analysis, or clear it for analysis without a problem.' : prep.result ? 'Problem prepared. You can now compare approach evidence.' : ''}
         </p>
-        {prep.error && !comparisonUnsupported && <p role="alert" className="mt-3 text-sm text-destructive">{prep.error} Review the problem ID and prepare again explicitly.</p>}
+        {prep.error && !comparisonUnsupported && <p role="alert" className="mt-3 text-sm text-destructive">{prep.error}</p>}
         {currentError && !codeOnlyRequested && <p role="alert" className="mt-3 text-sm text-destructive">{currentError} Review the message before retrying.</p>}
-        {comparisonUnsupported && <div className="mt-3 space-y-3">
+        {(comparisonUnsupported || !!prep.error) && <div className="mt-3 space-y-3">
           <ApproachDescriptions approaches={prep.unsupported ?? undefined} />
           <button type="button" className="action-secondary" onClick={() => {
             prep.clear()

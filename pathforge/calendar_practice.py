@@ -3,40 +3,56 @@
 from collections import Counter
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
+import json
 
 from pathforge.practice_recommendations import DIFFICULTIES, HISTORY_LIMIT, _identity, _topics
 from pathforge.recommendation_links import problem_url
 
 POLICY = "calendar_practice_v2"
 RETURN_INTERVAL = timedelta(days=7)
-# A shared container/type alone is too broad to label a targeted follow-up.
-# These tags still contribute to general variety, never to mastery estimates.
-BROAD_TOPICS = frozenset({"array", "arrays", "string", "strings", "matrix", "matrices",
-                          "linked list", "linked lists", "tree", "trees", "binary tree",
-                          "binary trees", "graph", "graphs"})
+# Only recognized algorithm topics can justify a targeted link. Broad source
+# tags (including Math/Hash Table) and unknown metadata remain general choices.
+TARGET_TOPICS = frozenset({"binary search", "sliding window", "two pointers", "stack",
+    "monotonic stack", "monotonic queue", "dynamic programming", "backtracking",
+    "depth-first search", "breadth-first search", "union find", "trie", "prefix sum",
+    "heap (priority queue)", "shortest path", "topological sort", "segment tree",
+    "binary indexed tree", "divide and conquer", "bit manipulation", "greedy"})
+
+
+def _source_topics(value):
+    if isinstance(value, str) and value.lstrip().startswith("["):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            return ()
+    return _topics(value)
 
 
 def _catalog(rows):
-    aliases, identities, conflicts = {}, {}, set()
+    aliases, identities, conflicts, paid_urls = {}, {}, set(), set()
     for row in rows:
         if not isinstance(row, Mapping):
             continue
         pid, url = _identity(row.get("id")), problem_url(row.get("link"))
         if not pid or not url:
             continue
+        if row.get("premium_only") is True:
+            paid_urls.add(url)
         if pid in identities and identities[pid] != url:
             conflicts.add(pid)
         identities[pid] = url
         title, difficulty = row.get("title"), row.get("difficulty")
         if not isinstance(title, str) or not title.strip() or difficulty not in DIFFICULTIES:
             continue
-        tags = {t.casefold(): t for t in sorted(_topics(row.get("topics")))}
+        tags = {t.casefold(): t for t in sorted(_source_topics(row.get("topics")))}
         aliases.setdefault(url, []).append((pid, title.strip(), difficulty, tags))
 
     items, mapping = {}, {}
     for url, definitions in aliases.items():
+        if url in paid_urls:
+            continue
         definitions = [d for d in definitions if d[0] not in conflicts]
-        signatures = {(d[1], d[2], tuple(sorted(d[3]))) for d in definitions}
+        signatures = {(d[1].casefold(), d[2], tuple(sorted(d[3]))) for d in definitions}
         if len(signatures) != 1:
             continue
         pid, title, difficulty, tags = min(definitions, key=lambda d: d[0])
@@ -64,7 +80,7 @@ def _timestamp(value, now):
 def recommend_calendar_practice(problems, history, *, now, difficulty=None, excluded_ids=()):
     """Newest-first bounded history; no writes, online inference or outcome labels.
 
-    O(N*T + H log H + H*T + 3*N*T), with at most 1,000 history rows.
+    O(N*T + H log H + H*T + 3*N*T), with at most 1,000 distinct problems.
     Dates/day deduplication use UTC. Seven elapsed days is a scheduling heuristic.
     """
     if not isinstance(history, list):
@@ -76,7 +92,7 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
     now = now.astimezone(timezone.utc)
     items, mapping = _catalog(problems)
     tags = {url: {t.casefold() for t in item["topics"]} for url, item in items.items()}
-    specific = {url: values - BROAD_TOPICS for url, values in tags.items()}
+    specific = {url: values & TARGET_TOPICS for url, values in tags.items()}
     seen, dated, invalid_urls = set(), {}, set()
     invalid, unmapped, first_url = 0, 0, None
     for row in history[:HISTORY_LIMIT]:
@@ -94,7 +110,8 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
         key = (url, timestamp.date())
         dated[key] = max(timestamp, dated.get(key, timestamp))
 
-    ordered = sorted(((stamp, url) for (url, _), stamp in dated.items()), reverse=True)
+    # Python's stable sort retains newest-first input order for equal times.
+    ordered = sorted(((stamp, url) for (url, _), stamp in dated.items()), key=lambda row: row[0], reverse=True)
     latest = first_url if invalid else ordered[0][1] if ordered else first_url
     last_problem, last_topic, exposure = {}, {}, Counter()
     unknown_topics = set().union(*(tags[url] for url in invalid_urls)) if invalid_urls else set()
@@ -105,15 +122,15 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
             exposure[tag] += 1 / len(tags[url])
 
     exclusions = {mapping.get(_identity(pid)) for pid in excluded_ids}
-    matching = [p for p in items.values() if difficulty is None or p["difficulty"] == difficulty]
+    preferred = items[latest]["difficulty"] if latest and latest not in invalid_urls else "Easy"
+    matching = [p for p in items.values() if (p["difficulty"] == difficulty if difficulty else
+                DIFFICULTIES.index(p["difficulty"]) <= DIFFICULTIES.index(preferred))]
     available = [p for p in matching if p["problem_url"] not in exclusions]
     fresh = [p for p in available if p["problem_url"] not in seen]
-    revisits = sorted((p for p in available if p["problem_url"] != latest
-                       and p["problem_url"] not in invalid_urls
+    revisits = sorted((p for p in available if p["problem_url"] not in invalid_urls
                        and p["problem_url"] in last_problem
                        and now - last_problem[p["problem_url"]] >= RETURN_INTERVAL),
                       key=lambda p: (last_problem[p["problem_url"]], p["problem_url"]))
-    preferred = items[latest]["difficulty"] if latest and latest not in invalid_urls else "Easy"
     selected, selected_topics = [], Counter()
 
     def rank(item):
@@ -121,7 +138,7 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
         level = DIFFICULTIES.index(item["difficulty"])
         target = DIFFICULTIES.index(preferred)
         distance = (abs(level-target), level > target)
-        return (sum(selected_topics[t] for t in values), distance,
+        return (not bool(values), sum(selected_topics[t] for t in values), distance,
                 sum(exposure[t] for t in values) / max(1, len(values)), item["problem_url"])
 
     def add(item, kind, anchor=None, shared=()):
@@ -149,13 +166,19 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
             revisits.remove(item)
 
     # Use the actual latest exposure to a specific tag, not an arbitrary old event.
-    due = sorted((stamp, url, tag) for tag, (stamp, url) in last_topic.items()
-                 if tag not in BROAD_TOPICS and tag not in unknown_topics and now-stamp >= RETURN_INTERVAL)
-    for stamp, url, tag in due:
-        related = [p for p in fresh if tag in specific[p["problem_url"]]]
-        if related:
-            add(min(related, key=rank), "related_return", (stamp, url), {tag})
-            break
+    due = {tag: (stamp, url) for tag, (stamp, url) in last_topic.items()
+           if tag in TARGET_TOPICS and tag not in unknown_topics and now-stamp >= RETURN_INTERVAL}
+    # Scan candidates once, rather than once per stale tag.
+    returns = []
+    for item in fresh:
+        shared = specific[item["problem_url"]] & due.keys()
+        if shared:
+            tag = min(shared, key=lambda tag: (*due[tag], tag))
+            stamp, url = due[tag]
+            returns.append((stamp, url, tag, item))
+    if returns:
+        stamp, url, tag, item = min(returns, key=lambda r: (r[0], r[1], r[2], rank(r[3])))
+        add(item, "related_return", (stamp, url), {tag})
     else:
         if revisits:
             item = revisits[0]
@@ -168,13 +191,18 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
             add(item, "follow_up", (last_problem[latest], latest), specific[item["problem_url"]] & specific[latest])
     while fresh and len(selected) < 3:
         add(min(fresh, key=rank), "explore" if history else "starter")
-    while revisits and len(selected) < 3:
+    if revisits and len(selected) < 3 and not any(r["practice_kind"] == "revisit" for r in selected):
         item = revisits[0]
         add(item, "revisit", (last_problem[item["problem_url"]], item["problem_url"]))
 
-    state = ("available" if selected else "no_candidates" if not matching else
-             "session_exhausted" if not available else "caught_up")
+    eligible_before_skips = [p for p in matching if p["problem_url"] not in seen or (
+        p["problem_url"] not in invalid_urls and p["problem_url"] in last_problem
+        and now-last_problem[p["problem_url"]] >= RETURN_INTERVAL)]
+    state = ("available" if selected else "difficulty_limited" if items and not matching and difficulty is None else
+             "no_candidates" if not matching else "session_exhausted" if eligible_before_skips else "caught_up")
     return {"policy": POLICY, "state": state, "recommendations": selected,
+            "context": {"latest_problem_id": items[latest]["problem_id"] if latest else None,
+                        "default_max_difficulty": preferred if difficulty is None else None},
             "history": {"scope": "latest_recorded_submissions", "limit": HISTORY_LIMIT,
                         "truncated": len(history) > HISTORY_LIMIT, "mapped_problems": len(seen),
                         "unmapped_submissions": unmapped, "invalid_timestamps": invalid,
