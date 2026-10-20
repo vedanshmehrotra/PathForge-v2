@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathForge</title>
+  <link rel="stylesheet" href="panel.css">
+  <script src="leetcode.js" defer></script>
+  <script src="panel.js" defer></script>
+</head>
+<body>
+<main>
+  <header class="toolbar">
+    <span class="wordmark"><span class="brand-mark" aria-hidden="true">⌁</span> PathForge</span>
+    <button id="settings-toggle" class="icon-button" type="button" aria-label="Account settings" aria-expanded="false" aria-controls="settings" title="Account settings" disabled>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1-2 3 2 3 1 3 3 1 3 2 3-2 3-1 1-3 2-3-2-3-3-1-1-3Z"/><circle cx="12" cy="11" r="3"/></svg>
+    </button>
+  </header>
+  <section id="settings" class="settings hidden" aria-label="Account settings">
+    <span id="account-email"></span>
+    <div><button id="reconnect" class="text-button" type="button">Reconnect</button><button id="disconnect" class="text-button" type="button">Disconnect</button></div>
+  </section>
+
+  <p id="boot-status" class="boot-status" role="status">Opening PathForge…</p>
+  <section id="setup" class="setup hidden">
+    <div class="setup-symbol" aria-hidden="true">⌁</div>
+    <h1>Connect once. Keep practising.</h1>
+    <p class="muted">Sign in on PathForge in this Chrome window, then connect your account.</p>
+    <button id="open-app" class="button secondary" type="button">Open PathForge</button>
+    <button id="connect-account" class="button primary" type="button">Connect account</button>
+    <p class="fine">Next time, your solution is read straight from LeetCode.</p>
+  </section>
+
+  <div id="workspace" class="hidden">
+    <div class="problem-bar">
+      <div class="problem-name"><h1 id="problem-title">Your solution</h1><span id="difficulty" class="difficulty"></span></div>
+      <button id="recheck" class="icon-button" type="button" aria-label="Recheck current solution" title="Read your updated code"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg></button>
+    </div>
+
+    <section id="activity" class="activity" role="status" aria-live="polite">
+      <div class="signal" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p id="activity-title">Reading your solution</p><p id="activity-help" class="muted"></p>
+    </section>
+    <button id="inspect-anyway" class="text-button hidden" type="button">Inspect code without problem comparison</button>
+    <button id="retry-analysis" class="text-button hidden" type="button">Retry analysis</button>
+
+    <section id="analysis-result" class="result hidden" aria-label="Analysis observations" aria-live="polite">
+      <div id="verdict" class="verdict"><span id="verdict-icon" aria-hidden="true"></span><span id="verdict-label"></span></div>
+      <p id="verdict-note" class="fine"></p>
+      <div id="level-feedback" class="level-feedback hidden" role="status" aria-live="polite"></div>
+      <h2>Your approach</h2>
+      <div id="detected-patterns" class="pattern-pills"></div>
+      <div id="comparison" class="comparison"></div>
+    </section>
+
+    <section id="next-practice" class="next-practice hidden" aria-live="polite">
+      <h2 id="recommendation-title">Next practice</h2>
+      <div id="recommendations" class="recommendations"></div>
+      <button id="retry-recommendations" class="text-button hidden" type="button">Retry suggestions</button>
+    </section>
+
+    <section id="problem-picker" class="problem-picker hidden">
+      <label for="manual-problem">Problem URL or slug</label>
+      <div class="picker-row"><input id="manual-problem" autocomplete="off" placeholder="two-sum"><button id="open-problem" class="button secondary" type="button">Open</button></div>
+    </section>
+    <footer><span id="saved-note"></span><a id="progress-link" href="https://path-forge-v2.vercel.app/progress" target="_blank" rel="noopener noreferrer">More on PathForge ↗</a></footer>
+  </div>
+  <p id="message" class="message" role="alert" aria-live="polite"></p>
+</main>
+</body>
+</html>

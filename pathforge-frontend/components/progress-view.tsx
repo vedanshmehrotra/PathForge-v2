@@ -15,13 +15,17 @@ export function ProgressView() {
   const [selected, setSelected] = useState<string | null>(null)
   const [chosen, setChosen] = useState<string[] | null>(null)
   const [query, setQuery] = useState('')
-  const topics = new Map((history.data?.profiles ?? []).map(p => [p.topic, p]))
+  const records = history.data?.practice_records ?? history.data?.profiles ?? []
+  const topics = new Map(records.map(p => [p.topic, p]))
+  const scoredTopics = new Map((history.data?.profiles ?? []).map(p => [p.topic, p]))
   const patterns = [...new Set([...Object.keys(elo.data?.pattern_elo ?? {}), ...topics.keys()])].sort()
   const active = selected && patterns.includes(selected) ? selected : patterns[0]
   const included = (chosen ?? patterns.slice(0, 3)).filter(id => patterns.includes(id))
   const filtered = patterns.filter(id => id.replace(/_/g, ' ').toLowerCase().includes(query.trim().toLowerCase()))
   const record = active ? topics.get(active) : undefined
   const rating = active ? elo.data?.pattern_elo[active] : undefined
+  const level = active ? elo.data?.pattern_levels?.[active] : undefined
+  const scoredRecord = active ? scoredTopics.get(active) : undefined
   const loading = elo.loading || history.loading
   const error = elo.error || history.error
   const toggle = (id: string) => {
@@ -54,12 +58,21 @@ export function ProgressView() {
         <div className="grid min-w-0 gap-8 border-y border-border py-6 lg:grid-cols-[1.5fr_1fr]">
           <section className="min-w-0" aria-labelledby="footprint-heading">
             <div className="flex items-center justify-between gap-3"><h2 id="footprint-heading" className="section-title flex items-center gap-2"><ChartNoAxesCombined className="size-4 text-mint" />Practice footprint</h2><span className="text-[11px] text-muted-foreground">Your selection</span></div>
-            <div className="pt-7"><PracticeFootprint records={history.data?.profiles ?? []} selected={included} /></div>
+            <div className="pt-7"><PracticeFootprint records={records} selected={included} /></div>
           </section>
           <section className="flex flex-col lg:border-l lg:border-border lg:pl-8" aria-labelledby="focus-heading" aria-live="polite">
             <p className="eyebrow text-amber"><Compass className="size-4" />Choose your own focus</p>
             <div key={active} className="detail-enter"><h2 id="focus-heading" className="mt-4 text-2xl font-semibold capitalize tracking-tight">{active.replace(/_/g, ' ')}</h2>
             <p className="mt-2 text-xs text-muted-foreground">{record?.last_attempt_at ? 'Last recorded ' + relativeTime(record.last_attempt_at) + '.' : 'A pattern in your saved practice record.'}</p></div>
+            <div className="mt-5" aria-label="Selected pattern level">
+              {level ? <>
+                <div className="flex items-baseline justify-between gap-3"><p className="text-lg font-semibold text-mint">Level {level.level}</p><span className="text-xs text-muted-foreground">{Math.floor(level.into_level)} / {level.points_per_level} XP</span></div>
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-secondary" role="progressbar" aria-valuemin={0} aria-valuemax={level.points_per_level} aria-valuenow={level.into_level} aria-label={`${active.replace(/_/g, ' ')} progress toward level ${level.level + 1}`}>
+                  <div className="h-full rounded-full bg-mint transition-[width] duration-700 motion-reduce:transition-none" style={{ width: `${level.progress_percent}%` }} />
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">{Math.ceil(level.points_per_level - level.into_level)} XP to level {level.level + 1}</p>
+              </> : <p className="text-xs text-muted-foreground">Practice recorded. A level appears after a scored comparison.</p>}
+            </div>
             <h3 className="mt-7 text-sm font-semibold">Try a different implementation</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Compare how two solutions express this pattern, including where the evidence is inconclusive.</p>
             <Link href="/analysis" className="action-primary mt-6 self-start">Inspect another solution <ArrowRight className="size-4" /></Link>
@@ -74,7 +87,7 @@ export function ProgressView() {
             {filtered.map(id => <button key={id} type="button" onClick={() => toggle(id)} aria-pressed={included.includes(id)}
               disabled={!included.includes(id) && included.length >= 4}
               className={cn('flex min-h-11 items-center gap-3 border-b border-border px-2 py-2 text-left text-xs capitalize transition-colors disabled:cursor-not-allowed disabled:opacity-45', included.includes(id) ? 'bg-secondary/40 text-foreground' : 'text-muted-foreground hover:bg-secondary/40')}>
-              <span className={cn('size-2 shrink-0 rounded-full', included.includes(id) ? 'bg-mint' : 'bg-muted-foreground/30')} />{id.replace(/_/g, ' ')}<span className="ml-auto text-base" aria-hidden="true">{included.includes(id) ? '−' : '+'}</span>
+              <span className={cn('size-2 shrink-0 rounded-full', included.includes(id) ? 'bg-mint' : 'bg-muted-foreground/30')} />{id.replace(/_/g, ' ')}{elo.data?.pattern_levels?.[id] && <span className="ml-auto whitespace-nowrap text-[10px] normal-case text-mint">Level {elo.data.pattern_levels[id].level}</span>}<span className="ml-auto text-base" aria-hidden="true">{included.includes(id) ? '−' : '+'}</span>
             </button>)}
           </div>
           {!filtered.length && <p role="status" className="mt-5 text-sm text-muted-foreground">No recorded topics match that search.</p>}
@@ -84,11 +97,12 @@ export function ProgressView() {
           <p className="mt-3 text-xs text-muted-foreground">Stored engine metrics are not a correctness grade or a proficiency certification.</p>
           <dl className="mt-4 grid grid-cols-2 gap-5 text-sm sm:grid-cols-4">
             <div><dt className="text-muted-foreground">Pattern Elo</dt><dd className="mt-1 font-mono">{rating === undefined ? 'Not recorded' : Math.round(rating)}</dd></div>
-            <div><dt className="text-muted-foreground">Pattern attempts</dt><dd className="mt-1 font-mono">{record?.attempt_count ?? 'Not recorded'}</dd></div>
-            <div><dt className="text-muted-foreground">Stored pass count</dt><dd className="mt-1 font-mono">{record?.pass_count ?? 'Not recorded'}</dd></div>
-            <div><dt className="text-muted-foreground">Stored accuracy</dt><dd className="mt-1 font-mono">{record && record.attempt_count > 0 ? Math.round(record.accuracy * 100) + '%' : 'Not recorded'}</dd></div>
+            <div><dt className="text-muted-foreground">Practice sessions</dt><dd className="mt-1 font-mono">{record?.attempt_count ?? 'Not recorded'}</dd></div>
+            <div><dt className="text-muted-foreground">Stored pass count</dt><dd className="mt-1 font-mono">{scoredRecord?.pass_count ?? 'Not recorded'}</dd></div>
+            <div><dt className="text-muted-foreground">Stored accuracy</dt><dd className="mt-1 font-mono">{scoredRecord && scoredRecord.attempt_count > 0 ? Math.round(scoredRecord.accuracy * 100) + '%' : 'Not recorded'}</dd></div>
           </dl>
           <p className="mt-4 text-xs text-muted-foreground">Rating history is not retained, so a progress-over-time chart is unavailable.</p>
+          <p className="mt-2 text-xs text-muted-foreground">Levels follow your current pattern Elo: 200 XP per level, starting at 400 Elo. XP and levels can rise or fall. Saved practice sessions include unscored analysis, counted once per problem per UTC day.</p>
         </details>
       </>}
     </div>

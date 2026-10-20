@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "PathForge Companion",
+  "version": "0.4.1",
+  "description": "Analyze LeetCode solutions with your existing PathForge account.",
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "permissions": ["storage", "scripting"],
+  "host_permissions": [
+    "https://leetcode.com/*",
+    "https://www.leetcode.com/*",
+    "https://path-forge-v2.vercel.app/*",
+    "https://pathforge-v2.onrender.com/*"
+  ],
+  "background": { "scripts": ["background.js"] },
+  "action": {
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" },
+    "default_title": "Open PathForge"
+  },
+  "sidebar_action": {
+    "default_title": "PathForge",
+    "default_panel": "panel.html",
+    "default_icon": "icons/icon32.png",
+    "open_at_install": false
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pathforge-companion@pathforge.local",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["authenticationInfo", "personallyIdentifyingInfo", "browsingActivity", "websiteContent"]
+      }
+    }
+  }
+}

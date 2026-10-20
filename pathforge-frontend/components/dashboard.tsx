@@ -17,7 +17,7 @@ export function DifficultyBadge({ difficulty }: { difficulty: 'Easy' | 'Medium' 
 
 export function DashboardView() {
   const { data, loading, error, refresh } = useAuthProfile()
-  const activity = [...(data?.profiles ?? [])]
+  const activity = [...(data?.practice_records ?? data?.profiles ?? [])]
     .filter(p => p.last_attempt_at || p.attempt_count > 0)
     .sort((a, b) => (b.last_attempt_at ?? '').localeCompare(a.last_attempt_at ?? ''))
     .slice(0, 5)
@@ -60,7 +60,7 @@ export function DashboardView() {
           {loading ? <p role="status" className="mt-5 text-sm text-muted-foreground">Loading your practice history...</p> : error ? (
             <div className="mt-5">
               <p role="alert" className="text-sm">Could not load practice history. {error}</p>
-              <button type="button" onClick={refresh} className="text-link mt-3">Retry history</button>
+              <button type="button" onClick={() => refresh()} className="text-link mt-3">Retry history</button>
             </div>
           ) : activity.length === 0 ? (
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground">

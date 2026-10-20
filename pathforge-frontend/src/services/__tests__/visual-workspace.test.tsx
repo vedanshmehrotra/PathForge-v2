@@ -17,8 +17,8 @@ const chart = (selected: string[], data = records) => renderToStaticMarkup(creat
 describe('an expressive workspace with truthful visuals', () => {
   it('only plots selected saved counts without a fabricated skill score or timeline', () => {
     const html = chart(['hash_map_lookup', 'binary_search_standard'])
-    expect(html).toContain('hash map lookup: 4 recorded attempts')
-    expect(html).toContain('binary search standard: 8 recorded attempts')
+    expect(html).toContain('hash map lookup: 4 recorded sessions')
+    expect(html).toContain('binary search standard: 8 recorded sessions')
     expect(html).not.toContain('sliding window fixed')
     expect(html).toContain('not a progress timeline')
     expect(html).not.toMatch(/mastery|role="progressbar"/)
@@ -28,11 +28,11 @@ describe('an expressive workspace with truthful visuals', () => {
   it('does not convert missing records or malformed counts into zeroes', () => {
     const html = chart(['missing', 'hash_map_lookup'], [{ topic: 'hash_map_lookup', attempt_count: Number.NaN }])
     expect(html).toContain('Attempt counts are not available')
-    expect(html).not.toContain('0 recorded attempts')
+    expect(html).not.toContain('0 recorded sessions')
   })
 
   it('keeps a genuine zero distinguishable from unavailable data', () => {
-    expect(chart(['hash_map_lookup'], [{ topic: 'hash_map_lookup', attempt_count: 0 }])).toContain('0 recorded attempts')
+    expect(chart(['hash_map_lookup'], [{ topic: 'hash_map_lookup', attempt_count: 0 }])).toContain('0 recorded sessions')
   })
 
   it('caps the chart at four unique topics', () => {

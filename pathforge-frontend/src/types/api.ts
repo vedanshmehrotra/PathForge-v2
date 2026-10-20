@@ -2,6 +2,11 @@ export interface AnalyzeRequest {
   user_id: number
   code: string
   language?: string
+  practice_event?: {
+    source: 'extension'
+    submission_id: string | null
+    submission_status?: 'accepted' | 'failed' | null
+  }
   problem?: {
     leetcode_id?: number
     title_slug?: string
@@ -61,6 +66,8 @@ export interface EloUpdate {
   elo_before: number
   elo_after: number
   delta: number
+  level_before?: PatternLevel
+  level_after?: PatternLevel
 }
 
 export interface SubmissionGap {
@@ -143,6 +150,8 @@ export interface AnalyzeResponse {
     elo_updates_count: number
     recommendation_id?: number | null
     skill_updates_skipped?: boolean | null
+    replayed?: boolean
+    score_reason?: string | null
   }
   shadow_analysis?: ShadowAnalysisResult | null
 }
@@ -190,11 +199,20 @@ export interface EloRequest {
 
 export interface EloResponse {
   pattern_elo: Record<string, number>
+  pattern_levels?: Record<string, PatternLevel>
   summary: {
     average_elo: number
     weakest_patterns: string[]
     strongest_patterns: string[]
   }
+}
+
+export interface PatternLevel {
+  level: number
+  experience: number
+  into_level: number
+  points_per_level: number
+  progress_percent: number
 }
 
 export interface RecommendRequest {
@@ -261,6 +279,7 @@ export interface UserProfile {
 }
 
 export interface AuthProfile {
+  practice_records?: Array<{ topic: string; attempt_count: number; last_attempt_at: string | null }>
   profiles: Array<{
     user_id: number
     topic: string
