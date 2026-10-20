@@ -92,7 +92,7 @@ bug and not an `array_traversal` bug. It is the absence of a decision layer.**
 Three further findings make the case stronger:
 
 - The project has **already measured** the `array_traversal` problem and reached the
-  correct conclusion, five separate times, in `reports and docs/`:
+  correct conclusion, five separate times, in `docs/experiments/semantic-analysis/`:
   precision **0.24–0.30**, **106–183 AST false positives**, it fires on **188/301 (62%)**
   of cases, and the explicit recommendation
   *"Demote `array_traversal` to structural primitive (not a scored pattern)"*
@@ -172,8 +172,8 @@ independently measurable and reversible.
 
 **Prior empirical work (this proposal leans on it heavily)**
 
-- `reports and docs/SEMANTIC_EXPERIMENT_1D/1E/2A/2B/2C/2D/3A/3B/3C*_REPORT.md`
-- `reports and docs/SEMANTIC_ANALYSIS_ARCHITECTURE.md`
+- `docs/experiments/semantic-analysis/` (semantic experiment reports)
+- `docs/experiments/semantic-analysis/SEMANTIC_ANALYSIS_ARCHITECTURE.md`
 - root-level architecture reconciliation set: `ARCHITECTURE_FINAL_RECONCILIATION.md`,
   `ARCHITECTURE_PREIMPLEMENTATION_AUDIT.md`, `ARCHITECTURE_AUTHORITY_STRESS_TEST.md`,
   `GROUND_TRUTH_AUTHORITY_RECONCILIATION.md`, `FINAL_ARCHITECTURE_VERDICT.md`,
@@ -516,7 +516,7 @@ so the generic `array_traversal` must not be reported as the primary approach".
 
 ### 6.2 Prior measurement already established the `array_traversal` conclusion
 
-This is the decisive evidence for §25. From `reports and docs/`:
+This is the decisive evidence for §25. From `docs/experiments/semantic-analysis/`:
 
 | Report | Finding |
 |---|---|

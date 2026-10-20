@@ -277,7 +277,7 @@ Reported for review; **no renaming was performed in B1.**
 
 | Concept | Why the name misleads | Actual behaviour (evidence) |
 |---|---|---|
-| `array_traversal` | "traversal" reads as an algorithmic approach | Fires on a `for` over a Name/`range`/`enumerate` **plus any `Subscript` anywhere in the module** (`_detect_subscript_access` walks the whole file, not the loop). Measured precision 0.24–0.30, 106–183 false positives, 62 % fire rate (`reports and docs/SEMANTIC_EXPERIMENT_2A/2B/3A/3B/3C`) |
+| `array_traversal` | "traversal" reads as an algorithmic approach | Fires on a `for` over a Name/`range`/`enumerate` **plus any `Subscript` anywhere in the module** (`_detect_subscript_access` walks the whole file, not the loop). Measured precision 0.24–0.30, 106–183 false positives, 62 % fire rate (see `docs/experiments/semantic-analysis/`) |
 | `brute_force` | Implies a judgement about exhaustiveness | Fires when a loop body contains a loop (`has_exhaustive_core = has_nested or has_branch`). "Nested loop" has a measured 66.7 % FP exposure on the V2 corpus |
 | `sorting` | A pattern-level name for a structural operation | Detects that a sort happens; the same operation appears inside many distinct approaches. Also not in `ALL_PATTERNS` |
 | `frequency_counting` (detector file) registers `hash_map_frequency` | The file name and the `pattern_id` disagree | `_detect_frequency_counting` / the detector also matches a pre-sized count array (`cnt = [0]*26`), which is not a hash map |

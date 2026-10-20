@@ -282,13 +282,16 @@ npm run dev
 
 ```text
 PathForge-v2/
-├── pathforge/              # Application + learning pipeline
-├── src/                    # V2 AST analysis
-├── pathforge-frontend/     # Next.js frontend
-├── docs/                   # Supporting documentation
-├── *_report.md             # Audits / evaluation reports
-├── *.json                  # Evaluation data
-└── requirements.txt
+├── pathforge/                         # Python API and application services
+├── src/                               # AST analysis and matching engines
+├── pathforge-frontend/                # Next.js website
+├── experiments/                       # Evaluation code, fixtures, and results
+├── docs/                              # Architecture, audits, and project reports
+│   └── experiments/semantic-analysis/ # Semantic-analysis experiment reports
+├── scripts/                           # Development and packaging utilities
+├── Procfile                           # Backend process entry point
+├── requirements.txt                   # Python dependencies
+└── README.md
 ```
 
 ---
