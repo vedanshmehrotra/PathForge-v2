@@ -15,9 +15,9 @@ PathForge tries to look one step further:
 
 **What strategy is actually present in the code?**
 
-A Python submission is parsed into an AST, analyzed by independent pattern detectors, and then compared with the approaches associated with the problem.
+A Python submission is parsed into an AST and examined for structural evidence. When a problem is selected, PathForge compares those observations with the approaches available for that problem.
 
-The goal is not to have an LLM guess an answer and call it a day. The system tries to make the reasoning behind a detection visible and testable.
+The goal is to make the reasoning behind a pattern observation visible and testable. PathForge inspects code; it does not execute the solution or certify that it is correct.
 
 > A detector saying `dynamic programming` means a lot more when there is actual structural evidence behind it.
 
@@ -25,11 +25,15 @@ The goal is not to have an LLM guess an answer and call it a day. The system tri
 
 ## 📸 The app
 
-<img width="1897" height="1003" alt="{AFE54765-9564-4F14-982D-A71FBD6105F9}" src="https://github.com/user-attachments/assets/47f5d948-0548-438c-bd43-679bb410e9af" />
+These captures show the current public landing page and its product tour. The code and practice examples are illustrative; they are not results from a user account.
 
-<img width="1891" height="1003" alt="{D7CDF3DC-F50B-4EE5-B528-B4BAD73AC591}" src="https://github.com/user-attachments/assets/ff6d2e59-4deb-4a5e-8b96-f6858adaba6a" />
+<img width="1440" height="1000" alt="PathForge landing page with the current approach comparison tour" src="docs/screenshots/pathforge-home.png" />
 
-<img width="1893" height="1004" alt="{58CABD04-0FAF-4AB1-86F2-B72E1B361CE0}" src="https://github.com/user-attachments/assets/5400477a-f7f1-4b01-8a0e-571aa964b3cd" />
+<p align="center">
+  <img width="32%" alt="Inspect tour: a sliding window Python example" src="docs/screenshots/inspect.png" />
+  <img width="32%" alt="Compare tour: two approaches shown separately" src="docs/screenshots/compare.png" />
+  <img width="32%" alt="Practise tour: revisit, explore, or adjust difficulty" src="docs/screenshots/practise.png" />
+</p>
 
 ---
 
@@ -38,30 +42,30 @@ The goal is not to have an LLM guess an answer and call it a day. The system tri
 ```text
 Python solution
       ↓
-   Parse AST
+   Parse Python AST
       ↓
-Extract structural signals
+Observe code structure
       ↓
-Run pattern detectors
+Collect detector evidence
       ↓
-Collect evidence + confidence
+Qualify pattern observations
       ↓
-Match against accepted approaches
+Compare with available approaches
       ↓
-Feed results into learning / recommendations
+Save eligible practice and recommend a next problem
 ```
 
 The interesting part is in the middle.
 
-PathForge looks at implementation details such as control flow, loops, state changes, index relationships, membership checks, table access, and other code-level signals.
+PathForge looks at implementation details such as control flow, loops, state changes, index relationships, membership checks, and table access.
 
-That means it is analysing the **implementation**, not just the problem statement.
+That means it analyses the **implementation**, not just the problem statement. Code-only analysis is available too; without a selected problem, it does not compare approaches or update problem-linked practice.
 
 ---
 
 ## 🔍 Pattern detection
 
-The V2 detector system is built around independent detectors.
+The detector system is built around independent structural detectors. They examine the same parsed AST and produce evidence for specific code patterns.
 
 Each detector:
 
@@ -72,9 +76,7 @@ Each detector:
 - does not depend on another detector's output
 - produces deterministic results for the same input
 
-The current architecture defines **44 algorithmic patterns**.
-
-The decision is deliberately split into separate steps:
+Detection and product use are separate decisions. The broader Shadow pipeline can qualify observations and assess strategy authority, but it remains observational; Shadow results do not directly update learner progress or recommendations.
 
 ```text
 Evidence
@@ -86,23 +88,21 @@ Gating rules
 Detected / Not detected
 ```
 
-So a detector having a 70% confidence score does not automatically mean the pattern is confirmed.
+Detector confidence describes evidence strength. It is not the probability that the code is correct, and a raw observation is not automatically a confirmed algorithmic approach.
 
 ---
 
 ## 🧩 Matching
 
-Once the code has been analysed, PathForge compares the detected patterns with accepted solution groups for the problem.
+When a problem is prepared, PathForge compares detected patterns with the available solution approach groups. The comparison keeps patterns that must be used together distinct from alternative approaches.
 
-The matcher currently works with three outcomes:
+The comparison distinguishes complete matches, partial overlap, no match, and cases where the evidence is not sufficient to evaluate the comparison. A listed pattern match does not prove that a solution passes the problem.
 
-| Result | Meaning |
-|---|---|
-| `FULL_MATCH` | The accepted approach is represented |
-| `PARTIAL_MATCH` | Part of the approach is present |
-| `NO_MATCH` | No accepted approach was matched |
+For each approach, the UI shows which listed patterns were observed and which were not. Proposed, legacy, or incomplete approach data stays clearly qualified instead of being presented as reviewed ground truth.
 
-Only sufficiently strong detections move into this stage. Uncertain signals are not quietly turned into facts.
+Problem-linked analysis can contribute to your saved practice record. Recommendations use that history to suggest revisits, related follow-ups, and new problems from the current bank. You can filter by difficulty or skip a suggestion; skips are kept in this browser for 30 days.
+
+The Learning Progress page gives that record a practice footprint, so you can choose which patterns to focus on next.
 
 ---
 
@@ -110,7 +110,7 @@ Only sufficiently strong detections move into this stage. Uncertain signals are 
 
 This is probably the less flashy part of PathForge, but it matters.
 
-A pattern suggested by an LLM is not automatically treated as ground truth.
+A pattern suggested by a model or observed in code is not automatically treated as ground truth.
 
 The system keeps track of where evidence came from:
 
@@ -122,7 +122,7 @@ unobserved
 conflicted
 ```
 
-That distinction can then affect what happens downstream.
+Those distinctions keep observations, proposed approaches, and product authority separate.
 
 For example, low-authority information can stay in:
 
@@ -137,13 +137,15 @@ instead of directly changing a learner's:
 - gap signals
 - recommendations
 
-So the pipeline can separate:
+That lets PathForge separate:
 
 **"the code appears to use this pattern"**
 
 from:
 
-**"we are confident enough to use this information to update the learner model."**
+**"this information is eligible to update the learner's saved practice record."**
+
+The experimental Shadow analysis is kept separate from product consequences. Its product gate is off by default, so Shadow findings do not directly change ELO, topic profiles, gaps, or recommendations.
 
 ---
 
@@ -152,34 +154,25 @@ from:
 The main analysis path looks roughly like this:
 
 ```text
-                Submission
-                    │
-                    ▼
-            Problem resolution
-                    │
-                    ▼
-          Accepted solution groups
-                    │
-                    ▼
-              AST analysis
-        ┌───────────┼───────────┐
-        │           │           │
-     Parser      Detectors   Coordinator
-        │           │           │
-        └───────────┼───────────┘
-                    ▼
-             Output pipeline
-                    │
-                    ▼
-            Matching engine
-                    │
-                    ▼
-         Evidence / authority checks
-                    │
-          ┌─────────┼─────────┐
-          ▼         ▼         ▼
-         ELO      Topics   Recommendations
+    Python solution                    LeetCode problem
+          │                                  │
+          ▼                                  ▼
+   Parsed Python AST                Problem preparation
+          │                                  │
+          ▼                                  ▼
+   Detector evidence              Available approach groups
+          └────────────────┬─────────────────┘
+                           ▼
+                  Approach comparison
+                           │
+                           ▼
+               Eligible saved practice
+                           │
+                           ▼
+          Calendar-aware recommendations
 ```
+
+Problem preparation and code analysis are separate API operations. Preparation resolves the problem's available approach data; analysis inspects the submitted Python code and records only eligible, problem-linked practice.
 
 The V2 AST components currently live around:
 
@@ -201,7 +194,7 @@ The repository also contains the application layer, frontend, database code, eva
 
 Testing is split across the main parts of the system rather than relying only on the UI.
 
-The repository contains tests and evaluation material for:
+The repository contains automated tests and evaluation material for:
 
 - AST detectors
 - matching
@@ -210,15 +203,13 @@ The repository contains tests and evaluation material for:
 - adversarial cases
 - product-level behaviour
 
-I'm keeping the exact pass counts in the README as a **living section**, since V2 is still changing.
+Useful design and review documents:
 
-Useful reports:
-
-- `IMPLEMENTATION_AUDIT_REPORT.md`
-- `AST_ARCHITECTURE.md`
-- `MATCHING_ENGINE.md`
-- `DETECTOR_DECISION_RULE.md`
-- `PRODUCT_REVIEW.md`
+- [Implementation audit](docs/phase_reports/IMPLEMENTATION_AUDIT_REPORT.md)
+- [AST architecture](docs/architecture/AST_ARCHITECTURE.md)
+- [Matching engine](docs/architecture/MATCHING_ENGINE.md)
+- [Detector decision rule](docs/architecture/DETECTOR_DECISION_RULE.md)
+- [Product review](docs/audits/PRODUCT_REVIEW.md)
 
 ---
 
@@ -226,7 +217,6 @@ Useful reports:
 
 <p>
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-  <img src="https://img.shields.io/badge/Flask-111111?style=for-the-badge&logo=flask&logoColor=white">
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white">
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white">
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white">
@@ -266,7 +256,11 @@ pip install -r requirements.txt
 
 Create a local `.env` from `.env.example` and add the required configuration.
 
-The backend has evolved across Flask and FastAPI components, so the exact entry point depends on the part of the application you are running.
+Run the active API with:
+
+```bash
+python -m uvicorn pathforge.api.app:app --reload
+```
 
 ### Frontend
 
@@ -286,8 +280,9 @@ PathForge-v2/
 ├── src/                               # AST analysis and matching engines
 ├── pathforge-frontend/                # Next.js website
 ├── experiments/                       # Evaluation code, fixtures, and results
-├── docs/                              # Architecture, audits, and project reports
-│   └── experiments/semantic-analysis/ # Semantic-analysis experiment reports
+├── docs/                              # Architecture, audits, reports, and screenshots
+│   ├── experiments/semantic-analysis/ # Semantic-analysis experiment reports
+│   └── screenshots/                   # README screenshots of the public product tour
 ├── scripts/                           # Development and packaging utilities
 ├── Procfile                           # Backend process entry point
 ├── requirements.txt                   # Python dependencies
