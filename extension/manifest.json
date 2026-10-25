@@ -1,11 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "PathForge Side Panel",
-  "version": "0.4.1",
+  "name": "PathForge Companion",
+  "version": "0.5.0",
   "minimum_chrome_version": "116",
-  "description": "Analyze LeetCode solutions with your existing PathForge account.",
-  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
-  "permissions": ["sidePanel", "storage", "scripting"],
+  "description": "Understand your LeetCode Python patterns, save practice, and find related problems with PathForge.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "scripting"
+  ],
   "host_permissions": [
     "https://*.leetcode.com/*",
     "https://path-forge-v2.vercel.app/*",
@@ -17,7 +26,10 @@
     "service_worker": "service-worker.js"
   },
   "action": {
-    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" },
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    },
     "default_title": "Open PathForge"
   },
   "side_panel": {

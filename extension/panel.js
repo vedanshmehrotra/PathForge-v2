@@ -3,9 +3,10 @@ const WEBSITE_BASE = 'https://path-forge-v2.vercel.app';
 const SESSION_KEY = 'pathforgeSession';
 const CACHE_KEY = 'pathforgeChecks';
 const SETUP_KEY = 'pathforgeSetup';
+const PATTERN_HINT_KEY = 'pathforgePatternHintSeen';
 const $ = id => document.getElementById(id);
 const state = { session: null, verified: false, connecting: false, running: false, accountVersion: 0,
-  viewVersion: 0, windowId: null, sourceTabId: null, snapshot: null, checks: {}, queued: false, changed: false, booting: true };
+  viewVersion: 0, windowId: null, sourceTabId: null, snapshot: null, checks: {}, queued: false, changed: false, booting: true, setupOpened: false, patternHintSeen: false };
 const requests = new Set();
 let navigationTimer;
 let levelTimers = [];
@@ -39,7 +40,11 @@ function renderAccount() {
   $('settings-toggle').disabled = !state.verified;
   $('account-email').textContent = state.session?.email || 'PathForge account';
   $('connect-account').disabled = state.connecting;
-  $('connect-account').textContent = state.connecting ? 'Connecting…' : 'Connect account';
+  $('connect-account').textContent = state.connecting ? 'Connecting…' : state.setupOpened ? 'Connect account' : "I'm already signed in";
+  $('connect-account').className = `button ${state.setupOpened ? 'primary' : 'secondary'}`;
+  $('open-app').className = `button ${state.setupOpened ? 'secondary' : 'primary'}`;
+  $('open-app').textContent = state.setupOpened ? 'Return to sign-in page' : 'Sign in on PathForge';
+  $('setup-step').textContent = state.setupOpened ? '2. Signed in? Connect your account here.' : '1. Sign in on PathForge · 2. Connect here';
   $('reconnect').disabled = state.running || state.connecting;
   $('recheck').disabled = state.running;
   $('recheck').classList.toggle('spinning', state.running);
@@ -50,12 +55,18 @@ function clearView() {
   levelTimers = [];
   $('level-feedback').className = 'level-feedback hidden';
   $('level-feedback').replaceChildren();
+  $('level-feedback').style.height = '';
+  $('pattern-hint').classList.add('hidden');
+  $('watch-status').textContent = 'Checks after Submit';
   state.snapshot = null; state.changed = false;
-  for (const id of ['analysis-result', 'next-practice', 'problem-picker', 'inspect-anyway', 'retry-analysis']) $(id).classList.add('hidden');
+  for (const id of ['analysis-result', 'next-practice', 'problem-picker', 'inspect-anyway', 'retry-analysis', 'read-again']) $(id).classList.add('hidden');
   for (const id of ['detected-patterns', 'comparison', 'recommendations']) $(id).replaceChildren();
   $('problem-title').textContent = 'Your solution';
   $('difficulty').textContent = '';
   $('saved-note').textContent = '';
+  $('xp-detail').textContent = '';
+  $('pattern-explanation').textContent = '';
+  $('comparison-details').open = false;
   message();
 }
 function errorText(data, status) {
@@ -98,8 +109,10 @@ async function api(path, { body, session = state.session, timeout = 30000 } = {}
 
 async function openWebsite() {
   const tabs = await chrome.tabs.query({ url: `${WEBSITE_BASE}/*`, windowId: state.windowId });
-  if (tabs.length) await chrome.tabs.update(tabs[0].id, { active: true });
-  else await chrome.tabs.create({ url: `${WEBSITE_BASE}/analysis`, windowId: state.windowId });
+  const connection = tabs.find(tab => tab.url?.startsWith(`${WEBSITE_BASE}/companion/connect`));
+  if (connection) await chrome.tabs.update(connection.id, { active: true });
+  else await chrome.tabs.create({ url: `${WEBSITE_BASE}/companion/connect`, windowId: state.windowId });
+  state.setupOpened = true; renderAccount();
   message('Sign in on the website, then choose Connect account in this panel.');
 }
 
@@ -198,15 +211,12 @@ async function capture(tab, includeSubmission = true) {
 }
 async function sourceMatches(tab, snapshot) {
   const latest = await capture(tab, false);
-  if (latest.code) return latest.code === snapshot.code && latest.slug === snapshot.slug;
-  const current = await chrome.tabs.get(tab.id).catch(() => null);
-  return snapshot.source === 'submission' && latest.error === 'EDITOR_UNAVAILABLE' &&
-    problemSlug(current?.url) === snapshot.slug &&
-    new URL(current.url).pathname.match(/\/submissions\/(\d+)(?:\/|$)/)?.[1] === snapshot.submissionId;
+  return latest.source === 'editor' && latest.code === snapshot.code && latest.slug === snapshot.slug;
 }
 function captureFailure(snapshot) {
   const messages = {
-    EDITOR_UNAVAILABLE: ['Open your solution in LeetCode', 'The complete editor could not be read. Keep the code editor visible, then recheck.'],
+    EDITOR_UNAVAILABLE: ['Open the Code tab in LeetCode', 'Keep the editable solution visible. Submission previews are not analyzed.'],
+    EDITOR_NOT_EDITABLE: ['Open the Code tab in LeetCode', 'PathForge is paused while you browse submissions or read-only code. Return to the editable solution to continue.'],
     AMBIGUOUS_EDITOR: ['Choose one solution editor', 'Close the extra editor or diff view, then recheck.'],
     EMPTY_SOLUTION: ['Write your solution in LeetCode', 'Submit for an automatic check, or recheck for a preview.'],
     UNSUPPORTED_LANGUAGE: ['Switch to Python in LeetCode', 'The current PathForge analyzer supports Python and Python3.'],
@@ -215,6 +225,8 @@ function captureFailure(snapshot) {
   };
   const [title, help] = messages[snapshot.error] || messages.EDITOR_UNAVAILABLE;
   activity(title, help);
+  $('watch-status').textContent = 'Paused · editor needed';
+  $('read-again').classList.toggle('hidden', !['EDITOR_UNAVAILABLE', 'EDITOR_NOT_EDITABLE', 'AMBIGUOUS_EDITOR', 'CODE_CHANGED'].includes(snapshot.error));
 }
 async function cacheSave(key, entry) {
   state.checks[key] = { ...entry, at: Date.now() };
@@ -261,7 +273,8 @@ async function captureAndAnalyze({ retry = false, codeOnly = false } = {}) {
     key = await fingerprint(snapshot, codeOnly);
     const cached = state.checks[key];
     if (cached?.status === 'done') {
-      renderAnalysis(cached.data, snapshot);
+      const saved = cached.data.persisted;
+      renderAnalysis({ ...cached.data, persisted: saved?.score_reason === 'scored' ? { ...saved, replayed: true } : saved }, snapshot);
       await recommendations(cached.data, snapshot, current);
       return;
     }
@@ -318,8 +331,72 @@ async function captureAndAnalyze({ retry = false, codeOnly = false } = {}) {
   }
 }
 function label(value) {
-  const names = { hash_map_lookup: 'Hash lookup', two_pointers_same: 'Two pointers', two_pointers_opposite: 'Two pointers', sliding_window: 'Sliding window', binary_search: 'Binary search', dfs_recursive: 'Depth-first search', bfs: 'Breadth-first search' };
+  const names = { hash_map_lookup: 'Hash lookup', hash_map_frequency: 'Frequency counting', two_pointers_same: 'Two pointers', two_pointers_opposite: 'Two pointers', sliding_window: 'Sliding window', sliding_window_fixed: 'Fixed sliding window', sliding_window_variable: 'Variable sliding window', binary_search: 'Binary search', binary_search_standard: 'Binary search', binary_search_rotated: 'Rotated binary search', binary_search_answer: 'Binary search on answers', dfs_recursive: 'Depth-first search', dfs_iterative: 'Depth-first search', bfs: 'Breadth-first search', bfs_level_order: 'Breadth-first search', bfs_shortest_path: 'Breadth-first search', dp_1d_forward: 'Dynamic programming', dp_1d_sequence: 'Sequence dynamic programming', dp_2d_grid: 'Grid dynamic programming', dp_2d_string: 'String dynamic programming', dp_knapsack: 'Knapsack', dp_interval: 'Interval dynamic programming', dp_state_machine: 'State-based dynamic programming', heap_top_k: 'Heap selection', greedy_local: 'Greedy choice', greedy_interval: 'Greedy intervals', backtracking_permutation: 'Backtracking: arrangements', backtracking_subset: 'Backtracking: subsets' };
   return names[value] || String(value || '').replaceAll('_', ' ').replace(/\bdp\b/gi, 'dynamic programming').replace(/^./, character => character.toUpperCase());
+}
+function patternExplanation(id) {
+  const descriptions = {
+    hash_map_lookup: 'You use a dictionary to look up a value without searching the whole collection again.',
+    hash_map_frequency: 'You count how often values appear, keeping a total for each value.',
+    array_traversal: 'You visit items in a sequence to inspect them or build an answer.',
+    sliding_window_fixed: 'You move a fixed-size window across the sequence, updating what enters and leaves.',
+    sliding_window_variable: 'You grow or shrink a window to keep a section of the sequence within a condition.',
+    two_pointers_same: 'Two positions move through the sequence in the same direction.',
+    two_pointers_opposite: 'Two positions move toward each other to narrow the search.',
+    binary_search_standard: 'You repeatedly narrow a sorted search range instead of checking every item.',
+    dfs_recursive: 'You explore one branch deeply before returning to try another.',
+    dfs_iterative: 'A stack remembers branches to explore, letting you go deeper before trying another branch.',
+    bfs_level_order: 'You use a queue to explore nearby items before moving to the next layer.',
+    bfs_shortest_path: 'A queue explores nearby positions first. On an unweighted graph, this can find the fewest steps.',
+    topological_sort: 'You work through dependencies, choosing items whose prerequisites are ready.',
+    union_find: 'You track which items belong to the same group and combine groups when they connect.',
+    binary_search_tree: 'An ordered tree lets comparisons guide you toward the relevant branch.',
+    binary_search_rotated: 'You identify an ordered part of a rotated sequence, then narrow the search.',
+    binary_search_answer: 'You test a candidate answer and narrow the range of possible answers.',
+    dp_1d_forward: 'You build answers from smaller answers already stored in a one-dimensional table.',
+    dp_1d_sequence: 'You reuse answers for earlier parts of a sequence instead of solving them again.',
+    dp_2d_grid: 'Each grid position uses answers from earlier positions to build the result.',
+    dp_2d_string: 'A table remembers results for pairs of positions in strings or sequences.',
+    dp_knapsack: 'You compare taking or skipping items while tracking the remaining capacity.',
+    dp_interval: 'You build answers for larger intervals from answers for smaller intervals.',
+    dp_state_machine: 'You track several possible states and reuse their results as each new item arrives.',
+    fast_slow_pointers: 'Two positions move at different speeds to locate a midpoint or detect a cycle.',
+    linked_list_reversal: 'You change the links between nodes to reverse their direction.',
+    monotonic_stack: 'You keep stack values in order, removing candidates that are no longer useful.',
+    monotonic_deque: 'You keep ordered candidates for a moving range, removing old or less useful entries.',
+    heap_top_k: 'A priority queue keeps useful ranked candidates available without sorting everything again.',
+    greedy_local: 'A greedy approach chooses a locally useful option at each step. The choice still needs to be justified.',
+    greedy_interval: 'You order and compare intervals to select or combine them.',
+    backtracking_permutation: 'You try arrangements one choice at a time, undoing each choice before exploring another.',
+    backtracking_subset: 'You explore groups of choices, undoing each choice before trying a different branch.',
+    sorting: 'You put values in order before working with them. Sorting is a step, not proof of the whole approach.',
+    brute_force: 'You try candidate answers directly. This can be useful when the search space is small.',
+    prefix_sum: 'You store running totals so a section can be measured from its endpoints.',
+    stack: 'You keep recent items in a stack and work with the most recent one first.',
+  };
+  return descriptions[id] || 'PathForge spotted this structure in your code. Tap another pattern to explore it.';
+}
+function practiceFeedback(saved, verdict) {
+  if (!saved?.submission_id) return ['', ''];
+  if (saved.replayed) return ['Already saved · no extra XP', 'This check is already in your practice record. Rechecking does not earn XP again.'];
+  const reasons = {
+    problem_already_scored_today: ['Practice saved · today’s XP counted', 'This problem has already changed your XP today (UTC). You can keep practising without another rating change.'],
+    awaiting_submission: ['Practice saved · not submitted', 'Submit on LeetCode to check correctness. Drafts and Run/Test never change XP.'],
+    submission_not_accepted: ['Practice saved · fix and submit again', 'No XP lost. Correct your solution and submit again; you can still qualify today.'],
+    submission_status_unavailable: ['Practice saved · verdict not confirmed', 'XP is unchanged until a completed LeetCode submission matches this code.'],
+    expectations_not_authorizing: ['Practice saved · XP unchanged', 'This problem’s approach has not been verified for XP yet. Your practice is still saved.'],
+    comparison_unavailable: ['Practice saved · XP unchanged', 'There is no supported approach comparison for this problem yet. Your practice still counts.'],
+    comparison_incomplete: ['Practice saved · XP unchanged', verdict.state === 'accepted'
+      ? 'Your solution was accepted. PathForge could not verify its approach for pattern XP. Your practice is saved.'
+      : 'PathForge could not verify a supported approach for pattern XP. Your practice is saved.'],
+    observational_components_not_scoring: ['Practice saved · XP unchanged', 'These code patterns are recorded as practice, but do not qualify for XP scoring.'],
+    approach_unsupported_or_ambiguous: ['Practice saved · XP unchanged', 'This approach cannot be compared reliably enough for an XP update yet.'],
+    comparison_inconsistent: ['Practice saved · XP unchanged', 'PathForge could not confirm a reliable comparison. Your practice is saved.'],
+    authority_required: ['Practice saved · XP unchanged', 'XP needs a verified approach comparison for this problem. Your practice is saved.'],
+  };
+  if (reasons[saved.score_reason]) return reasons[saved.score_reason];
+  if (saved.skill_updates_skipped) return ['Practice saved · XP unchanged', 'This analysis did not qualify for a rating update. Your practice is saved.'];
+  return ['Practice saved', verdict.state === 'accepted' ? 'XP reflects eligible pattern comparisons, not a certificate of mastery.' : ''];
 }
 function patternRow(pattern, observed, unobserved) {
   const row = node('div', 'pattern-row');
@@ -339,27 +416,44 @@ function renderAnalysis(data, snapshot) {
   $('verdict-label').textContent = verdict.label;
   $('verdict-note').textContent = verdict.state === 'unknown' ? 'Submit this code on LeetCode to check correctness.' : 'Matches this code’s LeetCode submission.';
   const patterns = (data.ast?.detected_patterns || []).filter(pattern => pattern.detected !== false);
+  $('pattern-heading').textContent = !patterns.length && verdict.state === 'accepted' ? 'Approach not recognized yet' : 'Patterns in your code';
+  $('pattern-explanation').textContent = '';
+  $('pattern-hint').classList.toggle('hidden', !patterns.length || state.patternHintSeen);
   $('detected-patterns').replaceChildren();
-  for (const pattern of patterns) $('detected-patterns').append(node('span', 'pattern-pill', `✓ ${label(pattern.pattern_id || pattern.name)}`));
-  if (!patterns.length) $('detected-patterns').append(node('p', 'muted', 'No supported patterns recognized yet.'));
+  for (const [index, pattern] of patterns.entries()) {
+    const id = pattern.pattern_id || pattern.name;
+    const pill = node('button', 'pattern-pill', `✓ ${label(id)}`);
+    pill.type = 'button'; pill.setAttribute('aria-pressed', String(index === 0));
+    pill.addEventListener('click', () => {
+      for (const button of $('detected-patterns').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button === pill));
+      $('pattern-explanation').textContent = patternExplanation(id);
+      if (!state.patternHintSeen) {
+        state.patternHintSeen = true;
+        $('pattern-hint').classList.add('hidden');
+        chrome.storage.local.set({ [PATTERN_HINT_KEY]: true }).catch(() => {});
+      }
+    });
+    $('detected-patterns').append(pill);
+    if (index === 0) $('pattern-explanation').textContent = patternExplanation(id);
+  }
+  if (!patterns.length) $('detected-patterns').append(node('p', 'muted', verdict.state === 'accepted'
+    ? 'PathForge couldn’t identify a supported pattern in this accepted solution. This is a limit of the analysis.'
+    : 'PathForge couldn’t identify a supported pattern in this code yet.'));
   const groups = Array.isArray(data.problem_info?.solution_groups) ? data.problem_info.solution_groups : [];
   const usable = group => group.review_state !== 'CONFLICT' && group.pattern_evidence_state !== 'UNAVAILABLE';
   const chosen = groups.find(group => usable(group) && group.pattern_evidence_state === 'ALL_OBSERVED') || groups.find(group => usable(group) && group.observed_patterns?.length) || groups[0];
   const comparison = $('comparison'); comparison.replaceChildren();
+  $('comparison-details').classList.toggle('hidden', !chosen);
   if (chosen) {
-    comparison.append(node('p', 'comparison-caption', `${chosen.review_state === 'REVIEWED' ? 'Compared with' : 'Proposed approach:'} ${chosen.name || 'Stored approach'}`));
+    comparison.append(node('p', 'comparison-caption', `${!patterns.length ? 'Example approach:' : chosen.review_state === 'REVIEWED' ? 'Compared with' : 'Possible approach:'} ${chosen.name || 'Stored approach'}`));
     if (chosen.pattern_evidence_state === 'UNAVAILABLE' || chosen.review_state === 'CONFLICT') comparison.append(node('p', 'muted', 'This approach cannot be compared reliably yet.'));
     else for (const pattern of chosen.patterns || []) comparison.append(patternRow(pattern, chosen.observed_patterns?.includes(pattern), chosen.unobserved_patterns?.includes(pattern)));
     if (chosen.family_relation === 'ONE_OF') comparison.append(node('p', 'fine', 'One possible approach. Other approaches can also be valid.'));
   }
   const saved = data.persisted;
-  $('saved-note').textContent = !saved?.submission_id ? '' : saved.replayed ? 'Already in your practice record'
-    : saved.score_reason === 'problem_already_scored_today' ? 'Practice saved · today’s score counted'
-    : saved.score_reason === 'awaiting_submission' ? 'Practice saved · submit to earn XP'
-    : saved.score_reason === 'submission_not_accepted' ? 'Practice saved · fix and submit again'
-    : saved.score_reason === 'submission_status_unavailable' ? 'Practice saved · verdict not confirmed'
-    : saved.skill_updates_skipped && snapshot.verdict?.state === 'accepted' ? 'Practice saved · approach not confirmed'
-    : saved.skill_updates_skipped ? 'Practice saved · XP unchanged' : 'Practice saved';
+  const [note, explanation] = practiceFeedback(saved, verdict);
+  $('saved-note').textContent = note;
+  $('xp-detail').textContent = explanation;
   showLevelFeedback(data);
 }
 function showLevelFeedback(data) {
@@ -367,35 +461,46 @@ function showLevelFeedback(data) {
   const updates = (data.elo_updates || []).filter(update =>
     Number.isFinite(update.delta) && update.delta !== 0 &&
     Number.isInteger(update.level_before?.level) && Number.isInteger(update.level_after?.level) &&
-    Number.isFinite(update.level_before.progress_percent) && Number.isFinite(update.level_after.progress_percent));
+    Number.isFinite(update.level_before.experience) && Number.isFinite(update.level_after.experience) &&
+    update.level_before.experience !== update.level_after.experience &&
+    Number.isFinite(update.level_before.progress_percent) && Number.isFinite(update.level_after.progress_percent) &&
+    [update.level_before.progress_percent, update.level_after.progress_percent].every(value => value >= 0 && value <= 100));
   if (!updates.length) return;
   const feedback = $('level-feedback');
   feedback.className = 'level-feedback';
+  feedback.append(node('p', 'reward-heading', updates.some(update => update.delta > 0) ? 'Pattern XP gained' : 'Pattern XP updated'));
   for (const update of updates) {
     const before = update.level_before, after = update.level_after;
     const row = node('div', 'level-update');
     const title = node('p', 'level-title', `${label(update.pattern_id)} · Level ${before.level}`);
     const gain = after.experience - before.experience;
+    row.classList.toggle('xp-loss', gain < 0);
     title.append(node('span', gain > 0 ? 'xp-gain' : 'xp-change', `${gain > 0 ? '+' : ''}${Number(gain.toFixed(2))} XP`));
     const track = node('div', 'level-track');
     track.setAttribute('role', 'progressbar');
     track.setAttribute('aria-label', `${label(update.pattern_id)} level progress`);
     track.setAttribute('aria-valuemin', '0'); track.setAttribute('aria-valuemax', '100');
     track.setAttribute('aria-valuenow', String(after.progress_percent));
+    track.setAttribute('aria-valuetext', `Level ${after.level}, ${after.into_level} of ${after.points_per_level} XP`);
     const fill = node('span', 'level-fill');
     fill.style.width = `${before.progress_percent}%`;
-    track.append(fill); row.append(title, track); feedback.append(row);
+    const caption = node('p', 'level-caption', `${before.into_level} / ${before.points_per_level} XP toward level ${before.level + 1}`);
+    track.append(fill); row.append(title, track, caption); feedback.append(row);
     levelTimers.push(setTimeout(() => { fill.style.width = `${after.level > before.level ? 100 : after.level < before.level ? 0 : after.progress_percent}%`; }, 80));
     levelTimers.push(setTimeout(() => {
       title.firstChild.textContent = `${label(update.pattern_id)} · Level ${after.level}${after.level > before.level ? ' reached' : ''}`;
+      row.classList.toggle('level-reached', after.level > before.level);
+      caption.textContent = `${after.into_level} / ${after.points_per_level} XP toward level ${after.level + 1}`;
       if (after.level !== before.level) {
         fill.style.transition = 'none'; fill.style.width = after.level > before.level ? '0%' : '100%';
         levelTimers.push(setTimeout(() => { fill.style.transition = ''; fill.style.width = `${after.progress_percent}%`; }, 50));
       }
     }, 1100));
   }
-  levelTimers.push(setTimeout(() => feedback.classList.add('leaving'), 4800));
-  levelTimers.push(setTimeout(() => feedback.classList.add('hidden'), 5200));
+  feedback.style.height = `${feedback.scrollHeight}px`;
+  $('xp-detail').textContent = updates.map(update => `${label(update.pattern_id)}: ${update.level_after.experience > update.level_before.experience ? '+' : ''}${Number((update.level_after.experience - update.level_before.experience).toFixed(2))} XP · Level ${update.level_after.level}`).join(' · ');
+  levelTimers.push(setTimeout(() => feedback.classList.add('leaving'), 6000));
+  levelTimers.push(setTimeout(() => feedback.classList.add('hidden'), 6400));
 }
 function safeProblemUrl(value) {
   if (typeof value !== 'string' || /[\x00-\x20\\]/.test(value)) return null;
@@ -407,32 +512,54 @@ function safeProblemUrl(value) {
 async function recommendations(data, snapshot, current) {
   const failed = snapshot.verdict?.state === 'failed';
   $('next-practice').classList.remove('hidden');
-  $('recommendation-title').textContent = failed ? 'Work on the pattern' : 'Next practice';
+  $('recommendation-title').textContent = failed ? 'Keep working on this problem' : 'Next practice';
+  $('recommendation-help').textContent = failed ? 'Fix your solution and submit again. Your XP is safe.' : '';
   $('recommendations').replaceChildren(node('p', 'muted', 'Finding your next step…'));
   $('retry-recommendations').classList.add('hidden');
   try {
-    const body = failed ? { user_id: state.session.user_id, mode: 'legacy' } : { user_id: state.session.user_id, mode: 'practice', policy: 'calendar_practice_v2' };
+    const body = { user_id: state.session.user_id, mode: 'companion', context_problem_slug: snapshot.slug,
+      submission_status: snapshot.verdict?.state || 'unknown' };
     const result = await api('/recommend', { body });
     if (!current()) return;
     const recs = Array.isArray(result.recommendations) ? [...result.recommendations] : [];
-    if (!failed) recs.sort((a, b) => Number(b.practice_kind === 'follow_up') - Number(a.practice_kind === 'follow_up'));
+    recs.sort((a, b) => Number(b.practice_kind === 'follow_up') - Number(a.practice_kind === 'follow_up'));
     $('recommendations').replaceChildren();
     const seen = new Set();
+    let relatedCount = 0;
+    const difficulties = ['Easy', 'Medium', 'Hard'];
+    const maximum = Math.max(0, difficulties.indexOf(data.problem_info?.difficulty));
     for (const rec of recs) {
       const href = safeProblemUrl(rec.problem_url);
       if (!href || seen.has(href) || href.replace(/\/$/, '').endsWith(`/problems/${snapshot.slug}`)) continue;
+      if (!difficulties.includes(rec.difficulty) || difficulties.indexOf(rec.difficulty) > maximum) continue;
+      const shared = rec.reason_evidence?.anchor_url?.replace(/\/$/, '').endsWith(`/problems/${snapshot.slug}`) && rec.reason_evidence?.shared_topics?.length;
+      const related = rec.practice_kind === 'follow_up' && shared;
+      if (failed && !related) continue;
       seen.add(href);
+      if (related) relatedCount++;
       const bubble = node('a', 'recommendation'); bubble.href = href; bubble.target = '_blank'; bubble.rel = 'noopener noreferrer';
+      bubble.append(node('span', 'recommendation-kind', related ? 'Related practice' : 'Explore another topic'));
       bubble.append(node('span', 'recommendation-name', rec.title || 'Practice problem'));
-      const topic = rec.pattern ? label(rec.pattern) : rec.reason_evidence?.shared_topics?.[0] || rec.topics?.[0];
-      bubble.append(node('span', 'recommendation-meta', [rec.difficulty, topic ? `${rec.pattern ? 'Pattern' : 'Topic'}: ${topic}` : null].filter(Boolean).join(' · ')));
+      const topic = related ? rec.reason_evidence.shared_topics[0] : rec.topics?.[0];
+      bubble.append(node('span', 'recommendation-meta', [rec.difficulty, topic ? `${related ? 'Same topic' : 'Topic'}: ${topic}` : null].filter(Boolean).join(' · ')));
       if (rec.reason) bubble.title = rec.reason;
       $('recommendations').append(bubble);
       if (seen.size === 3) break;
     }
-    if (!seen.size) $('recommendations').append(node('p', 'muted', 'No more practice suggestions right now.'));
-  } catch {
-    if (current()) { $('recommendations').replaceChildren(node('p', 'muted', 'Suggestions couldn’t load.')); $('retry-recommendations').classList.remove('hidden'); }
+    if (!relatedCount) $('recommendation-help').textContent = failed
+      ? 'Fix and submit this solution again. No related question at this difficulty is available right now.'
+      : seen.size ? 'No related question at this difficulty is available right now. These are other topics to explore.'
+      : 'No suitable follow-up is available right now. Your practice is saved.';
+    if (result.state === 'context_unavailable') $('recommendation-help').textContent = 'Related practice is not available for this problem in the catalog yet.';
+    if (!seen.size && !failed) $('recommendations').append(node('p', 'muted', 'No more practice suggestions right now.'));
+  } catch (error) {
+    if (!current()) return;
+    const needsUpdate = error.status === 422 && Array.isArray(error.detail) &&
+      error.detail.some(issue => issue.loc?.[0] === 'body' && issue.loc?.[1] === 'mode');
+    $('recommendations').replaceChildren(node('p', 'muted', needsUpdate
+      ? 'Practice suggestions need a PathForge update.' : 'Suggestions couldn’t load.'));
+    if (needsUpdate) $('recommendation-help').textContent = 'Your analysis is still available. Reopen the panel after the PathForge service has been updated.';
+    else $('retry-recommendations').classList.remove('hidden');
   }
 }
 async function monitorEditor() {
@@ -462,6 +589,7 @@ async function monitorEditor() {
       captureFailure(latest);
       return;
     }
+    $('watch-status').textContent = 'Checks after Submit';
     if (snapshot && latest.slug !== snapshot.slug) { await captureAndAnalyze(); return; }
     if (snapshot && latest.code !== snapshot.code) {
       invalidate();
@@ -509,6 +637,7 @@ async function restoreSession(session) {
 async function initialize() {
   if (!globalThis.chrome?.runtime?.id || !chrome.storage?.session) { message('Load this folder through Chrome’s Extensions page to use PathForge.', 'error'); return; }
   state.windowId = (await chrome.windows.getCurrent()).id;
+  state.patternHintSeen = (await chrome.storage.local.get(PATTERN_HINT_KEY))[PATTERN_HINT_KEY] === true;
   await chrome.storage.local.remove(SESSION_KEY);
   await chrome.storage.session.remove('pathforgeDraft');
   const saved = await chrome.storage.session.get([SESSION_KEY, CACHE_KEY, `pathforgeSource:${state.windowId}`]);
@@ -521,6 +650,8 @@ async function initialize() {
   $('disconnect').addEventListener('click', () => disconnect());
   $('settings-toggle').addEventListener('click', () => { $('settings').classList.toggle('hidden'); $('settings-toggle').setAttribute('aria-expanded', String(!$('settings').classList.contains('hidden'))); });
   $('recheck').addEventListener('click', () => captureAndAnalyze());
+  $('read-again').addEventListener('click', () => captureAndAnalyze());
+  $('start-problem').addEventListener('click', () => chrome.tabs.create({ url: 'https://leetcode.com/problems/two-sum/', windowId: state.windowId }));
   $('retry-analysis').addEventListener('click', () => captureAndAnalyze({ retry: true }));
   $('inspect-anyway').addEventListener('click', () => captureAndAnalyze({ codeOnly: true }));
   $('retry-recommendations').addEventListener('click', () => { if (state.snapshot) captureAndAnalyze(); });

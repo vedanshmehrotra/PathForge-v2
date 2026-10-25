@@ -41,7 +41,8 @@ def _difficulty_to_label(difficulty_score: float) -> str:
 
 def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
                         mode: str = "legacy", difficulty=None, excluded_ids=(),
-                        policy: str = "recorded_practice_v1") -> Dict[str, Any]:
+                        policy: str = "recorded_practice_v1", context_problem_slug=None,
+                        submission_status="unknown") -> Dict[str, Any]:
     if policy not in ("recorded_practice_v1", CALENDAR_POLICY):
         return {"error": "Unsupported practice policy", "stage": "RECOMMENDATION"}
     connection = get_connection(db_path or config.DATABASE_PATH)
@@ -51,8 +52,8 @@ def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
             return {"error": f"User {user_id} not found", "stage": "RECOMMENDATION"}
 
         problems = load_problem_bank(connection)
-        if mode == "practice":
-            if policy == CALENDAR_POLICY:
+        if mode in ("practice", "companion"):
+            if policy == CALENDAR_POLICY or mode == "companion":
                 # Deduplicate BEFORE limiting. Repeated analyses of one problem
                 # must not evict another recently recorded problem from history.
                 history = connection.execute(
@@ -68,7 +69,9 @@ def get_recommendations(user_id: int, db_path: Optional[str] = None, *,
                 ).fetchone()
                 result = recommend_calendar_practice(
                     problems, [dict(row) for row in history], now=datetime.now(timezone.utc),
-                    difficulty=difficulty, excluded_ids=excluded_ids)
+                    difficulty=difficulty, excluded_ids=excluded_ids,
+                    **({"focus_slug": context_problem_slug, "allow_explore": submission_status != "failed"}
+                       if mode == "companion" else {}))
                 result["history"]["scope"] = "latest_recorded_problems"
                 result["history"]["code_only_submissions"] = int(code_only["code_only_submissions"])
                 return {"user_id": user_id, **result}

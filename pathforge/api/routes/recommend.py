@@ -12,16 +12,24 @@ router = APIRouter()
 
 class RecommendRequest(BaseModel):
     user_id: int
-    mode: Literal["legacy", "practice"] = "legacy"
+    mode: Literal["legacy", "practice", "companion"] = "legacy"
     policy: Literal["recorded_practice_v1", "calendar_practice_v2"] = "recorded_practice_v1"
     difficulty: Optional[Literal["Easy", "Medium", "Hard"]] = None
     excluded_ids: list[str] = Field(default_factory=list, max_length=50)
+    context_problem_slug: Optional[str] = Field(default=None, max_length=160, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    submission_status: Literal["accepted", "failed", "unknown"] = "unknown"
 
 
 @router.post("/recommend")
 def recommend_endpoint(req: RecommendRequest, request: Request):
     user = get_current_user(request)
-    if req.mode == "practice":
+    if req.mode == "companion":
+        if not req.context_problem_slug:
+            raise HTTPException(status_code=422, detail="Choose the current LeetCode problem first.")
+        result = get_recommendations(user.user_id, mode="companion", policy="calendar_practice_v2",
+                                    context_problem_slug=req.context_problem_slug,
+                                    submission_status=req.submission_status)
+    elif req.mode == "practice":
         options = {"mode": "practice", "difficulty": req.difficulty, "excluded_ids": req.excluded_ids}
         if req.policy != "recorded_practice_v1":
             options["policy"] = req.policy

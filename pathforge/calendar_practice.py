@@ -77,7 +77,8 @@ def _timestamp(value, now):
         return None
 
 
-def recommend_calendar_practice(problems, history, *, now, difficulty=None, excluded_ids=()):
+def recommend_calendar_practice(problems, history, *, now, difficulty=None, excluded_ids=(),
+                               focus_slug=None, allow_explore=True):
     """Newest-first bounded history; no writes, online inference or outcome labels.
 
     O(N*T + H log H + H*T + 3*N*T), with at most 1,000 distinct problems.
@@ -91,6 +92,11 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
         raise ValueError("Unsupported difficulty")
     now = now.astimezone(timezone.utc)
     items, mapping = _catalog(problems)
+    focus_url = problem_url(f"https://leetcode.com/problems/{focus_slug}/") if focus_slug else None
+    if focus_slug and focus_url not in items:
+        return {"policy": POLICY, "state": "context_unavailable", "recommendations": [],
+                "context": {"related_available": False},
+                "limitations": ["The current problem is not available in the practice catalog."]}
     tags = {url: {t.casefold() for t in item["topics"]} for url, item in items.items()}
     specific = {url: values & TARGET_TOPICS for url, values in tags.items()}
     seen, dated, invalid_urls = set(), {}, set()
@@ -113,6 +119,9 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
     # Python's stable sort retains newest-first input order for equal times.
     ordered = sorted(((stamp, url) for (url, _), stamp in dated.items()), key=lambda row: row[0], reverse=True)
     latest = first_url if invalid else ordered[0][1] if ordered else first_url
+    if focus_url:
+        latest = focus_url
+        seen.add(focus_url)
     last_problem, last_topic, exposure = {}, {}, Counter()
     unknown_topics = set().union(*(tags[url] for url in invalid_urls)) if invalid_urls else set()
     for stamp, url in ordered:
@@ -122,7 +131,7 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
             exposure[tag] += 1 / len(tags[url])
 
     exclusions = {mapping.get(_identity(pid)) for pid in excluded_ids}
-    preferred = items[latest]["difficulty"] if latest and latest not in invalid_urls else "Easy"
+    preferred = items[latest]["difficulty"] if latest and (focus_url or latest not in invalid_urls) else "Easy"
     matching = [p for p in items.values() if (p["difficulty"] == difficulty if difficulty else
                 DIFFICULTIES.index(p["difficulty"]) <= DIFFICULTIES.index(preferred))]
     available = [p for p in matching if p["problem_url"] not in exclusions]
@@ -149,11 +158,14 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
             anchor_item = items[anchor_url]
             display_tags = sorted(t for t in item["topics"] if t.casefold() in shared)
             result["reason_evidence"] = {"anchor_url": anchor_url, "anchor_title": anchor_item["title"],
-                                         "anchor_date": stamp.date().isoformat(), "shared_topics": display_tags}
+                                         "shared_topics": display_tags}
+            if stamp is not None:
+                result["reason_evidence"]["anchor_date"] = stamp.date().isoformat()
             if kind == "revisit":
                 reason = f"Revisit this problem, last recorded on {stamp.date().isoformat()}."
             else:
-                reason = f"Shares {', '.join(display_tags)} with {anchor_item['title']}, recorded on {stamp.date().isoformat()}."
+                reason = (f"Shares {', '.join(display_tags)} with {anchor_item['title']}" +
+                          (f", recorded on {stamp.date().isoformat()}." if stamp is not None else "."))
         else:
             reason = ("A starting choice from the current problem bank." if kind == "starter" else
                       "A different choice from the current bank to vary your practice.")
@@ -176,22 +188,35 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
             tag = min(shared, key=lambda tag: (*due[tag], tag))
             stamp, url = due[tag]
             returns.append((stamp, url, tag, item))
-    if returns:
+    if returns and not focus_url:
         stamp, url, tag, item = min(returns, key=lambda r: (r[0], r[1], r[2], rank(r[3])))
         add(item, "related_return", (stamp, url), {tag})
     else:
-        if revisits:
+        if revisits and not focus_url:
             item = revisits[0]
             add(item, "revisit", (last_problem[item["problem_url"]], item["problem_url"]))
 
-    if latest and latest not in invalid_urls:
-        related = [p for p in fresh if specific[p["problem_url"]] & specific[latest]]
+    # A companion link promises a related catalog topic, never a diagnosed gap
+    # or proof that another problem requires the detected algorithm. Hash Table
+    # is useful in this explicit context; broad Array/String overlap is not.
+    context_tags = tags[focus_url] & (TARGET_TOPICS | {"hash table"}) if focus_url else set()
+    if latest and (focus_url or latest not in invalid_urls):
+        related = [p for p in fresh if (tags[p["problem_url"]] & context_tags if focus_url else
+                                       specific[p["problem_url"]] & specific[latest])]
         if related:
             item = min(related, key=rank)
-            add(item, "follow_up", (last_problem[latest], latest), specific[item["problem_url"]] & specific[latest])
+            add(item, "follow_up", (last_problem.get(latest), latest),
+                tags[item["problem_url"]] & context_tags if focus_url else specific[item["problem_url"]] & specific[latest])
     while fresh and len(selected) < 3:
-        add(min(fresh, key=rank), "explore" if history else "starter")
-    if revisits and len(selected) < 3 and not any(r["practice_kind"] == "revisit" for r in selected):
+        related = [p for p in fresh if tags[p["problem_url"]] & context_tags] if focus_url else []
+        if related:
+            item = min(related, key=rank)
+            add(item, "follow_up", (last_problem.get(latest), latest), tags[item["problem_url"]] & context_tags)
+        elif focus_url and not allow_explore:
+            break
+        else:
+            add(min(fresh, key=rank), "explore" if history or focus_url else "starter")
+    if not focus_url and revisits and len(selected) < 3 and not any(r["practice_kind"] == "revisit" for r in selected):
         item = revisits[0]
         add(item, "revisit", (last_problem[item["problem_url"]], item["problem_url"]))
 
@@ -202,7 +227,9 @@ def recommend_calendar_practice(problems, history, *, now, difficulty=None, excl
              "no_candidates" if not matching else "session_exhausted" if eligible_before_skips else "caught_up")
     return {"policy": POLICY, "state": state, "recommendations": selected,
             "context": {"latest_problem_id": items[latest]["problem_id"] if latest else None,
-                        "default_max_difficulty": preferred if difficulty is None else None},
+                        "default_max_difficulty": preferred if difficulty is None else None,
+                        **({"source_problem_url": focus_url,
+                            "related_available": any(r["practice_kind"] == "follow_up" for r in selected)} if focus_url else {})},
             "history": {"scope": "latest_recorded_submissions", "limit": HISTORY_LIMIT,
                         "truncated": len(history) > HISTORY_LIMIT, "mapped_problems": len(seen),
                         "unmapped_submissions": unmapped, "invalid_timestamps": invalid,

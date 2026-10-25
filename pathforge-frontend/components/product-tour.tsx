@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { ArrowRight, Braces, Compass, Layers2, Pause, Play } from 'lucide-react'
+import Image from 'next/image'
 
 const STEPS = [
   { label: 'Inspect', title: 'The window moves. Its width stays fixed.', description: 'Follow the relationship between incoming and outgoing elements, beyond the names of your variables.' },
@@ -9,7 +10,14 @@ const STEPS = [
   { label: 'Practise', title: 'Keep the next step within reach.', description: 'Return to something familiar or explore a different problem, using your recorded practice as context.' },
 ]
 
-export function ProductTour() {
+const COMPANION_STEPS = [
+  { label: 'Understand', title: 'A pattern name, with an explanation.', description: 'Your Python code is read from LeetCode. Tap a detected pattern to understand the structure PathForge spotted.', image: 'patterns.png' },
+  { label: 'Progress', title: 'See eligible XP arrive.', description: 'A real rating change briefly fills the pattern bar. Rechecks never replay the reward; unscored practice is still saved.', image: 'level-up.png' },
+  { label: 'Retry', title: 'A wrong answer is room to try again.', description: 'No XP is lost for a failed submission. Fix and resubmit; any follow-up suggestions are tied to the current problem’s topic.', image: 'retry.png' },
+]
+
+export function ProductTour({ companion = false }: { companion?: boolean }) {
+  const steps = companion ? COMPANION_STEPS : STEPS
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [reduced, setReduced] = useState(true)
@@ -25,11 +33,11 @@ export function ProductTour() {
   useEffect(() => {
     if (!playing || reduced || hovered || focused) return
     const timer = window.setInterval(() => {
-      if (!document.hidden) setIndex(previous => (previous + 1) % STEPS.length)
+      if (!document.hidden) setIndex(previous => (previous + 1) % steps.length)
     }, 7000)
     return () => window.clearInterval(timer)
-  }, [playing, reduced, hovered, focused])
-  const step = STEPS[index]
+  }, [playing, reduced, hovered, focused, steps.length])
+  const step = steps[index]
 
   return (
     <section aria-label="Illustrative product tour" className="min-w-0 border-y border-border lg:border-y-0 lg:border-l lg:pl-8"
@@ -37,7 +45,7 @@ export function ProductTour() {
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false) }}>
       <div className="flex min-h-14 items-center justify-between gap-3 border-b border-border py-3">
-        <span className="eyebrow"><span className="size-2 rounded-full bg-mint" />A closer look at PathForge</span>
+        <span className="eyebrow"><span className="size-2 rounded-full bg-mint" />{companion ? 'Inside the companion' : 'A closer look at PathForge'}</span>
         <button type="button" onClick={() => setPlaying(value => !value)} disabled={reduced}
           aria-label={playing ? 'Pause product tour' : 'Play product tour'}
           title={reduced ? 'Automatic motion is off for your reduced-motion preference' : 'Control automatic slides'}
@@ -47,7 +55,10 @@ export function ProductTour() {
       </div>
       <div className="min-h-[365px] py-6" aria-live={playing ? 'off' : 'polite'} aria-atomic="true">
         <div key={index} className="detail-enter">
-          {index === 0 ? <>
+          {companion ? <figure>
+            <Image src={`/companion/${COMPANION_STEPS[index].image}`} alt={`Companion ${COMPANION_STEPS[index].label.toLowerCase()} screen with illustrative sample data`} width={400} height={900} loading={index === 0 ? 'eager' : 'lazy'} className="mx-auto max-h-[570px] w-auto max-w-full rounded-md border border-border object-contain" />
+            <figcaption className="mt-3 text-xs text-muted-foreground">Actual extension interface · illustrative sample data</figcaption>
+          </figure> : index === 0 ? <>
             <div className="mb-6 flex flex-wrap justify-center gap-2" aria-label="Illustrative fixed window over a sequence">
               {[2, 4, 1, 7, 3, 6].map((value, i) => <span key={i} className={`window-cell ${i > 0 && i < 4 ? 'border-mint/60 bg-mint/10 text-mint' : 'text-muted-foreground'}`}>{value}</span>)}
             </div>
@@ -68,7 +79,7 @@ export function ProductTour() {
         </div>
       </div>
       <div className="flex gap-2 border-t border-border py-4" role="group" aria-label="Product tour slides">
-        {STEPS.map((item, i) => <button key={item.label} type="button" aria-pressed={i === index}
+        {steps.map((item, i) => <button key={item.label} type="button" aria-pressed={i === index}
           onClick={() => { setIndex(i); setPlaying(false) }}
           className={`flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md text-xs font-semibold transition-colors ${i === index ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/60'}`}>
           <span className={`size-1.5 rounded-full ${i === index ? 'bg-mint' : 'bg-muted-foreground/40'}`} />{item.label}

@@ -41,7 +41,8 @@ describe('a practice workspace without unsupported proficiency claims', () => {
     fixture.practiceRecords = [{ topic: 'array_traversal', attempt_count: 5, last_attempt_at: new Date().toISOString() }]
     const html = render(ProgressView)
     expect(html).toContain('Last recorded today')
-    expect(html).toContain('A level appears after a scored comparison')
+    expect(html).toContain('A level appears after an eligible, verified comparison')
+    expect(html).toContain('Your recent practice')
     expect(render(DashboardView)).toContain('today')
   })
 

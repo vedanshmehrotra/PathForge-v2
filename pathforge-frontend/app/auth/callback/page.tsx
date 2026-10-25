@@ -10,22 +10,22 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log("[callback] mounted")
-
     async function handleCallback() {
       const code = new URLSearchParams(window.location.search).get("code")
-
-      console.log("[callback] code:", code)
+      const complete = () => {
+        let destination = '/'
+        try {
+          if (sessionStorage.getItem('pathforgeAuthReturn') === '/companion/connect') destination = '/companion/connect'
+          sessionStorage.removeItem('pathforgeAuthReturn')
+        } catch { /* Use the normal dashboard when storage is unavailable. */ }
+        router.replace(destination)
+      }
 
       if (!code) {
-        console.log("[callback] no code found")
-
         const { data: { session } } = await supabase.auth.getSession()
 
-        console.log("[callback] existing session:", !!session)
-
         if (session) {
-          router.replace("/")
+          complete()
           return
         }
 
@@ -33,26 +33,17 @@ export default function AuthCallbackPage() {
         return
       }
 
-      console.log("[callback] before exchange")
-
       const { data, error: exchangeError } =
         await supabase.auth.exchangeCodeForSession(code)
 
-      console.log("[callback] after exchange", {
-        session: !!data?.session,
-        error: exchangeError?.name,
-      })
-
       if (exchangeError) {
-        console.error("[OAuth Exchange]", exchangeError)
+        console.error("[OAuth Exchange]", exchangeError.name)
 
         if (exchangeError.name === "AuthPKCECodeVerifierMissingError") {
           const { data: { session } } = await supabase.auth.getSession()
 
-          console.log("[callback] fallback session:", !!session)
-
           if (session) {
-            router.replace("/")
+            complete()
             return
           }
         }
@@ -62,8 +53,7 @@ export default function AuthCallbackPage() {
       }
 
       if (data?.session) {
-        console.log("[callback] redirecting")
-        router.replace("/")
+        complete()
       } else {
         setError("Authentication completed but no session was returned.")
       }

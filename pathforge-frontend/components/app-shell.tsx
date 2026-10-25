@@ -43,6 +43,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const initials = displayName ? getInitials(displayName) : '??'
   const email = profile?.email || user?.email || ''
 
+  if (pathname === '/companion' || pathname === '/companion/connect') return <>{children}</>
+
   if (loading) {
     if (pathname.startsWith('/auth/callback')) {
       return <>{children}</>

@@ -59,6 +59,60 @@ def test_broad_array_overlap_cannot_be_a_targeted_follow_up():
     assert "reason_evidence" not in out["recommendations"][0]
 
 
+def test_companion_uses_current_problem_instead_of_latest_history_and_avoids_hard_jumps():
+    bank = [*BANK,
+        {"id": 217, "title": "Contains Duplicate", "difficulty": "Easy", "topics": "Array, Hash Table",
+         "link": "https://leetcode.com/problems/contains-duplicate/"},
+        {"id": 30, "title": "Hard hash practice", "difficulty": "Hard", "topics": "Hash Table",
+         "link": "https://leetcode.com/problems/substring-with-concatenation-of-all-words/"}]
+    out = plan([event(3)], bank=bank, focus_slug="two-sum", allow_explore=False)
+    assert [r["problem_id"] for r in out["recommendations"]] == ["217"]
+    rec = out["recommendations"][0]
+    assert rec["practice_kind"] == "follow_up" and rec["pattern"] == ""
+    assert rec["reason_evidence"] == {"anchor_url": BANK[0]["link"], "anchor_title": "Two Sum",
+                                       "shared_topics": ["Hash Table"]}
+    assert out["context"]["related_available"] is True
+
+
+def test_companion_no_related_candidate_is_honest_and_exploration_is_optional():
+    failed = plan(focus_slug="two-sum", allow_explore=False)
+    assert failed["recommendations"] == []
+    assert failed["context"]["related_available"] is False
+    accepted = plan(focus_slug="two-sum")
+    assert all(r["practice_kind"] == "explore" for r in accepted["recommendations"])
+    assert all(r["difficulty"] == "Easy" for r in accepted["recommendations"])
+    assert all(r["problem_id"] != "1" for r in accepted["recommendations"])
+    assert plan(focus_slug="missing-problem")["state"] == "context_unavailable"
+
+
+def test_companion_route_preserves_authenticated_ownership_and_validates_context():
+    from pydantic import ValidationError
+    from fastapi import HTTPException
+    with isolated_services():
+        from pathforge.api.routes import recommend as route
+        with patch.object(route, "get_current_user", return_value=SimpleNamespace(user_id=7)), \
+             patch.object(route, "get_recommendations", return_value={"recommendations": []}) as service:
+            route.recommend_endpoint(route.RecommendRequest(user_id=999, mode="companion",
+                context_problem_slug="two-sum", submission_status="failed"), Mock())
+            service.assert_called_once_with(7, mode="companion", policy=POLICY,
+                context_problem_slug="two-sum", submission_status="failed")
+            with pytest.raises(HTTPException) as error:
+                route.recommend_endpoint(route.RecommendRequest(user_id=999, mode="companion"), Mock())
+            assert error.value.status_code == 422
+        with pytest.raises(ValidationError):
+            route.RecommendRequest(user_id=7, mode="companion", context_problem_slug="../admin")
+
+
+def test_companion_service_reuses_calendar_policy_without_loading_elo_or_writing():
+    with practice_service([event(3)], BANK) as (service, connection):
+        result = service.get_recommendations(7, mode="companion", context_problem_slug="two-sum",
+                                             submission_status="failed")
+    assert result["recommendations"] == []
+    assert result["context"]["source_problem_url"] == BANK[0]["link"]
+    assert connection.execute.call_args_list[0].args[1] == (7, 1001)
+    assert all("SELECT" in call.args[0] for call in connection.execute.call_args_list)
+
+
 def test_weak_relation_returns_an_actual_old_problem_instead():
     out = plan([event(20), event(1, 10)], bank=[BANK[0], BANK[1], BANK[6]])
     returned = out["recommendations"][0]

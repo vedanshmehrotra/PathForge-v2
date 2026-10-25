@@ -16,6 +16,8 @@ export function ProgressView() {
   const [chosen, setChosen] = useState<string[] | null>(null)
   const [query, setQuery] = useState('')
   const records = history.data?.practice_records ?? history.data?.profiles ?? []
+  const recent = records.filter(record => record.last_attempt_at && Number.isFinite(Date.parse(record.last_attempt_at)))
+    .sort((a, b) => Date.parse(b.last_attempt_at!) - Date.parse(a.last_attempt_at!)).slice(0, 3)
   const topics = new Map(records.map(p => [p.topic, p]))
   const scoredTopics = new Map((history.data?.profiles ?? []).map(p => [p.topic, p]))
   const patterns = [...new Set([...Object.keys(elo.data?.pattern_elo ?? {}), ...topics.keys()])].sort()
@@ -60,6 +62,14 @@ export function ProgressView() {
           <Link href="/analysis" className="action-primary shrink-0">Analyze a solution <ArrowRight className="size-4" /></Link>
         </section>
       ) : <>
+        {recent.length > 0 && <section aria-labelledby="recent-practice-heading" className="border-t border-border py-6">
+          <h2 id="recent-practice-heading" className="section-title">Your recent practice</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Saved practice counts, even when no XP is awarded.</p>
+          <div className="mt-4 flex flex-wrap gap-x-8 gap-y-4">{recent.map(item => <button key={item.topic} type="button" onClick={() => setSelected(item.topic)} className="text-left text-sm hover:text-mint">
+            <span className="block capitalize">{item.topic.replace(/_/g, ' ')}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">{relativeTime(item.last_attempt_at!)}{elo.data?.pattern_levels?.[item.topic] ? ` · Level ${elo.data.pattern_levels[item.topic].level}` : ' · Practice saved'}</span>
+          </button>)}</div>
+        </section>}
         <div className="grid min-w-0 gap-8 border-y border-border py-6 lg:grid-cols-[1.5fr_1fr]">
           <section className="min-w-0" aria-labelledby="footprint-heading">
             <div className="flex items-center justify-between gap-3"><h2 id="footprint-heading" className="section-title flex items-center gap-2"><ChartNoAxesCombined className="size-4 text-mint" />Practice footprint</h2><span className="text-[11px] text-muted-foreground">Your selection</span></div>
@@ -76,12 +86,13 @@ export function ProgressView() {
                   <div className="h-full rounded-full bg-mint transition-[width] duration-700 motion-reduce:transition-none" style={{ width: `${level.progress_percent}%` }} />
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">{Math.ceil(level.points_per_level - level.into_level)} XP to level {level.level + 1}</p>
-              </> : <p className="text-xs text-muted-foreground">Practice recorded. A level appears after a scored comparison.</p>}
+                <p className="mt-2 text-xs text-muted-foreground">Your practice rating, shown as a level. It can rise or fall.</p>
+              </> : <p className="text-xs leading-relaxed text-muted-foreground">Your practice is saved. A level appears after an eligible, verified comparison. <Link href="/companion#questions-heading" className="text-link">How XP works</Link></p>}
             </div>
-            <h3 className="mt-7 text-sm font-semibold">Try a different implementation</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Compare how two solutions express this pattern, including where the evidence is inconclusive.</p>
-            <Link href="/analysis" className="action-primary mt-6 self-start">Inspect another solution <ArrowRight className="size-4" /></Link>
-            <Link href="/recommendations" className="text-link mt-3 self-start">Browse practice <ArrowRight className="size-3.5" /></Link>
+            <h3 className="mt-7 text-sm font-semibold">Keep practising</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Choose another problem, or inspect a different solution to compare the patterns.</p>
+            <Link href="/recommendations" className="action-primary mt-6 self-start">Choose your next problem <ArrowRight className="size-4" /></Link>
+            <Link href="/analysis" className="text-link mt-3 self-start">Inspect another solution <ArrowRight className="size-3.5" /></Link>
           </section>
         </div>
         <section className="min-w-0" aria-labelledby="patterns-heading">

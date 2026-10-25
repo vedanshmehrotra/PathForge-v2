@@ -1,19 +1,34 @@
 {
   "manifest_version": 3,
   "name": "PathForge Companion",
-  "version": "0.4.1",
-  "description": "Analyze LeetCode solutions with your existing PathForge account.",
-  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
-  "permissions": ["storage", "scripting"],
+  "version": "0.5.0",
+  "description": "Understand your LeetCode Python patterns, save practice, and find related problems with PathForge.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
   "host_permissions": [
     "https://leetcode.com/*",
     "https://www.leetcode.com/*",
     "https://path-forge-v2.vercel.app/*",
     "https://pathforge-v2.onrender.com/*"
   ],
-  "background": { "scripts": ["background.js"] },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
   "action": {
-    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" },
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    },
     "default_title": "Open PathForge"
   },
   "sidebar_action": {
@@ -27,7 +42,12 @@
       "id": "pathforge-companion@pathforge.local",
       "strict_min_version": "142.0",
       "data_collection_permissions": {
-        "required": ["authenticationInfo", "personallyIdentifyingInfo", "browsingActivity", "websiteContent"]
+        "required": [
+          "authenticationInfo",
+          "personallyIdentifyingInfo",
+          "browsingActivity",
+          "websiteContent"
+        ]
       }
     }
   }

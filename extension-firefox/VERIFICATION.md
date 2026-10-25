@@ -1,4 +1,12 @@
-# Firefox extension verification — 20 October 2026
+# Firefox extension verification
+
+**0.5 update, 25 October 2026:** 20 isolated Firefox browser checks passed with controlled service/editor responses. Includes editable-editor-only capture, pausing on read-only historical submissions and resuming with current editor code. Chrome additionally checks XP transitions, smooth collapse, no duplicate reward, first-use guidance and incompatible recommendation APIs. See [current release verification](../docs/releases/companion-0.5.0.md). The report below is historical evidence; submission-preview fallback is removed in 0.5.0.
+
+The packaged 0.5.0 add-on passed 20 checks in a fresh Firefox profile: native sidebar opening, permissions, account scanning, session storage, full editable-editor capture, pausing on read-only historical submissions, resuming with current editor code, verdict matching, related/filtered suggestions, cached analysis, compact layout and disconnect cleanup. Website, editor and API responses were controlled fixtures; this was not production OAuth or real LeetCode. See [the release verification](../docs/releases/companion-0.5.0.md). Earlier results below remain historical.
+
+---
+
+## Historical verification — 20 October 2026
 
 ## Current version 0.4.1
 

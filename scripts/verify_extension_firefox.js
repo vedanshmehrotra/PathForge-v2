@@ -35,10 +35,10 @@ const assert = (ok, description) => { if (!ok) throw new Error(description); che
           code: mode.submittedCode, statusCode: mode.status, lang: { name: 'Python3' }, question: { titleSlug: 'two-sum', title: 'Two Sum' },
         } } });
       } else if (url.hostname === 'leetcode.com') {
-        body = `<!doctype html><a href="/problems/two-sum/">1. Two Sum</a><div class="monaco-editor" style="width:700px;height:500px"><div class="view-lines">VISIBLE LINES ONLY</div></div><script>
+        body = `<!doctype html><a href="/problems/two-sum/">1. Two Sum</a><div class="monaco-editor" style="width:700px;height:500px"><textarea class="inputarea"></textarea><div class="view-lines">VISIBLE LINES ONLY</div></div><script>
           window.fixtureCode=${JSON.stringify(code)}; window.fixtureLanguage='python';
           window.fixtureModel={getValue:()=>window.fixtureCode,getLanguageId:()=>window.fixtureLanguage,isDisposed:()=>false};
-          window.fixtureEditor={getValue:()=>window.fixtureCode,getModel:()=>window.fixtureModel,getDomNode:()=>document.querySelector('.monaco-editor'),hasTextFocus:()=>true};
+          window.fixtureEditor={getValue:()=>window.fixtureCode,getModel:()=>window.fixtureModel,getDomNode:()=>document.querySelector('.monaco-editor'),getRawOptions:()=>({readOnly:window.fixtureReadOnly===true}),hasTextFocus:()=>true};
           window.monaco={editor:{getEditors:()=>[window.fixtureEditor],getModels:()=>[window.fixtureModel]}};
         </script>`;
       } else if (url.hostname === 'path-forge-v2.vercel.app') {
@@ -91,7 +91,7 @@ const assert = (ok, description) => { if (!ok) throw new Error(description); che
           problem_info: { title: 'Two Sum', difficulty: 'Easy', solution_groups: [{ name: 'Hash lookup', patterns: ['hash_map_lookup'], review_state: 'UNREVIEWED', pattern_evidence_state: 'ALL_OBSERVED', observed_patterns: ['hash_map_lookup'], unobserved_patterns: [], family_relation: 'ONE_OF' }] }, persisted: { submission_id: 321 } };
         else if (endpoint === '/recommend') data = { recommendations: [
           { title: 'Contains Duplicate', difficulty: 'Easy', pattern: 'hash_map_lookup', problem_url: 'https://leetcode.com/problems/contains-duplicate/' },
-          { title: 'Valid Anagram', difficulty: 'Easy', topics: ['String'], practice_kind: 'follow_up', problem_url: 'https://leetcode.com/problems/valid-anagram/' },
+          { title: 'Valid Anagram', difficulty: 'Easy', topics: ['String', 'Hash Table'], practice_kind: 'follow_up', reason_evidence: { anchor_url: 'https://leetcode.com/problems/two-sum/', shared_topics: ['Hash Table'] }, problem_url: 'https://leetcode.com/problems/valid-anagram/' },
           { title: 'Valid Parentheses', difficulty: 'Easy', pattern: 'stack', problem_url: 'https://leetcode.com/problems/valid-parentheses/' },
         ] };
         else throw new Error(`Unexpected endpoint: ${endpoint}`);
@@ -115,11 +115,26 @@ const assert = (ok, description) => { if (!ok) throw new Error(description); che
     await driver.findElement(By.id('recheck')).click(); await done();
     calls = await driver.executeScript('return window.fixtureCalls');
     assert(calls.filter(call => call.endpoint === '/analyze').length === before, 'Identical code reuses confirmed analysis without another write');
+    await driver.switchTo().window(source);
+    await driver.get('https://leetcode.com/problems/two-sum/submissions/701/');
+    await driver.executeScript('window.fixtureReadOnly = true; document.querySelector(".inputarea").readOnly = true');
+    await driver.switchTo().window(panel);
+    await driver.findElement(By.id('recheck')).click();
+    await driver.wait(async () => (await driver.findElement(By.id('activity-title')).getText()).includes('Open the Code tab') && await driver.findElement(By.id('recheck')).isEnabled(), 12000);
+    calls = await driver.executeScript('return window.fixtureCalls');
+    assert(calls.filter(call => call.endpoint === '/analyze').length === before && !(await driver.findElement(By.id('analysis-result')).isDisplayed()), 'Firefox pauses on a historical read-only submission without saving another analysis');
+    await driver.switchTo().window(source); await driver.executeScript('window.fixtureReadOnly = false; document.querySelector(".inputarea").readOnly = false; window.fixtureCode += "\\n# resumed editable code"');
+    await driver.switchTo().window(panel); await driver.findElement(By.id('recheck')).click(); await done();
+    calls = await driver.executeScript('return window.fixtureCalls');
+    assert(calls.filter(call => call.endpoint === '/analyze').at(-1)?.body.code.endsWith('# resumed editable code') && (await driver.findElement(By.id('verdict-label')).getText()) === 'Not checked on LeetCode', 'Firefox resumes from current editor code on a submission URL without attaching the historical verdict');
+    await driver.switchTo().window(source); await driver.get('https://leetcode.com/problems/two-sum/description/');
+    await driver.switchTo().window(panel);
     mode.status = 11; mode.submittedCode = `${code}\n# changed solution`;
     await driver.switchTo().window(source); await driver.executeScript('window.fixtureCode = arguments[0]', mode.submittedCode);
     await driver.switchTo().window(panel); await driver.findElement(By.id('recheck')).click(); await done();
-    await driver.wait(async () => (await driver.executeScript('return window.fixtureCalls')).filter(call => call.endpoint === '/recommend').at(-1)?.body.mode === 'legacy', 12000);
-    assert((await driver.findElement(By.id('verdict-label')).getText()) === 'Wrong answer on LeetCode', 'Matching failed source selects existing pattern-focused recommendations');
+    await driver.wait(async () => (await driver.executeScript('return window.fixtureCalls')).filter(call => call.endpoint === '/recommend').at(-1)?.body.submission_status === 'failed', 12000);
+    assert((await driver.findElement(By.id('verdict-label')).getText()) === 'Wrong answer on LeetCode', 'Matching failed source requests related practice for the current problem');
+    assert((await driver.findElements(By.css('a.recommendation'))).length === 1, 'Firefox failure recommendations omit unrelated fallback topics');
     mode.status = 10; mode.submittedCode = code;
     await driver.findElement(By.id('recheck')).click(); await done();
     assert((await driver.findElement(By.id('verdict-label')).getText()) === 'Not checked on LeetCode', 'An old Accepted submission cannot establish correctness for edited source');

@@ -4,6 +4,7 @@ import { ArrowRight, Braces, Compass, Layers2 } from 'lucide-react'
 import { signInWithGoogle } from '@/auth/authService'
 import { BrandMark } from '@/components/brand-mark'
 import { ProductTour } from '@/components/product-tour'
+import Link from 'next/link'
 
 function GoogleMark({ className }: { className?: string }) {
   return (
@@ -37,13 +38,13 @@ export function LoginScreen() {
           <p className="eyebrow mb-5 text-mint"><span className="h-px w-7 bg-mint" />See the structure. Find your next step.</p>
           <h1 className="text-4xl font-semibold leading-[1.12] tracking-[-0.05em] sm:text-5xl lg:text-6xl">See the approach <span>behind your code.</span></h1>
           <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">Bring a Python solution. Explore the patterns in its structure, compare available approaches, and choose what to practise next.</p>
-          <button type="button" onClick={signInWithGoogle} className="action-primary mt-7 gap-3 px-5"><GoogleMark className="size-4" />Sign in with Google<ArrowRight className="ml-2 size-4" /></button>
+          <button type="button" onClick={() => signInWithGoogle()} className="action-primary mt-7 gap-3 px-5"><GoogleMark className="size-4" />Sign in with Google<ArrowRight className="ml-2 size-4" /></button>
           <p className="mt-3 text-sm text-muted-foreground">Keep your practice record in one place.</p>
           <div className="mt-9 flex flex-wrap gap-5 border-t border-border pt-5 text-xs text-muted-foreground"><span className="inline-flex items-center gap-2"><Braces className="size-4 text-mint" />Code evidence</span><span className="inline-flex items-center gap-2"><Layers2 className="size-4 text-sky" />Approach comparison</span><span className="inline-flex items-center gap-2"><Compass className="size-4 text-amber" />Next practice</span></div>
         </div>
         <ProductTour />
       </main>
-      <footer className="flex flex-wrap justify-between gap-3 border-t border-border pt-5 text-xs text-muted-foreground"><span>PathForge · A clearer view of your practice.</span><span>Inspects patterns; does not execute code or prove correctness.</span></footer>
+      <footer className="flex flex-wrap justify-between gap-3 border-t border-border pt-5 text-xs text-muted-foreground"><span>PathForge · A clearer view of your practice.</span><Link href="/companion" className="text-link">Get the Firefox companion <ArrowRight className="size-3" /></Link><span>Inspects patterns; does not execute code or prove correctness.</span></footer>
     </div>
   )
 }

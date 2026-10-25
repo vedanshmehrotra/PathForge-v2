@@ -8,15 +8,16 @@ import { AppShell } from '../../../components/app-shell'
 
 const fixture = vi.hoisted(() => ({
   data: null as RecommendResponse | null, loading: false, error: null as string | null, refresh: vi.fn(),
+  pathname: '/recommendations', authLoading: false, signedIn: true,
 }))
 vi.mock('@/hooks/useApi', () => ({ useRecommendations: () => fixture }))
 vi.mock('@/hooks/usePracticeSkips', () => ({ usePracticeSkips: () => ({
   ready: true, excludedIds: [], skip: vi.fn(), reset: vi.fn(),
 }) }))
 vi.mock('@/auth/AuthProvider', () => ({ useAuth: () => ({
-  user: { id: 'local-fixture' }, profile: { user_id: 7 }, loading: false, signOut: vi.fn(),
+  user: fixture.signedIn ? { id: 'local-fixture' } : null, profile: { user_id: 7 }, loading: fixture.authLoading, signOut: vi.fn(),
 }) }))
-vi.mock('next/navigation', () => ({ usePathname: () => '/recommendations' }))
+vi.mock('next/navigation', () => ({ usePathname: () => fixture.pathname }))
 vi.mock('@/components/login-screen', () => ({ LoginScreen: () => null }))
 
 const response: RecommendResponse = {
@@ -27,7 +28,7 @@ const response: RecommendResponse = {
 }
 const render = (component = RecommendationsView) => renderToStaticMarkup(createElement(component))
 
-beforeEach(() => { fixture.data = structuredClone(response); fixture.loading = false; fixture.error = null })
+beforeEach(() => { fixture.data = structuredClone(response); fixture.loading = false; fixture.error = null; fixture.pathname = '/recommendations'; fixture.authLoading = false; fixture.signedIn = true })
 
 describe('recommendation usability without unsupported diagnosis claims', () => {
   it('offers a real problem destination without presenting heuristic scores as learning gains', () => {
@@ -134,5 +135,15 @@ describe('recommendation usability without unsupported diagnosis claims', () => 
     const html = renderToStaticMarkup(createElement(AppShell, null, 'Local content'))
     expect(html).toContain('aria-label="Mobile navigation"')
     expect(html).not.toContain('engine live')
+  })
+
+  it.each(['/companion', '/companion/connect'])('renders the public %s page before authentication loads', pathname => {
+    fixture.pathname = pathname; fixture.authLoading = true; fixture.signedIn = false
+    expect(renderToStaticMarkup(createElement(AppShell, null, 'Public companion information'))).toBe('Public companion information')
+  })
+
+  it('preserves the sign-in gate on the existing private routes', () => {
+    fixture.pathname = '/progress'; fixture.signedIn = false
+    expect(renderToStaticMarkup(createElement(AppShell, null, 'Private progress'))).not.toContain('Private progress')
   })
 })

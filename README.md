@@ -4,6 +4,27 @@
 
 [![Live App](https://img.shields.io/badge/LIVE_APP-2457D6?style=for-the-badge&logo=vercel&logoColor=white)](https://path-forge-v2.vercel.app/)
 [![GitHub](https://img.shields.io/badge/SOURCE-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vedanshmehrotra/PathForge-v2)
+[![Firefox](https://img.shields.io/badge/FIREFOX_COMPANION-20123A?style=for-the-badge&logo=firefoxbrowser&logoColor=FF7139)](https://addons.mozilla.org/en-US/firefox/addon/pathforge-companion/)
+
+---
+
+## On LeetCode
+
+The **PathForge Companion** reads your Python solution from LeetCode, explains supported patterns, and saves practice to the same account as the website.
+
+1. [Install the Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/pathforge-companion/).
+2. Sign in on PathForge in the same browser, then choose **Connect account** in the sidebar.
+3. Write and submit on LeetCode. Open a detected pattern to understand it, then choose a related question when you are ready.
+
+Python/Python3 only. LeetCode supplies correctness; detected patterns do not prove correctness or mastery. Drafts and Run/Test do not change XP. Eligible rating updates appear as a brief pattern-level bar; repeated scans do not earn another reward.
+
+<p align="center">
+  <img width="31%" alt="Companion 0.5 preview: detected patterns explained in plain language" src="pathforge-frontend/public/companion/patterns.png" />
+  <img width="31%" alt="Companion 0.5 preview: server-confirmed pattern XP and a level transition" src="pathforge-frontend/public/companion/level-up.png" />
+  <img width="31%" alt="Companion 0.5 preview: a failed submission keeps XP safe and offers related practice" src="pathforge-frontend/public/companion/retry.png" />
+</p>
+
+These are browser captures of the **0.5 release candidate with illustrative sample data**. Store availability follows Mozilla approval. [Release notes, listing material and verification](docs/releases/companion-0.5.0.md) · [Chrome installation](extension/README.md) · [Firefox / Zen installation](extension-firefox/README.md)
 
 ---
 

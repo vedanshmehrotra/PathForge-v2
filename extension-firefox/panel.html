@@ -11,7 +11,7 @@
 <body>
 <main>
   <header class="toolbar">
-    <span class="wordmark"><span class="brand-mark" aria-hidden="true">⌁</span> PathForge</span>
+    <span class="wordmark"><img class="brand-mark" src="icons/icon32.png" width="20" height="20" alt="">PathForge</span>
     <button id="settings-toggle" class="icon-button" type="button" aria-label="Account settings" aria-expanded="false" aria-controls="settings" title="Account settings" disabled>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1-2 3 2 3 1 3 3 1 3 2 3-2 3-1 1-3 2-3-2-3-3-1-1-3Z"/><circle cx="12" cy="11" r="3"/></svg>
     </button>
@@ -24,17 +24,23 @@
   <p id="boot-status" class="boot-status" role="status">Opening PathForge…</p>
   <section id="setup" class="setup hidden">
     <div class="setup-symbol" aria-hidden="true">⌁</div>
-    <h1>Connect once. Keep practising.</h1>
-    <p class="muted">Sign in on PathForge in this browser window, then connect your account.</p>
-    <button id="open-app" class="button secondary" type="button">Open PathForge</button>
-    <button id="connect-account" class="button primary" type="button">Connect account</button>
-    <p class="fine">Once connected, opening this panel sends your LeetCode code and problem to PathForge for analysis and progress tracking.</p>
+    <h1>Understand your next solution.</h1>
+    <p class="muted">Spot patterns in your Python code and find a related problem to practise.</p>
+    <p class="setup-step">Accepted submissions can earn pattern XP when PathForge can verify the approach. Not every accepted solution qualifies.</p>
+    <p id="setup-step" class="setup-step">1. Sign in on PathForge · 2. Connect here</p>
+    <button id="open-app" class="button primary" type="button">Sign in on PathForge</button>
+    <button id="connect-account" class="button secondary" type="button">I'm already signed in</button>
+    <p class="fine">Once connected, opening this panel sends your LeetCode code and problem to PathForge for analysis and progress tracking. Drafts never change XP.</p>
   </section>
 
   <div id="workspace" class="hidden">
     <div class="problem-bar">
       <div class="problem-name"><h1 id="problem-title">Your solution</h1><span id="difficulty" class="difficulty"></span></div>
-      <button id="recheck" class="icon-button" type="button" aria-label="Recheck current solution" title="Read your updated code"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg></button>
+      <button id="recheck" class="icon-button" type="button" aria-label="Recheck current solution" title="Preview the current editor code. Drafts never change XP."><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg></button>
+    </div>
+    <div class="check-help">
+      <p id="watch-status">Checks after Submit</p>
+      <details class="xp-guide"><summary>How XP works</summary><p>XP requires an accepted submission matching your current editor code and an approach PathForge can verify. A problem can change XP once per day (UTC). Drafts, Run/Test and repeated checks never change XP. Failed submissions do not cost XP; you can correct and submit again. A problem already being in the catalog does not prevent XP.</p></details>
     </div>
 
     <section id="activity" class="activity" role="status" aria-live="polite">
@@ -43,27 +49,33 @@
     </section>
     <button id="inspect-anyway" class="text-button hidden" type="button">Inspect code without problem comparison</button>
     <button id="retry-analysis" class="text-button hidden" type="button">Retry analysis</button>
+    <button id="read-again" class="button secondary hidden" type="button">Read code again</button>
 
     <section id="analysis-result" class="result hidden" aria-label="Analysis observations" aria-live="polite">
       <div id="verdict" class="verdict"><span id="verdict-icon" aria-hidden="true"></span><span id="verdict-label"></span></div>
       <p id="verdict-note" class="fine"></p>
       <div id="level-feedback" class="level-feedback hidden" role="status" aria-live="polite"></div>
-      <h2>Your approach</h2>
+      <h2 id="pattern-heading">Patterns in your code</h2>
       <div id="detected-patterns" class="pattern-pills"></div>
-      <div id="comparison" class="comparison"></div>
+      <p id="pattern-hint" class="fine pattern-hint hidden">Select a pattern to see what it means.</p>
+      <p id="pattern-explanation" class="pattern-explanation"></p>
+      <details id="comparison-details" class="comparison-details"><summary>See an example approach</summary><div id="comparison" class="comparison"></div></details>
+      <p id="xp-detail" class="fine xp-detail"></p>
     </section>
 
     <section id="next-practice" class="next-practice hidden" aria-live="polite">
       <h2 id="recommendation-title">Next practice</h2>
+      <p id="recommendation-help" class="fine recommendation-help"></p>
       <div id="recommendations" class="recommendations"></div>
       <button id="retry-recommendations" class="text-button hidden" type="button">Retry suggestions</button>
     </section>
 
     <section id="problem-picker" class="problem-picker hidden">
-      <label for="manual-problem">Problem URL or slug</label>
+      <button id="start-problem" class="button primary" type="button">Start with Two Sum</button>
+      <label for="manual-problem">Or open a problem link or name from its URL</label>
       <div class="picker-row"><input id="manual-problem" autocomplete="off" placeholder="two-sum"><button id="open-problem" class="button secondary" type="button">Open</button></div>
     </section>
-    <footer><span id="saved-note"></span><a id="progress-link" href="https://path-forge-v2.vercel.app/progress" target="_blank" rel="noopener noreferrer">More on PathForge ↗</a></footer>
+    <footer><span id="saved-note"></span><a id="progress-link" href="https://path-forge-v2.vercel.app/progress" target="_blank" rel="noopener noreferrer">Your progress ↗</a></footer>
   </div>
   <p id="message" class="message" role="alert" aria-live="polite"></p>
 </main>

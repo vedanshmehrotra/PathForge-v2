@@ -1,5 +1,7 @@
 # Extension verification — 20 October 2026
 
+**0.5 update, 25 October 2026:** 86 isolated Chromium browser checks passed with controlled service/editor responses. Includes editable-editor-only capture, pausing on read-only historical submissions and resuming with current editor code. Chrome additionally checks XP transitions, smooth collapse, no duplicate reward, first-use guidance and incompatible recommendation APIs. See [current release verification](../docs/releases/companion-0.5.0.md). The report below is historical evidence; submission-preview fallback is removed in 0.5.0.
+
 Version **0.4.1** adds accepted-submission scoring safeguards, rating-derived levels,
 and brief XP feedback. Elo calculations and evidence/authority gates are preserved.
 
